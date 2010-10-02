@@ -9,6 +9,7 @@ if( !Function.prototype.bind ) {
 
 /**
 * The AFrame namespace
+* @namespace AFrame
 */
 AFrame = {
 	/**

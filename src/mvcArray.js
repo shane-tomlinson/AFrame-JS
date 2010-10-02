@@ -12,6 +12,10 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 		this.triggerEvent( 'onInsert', index, item );
 	},
 	
+	push: function( item ) {
+		this.insert( this.getCount(), item );
+	},
+	
 	get: function( index ) {
 		return this.items[ index ];
 	},
@@ -28,7 +32,19 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 		return item;
 	},
 	
+	clear: function() {
+		var item;
+		
+		do {
+			item = this.remove( 0 );
+		} while( item );
+	},
+	
 	getCount: function() {
 		return this.items.length;
+	},
+	
+	getArray: function() {
+		return this.items;
 	}
 } );
