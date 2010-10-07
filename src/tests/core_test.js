@@ -1,27 +1,50 @@
+function SuperClass() {
+}
+SuperClass.prototype = {
+	hasFunc: function() {
+		return true;
+	},
+	
+	sharedFunc: function() {
+	    this.sharedFuncCalled = true;
+	    return true;
+	}
+}
+
+function SubClass() {
+}
+AFrame.extend( SubClass, SuperClass, { 
+    superExtendedFunc: function() {
+	return true;
+    },
+    
+    sharedFunc: function() {
+	return SubClass.superclass.sharedFunc.call( this );
+    },
+    
+    init: function() {
+      this.initCalled = true;
+    },
+    
+    itemToRemove: true
+} );
+
+var A = {
+    SubClass: function() {
+	this.init = function() {};
+	return true;
+    }
+};
 $( function() {
+	var TestRunner = YAHOO.tool.TestRunner;
+	var Assert = YAHOO.util.Assert;
+	
 	var testExtend = new YAHOO.tool.TestCase( {
 	 
 		name: "TestCase AFrame.extend",
 	 
-		//---------------------------------------------
-		// Setup and tear down
-		//---------------------------------------------
-	 
-		setUp : function () {
-			function SuperClass() {
-			}
-			SuperClass.prototype = {
-				hasFunc: function() {
-					return true;
-				}
-			}
-			
-			function SubClass() {
-			}
-			AFrame.extend( SubClass, SuperClass );
-			
+		setUp : function () {		
 			this.subInstance = new SubClass();
-			
 		},
 	 
 		tearDown : function () {
@@ -29,50 +52,94 @@ $( function() {
 			delete this.subInstance;
 		},
 	 
-		//---------------------------------------------
-		// Tests
-		//---------------------------------------------
-	 
-		testExtendBase: function () {
-			var Assert = YAHOO.util.Assert;
-			
-			Assert.isTrue( this.subInstance.hasFunc() );
-		} 
+		testExtendSuperclass: function () {
+		    Assert.isFunction( this.subInstance.hasFunc, 'superExtendedFunc exists' );
+		    Assert.isTrue( this.subInstance.hasFunc(), 'subclass function returns true' );
+		    Assert.isObject( SubClass.superclass, 'superclass exists' );
+		    Assert.areEqual( SubClass.superclass.hasFunc, SuperClass.prototype.hasFunc, 'superclass points to super\'s function' );
+		},
+		
+		testExtendExtraFuncs: function () {
+		    Assert.isFunction( this.subInstance.superExtendedFunc, 'superExtendedFunc exists' );
+		    Assert.isTrue( this.subInstance.superExtendedFunc(), 'superExtendedFunc returns correctly' );
+		},
+		
+		testExtendSuperclassInheritedFuncCall: function () {
+ 		    Assert.isTrue( this.subInstance.sharedFunc(), 'sharedFunc calls super class' );
+ 		    Assert.isTrue( this.subInstance.sharedFuncCalled, 'sharedFunc calls super class sets value' );
+		}
+
 	} );
 	
-	
-	
-	
-	
-	
-	function handleTestResult(data){
-		var TestRunner = YAHOO.tool.TestRunner;
-		var message;
-		
-		switch(data.type) {
-			case TestRunner.TEST_FAIL_EVENT:
-				message = "Test named '" + data.testName + "' failed with message: '" + data.error.message + "'.";
-				break;
-			case TestRunner.TEST_PASS_EVENT:
-				message = "Test named '" + data.testName + "' passed.";
-				break;
-			case TestRunner.TEST_IGNORE_EVENT:
-				message = "Test named '" + data.testName + "' was ignored.";
-				break;
-		}
-		
-		if( message ) {
-			console.log( message );
-		}
+	var testMixin = new YAHOO.tool.TestCase( {
+		name: "TestCase AFrame.mixin",
 	 
-	}
+		setUp : function () {		
+			this.subInstance = new SubClass();
+			AFrame.mixin( this.subInstance, {
+			    mixedFunction: function() {
+				return true;
+			    }
+			} );
+		},
 	 
-	var TestRunner = YAHOO.tool.TestRunner;
-	TestRunner.subscribe(TestRunner.TEST_FAIL_EVENT, handleTestResult);
-	TestRunner.subscribe(TestRunner.TEST_IGNORE_EVENT, handleTestResult);
-	TestRunner.subscribe(TestRunner.TEST_PASS_EVENT, handleTestResult);
- 
+		tearDown : function () {
+			this.subInstance = null;
+			delete this.subInstance;
+		},
+		
+		testMixin: function() {
+		    Assert.isFunction( this.subInstance.mixedFunction, 'mixedFunction added' );
+		    Assert.isTrue( this.subInstance.mixedFunction(), 'mixedFunction can be called' );
+		}
+	  
+	} );
+
+	var testRemove = new YAHOO.tool.TestCase( {
+		name: "TestCase AFrame.remove",
+	 
+		setUp : function () {		
+		    this.subInstance = new SubClass();
+		},
+	 
+		tearDown : function () {
+		    this.subInstance = null;
+		    delete this.subInstance;
+		},
+		
+		testRemove: function() {
+		    Assert.isTrue( this.subInstance.itemToRemove, 'itemToRemove exists' );
+		    AFrame.remove( this.subInstance, 'itemToRemove' );
+		    Assert.isFalse( this.subInstance.hasOwnProperty( 'itemToRemove' ), 'item is removed' );
+		}
+	} );
+
+	var testConstruct= new YAHOO.tool.TestCase( {
+		name: "TestCase AFrame.construct",
+	 
+		testConstructOneLevel: function() {
+		    this.subInstance = AFrame.construct( {
+			type: 'SubClass'
+		    } );
+		    
+		    Assert.isTrue( this.subInstance.initCalled, 'init called' );
+
+		    this.subInstance = null;
+		    delete this.subInstance;
+		},
+		
+		testTypeWithDot: function() {
+		    var instance = AFrame.construct( {
+			type: 'A.SubClass'
+		    } );
+		    
+		    Assert.isObject( instance, 'object with dot created' );
+		}
+
+	} );
+		
 	TestRunner.add( testExtend );
-	TestRunner.run();
-	
+	TestRunner.add( testMixin );
+	TestRunner.add( testRemove );
+	TestRunner.add( testConstruct );
 } );
