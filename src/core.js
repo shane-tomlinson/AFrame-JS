@@ -14,7 +14,7 @@ if( !Function.prototype.bind ) {
 AFrame = {
 	/**
 	* extend a class with another class and optional functions
-	* @method extend
+	* @method AFrame.extend
 	* @param {function} derived - class to extend
 	* @param {function} superclass - class to extend with.
 	* @param {object} extrafuncs (optional) - object with optional functions to extend derived with
@@ -30,59 +30,74 @@ AFrame = {
 	
 	/**
 	* extend an object with the members of another object.
-	* @method extend
+	* @method AFrame.mixin
 	* @param {object} toExtend - object to extend
 	* @param {object} mixin (optional) - object with optional functions to extend bc with
 	*/
 	mixin: function( toExtend, mixin ) {
 		toExtend = jQuery.extend( toExtend, mixin );
-	}
-};
-
-/**
-* Construct some objects
-* @method construct
-* @param {object} obj_config - configuration.
-* @return {object} - created object.
-*/
-function construct( obj_config ) {
-	var type = obj_config.type;
-	var config = obj_config.config || {};
-	var plugins = obj_config.plugins || [];
-	var retval;
-	var constructor = getConstructor( type );
+	},
 	
-	if( constructor ) {
-		retval = new constructor();
-
-		for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-			var pluginObj = construct( plugin );
-
-			pluginObj.setPlugged( retval );
-		} // end for
+	
+	/**
+	* Construct some objects
+	* @method AFrame.construct
+	* @param {object} obj_config - configuration.
+	* @return {object} - created object.
+	*/
+	construct: function( obj_config ) {
+		var type = obj_config.type;
+		var config = obj_config.config || {};
+		var plugins = obj_config.plugins || [];
+		var retval;
+		var constructor = getConstructor( type );
 		
-		retval.init( config );
-	}
-	else {
-		throw 'Class: ' + type + ' does not exist.'
-	}
-	
-	return retval;
-	
-	function getConstructor( name ) {
-		var constructor = window;
-		var parts = name.split( '.' );
-		
-		for( var index = 0, part; part = parts[ index ]; ++index ) {
-			constructor = constructor[ part ];
-			if( !constructor ) {
-				break;
-			}
+		if( constructor ) {
+			retval = new constructor();
+
+			for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+				var pluginObj = AFrame.construct( plugin );
+
+				pluginObj.setPlugged( retval );
+			} // end for
+			
+			retval.init( config );
+		}
+		else {
+			throw 'Class: ' + type + ' does not exist.'
 		}
 		
-		return constructor;
+		return retval;
+		
+		function getConstructor( name ) {
+			var constructor = window;
+			var parts = name.split( '.' );
+			
+			for( var index = 0, part; part = parts[ index ]; ++index ) {
+				constructor = constructor[ part ];
+				if( !constructor ) {
+					break;
+				}
+			}
+			
+			return constructor;
+		}
+	},
+	
+	/**
+	 * Remove an item from an object freeing the reference to the item.
+	 * 
+	 * @method AFrame.removeFromObject
+	 * @param {object} object to remove item from.
+	 * @param {string} key of item to remove
+	 */
+	removeFromObject: function( object, key ) {
+	  object[ key ] = null;
+	  delete object[ key ];
 	}
-}
+
+	
+};
 
 
 if( !window.console ) {
