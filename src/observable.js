@@ -2,11 +2,36 @@
  * An observable class.  The framework for a basic event system.
  * @class AFrame.Observable
  */
-function AFrame.Observable() {
-	this.callbacks = {};
-	this.currID = 0;
+AFrame.Observable = function() {
 }
+/**
+ * Get an instance of the observable
+ * @method AFrame.Observable.getInstance
+ * @return {AFrame.Observable}
+ */
+AFrame.Observable.getInstance = function() {
+    return AFrame.construct( {
+	type: 'AFrame.Observable'
+    } );
+};
 AFrame.Observable.prototype = {
+	/**
+	 * Initialize the observable
+	 * @method init
+	 */
+	init: function() {
+		this.callbacks = {};
+		this.currID = 0;
+	},
+	
+	/**
+	 * Tear the observable down, free references
+	 * @method teardown
+	 */
+	teardown: function() {
+	    this.unbindAll();
+	},
+	
 	/**
 	 * Trigger the observable, calls any callbacks bound to the observable.
 	 * @method trigger
