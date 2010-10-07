@@ -87,11 +87,11 @@ AFrame = {
 	/**
 	 * Remove an item from an object freeing the reference to the item.
 	 * 
-	 * @method AFrame.removeFromObject
+	 * @method AFrame.remove
 	 * @param {object} object to remove item from.
 	 * @param {string} key of item to remove
 	 */
-	removeFromObject: function( object, key ) {
+	remove: function( object, key ) {
 	  object[ key ] = null;
 	  delete object[ key ];
 	}

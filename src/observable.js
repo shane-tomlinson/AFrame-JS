@@ -40,7 +40,7 @@ AFrame.Observable.prototype = {
 	 * @param {id} id - id of observable to unbind
 	 */
 	unbind: function( id ) {
-	    AFrame.removeFromObject( this.callbacks, id );
+	    AFrame.remove( this.callbacks, id );
 	},
 	
 	/**
@@ -49,7 +49,7 @@ AFrame.Observable.prototype = {
 	 */
 	unbindAll: function() {
 		for( var key in this.callbacks ) {
-		  AFrame.removeFromObject( this.callbacks, key );
+		  AFrame.remove( this.callbacks, key );
 		}
 	}
 };

@@ -36,7 +36,7 @@ AFrame.AObject.prototype = {
 	    
 	    for( var key in this.events ) {
 		this.events[ key ].unbindAll();
-		AFrame.removeFromObject( this.events, key );
+		AFrame.remove( this.events, key );
 	    }
 	},
 	
