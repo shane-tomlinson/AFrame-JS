@@ -35,11 +35,13 @@ var A = {
 	return true;
     }
 };
-$( function() {
-	var TestRunner = YAHOO.tool.TestRunner;
-	var Assert = YAHOO.util.Assert;
+
+function testCore( Y ) {
+ 
+	var TestRunner = Y.Test.Runner;
+	var Assert = Y.Assert;
 	
-	var testExtend = new YAHOO.tool.TestCase( {
+	var testExtend = new Y.Test.Case( {
 	 
 		name: "TestCase AFrame.extend",
 	 
@@ -71,7 +73,7 @@ $( function() {
 
 	} );
 	
-	var testMixin = new YAHOO.tool.TestCase( {
+	var testMixin = new Y.Test.Case( {
 		name: "TestCase AFrame.mixin",
 	 
 		setUp : function () {		
@@ -95,7 +97,7 @@ $( function() {
 	  
 	} );
 
-	var testRemove = new YAHOO.tool.TestCase( {
+	var testRemove = new Y.Test.Case( {
 		name: "TestCase AFrame.remove",
 	 
 		setUp : function () {		
@@ -114,7 +116,7 @@ $( function() {
 		}
 	} );
 
-	var testConstruct= new YAHOO.tool.TestCase( {
+	var testConstruct= new Y.Test.Case( {
 		name: "TestCase AFrame.construct",
 	 
 		testConstructOneLevel: function() {
@@ -142,4 +144,5 @@ $( function() {
 	TestRunner.add( testMixin );
 	TestRunner.add( testRemove );
 	TestRunner.add( testConstruct );
-} );
+
+}

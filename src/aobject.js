@@ -63,7 +63,23 @@ AFrame.AObject.prototype = {
 		if( event ) {
 			event.trigger.apply( event, args );
 		}
-		
+	},
+	
+	/**
+	 * Check to see if an event has been triggered
+	 * @method isEventTriggered
+	 * @param {string} eventName - name of event to check.
+	 * @return {boolean} true if event has been triggered, false otw.
+	 */
+	isEventTriggered: function( eventName ) {
+	    var retval = false;
+	    var observable = this.events[ eventName ];
+	    
+	    if( observable ) {
+		retval = observable.isTriggered();
+	    }
+	    
+	    return retval;
 	},
 	
 	/**

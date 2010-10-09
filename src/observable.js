@@ -38,6 +38,7 @@ AFrame.Observable.prototype = {
 	 * @param {variant} optional - any arguments will be passed to the callbacks
 	 */
 	trigger: function() {
+		this.triggered = true;
 		for( var key in this.callbacks ) {
 			var callback = this.callbacks[ key ];
 			callback.apply( this, arguments );
@@ -76,5 +77,14 @@ AFrame.Observable.prototype = {
 		for( var key in this.callbacks ) {
 		  AFrame.remove( this.callbacks, key );
 		}
+	},
+	
+	/**
+	 * Check whether the observable has been triggered
+	 * @method isTriggered
+	 * @return {boolean} true if observable has been triggered, false otw.
+	 */
+	isTriggered: function() {
+	    return !!this.triggered;
 	}
 };

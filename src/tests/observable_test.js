@@ -1,8 +1,9 @@
-$( function() {
-	var TestRunner = YAHOO.tool.TestRunner;
-	var Assert = YAHOO.util.Assert;
+function testObservable( Y ) {
+	var TestRunner = Y.Test.Runner;
+	var Assert = Y.Assert;
+	var TestCase = Y.Test.Case;
 	
-	var testObservable = new YAHOO.tool.TestCase( {
+	var testObservable = new TestCase( {
 	 
 		name: "TestCase AFrame.Observable",
 	 
@@ -62,6 +63,14 @@ $( function() {
 		    Assert.isFalse( secondBound, 'secondBound function unbound' );
 		},
 		
+		testIsTriggered: function() {
+		    Assert.isFalse( this.observable.isTriggered(), 'observable has not been triggered' );
+		    
+		    this.observable.trigger();
+		    
+		    Assert.isTrue( this.observable.isTriggered(), 'observable has been triggered' );
+		},
+		
 		testTeardown: function() {
 		    this.observable.teardown();
 		}
@@ -70,4 +79,4 @@ $( function() {
 	
 	
 	TestRunner.add( testObservable );
-} );
+}
