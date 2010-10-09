@@ -19,40 +19,36 @@ function testMVCHash( Y ) {
 		    delete this.hash;
 		},
 		
-		testInsert: function() {
-		    var beforeInsertItem;
-		    var beforeInsertID;
-		    var onBeforeInsert = function( config ) {
-			beforeInsertItem = config.item;
-			beforeInsertID = config.id;
+		testSet: function() {
+		    var beforeSetData;
+		    var onBeforeSet = function( data ) {
+			beforeSetData = data;
 			
-			// adding a field to the data, making sure we get it in onInsert
-			config.item.field2 = "field2";
+			// adding a field to the data, making sure we get it in onSet
+			data.item.field2 = "field2";
 		    };
 		    
-		    var insertData;
-		    var insertID;
-		    var onInsert = function( config ) {
-			insertData = config.item;
-			insertID = config.id;
+		    var setData;
+		    var onSet = function( data ) {
+			setData = data;
 		    };
 		    
-		    this.hash.bindEvent( 'onBeforeInsert', onBeforeInsert );
-		    this.hash.bindEvent( 'onInsert', onInsert );
+		    this.hash.bindEvent( 'onBeforeSet', onBeforeSet );
+		    this.hash.bindEvent( 'onSet', onSet );
 		    
 		    var id = 1;
-		    this.hash.insert( id, { 
+		    this.hash.set( id, { 
 		      field: 'fieldValue'
 		    } );
 		    
-		    Assert.isObject( beforeInsertItem, 'onBeforeInsert sets data' );
-		    Assert.areEqual( id, beforeInsertID, 'onBeforeInsert gives same id as insert' );
-		    Assert.areEqual( 'fieldValue', beforeInsertItem.field, 'onBeforeInsert gives data we pass in' );
+		    Assert.isObject( beforeSetData, 'onBeforeSet sets data' );
+		    Assert.areEqual( id, beforeSetData.id, 'onBeforeSet gives same id as insert' );
+		    Assert.areEqual( 'fieldValue', beforeSetData.item.field, 'onBeforeSet gives data we pass in' );
 		    
-		    Assert.isObject( insertData, 'onInsert sets data' );
-		    Assert.areEqual( id, insertID, 'onInsert gives same id as insert' );
-		    Assert.areEqual( 'fieldValue', insertData.field, 'onInsert gives data we pass in' );
-		    Assert.areEqual( 'field2', insertData.field2, 'onInsert gets data set by onBeforeInsert' );
+		    Assert.isObject( setData, 'onSet sets data' );
+		    Assert.areEqual( id, setData.id, 'onSet gives same id as insert' );
+		    Assert.areEqual( 'fieldValue', setData.item.field, 'onSet gives data we pass in' );
+		    Assert.areEqual( 'field2', setData.item.field2, 'onSet gets data set by onBeforeInsert' );
 		},
 		
 		testGet: function() {
@@ -61,7 +57,7 @@ function testMVCHash( Y ) {
 		    };
 		    
 		    var id = 1;
-		    this.hash.insert( id, item );
+		    this.hash.set( id, item );
 		    var retrievedItem = this.hash.get( id );
 		    
 		    Assert.areEqual( item, retrievedItem, 'item and the retrievedItem are the same' );
@@ -74,7 +70,7 @@ function testMVCHash( Y ) {
 		    
 		    var id = 1;
 		    
-		    this.hash.insert( id, item );
+		    this.hash.set( id, item );
 		    var deletedItem = this.hash.remove( id );
 		    Assert.areEqual( item, deletedItem, 'got the correct deleted item' );
 		    
@@ -93,7 +89,7 @@ function testMVCHash( Y ) {
 		    
 		    var id = 1;
 		    
-		    this.hash.insert( id, item );
+		    this.hash.set( id, item );
 		  
 		    var beforeRemoveData;
 		    var onBeforeRemove = function( data ) {

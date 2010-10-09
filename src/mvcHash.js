@@ -16,20 +16,21 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
       },
       
       /**
-       * Insert an item into the hash
-       * @method insert
+       * set an item in the hash
+       * @method set
        * @param {id} id - id to set item at.
        * @param {variant} item - item to set
        */
-      insert: function( id, item ) {
+      set: function( id, item ) {
 	  var data = {
 	      id: id,
-	      item: item
+	      item: item,
+	      previousItem: this.get( id )
 	  };
 	  
-	  this.triggerEvent( 'onBeforeInsert', data );
+	  this.triggerEvent( 'onBeforeSet', data );
 	  this.hash[ id ] = item;
-	  this.triggerEvent( 'onInsert', data );
+	  this.triggerEvent( 'onSet', data );
       },
       
       /**
