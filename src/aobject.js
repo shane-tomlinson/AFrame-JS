@@ -24,6 +24,15 @@ AFrame.AObject.prototype = {
 	},
 	
 	/**
+	 * Return the configuration object
+	 * @method getConfig
+	 * @return {object} the configuration object
+	 */
+	getConfig: function() {
+	    return this.config;
+	},
+	
+	/**
 	 * Tear the object down, free any references
 	 * @method teardown
 	 */
@@ -64,12 +73,26 @@ AFrame.AObject.prototype = {
 	 * @param {function} callback - callback to call
 	 * @param {object} context (optional) - optional context to call the callback in.  If not given,
 	 * 	use the 'this' object.
+	 * @return {id} - id that can be used to unbind the callback.
 	 */
 	bindEvent: function( eventName, callback, context ) {
 		if( !this.events[ eventName ] ) {
-			this.events[ eventName ] = new AFrame.Observable();
+			this.events[ eventName ] = AFrame.Observable.getInstance();
 		}
 		
-		this.events[ eventName ].bind( callback.bind( context || this ) );
+		return this.events[ eventName ].bind( callback.bind( context || this ) );
+	},
+	
+	/**
+	 * Unbind an event
+	 * @method unbindEvent
+	 * @param {id} id returned by bindEvent
+	 */
+	unbindEvent: function( eventName, id ) {
+	    var observable = this.events[ eventName ];
+	    
+	    if( observable ) {
+		return observable.unbind( id );
+	    }
 	}
 };
