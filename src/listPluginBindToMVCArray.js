@@ -1,6 +1,6 @@
 AFrame.ListPluginBindToMVCArray = function() {
 	AFrame.ListPluginBindToMVCArray.superclass.constructor.apply( this, arguments );
-}
+};
 
 AFrame.extend( AFrame.ListPluginBindToMVCArray, AFrame.Plugin, {
 	init: function( config ) {

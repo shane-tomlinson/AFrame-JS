@@ -7,8 +7,8 @@ if( !Function.prototype.bind ) {
 		var callback = this;
 		return function() {
 			callback.apply( context, arguments );
-		}
-	}
+		};
+	};
 }
 
 /**
@@ -63,12 +63,12 @@ AFrame = {
 				var pluginObj = AFrame.construct( plugin );
 
 				pluginObj.setPlugged( retval );
-			} // end for
+			}
 			
 			retval.init( config );
 		}
 		else {
-			throw 'Class: ' + type + ' does not exist.'
+			throw 'Class: ' + type + ' does not exist.';
 		}
 		
 		return retval;

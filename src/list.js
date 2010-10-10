@@ -1,6 +1,6 @@
 AFrame.List = function() {
 	AFrame.List.superclass.constructor.apply( this, arguments );
-}
+};
 AFrame.extend( AFrame.List, AFrame.Display, {
 	init: function( config ) {
 		this.template = $( config.template ).html();

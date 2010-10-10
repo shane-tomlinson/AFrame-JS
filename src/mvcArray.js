@@ -1,6 +1,6 @@
 AFrame.MVCArray = function() {
 	AFrame.MVCArray.superclass.constructor.apply( this, arguments );
-}
+};
 AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	init: function() {
 		this.items = [];

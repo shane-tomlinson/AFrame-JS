@@ -4,8 +4,7 @@
  */
 AFrame.AObject = function() {
 	this.events = {};
-	
-}
+};
 AFrame.AObject.prototype = {
 	constructor: AFrame.AObject,
 	/**
