@@ -3,7 +3,7 @@
  * @class AFrame.Observable
  */
 AFrame.Observable = function() {
-}
+};
 /**
  * Get an instance of the observable
  * @method AFrame.Observable.getInstance

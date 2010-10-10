@@ -6,7 +6,7 @@
 */
 AFrame.MVCHash = function() {
 	AFrame.MVCHash.superclass.constructor.apply( this, arguments );
-}
+};
 
 AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 init: function( config ) {
