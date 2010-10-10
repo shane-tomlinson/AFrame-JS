@@ -42,11 +42,11 @@ function testMVCHash( Y ) {
 		    } );
 		    
 		    Assert.isObject( beforeSetData, 'onBeforeSet sets data' );
-		    Assert.areEqual( id, beforeSetData.id, 'onBeforeSet gives same id as insert' );
+		    Assert.areEqual( id, beforeSetData.meta.id, 'onBeforeSet gives same id as insert' );
 		    Assert.areEqual( 'fieldValue', beforeSetData.item.field, 'onBeforeSet gives data we pass in' );
 		    
 		    Assert.isObject( setData, 'onSet sets data' );
-		    Assert.areEqual( id, setData.id, 'onSet gives same id as insert' );
+		    Assert.areEqual( id, setData.meta.id, 'onSet gives same id as insert' );
 		    Assert.areEqual( 'fieldValue', setData.item.field, 'onSet gives data we pass in' );
 		    Assert.areEqual( 'field2', setData.item.field2, 'onSet gets data set by onBeforeInsert' );
 		},
@@ -84,7 +84,7 @@ function testMVCHash( Y ) {
 		
 		testRemoveEvents: function() {
 		    var item = {
-			fieldName: 'fieldValue'
+				fieldName: 'fieldValue'
 		    };
 		    
 		    var id = 1;
@@ -106,11 +106,109 @@ function testMVCHash( Y ) {
 		    
 		    this.hash.remove( id );
 		    
-		    Assert.areEqual( id, beforeRemoveData.id, 'onBeforeRemove ids are the same' );
+		    Assert.areEqual( id, beforeRemoveData.meta.id, 'onBeforeRemove ids are the same' );
 		    Assert.areEqual( item, beforeRemoveData.item, 'onBeforeRemove items are the same' );
 		    
-		    Assert.areEqual( id, removeData.id, 'onRemove ids are the same' );
+		    Assert.areEqual( id, removeData.meta.id, 'onRemove ids are the same' );
 		    Assert.areEqual( item, removeData.item, 'onRemove items are the same' );
+		},
+		
+		testInsert: function() {
+			var item = {
+				fieldName: 'fieldValue'
+			};
+			
+			var meta = {
+				metaField: 'metaValue'
+			};
+			
+			var beforeInsertData;
+			this.hash.bindEvent( 'onBeforeInsert', function( data ) {
+				beforeInsertData = data;
+			} );
+
+			var insertData;
+			this.hash.bindEvent( 'onInsert', function( data ) {
+				insertData = data;
+			} );
+			
+			var id = this.hash.insert( item, meta );
+			
+			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
+			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
+			
+			Assert.areEqual( insertData.meta.id, id, 'ids are the same' );
+			
+		},
+		
+		testInsertNoMeta: function() {
+			var item = {
+				fieldName: 'fieldValue'
+			};
+			
+			var beforeInsertData;
+			this.hash.bindEvent( 'onBeforeInsert', function( data ) {
+				beforeInsertData = data;
+			} );
+
+			var insertData;
+			this.hash.bindEvent( 'onInsert', function( data ) {
+				insertData = data;
+			} );
+			
+			var id = this.hash.insert( item );
+			
+			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
+			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
+		},
+		
+		testInsertAs: function() {
+			var id = 1;
+			var item = {
+				fieldName: 'fieldValue'
+			};
+			
+			var returnedId = this.hash.insertAs( id, item );
+			
+			Assert.areEqual( id, returnedId, 'insertAs returning same id that we give it' );
+			
+		},
+		
+		testInsertAsNoID: function() {
+			var item = {
+				fieldName: 'fieldValue'
+			};
+			
+			var except;
+			try {
+				// this should cause an exception
+				this.hash.insertAs( undefined, item );
+			}
+			catch( e ) {
+				except = e;
+			}
+			
+			Assert.areEqual( 'no id given', except, 'no id given exception thrown' );
+		},
+		
+		testInsertAsDuplicate: function() {
+			var id = 1;
+			var item = {
+				fieldName: 'fieldValue'
+			};
+			
+			this.hash.insertAs( id, item );
+			
+			var except;
+			try {
+				// this should cause an exception
+				this.hash.insertAs( id, item );
+			}
+			catch( e ) {
+				except = e;
+			}
+			
+			Assert.areEqual( 'duplicate id', except, 'duplicate id exception thrown' );
 		}
 	} );
 	
