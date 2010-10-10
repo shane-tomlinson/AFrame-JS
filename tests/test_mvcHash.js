@@ -3,7 +3,7 @@ function testMVCHash( Y ) {
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
 		
-	var testAObject = new TestCase( {
+	var test = new TestCase( {
 	 
 		name: "TestCase AFrame.MVCHash",
 
@@ -42,13 +42,13 @@ function testMVCHash( Y ) {
 		    } );
 		    
 		    Assert.isObject( beforeSetData, 'onBeforeSet sets data' );
-		    Assert.areEqual( id, beforeSetData.meta.id, 'onBeforeSet gives same id as insert' );
-		    Assert.areEqual( 'fieldValue', beforeSetData.item.field, 'onBeforeSet gives data we pass in' );
+		    Assert.areSame( id, beforeSetData.meta.id, 'onBeforeSet gives same id as insert' );
+		    Assert.areSame( 'fieldValue', beforeSetData.item.field, 'onBeforeSet gives data we pass in' );
 		    
 		    Assert.isObject( setData, 'onSet sets data' );
-		    Assert.areEqual( id, setData.meta.id, 'onSet gives same id as insert' );
-		    Assert.areEqual( 'fieldValue', setData.item.field, 'onSet gives data we pass in' );
-		    Assert.areEqual( 'field2', setData.item.field2, 'onSet gets data set by onBeforeInsert' );
+		    Assert.areSame( id, setData.meta.id, 'onSet gives same id as insert' );
+		    Assert.areSame( 'fieldValue', setData.item.field, 'onSet gives data we pass in' );
+		    Assert.areSame( 'field2', setData.item.field2, 'onSet gets data set by onBeforeInsert' );
 		},
 		
 		testGet: function() {
@@ -60,7 +60,7 @@ function testMVCHash( Y ) {
 		    this.hash.set( id, item );
 		    var retrievedItem = this.hash.get( id );
 		    
-		    Assert.areEqual( item, retrievedItem, 'item and the retrievedItem are the same' );
+		    Assert.areSame( item, retrievedItem, 'item and the retrievedItem are the same' );
 		},
 		
 		testRemove: function() {
@@ -72,7 +72,7 @@ function testMVCHash( Y ) {
 		    
 		    this.hash.set( id, item );
 		    var deletedItem = this.hash.remove( id );
-		    Assert.areEqual( item, deletedItem, 'got the correct deleted item' );
+		    Assert.areSame( item, deletedItem, 'got the correct deleted item' );
 		    
 		    var retrievedItem = this.hash.get( id );
 		    Assert.isUndefined( retrievedItem, 'remove correctly occured' );
@@ -106,11 +106,11 @@ function testMVCHash( Y ) {
 		    
 		    this.hash.remove( id );
 		    
-		    Assert.areEqual( id, beforeRemoveData.meta.id, 'onBeforeRemove ids are the same' );
-		    Assert.areEqual( item, beforeRemoveData.item, 'onBeforeRemove items are the same' );
+		    Assert.areSame( id, beforeRemoveData.meta.id, 'onBeforeRemove ids are the same' );
+		    Assert.areSame( item, beforeRemoveData.item, 'onBeforeRemove items are the same' );
 		    
-		    Assert.areEqual( id, removeData.meta.id, 'onRemove ids are the same' );
-		    Assert.areEqual( item, removeData.item, 'onRemove items are the same' );
+		    Assert.areSame( id, removeData.meta.id, 'onRemove ids are the same' );
+		    Assert.areSame( item, removeData.item, 'onRemove items are the same' );
 		},
 		
 		testInsert: function() {
@@ -137,7 +137,7 @@ function testMVCHash( Y ) {
 			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
 			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
 			
-			Assert.areEqual( insertData.meta.id, id, 'ids are the same' );
+			Assert.areSame( insertData.meta.id, id, 'ids are the same' );
 			
 		},
 		
@@ -170,7 +170,7 @@ function testMVCHash( Y ) {
 			
 			var returnedId = this.hash.insertAs( id, item );
 			
-			Assert.areEqual( id, returnedId, 'insertAs returning same id that we give it' );
+			Assert.areSame( id, returnedId, 'insertAs returning same id that we give it' );
 			
 		},
 		
@@ -188,7 +188,7 @@ function testMVCHash( Y ) {
 				except = e;
 			}
 			
-			Assert.areEqual( 'no id given', except, 'no id given exception thrown' );
+			Assert.areSame( 'no id given', except, 'no id given exception thrown' );
 		},
 		
 		testInsertAsDuplicate: function() {
@@ -208,12 +208,12 @@ function testMVCHash( Y ) {
 				except = e;
 			}
 			
-			Assert.areEqual( 'duplicate id', except, 'duplicate id exception thrown' );
+			Assert.areSame( 'duplicate id', except, 'duplicate id exception thrown' );
 		}
 	} );
 	
 	
 	
-	TestRunner.add( testAObject );
+	TestRunner.add( test );
 
 }

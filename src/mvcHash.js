@@ -93,7 +93,7 @@ init: function( config ) {
 	*/
 	insert: function( item, meta ) {
 		AFrame.MVCHash.currID++;
-		var id = AFrame.MVCHash.currID;
+		var id = 'aframeid' + AFrame.MVCHash.currID;
 		
 		return this.insertAs( id, item, meta );
 	},
