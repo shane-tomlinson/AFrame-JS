@@ -12,10 +12,19 @@ AFrame.MVCHash = function() {
 };
 AFrame.MVCHash.currID = 0;
 AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
-init: function( config ) {
+	init: function( config ) {
 		this.hash = {};
 		
 		AFrame.MVCHash.superclass.init.apply( this, arguments );
+	},
+	
+	teardown: function() {
+		for( var key in this.hash ) {
+			AFrame.remove( this.hash, key );
+		}
+		AFrame.remove( this, 'hash' );
+		
+		AFrame.MVCHash.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**

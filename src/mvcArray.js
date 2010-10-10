@@ -13,6 +13,15 @@ AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
 		AFrame.MVCArray.superclass.init.apply( this, arguments );
 	},
 	
+	teardown: function() {
+		this.itemIDs.forEach( function( id, index ) {
+			this.itemIDs[ index ] = null;
+		}, this );
+		AFrame.remove( this, 'itemIDs' );
+		
+		AFrame.MVCArray.superclass.init.apply( this, arguments );
+	},
+	
 	/**
 	* Insert an item into the array.
 	* @method insert
