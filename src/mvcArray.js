@@ -1,5 +1,5 @@
 /**
-* an array to be used MVC style
+* an array to be used MVC style.  The item's index will be added to all meta information in all events.
 * @class AFrame.MVCArray
 * @extends AFrame.MVCHash
 * @constructor
