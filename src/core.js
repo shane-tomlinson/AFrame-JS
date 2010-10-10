@@ -1,3 +1,7 @@
+/**
+* @module AFrame
+*/
+
 if( !Function.prototype.bind ) {
 	Function.prototype.bind = function( context ) {
 		var callback = this;
