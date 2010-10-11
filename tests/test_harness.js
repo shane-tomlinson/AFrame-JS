@@ -6,6 +6,7 @@ YUI().use( 'test', function( Y ) {
     testAObject( Y );
     testMVCHash( Y );
     testMVCArray( Y );
+    testDisplay( Y );
     
     TestRunner.run();
 } );
