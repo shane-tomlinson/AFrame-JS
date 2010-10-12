@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="../src/mvcHash.js"></script>
 	<script type="text/javascript" src="../src/mvcArray.js"></script>
 	<script type="text/javascript" src="../src/display.js"></script>
+	<script type="text/javascript" src="../src/list.js"></script>
 	
 
 	<script type="text/javascript" src="test_core.js"></script>
@@ -17,19 +18,37 @@
 	<script type="text/javascript" src="test_mvcHash.js"></script>
 	<script type="text/javascript" src="test_mvcArray.js"></script>
 	<script type="text/javascript" src="test_display.js"></script>
+	<script type="text/javascript" src="test_list.js"></script>
 	
 	<!-- this has to go last -->
 	<script type="text/javascript" src="test_harness.js"></script>
 	
 </head>
 <body>
-	Unit tests
+	<header>
+		<h1>AFrame Unit tests</h1>
+	</header>
 
-	<div class="target">
-		Target
-		<a href="#" class="button">Button</a>
-	</div>
+	<section id="AFrame_Display">
+		<h3>AFrame.Display test</h2>
+		<div class="target">
+			Target
+			<a href="#" class="button">Button</a>
+		</div>
 
-	<a href="#" id="externalButton">External Button</a>
+		<a href="#" id="externalButton">External Button</a>
+	</section>
+
+	<section id="AFrame_List">
+		<h3>AFrame.List test</h3>
+
+		<ul class="list">
+		</ul>
+
+		<script type="text/html" class="template">
+			<li>template</li>
+		</script>
+	</section>
+
 </body>
 </html>
