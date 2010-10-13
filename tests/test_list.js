@@ -24,6 +24,8 @@ function testList( Y ) {
 		},
 		
 		tearDown : function () {
+			$( '#AFrame_List .list' ).html( '' );
+			
 			this.list.teardown();
 			this.list= null;
 			delete this.list;
@@ -43,6 +45,22 @@ function testList( Y ) {
 			Assert.areEqual( 1, $( 'ul > li#insertedBefore1' ).length, 'third list element inserted' );
 
 			Assert.areEqual( 1, $( 'li#insertedBefore1 + li#inserted1' ).length, 'third inserted in correct order' );
+
+			this.list.insert( 10, { id: 'insertedOutOfOrder' } );
+			Assert.areEqual( 1, $( 'li#insertedOutOfOrder' ).length, 'out of order insert inserts at end' );
+
+			var insertData;
+			this.list.bindEvent( 'onInsert', function( data ) {
+				insertData = data;
+			} );
+			this.list.insert( Infinity, { id: 'insertWithObservable' } );
+			Assert.areEqual( 'insertWithObservable', insertData.data.id, 'onInsert data set correctly' );
+			Assert.isNotUndefined( insertData.index, 'onInsert data index set correctly' );
+		},
+
+		testInsertElement: function() {
+			this.list.insertElement( 0, $( '<li id="insertRowInsert">Insert Row Insert</li>' ) );
+			Assert.areEqual( 1, $( 'li#insertRowInsert' ).length, 'insertRow correctly working' );
 		}
 	} );
 

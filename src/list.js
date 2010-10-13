@@ -19,24 +19,50 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
 
+	clear: function() {
+		this.getTarget().html( '' );
+	},
+	
 	/**
-	 * Insert an item into the list
+	 * Insert a data item into the list, the list item is created using the createListElementCallback.
 	 * @method insert
-	 * @param {number} index - index to insert at.
+	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
 	 * @param {object} data - data to use for list item
 	 */
 	insert: function( index, data ) {
 		var rowElement = this.createListElementCallback( index, data );
-
-		this.getTarget().append( rowElement );
+		var insertedIndex = this.insertElement( index, rowElement );
 		
 		this.triggerEvent( 'onInsert', {
-			index: index,
+			index: insertedIndex,
 			rowElement: rowElement, 
 			data: data 
 		} );
+
+		return insertedIndex;
 	},
 
+	/**
+	 * Insert an element into the list.
+	 * @method insertRow
+	 * @param {number} index - index to insert at.
+	 * @param {element} rowElement - element to insert
+	 */
+	insertElement: function( index, rowElement ) {
+		var target = this.getTarget();
+		var children = target.children();
+		if( index < children.length ) {
+			var insertBefore = children.eq( index );
+			rowElement.insertBefore( insertBefore );
+		}
+		else {
+			index = children.length;
+			target.append( rowElement );
+		}
+
+		return index;
+	},
+	
 	/**
 	 * Remove an item from the list
 	 * @method remove
