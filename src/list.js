@@ -5,16 +5,16 @@
  * @constructor
  */
 /**
- * A template to use for the list and list items.
- * @config template
- * @type {element || selector}
+ * A function to call to create a list element.  function will be called with two parameters, an index and the data.
+ * @config createListElementCallback
+ * @type {function}
  */
 AFrame.List = function() {
 	AFrame.List.superclass.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.List, AFrame.Display, {
 	init: function( config ) {
-		this.template = $( config.template ).html();
+		this.createListElementCallback = config.createListElementCallback;
 		
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
@@ -26,11 +26,15 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 	 * @param {object} data - data to use for list item
 	 */
 	insert: function( index, data ) {
-		var elementToInsert = $( '<div/>' ).setTemplate( this.template ).processTemplate( data ).first().children( 0 );
+		var rowElement = this.createListElementCallback( index, data );
 
-		this.getTarget().append( elementToInsert );
+		this.getTarget().append( rowElement );
 		
-		this.triggerEvent( 'onInsert', index, elementToInsert, data );
+		this.triggerEvent( 'onInsert', {
+			index: index,
+			rowElement: rowElement, 
+			data: data 
+		} );
 	},
 
 	/**

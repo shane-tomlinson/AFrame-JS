@@ -6,7 +6,7 @@ if( !Function.prototype.bind ) {
 	Function.prototype.bind = function( context ) {
 		var callback = this;
 		return function() {
-			callback.apply( context, arguments );
+			return callback.apply( context, arguments );
 		};
 	};
 }
