@@ -99,6 +99,17 @@ AFrame = {
 	remove: function( object, key ) {
 	  object[ key ] = null;
 	  delete object[ key ];
+	},
+
+	currentID: 0,
+	/**
+	 * Get a unique ID
+	 * @method getUniqueID
+	 * @return {id} a unique id
+	 */
+	getUniqueID: function() {
+		this.currentID++;
+		return 'cid' + this.currentID;
 	}
 
 	

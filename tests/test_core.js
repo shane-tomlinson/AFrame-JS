@@ -139,10 +139,23 @@ function testCore( Y ) {
 		}
 
 	} );
+
+	var testGetUniqueID = new Y.Test.Case( {
+		name: 'TestCase AFrame.getUniqueID',
+
+		testGetUniqueID: function() {
+			var id1 = AFrame.getUniqueID();
+			var id2 = AFrame.getUniqueID();
+
+			Assert.areNotEqual( id1, id2, 'ids are unique' );
+		}
 		
+	} );
+	
 	TestRunner.add( testExtend );
 	TestRunner.add( testMixin );
 	TestRunner.add( testRemove );
 	TestRunner.add( testConstruct );
-
+	TestRunner.add( testGetUniqueID );
+	
 }
