@@ -26,49 +26,102 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 	/**
 	 * Insert a data item into the list, the list item is created using the createListElementCallback.
 	 * @method insert
-	 * @param {object} data - data to use for list item
 	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
+	 * 	If index is negative, item is inserted from end.  -1 is at the end.
+	 * @param {object} data - data to use for list item
 	 */
-	insert: function( data, index ) {
-		var rowElement = this.createListElementCallback( index, data );
-		var insertedIndex = this.insertElement( rowElement, index );
+	insert: function( index, data ) {
+		var insertIndex = this.getActualInsertIndex( index );
+		var rowElement = this.createListElementCallback( insertIndex, data );
+		var insertIndex = this.insertElement( insertIndex, rowElement );
 		
 		this.triggerEvent( 'onInsert', {
-			index: insertedIndex,
+			index: insertIndex,
 			rowElement: rowElement, 
 			data: data 
 		} );
 
-		return insertedIndex;
+		return insertIndex;
 	},
 
 	/**
 	 * Insert an element into the list.
 	 * @method insertRow
+	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
+	 * 	If index is negative, item is inserted from end.  -1 is at the end.
 	 * @param {element} rowElement - element to insert
-	 * @param {number} index - index to insert at.
 	 */
-	insertElement: function( rowElement, index ) {
+	insertElement: function( index, rowElement ) {
 		var target = this.getTarget();
 		var children = target.children();
-		if( index < children.length ) {
-			var insertBefore = children.eq( index );
-			rowElement.insertBefore( insertBefore );
-		}
-		else {
-			index = children.length;
+		
+		var insertIndex = this.getActualInsertIndex( index );
+		if( insertIndex === children.length ) {
 			target.append( rowElement );
 		}
+		else {
+			var insertBefore = children.eq( insertIndex );
+			rowElement.insertBefore( insertBefore );
+		}
 
-		return index;
+		this.triggerEvent( 'onInsertElement', {
+			index: insertIndex,
+			rowElement: rowElement
+		} );
+		
+		return insertIndex;
 	},
-	
+
 	/**
 	 * Remove an item from the list
 	 * @method remove
 	 * @param {number} index - index of item to remove
 	 */
 	remove: function( index ) {
-		this.getTarget().children( 'li:eq(' + index + ')' ).remove();
+		var removeIndex = this.getActualRemoveIndex( index );
+		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
+
+		this.triggerEvent( 'onRemoveElement', {
+			index: removeIndex,
+			rowElement: rowElement
+		} );
+	},
+	
+	/**
+	 * @private
+	 * Given an tentative index, get the index the item would be inserted at
+	 * @method getActualInsertIndex
+	 * @param {number} index - index to check for
+	 */
+	getActualInsertIndex: function( index ) {
+		var len = this.getTarget().children().length;
+		
+		if( index < 0 ) {
+			index = len + ( index + 1 );
+		}
+		
+		index = Math.max( 0, index );
+		index = Math.min( len, index );
+		
+		return index;
+	},
+
+	/**
+	 * @private
+	 * Given an tentative index, get the index the item would be removed from
+	 * @method getActualRemoveIndex
+	 * @param {number} index - index to check for
+	 */
+	getActualRemoveIndex: function( index ) {
+		var len = this.getTarget().children().length;
+
+		if( index < 0 ) {
+			index = len + index;
+		}
+
+		index = Math.min( len - 1, index );
+		index = Math.max( 0, index );
+		
+		return index;
 	}
 } );
