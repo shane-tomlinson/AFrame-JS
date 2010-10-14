@@ -26,12 +26,12 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 	/**
 	 * Insert a data item into the list, the list item is created using the createListElementCallback.
 	 * @method insert
-	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
 	 * @param {object} data - data to use for list item
+	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
 	 */
-	insert: function( index, data ) {
+	insert: function( data, index ) {
 		var rowElement = this.createListElementCallback( index, data );
-		var insertedIndex = this.insertElement( index, rowElement );
+		var insertedIndex = this.insertElement( rowElement, index );
 		
 		this.triggerEvent( 'onInsert', {
 			index: insertedIndex,
@@ -45,10 +45,10 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 	/**
 	 * Insert an element into the list.
 	 * @method insertRow
-	 * @param {number} index - index to insert at.
 	 * @param {element} rowElement - element to insert
+	 * @param {number} index - index to insert at.
 	 */
-	insertElement: function( index, rowElement ) {
+	insertElement: function( rowElement, index ) {
 		var target = this.getTarget();
 		var children = target.children();
 		if( index < children.length ) {
