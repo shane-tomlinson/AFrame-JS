@@ -86,6 +86,23 @@ function testAObject( Y ) {
 		    
 		    this.aobject.triggerEvent( 'onCallback' );
 		    Assert.isFalse( callbackCalled, 'callback unbound with ID' );
+		},
+
+		testProxyEvents: function() {
+			this.proxy = AFrame.construct( {
+				type: 'AFrame.AObject'
+			} );
+
+			this.proxy.proxyEvents( this.aobject, [ 'proxiedEvent' ] );
+
+			var proxiedEventData;
+			this.proxy.bindEvent( 'proxiedEvent', function( data ) {
+				proxiedEventData = data;
+			} );
+			
+			this.aobject.triggerEvent( 'proxiedEvent', { proxiedField: 123 } );
+
+			Assert.areEqual( 123, proxiedEventData.proxiedField, 'proxied event occured, correct data passed' );
 		}
 	 
 	} );

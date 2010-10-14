@@ -109,5 +109,17 @@ AFrame.AObject.prototype = {
 	    if( observable ) {
 		return observable.unbind( id );
 	    }
-	}
+	},
+
+	proxyEvents: function( proxyFrom, eventList ) {
+		eventList.forEach( function( eventName, index ) {
+			proxyFrom.bindEvent( eventName, function() {
+				var args = Array.prototype.slice.call( arguments, 0 );
+				args.splice( 0, 0, eventName );
+				this.triggerEvent.apply( this, args );
+			}.bind( this ) );
+		}, this );
+	},
+
+	
 };

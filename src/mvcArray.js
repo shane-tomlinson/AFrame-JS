@@ -7,9 +7,14 @@
 AFrame.MVCArray = function() {
 	AFrame.MVCArray.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
+AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	init: function() {
 		this.itemIDs = [];
+		this.hash = AFrame.construct( {
+			type: 'AFrame.MVCHash'
+		} );
+		this.proxyEvents( this.hash, [ 'onBeforeInsert', 'onInsert', 'onBeforeRemove', 'onRemove', 'onBeforeSet', 'onSet' ] );
+		
 		AFrame.MVCArray.superclass.init.apply( this, arguments );
 	},
 	
@@ -18,6 +23,8 @@ AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
 			this.itemIDs[ index ] = null;
 		}, this );
 		AFrame.remove( this, 'itemIDs' );
+		
+		this.hash.teardown();
 		
 		AFrame.MVCArray.superclass.init.apply( this, arguments );
 	},
@@ -30,7 +37,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
 	* @param {object} meta information
 	*/
 	insert: function( index, item, meta ) {
-		var id = AFrame.MVCArray.superclass.insert.call( this, item, this.getArrayMeta( index, meta ) );
+		var id = this.hash.insert( item, this.getArrayMeta( index, meta ) );
 		
 		this.itemIDs.splice( index, 0, id );
 		
@@ -57,7 +64,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
 		var id = this.getID( index );
 		var retval;
 		if( id ) {
-			retval = AFrame.MVCArray.superclass.get.call( this, id );
+			retval = this.hash.get( id );
 		}
 		return retval;
 	},
@@ -75,7 +82,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
 		var retval;
 		if( index > -1 ) {
 			this.itemIDs.splice( index, 1 );
-			retval = AFrame.MVCArray.superclass.remove.call( this, id, this.getArrayMeta( index, meta ) );
+			retval = this.hash.remove( id, this.getArrayMeta( index, meta ) );
 		}
 		
 		return retval;
@@ -98,7 +105,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.MVCHash, {
 	getArray: function() {
 		var array = [];
 		this.itemIDs.forEach( function( id, index ) {
-			array[ index ] = AFrame.MVCArray.supperclass.get( id );
+			array[ index ] = this.hash.get( id );
 		} );
 		
 		return array;
