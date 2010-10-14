@@ -94,16 +94,14 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	},
 	
 	/**
-	* Insert an item into the hash
+	* Insert an item into the hash.  ID is assigned unless given in the meta parameter's id field.
 	* @method insert
 	* @param {variant} item to insert
-	* @param {object} meta data object to pass to events
+	* @param {object} meta data object to pass to events.
 	* @return {id} id of the item.
 	*/
 	insert: function( item, meta ) {
-		AFrame.MVCHash.currID++;
-		var id = 'aframeid' + AFrame.MVCHash.currID;
-		
+		var id = meta && meta.id || AFrame.getUniqueID();		
 		return this.insertAs( id, item, meta );
 	},
 	

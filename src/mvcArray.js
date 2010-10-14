@@ -1,5 +1,6 @@
 /**
-* an array to be used MVC style.  The item's index will be added to all meta information in all events.
+* an array to be used MVC style.  The item's index will be added to all meta information in all events.  Items
+* are inserted by index, but can be retreived either by index or by id.
 * @class AFrame.MVCArray
 * @extends AFrame.MVCHash
 * @constructor
@@ -26,11 +27,12 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 		
 		this.hash.teardown();
 		
-		AFrame.MVCArray.superclass.init.apply( this, arguments );
+		AFrame.MVCArray.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**
-	* Insert an item into the array.
+	* Insert an item into the array.  ID is assigned by hash unless specified
+	* 	in the meta parameter's id field.
 	* @method insert
 	* @param {number} index to insert into
 	* @param {variant} item to insert
@@ -45,7 +47,8 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	},
 	
 	/**
-	* Push an item onto the array
+	 * Push an item onto the array.  ID is assigned by hash unless specified
+	 * 	in the meta parameter's id field.
 	* @method push
 	* @param {variant} item to insert
 	* @param {object} meta information
@@ -55,9 +58,9 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	},
 	
 	/**
-	* Get an item from the array
+	* Get an item from the array.
 	* @method get
-	* @param {number || string} index - index or id of item to get
+	* @param {number || id} index - index or id of item to get
 	* @return {variant} item if it exists, undefined otw.
 	*/
 	get: function( index ) {
@@ -72,7 +75,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	/** 
 	* Remove an item from the array
 	* @method remove
-	* @param {number} index of item to remove.
+	* @param {number || id} index of item to remove.
 	* @param {object} meta information
 	*/
 	remove: function( index, meta ) {
@@ -110,13 +113,19 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 		
 		return array;
 	},
-	
+
+	/**
+	 * @private
+	 */
 	getArrayMeta: function( index, meta ) {
 		meta = meta || {};
 		meta.index = index;
 		return meta;
 	},
 	
+	/**
+	 * @private
+	 */
 	getID: function( index ) {
 		var id = index;
 		
@@ -126,7 +135,10 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 		
 		return id;
 	},
-	
+
+	/**
+	 * @private
+	 */
 	getIndex: function( index ) {
 		if( 'string' == typeof( index ) ) {
 			index = this.itemIDs.indexOf( index );

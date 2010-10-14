@@ -14,7 +14,7 @@ AFrame.AObject.prototype = {
 	 */
 	init: function( config ) {
 	    this.config = config;
-		
+
 	    /**
 	     * Triggered when the object is initialized
 	     * @event onInit
@@ -119,7 +119,6 @@ AFrame.AObject.prototype = {
 				this.triggerEvent.apply( this, args );
 			}.bind( this ) );
 		}, this );
-	},
-
+	}
 	
 };
