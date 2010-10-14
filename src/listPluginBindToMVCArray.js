@@ -1,12 +1,19 @@
+/**
+ * A plugin that binds a list to a collection.  Listens for onInsert and onRemove
+ * events, when this happens, the list is automatically updated
+ * @class AFrame.ListPluginBindToMVCArray
+ * @extends AFrame.Plugin
+ * @constructor
+ */
 AFrame.ListPluginBindToMVCArray = function() {
 	AFrame.ListPluginBindToMVCArray.superclass.constructor.apply( this, arguments );
 };
 
 AFrame.extend( AFrame.ListPluginBindToMVCArray, AFrame.Plugin, {
 	init: function( config ) {
-		this.store = config.store;
-		this.store.bindEvent( 'onInsert', this.onInsert, this );
-		this.store.bindEvent( 'onRemove', this.onRemove, this );
+		this.collection = config.collection;
+		this.collection.bindEvent( 'onInsert', this.onInsert, this );
+		this.collection.bindEvent( 'onRemove', this.onRemove, this );
 		
 		AFrame.ListPluginBindToMVCArray.superclass.init.apply( this, arguments );
 	},
