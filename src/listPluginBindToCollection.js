@@ -23,11 +23,12 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 		AFrame.ListPluginBindToCollection.superclass.init.apply( this, arguments );
 	},
 	
-	onInsert: function( index, item ) {
-		this.getPlugged().insert( index, item );
+	onInsert: function( data ) {
+		this.getPlugged().insert( data.meta.index || -1, data.item );
 	},
 	
-	onRemove: function( index, item ) {
-		this.getPlugged().remove( index );
+	onRemove: function( data ) {
+		// XXX - how do we tie in a normal non-array collection an id to an index?
+		this.getPlugged().remove( data.meta.index );
 	}
 } );

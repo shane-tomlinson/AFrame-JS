@@ -8,6 +8,7 @@ YUI().use( 'test', function( Y ) {
     testMVCArray( Y );
     testDisplay( Y );
     testList( Y );
-    
+	testListPluginBindToCollection( Y );
+	
     TestRunner.run();
 } );
