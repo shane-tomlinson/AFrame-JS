@@ -1,4 +1,4 @@
-YUI().use( 'test', function( Y ) {
+YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', function( Y ) {
     var TestRunner = Y.Test.Runner;
     
     testObservable( Y );
@@ -10,6 +10,12 @@ YUI().use( 'test', function( Y ) {
     testDisplay( Y );
     testList( Y );
     testListPluginBindToCollection( Y );
-	
+
+    //initialize the console
+    var yconsole = new Y.Console( {
+    	newestOnTop: false
+    } );
+    yconsole.render('#log');
+
     TestRunner.run();
 } );
