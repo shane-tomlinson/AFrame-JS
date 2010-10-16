@@ -120,6 +120,16 @@ function testList( Y ) {
 			Assert.areEqual( 0, $( '#AFrame_List .list > #li3' ).length, 'remove index -1 correctly removes #li3' );
 			
 			Assert.areEqual( 1, $( '#AFrame_List .list > #li1' ).length, '#li1 still remains' );
+		},
+		
+		testGetCount: function() {
+			var count = this.list.getCount();
+			Assert.areEqual( 0, count, 'List is empty' );
+			
+			this.list.insert( -1, {} );
+
+			count = this.list.getCount();
+			Assert.areEqual( 1, count, 'List has 1 element' );
 		}
 	} );
 

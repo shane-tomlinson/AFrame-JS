@@ -27,7 +27,10 @@ AFrame.extend( SubClass, SuperClass, {
     },
     
     itemToRemove: true
-} );
+}, {
+	funcsFromSecondMixin: function() {
+	}
+}  );
 
 var A = {
     SubClass: function() {
@@ -59,6 +62,8 @@ function testCore( Y ) {
 		    Assert.isTrue( this.subInstance.hasFunc(), 'subclass function returns true' );
 		    Assert.isObject( SubClass.superclass, 'superclass exists' );
 		    Assert.areEqual( SubClass.superclass.hasFunc, SuperClass.prototype.hasFunc, 'superclass points to super\'s function' );
+			
+			Assert.isFunction( this.subInstance.funcsFromSecondMixin, 'extend works with more than one mixin' );
 		},
 		
 		testExtendExtraFuncs: function () {

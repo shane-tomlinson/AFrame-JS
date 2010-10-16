@@ -22,15 +22,19 @@ AFrame = {
 	* @method AFrame.extend
 	* @param {function} derived - class to extend
 	* @param {function} superclass - class to extend with.
-	* @param {object} extrafuncs (optional) - object with optional functions to extend derived with
+	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
 	*/
-	extend: function( derived, superclass, extrafuncs ) {
+	extend: function( derived, superclass ) {
 		var f = function() {};
 		f.prototype = superclass.prototype;
 		derived.prototype = new f();
 		derived.prototype.constructor = derived;
 		derived.superclass = superclass.prototype;
-		AFrame.mixin( derived.prototype, extrafuncs || {} );
+		
+		var mixins = Array.prototype.slice.call( arguments, 2 );
+		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
+			AFrame.mixin( derived.prototype, mixin );
+		}
 	},
 	
 	/**

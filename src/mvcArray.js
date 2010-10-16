@@ -3,12 +3,13 @@
 * are inserted by index, but can be retreived either by index or by id.
 * @class AFrame.MVCArray
 * @extends AFrame.MVCHash
+* @uses AFrame.ArrayCommonFuncsMixin
 * @constructor
 */
 AFrame.MVCArray = function() {
 	AFrame.MVCArray.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
+AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemIDs = [];
 		this.hash = AFrame.construct( {
@@ -39,9 +40,10 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	* @param {object} meta information
 	*/
 	insert: function( index, item, meta ) {
-		var id = this.hash.insert( item, this.getArrayMeta( index, meta ) );
+		var realInsertIndex = this.getActualInsertIndex( index );
+		var id = this.hash.insert( item, this.getArrayMeta( realInsertIndex, meta ) );
 		
-		this.itemIDs.splice( index, 0, id );
+		this.itemIDs.splice( realInsertIndex, 0, id );
 		
 		return id;
 	},
@@ -54,7 +56,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	* @param {object} meta information
 	*/
 	push: function( item, meta ) {
-		return this.insert( this.getCount(), item, meta );
+		return this.insert( -1, item, meta );
 	},
 	
 	/**
@@ -79,8 +81,16 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	* @param {object} meta information
 	*/
 	remove: function( index, meta ) {
-		var id = this.getID( index );
-		index = this.getIndex( index );
+		var id;
+		if( 'string' == typeof( index ) ) {
+			id = index;
+			index = this.getIndex( index );
+		}
+		else {
+			index = this.getActualRemoveIndex( index );
+			id = this.getID( index );
+		}
+
 		
 		var retval;
 		if( index > -1 ) {
@@ -124,6 +134,9 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	},
 	
 	/**
+	 * Given an index or id, get the id.
+	 * @method getID
+	 * @param {id || number} index
 	 * @private
 	 */
 	getID: function( index ) {
@@ -137,6 +150,10 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, {
 	},
 
 	/**
+	/**
+	 * Given an index or id, get the index.
+	 * @method getIndex
+	 * @param {id || number} index
 	 * @private
 	 */
 	getIndex: function( index ) {

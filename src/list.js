@@ -2,6 +2,7 @@
  * A generic HTML list class
  * @class AFrame.List
  * @extends AFrame.Display
+ * @uses AFrame.ArrayCommonFuncsMixin
  * @constructor
  */
 /**
@@ -12,7 +13,7 @@
 AFrame.List = function() {
 	AFrame.List.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.List, AFrame.Display, {
+AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
 		this.createListElementCallback = config.createListElementCallback;
 		
@@ -88,40 +89,11 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 	},
 	
 	/**
-	 * @private
-	 * Given an tentative index, get the index the item would be inserted at
-	 * @method getActualInsertIndex
-	 * @param {number} index - index to check for
-	 */
-	getActualInsertIndex: function( index ) {
-		var len = this.getTarget().children().length;
-		
-		if( index < 0 ) {
-			index = len + ( index + 1 );
-		}
-		
-		index = Math.max( 0, index );
-		index = Math.min( len, index );
-		
-		return index;
-	},
-
-	/**
-	 * @private
-	 * Given an tentative index, get the index the item would be removed from
-	 * @method getActualRemoveIndex
-	 * @param {number} index - index to check for
-	 */
-	getActualRemoveIndex: function( index ) {
-		var len = this.getTarget().children().length;
-
-		if( index < 0 ) {
-			index = len + index;
-		}
-
-		index = Math.min( len - 1, index );
-		index = Math.max( 0, index );
-		
-		return index;
+	* Get the number of items
+	* @method getCount
+	* @return {number} number of items
+	*/
+	getCount: function() {
+		return this.getTarget().children().length;
 	}
 } );
