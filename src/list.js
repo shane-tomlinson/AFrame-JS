@@ -26,51 +26,60 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	
 	/**
 	 * Insert a data item into the list, the list item is created using the createListElementCallback.
+	 * If meta.index > current highest index, inserts at end.
+	 * 	If meta.index is negative, item is inserted from end.
+	 * 	-1 is at the end.  If not given, inserts at end.
 	 * @method insert
-	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
-	 * 	If index is negative, item is inserted from end.  -1 is at the end.
 	 * @param {object} data - data to use for list item
+	 * @param {object} meta (optional) - optional meta data.
+	 * return {number} index the item is inserted at.
 	 */
-	insert: function( index, data ) {
-		var insertIndex = this.getActualInsertIndex( index );
-		var rowElement = this.createListElementCallback( insertIndex, data );
-		this.insertElement( insertIndex, rowElement );
+	insert: function( data, meta ) {
+		meta = meta || {};
+		var index = this.getActualInsertIndex( meta.index );
+		meta.index = index;
+		
+		var rowElement = this.createListElementCallback( meta, data );
+		var index = this.insertElement( rowElement, meta );
 		
 		this.triggerEvent( 'onInsert', {
-			index: insertIndex,
+			index: index,
 			rowElement: rowElement, 
 			data: data 
 		} );
 
-		return insertIndex;
+		return index;
 	},
 
 	/**
 	 * Insert an element into the list.
 	 * @method insertRow
-	 * @param {number} index - index to insert at.  If index > current highest index, inserts at end.
-	 * 	If index is negative, item is inserted from end.  -1 is at the end.
 	 * @param {element} rowElement - element to insert
+	 * @param {object} meta (optional) - meta data to insert the element.
+	 * index is looked for at meta.index.  If index > current highest index, inserts at end.
+	 * 	If index is negative, item is inserted from end.  -1 is at the end.
+	 * @return {number} index - the index the item is inserted at.
 	 */
-	insertElement: function( index, rowElement ) {
+	insertElement: function( rowElement, meta ) {
+		meta = meta || {};
 		var target = this.getTarget();
 		var children = target.children();
 		
-		var insertIndex = this.getActualInsertIndex( index );
-		if( insertIndex === children.length ) {
+		var index = this.getActualInsertIndex( meta.index );
+		if( index === children.length ) {
 			target.append( rowElement );
 		}
 		else {
-			var insertBefore = children.eq( insertIndex );
+			var insertBefore = children.eq( index );
 			rowElement.insertBefore( insertBefore );
 		}
 
 		this.triggerEvent( 'onInsertElement', {
-			index: insertIndex,
+			index: index,
 			rowElement: rowElement
 		} );
 		
-		return insertIndex;
+		return index;
 	},
 
 	/**
@@ -81,7 +90,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	remove: function( index ) {
 		var removeIndex = this.getActualRemoveIndex( index );
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
-
+		
 		this.triggerEvent( 'onRemoveElement', {
 			index: removeIndex,
 			rowElement: rowElement

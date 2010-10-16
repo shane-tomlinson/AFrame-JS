@@ -22,8 +22,11 @@ AFrame.ArrayCommonFuncsMixin = {
 	 */
 	getActualInsertIndex: function( index ) {
 		var len = this.getCount();
-		
-		if( index < 0 ) {
+
+		if( 'undefined' == typeof( index ) ) {
+			index = len;
+		}
+		else if( index < 0 ) {
 			index = len + ( index + 1 );
 		}
 		

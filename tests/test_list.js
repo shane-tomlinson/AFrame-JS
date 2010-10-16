@@ -12,10 +12,10 @@ function testList( Y ) {
 				type: 'AFrame.List',
 				config: {
 					target: '#AFrame_List .list',
-					createListElementCallback: function( index, data ) {
-						this.insertedIndex = index;
+					createListElementCallback: function( meta, data ) {
+						this.insertedIndex = meta.index;
 						this.insertedData = data;
-						var rowElement = $( '<li id="' + ( data.id ? data.id : 'inserted' + index ) + '">Inserted Element</li>' );
+						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + meta.index ) + '">Inserted Element</li>' );
 						return rowElement;
 					}.bind( this )
 					
@@ -32,21 +32,21 @@ function testList( Y ) {
 		},
 
 		testInsert: function() {
-			this.list.insert( 0, { field: 'fieldValue' } );
+			this.list.insert( { field: 'fieldValue' } );
 			
 			Assert.areEqual( 0, this.insertedIndex, 'create function called for correct index' );
 			Assert.areEqual( 'fieldValue', this.insertedData.field, 'create function called with correct data' );
 			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element inserted' );
 
-			this.list.insert( 1, { field: 'fieldValue' } );
+			this.list.insert( { field: 'fieldValue' }, { index: 1 } );
 			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'second list element inserted' );
 
-			this.list.insert( 1, { id: 'insertedBefore1' } );
+			this.list.insert( { cid: 'insertedBefore1' }, { index: 1 } );
 			Assert.areEqual( 1, $( 'ul > li#insertedBefore1' ).length, 'third list element inserted' );
 
 			Assert.areEqual( 1, $( 'li#insertedBefore1 + li#inserted1' ).length, 'third inserted in correct order' );
 
-			this.list.insert( 10, { id: 'insertedOutOfOrder' } );
+			this.list.insert( { cid: 'insertedOutOfOrder' }, { index: 10 } );
 			Assert.areEqual( 1, $( 'li#insertedOutOfOrder' ).length, 'out of order insert inserts at end' );
 
 			var insertData;
@@ -59,8 +59,8 @@ function testList( Y ) {
 				insertElementData = data;
 			} );
 
-			this.list.insert( Infinity, { id: 'insertWithObservable' } );
-			Assert.areEqual( 'insertWithObservable', insertData.data.id, 'onInsert data set correctly' );
+			this.list.insert( { cid: 'insertWithObservable' }, { index: Infinity } );
+			Assert.areEqual( 'insertWithObservable', insertData.data.cid, 'onInsert data set correctly' );
 			Assert.isNotUndefined( insertData.index, 'onInsert data index set correctly' );
 			Assert.isNotUndefined( insertData.rowElement, 'onInsert rowElement set correctly' );
 			
@@ -70,27 +70,27 @@ function testList( Y ) {
 		},
 
 		testInsertNegativeIndex: function() {
-			this.list.insert( -1, { id: 'insertedAtEnd0' } );
+			this.list.insert( { cid: 'insertedAtEnd0' }, { index: -1 } );
 			Assert.areEqual( 0, this.insertedIndex, '-1 inserts at end' );
 
-			this.list.insert( -1, { id: 'insertedAtEnd1' } );
+			this.list.insert( { cid: 'insertedAtEnd1' }, { index: -1 } );
 			Assert.areEqual( 1, this.insertedIndex, '-1 inserts second at end' );
 
-			this.list.insert( -2, { id: 'insertedAtEnd3' } );
+			this.list.insert( { cid: 'insertedAtEnd3' }, { index: -2 } );
 			Assert.areEqual( 1, this.insertedIndex, '-2 inserts third at 2 from end' );
 			
 		},
 
 		testInsertElement: function() {
-			this.list.insertElement( 0, $( '<li id="insertRowInsert">Insert Row Insert</li>' ) );
+			this.list.insertElement( $( '<li id="insertRowInsert">Insert Row Insert</li>' ) );
 			Assert.areEqual( 1, $( 'li#insertRowInsert' ).length, 'insertRow correctly working' );
 		},
 
 		testRemove: function() {
-			this.list.insert( -1, { id: 'li0' } );
-			this.list.insert( -1, { id: 'li1' } );
-			this.list.insert( -1, { id: 'li2' } );
-			this.list.insert( -1, { id: 'li3' } );
+			this.list.insert( { cid: 'li0' } );
+			this.list.insert( { cid: 'li1' } );
+			this.list.insert( { cid: 'li2' } );
+			this.list.insert( { cid: 'li3' } );
 
 			var removeData;
 			this.list.bindEvent( 'onRemoveElement', function( data ) {
@@ -126,7 +126,7 @@ function testList( Y ) {
 			var count = this.list.getCount();
 			Assert.areEqual( 0, count, 'List is empty' );
 			
-			this.list.insert( -1, {} );
+			this.list.insert( {} );
 
 			count = this.list.getCount();
 			Assert.areEqual( 1, count, 'List has 1 element' );

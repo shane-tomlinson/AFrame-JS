@@ -19,7 +19,7 @@ function testListPluginBindToCollection( Y ) {
 					createListElementCallback: function( index, data ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
-						var rowElement = $( '<li id="' + ( data.id ? data.id : 'inserted' + index ) + '">Inserted Element</li>' );
+						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + '">Inserted Element</li>' );
 						return rowElement;
 					}.bind( this )
 					
@@ -45,16 +45,16 @@ function testListPluginBindToCollection( Y ) {
 		},
 		
 		testInsert: function() {
-			this.store.insert( { id: 'inserted0' } );
-			this.store.insert( { id: 'inserted1' } );
+			this.store.insert( { cid: 'inserted0' } );
+			this.store.insert( { cid: 'inserted1' } );
 			
 			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
 			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
 		},
 		
 		testRemove: function() {
-			this.store.insert( { id: 'inserted0' } );
-			this.store.insert( { id: 'inserted1' } );
+			this.store.insert( { cid: 'inserted0' } );
+			this.store.insert( { cid: 'inserted1' } );
 			
 			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
 			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
@@ -63,7 +63,7 @@ function testListPluginBindToCollection( Y ) {
 			Assert.areEqual( 0, $( 'ul > li#inserted0' ).length, 'list element0 removed' );
 			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 not removed' );
 
-			this.store.remove( 0 );
+			this.store.remove( 'inserted1' );
 			Assert.areEqual( 0, $( 'ul > li#inserted1' ).length, 'list element1 removed' );
 		}
 	} );

@@ -19,16 +19,23 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 		this.collection = config.collection;
 		this.collection.bindEvent( 'onInsert', this.onInsert, this );
 		this.collection.bindEvent( 'onRemove', this.onRemove, this );
+
+		this.cids = [];
 		
 		AFrame.ListPluginBindToCollection.superclass.init.apply( this, arguments );
 	},
 	
 	onInsert: function( data ) {
-		this.getPlugged().insert( data.meta.index || -1, data.item );
+		var index = this.getPlugged().insert( data.item, data.meta );
+
+		this.cids.splice( index, 0, data.meta.cid );
 	},
 	
 	onRemove: function( data ) {
-		// XXX - how do we tie in a normal non-array collection an id to an index?
-		this.getPlugged().remove( data.meta.index );
+		var index = this.cids.indexOf( data.meta.cid );
+		
+		this.getPlugged().remove( index );
+		
+		this.cids.splice( index, 1 );
 	}
 } );
