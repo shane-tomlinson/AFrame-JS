@@ -36,17 +36,17 @@ function testMVCHash( Y ) {
 		    this.hash.bindEvent( 'onBeforeSet', onBeforeSet );
 		    this.hash.bindEvent( 'onSet', onSet );
 		    
-		    var id = 1;
-		    this.hash.set( id, { 
+		    var cid = 1;
+		    this.hash.set( cid, {
 		      field: 'fieldValue'
 		    } );
 		    
 		    Assert.isObject( beforeSetData, 'onBeforeSet sets data' );
-		    Assert.areSame( id, beforeSetData.meta.id, 'onBeforeSet gives same id as insert' );
+		    Assert.areSame( cid, beforeSetData.meta.cid, 'onBeforeSet gives same cid as insert' );
 		    Assert.areSame( 'fieldValue', beforeSetData.item.field, 'onBeforeSet gives data we pass in' );
 		    
 		    Assert.isObject( setData, 'onSet sets data' );
-		    Assert.areSame( id, setData.meta.id, 'onSet gives same id as insert' );
+		    Assert.areSame( cid, setData.meta.cid, 'onSet gives same cid as insert' );
 		    Assert.areSame( 'fieldValue', setData.item.field, 'onSet gives data we pass in' );
 		    Assert.areSame( 'field2', setData.item.field2, 'onSet gets data set by onBeforeInsert' );
 		},
@@ -56,9 +56,9 @@ function testMVCHash( Y ) {
 			fieldName: 'fieldValue'
 		    };
 		    
-		    var id = 1;
-		    this.hash.set( id, item );
-		    var retrievedItem = this.hash.get( id );
+		    var cid = 1;
+		    this.hash.set( cid, item );
+		    var retrievedItem = this.hash.get( cid );
 		    
 		    Assert.areSame( item, retrievedItem, 'item and the retrievedItem are the same' );
 		},
@@ -68,13 +68,13 @@ function testMVCHash( Y ) {
 			fieldName: 'fieldValue'
 		    };
 		    
-		    var id = 1;
+		    var cid = 1;
 		    
-		    this.hash.set( id, item );
-		    var deletedItem = this.hash.remove( id );
+		    this.hash.set( cid, item );
+		    var deletedItem = this.hash.remove( cid );
 		    Assert.areSame( item, deletedItem, 'got the correct deleted item' );
 		    
-		    var retrievedItem = this.hash.get( id );
+		    var retrievedItem = this.hash.get( cid );
 		    Assert.isUndefined( retrievedItem, 'remove correctly occured' );
 		    
 		    // assert no blowup
@@ -87,9 +87,9 @@ function testMVCHash( Y ) {
 				fieldName: 'fieldValue'
 		    };
 		    
-		    var id = 1;
+		    var cid = 1;
 		    
-		    this.hash.set( id, item );
+		    this.hash.set( cid, item );
 		  
 		    var beforeRemoveData;
 		    var onBeforeRemove = function( data ) {
@@ -104,12 +104,12 @@ function testMVCHash( Y ) {
 		    this.hash.bindEvent( 'onBeforeRemove', onBeforeRemove );
 		    this.hash.bindEvent( 'onRemove', onRemove );
 		    
-		    this.hash.remove( id );
+		    this.hash.remove( cid );
 		    
-		    Assert.areSame( id, beforeRemoveData.meta.id, 'onBeforeRemove ids are the same' );
+		    Assert.areSame( cid, beforeRemoveData.meta.cid, 'onBeforeRemove ids are the same' );
 		    Assert.areSame( item, beforeRemoveData.item, 'onBeforeRemove items are the same' );
 		    
-		    Assert.areSame( id, removeData.meta.id, 'onRemove ids are the same' );
+		    Assert.areSame( cid, removeData.meta.cid, 'onRemove ids are the same' );
 		    Assert.areSame( item, removeData.item, 'onRemove items are the same' );
 		},
 		
@@ -132,12 +132,34 @@ function testMVCHash( Y ) {
 				insertData = data;
 			} );
 			
-			var id = this.hash.insert( item, meta );
+			var cid = this.hash.insert( item, meta );
 			
 			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
 			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
 			
-			Assert.areSame( insertData.meta.id, id, 'ids are the same' );
+			Assert.areSame( insertData.meta.cid, cid, 'ids are the same' );
+
+		},
+
+		testInsertWithExistingCID: function() {
+			var dataWithCID = {
+				cid: 'externalcid',
+				fieldName: 'fieldValue'
+			};
+			var cid = this.hash.insert( dataWithCID );
+			
+			Assert.areSame( 'externalcid', cid, 'item with cid retains cid' );
+
+			var dataWithoutCID = {
+				fieldName: 'fieldValue'
+			};
+
+			var metaWithCID = {
+				cid: 'metacid'
+			};
+
+			cid = this.hash.insert( dataWithoutCID, metaWithCID );
+			Assert.areSame( 'metacid', cid, 'meta with cid retains cid' );
 			
 		},
 		
@@ -156,21 +178,21 @@ function testMVCHash( Y ) {
 				insertData = data;
 			} );
 			
-			var id = this.hash.insert( item );
+			var cid = this.hash.insert( item );
 			
 			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
 			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
 		},
 		
 		testInsertAs: function() {
-			var id = 1;
+			var cid = 1;
 			var item = {
 				fieldName: 'fieldValue'
 			};
 			
-			var returnedId = this.hash.insertAs( id, item );
+			var returnedId = this.hash.insertAs( cid, item );
 			
-			Assert.areSame( id, returnedId, 'insertAs returning same id that we give it' );
+			Assert.areSame( cid, returnedId, 'insertAs returning same cid that we give it' );
 			
 		},
 		
@@ -188,27 +210,27 @@ function testMVCHash( Y ) {
 				except = e;
 			}
 			
-			Assert.areSame( 'no id given', except, 'no id given exception thrown' );
+			Assert.areSame( 'no cid given', except, 'no cid given exception thrown' );
 		},
 		
 		testInsertAsDuplicate: function() {
-			var id = 1;
+			var cid = 1;
 			var item = {
 				fieldName: 'fieldValue'
 			};
 			
-			this.hash.insertAs( id, item );
+			this.hash.insertAs( cid, item );
 			
 			var except;
 			try {
 				// this should cause an exception
-				this.hash.insertAs( id, item );
+				this.hash.insertAs( cid, item );
 			}
 			catch( e ) {
 				except = e;
 			}
 			
-			Assert.areSame( 'duplicate id', except, 'duplicate id exception thrown' );
+			Assert.areSame( 'duplicate cid', except, 'duplicate cid exception thrown' );
 		}
 	} );
 	

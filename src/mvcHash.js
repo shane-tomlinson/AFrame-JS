@@ -19,8 +19,8 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	},
 	
 	teardown: function() {
-		for( var key in this.hash ) {
-			AFrame.remove( this.hash, key );
+		for( var cid in this.hash ) {
+			AFrame.remove( this.hash, cid );
 		}
 		AFrame.remove( this, 'hash' );
 		
@@ -30,13 +30,14 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	/**
 	* set an item in the hash
 	* @method set
-	* @param {id} id - id to set item at.
+	* @param {id} cid - cid to set item at.
 	* @param {variant} item - item to set
 	* @param {variant} meta - meta data to pass to events.
 	*/
-	set: function( id, item, meta ) {
-		var data = this.getEventData( id, item, meta );
-		data.meta.previousItem = this.get( id );
+	set: function( cid, item, meta ) {
+		item.cid = cid;
+		var data = this.getEventData( cid, item, meta );
+		data.meta.previousItem = this.get( cid );
 
 		/**
 		* Triggered before set happens.
@@ -44,7 +45,7 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 		* @param {object} data - data has two fields, item and meta.
 		*/
 		this.triggerEvent( 'onBeforeSet', data );
-		this.hash[ id ] = item;
+		this.hash[ cid ] = item;
 		/**
 		* Triggered after set happens.
 		* @event onSet
@@ -56,24 +57,24 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	/**
 	* Get an item from the hash
 	* @method get
-	* @param {id} id - id of item to get
+	* @param {id} cid - cid of item to get
 	* @return {variant} item if it exists, undefined otw.
 	*/
-	get: function( id ) {
-		return this.hash[ id ];
+	get: function( cid ) {
+		return this.hash[ cid ];
 	},
 	
 	/**
 	* Remove an item from the store.
 	* @method remove
-	* @param {id} id - id of item to remove
+	* @param {id} cid - cid of item to remove
 	* @return {variant} item if it exists, undefined otw.
 	*/
-	remove: function( id, meta ) {
-		var item = this.get( id );
+	remove: function( cid, meta ) {
+		var item = this.get( cid );
 		
 		if( item ) {
-			var data = this.getEventData( id, item, meta );
+			var data = this.getEventData( cid, item, meta );
 			
 			/**
 			* Triggered before remove happens.
@@ -81,7 +82,7 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 			* @param {object} data - data has two fields, item and meta.
 			*/
 			this.triggerEvent( 'onBeforeRemove', data );
-			AFrame.remove( this.hash, id );
+			AFrame.remove( this.hash, cid );
 			/**
 			* Triggered after remove happens.
 			* @event onRemove
@@ -94,36 +95,37 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	},
 	
 	/**
-	* Insert an item into the hash.  ID is assigned unless given in the meta parameter's id field.
+	* Insert an item into the hash.  ID is assigned unless given in the meta parameter's cid field.
 	* @method insert
 	* @param {variant} item to insert
 	* @param {object} meta data object to pass to events.
-	* @return {id} id of the item.
+	* @return {id} cid of the item.
 	*/
 	insert: function( item, meta ) {
-		var id = meta && meta.id || AFrame.getUniqueID();		
-		return this.insertAs( id, item, meta );
+		var cid = item.cid || meta && meta.cid || AFrame.getUniqueID();		
+		return this.insertAs( cid, item, meta );
 	},
 	
 	/**
-	* Insert an item with the given id into the hash.
+	* Insert an item with the given cid into the hash.
 	* @method insertAs
-	* @param {id} id of item
+	* @param {id} cid of item
 	* @param {variant} item to insert
 	* @param {object} meta data object to pass to events
-	* @return {id} id of the item.
-	* @throws 'no id given' if id is undefined
-	* @throws 'duplicate id' if item already exists with id
+	* @return {id} cid of the item.
+	* @throws 'no cid given' if cid is undefined
+	* @throws 'duplicate cid' if item already exists with cid
 	*/
-	insertAs: function( id, item, meta ) {
-		if( !id ) {
-			throw 'no id given';
+	insertAs: function( cid, item, meta ) {
+		if( !cid ) {
+			throw 'no cid given';
 		}
-		else if( 'undefined' != typeof( this.get( id ) ) ) {
-			throw 'duplicate id';
+		else if( 'undefined' != typeof( this.get( cid ) ) ) {
+			throw 'duplicate cid';
 		}
-		
-		var data = this.getEventData( id, item, meta );
+
+		item.cid = cid;
+		var data = this.getEventData( cid, item, meta );
 		
 		/**
 		* Triggered before insertion happens.
@@ -131,7 +133,7 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 		* @param {object} data - data has two fields, item and meta.
 		*/
 		this.triggerEvent( 'onBeforeInsert', data );
-		this.hash[ id ] = item;
+		this.hash[ cid ] = item;
 
 		/**
 		* Triggered after insertion happens.
@@ -140,15 +142,15 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 		*/
 		this.triggerEvent( 'onInsert', data );
 		
-		return id;
+		return cid;
 	},
 	
 	/**
 	* @private
 	*/
-	getEventData: function( id, item, meta ) {
+	getEventData: function( cid, item, meta ) {
 		meta = meta || {};
-		meta.id = id;
+		meta.cid = cid;
 		
 		return {
 			item: item,
