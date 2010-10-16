@@ -30,7 +30,7 @@ function testMVCArray( Y ) {
 		testInsertGet: function() {
 			
 			var index = 0;
-			var id = this.array.insert( index, this.item );
+			var id = this.array.insert( this.item, { index: index } );
 			
 			var retrievedByIndexItem = this.array.get( index );
 			Assert.areSame( this.item, retrievedByIndexItem, 'insert then retrieval by index works' );
@@ -44,22 +44,16 @@ function testMVCArray( Y ) {
 			this.array.bindEvent( 'onInsert', function( data ) {
 				insertData = data;
 			} );
-			
-			this.array.insert( 0, this.item );
-			
-			Assert.areEqual( 0, insertData.meta.index, 'index set in the meta data' );
-		},
-		
-		testPush: function() {
-			var id = this.array.push( this.item );
 
-			var retrievedByIdItem = this.array.get( id );
-			Assert.areSame( this.item, retrievedByIdItem, 'push then retrieval by id works' );
+			var index = 0;
+			this.array.insert( this.item, { index: index } );
+			
+			Assert.areEqual( index, insertData.meta.index, 'index set in the meta data' );
 		},
 		
 		testRemove: function() {
 			var index = 0;
-			var id = this.array.insert( index, this.item );
+			var id = this.array.insert( this.item, { index: index } );
 			
 			var removedItem = this.array.remove( index );
 			Assert.areSame( this.item, removedItem, 'removedItem and original item are the same');
@@ -70,7 +64,7 @@ function testMVCArray( Y ) {
 		
 		testRemoveByID: function() {
 			var index = 0;
-			var id = this.array.insert( index, this.item );
+			var id = this.array.insert( this.item, { index: index } );
 			
 			var removedItem = this.array.remove( id );
 			
@@ -82,13 +76,33 @@ function testMVCArray( Y ) {
 			var count = this.array.getCount();
 			Assert.areSame( 0, count, 'emtpy gives correct count' );
 			
-			this.array.insert( 0, this.item );
+			var index = 0;
+			this.array.insert( this.item, { index: index } );
 			count = this.array.getCount();
 			Assert.areEqual( 1, count, 'one added gives correct count' );
 			
 			this.array.remove( 0 );
 			count = this.array.getCount();
 			Assert.areEqual( 0, count, 'one removed gives correct count' );
+		},
+
+		testInsertGetWithCID: function() {
+			var dataWithCID = {
+				cid: 'datacid'
+			};
+			var cid = this.array.insert( dataWithCID );
+
+			Assert.areEqual( 'datacid', cid, 'cid is correctly set using data' );
+
+			var getData = this.array.get( 'datacid' );
+			Assert.areEqual( dataWithCID, getData, 'correct data gotten' );
+			
+			var getByIndexData = this.array.get( 0 );
+			Assert.areEqual( dataWithCID, getByIndexData, 'correct data gotten by index' );
+		},
+
+		testInsertWithNegativeIndex: function() {
+			
 		}
 		
 	} );

@@ -184,47 +184,18 @@ function testMVCHash( Y ) {
 			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
 		},
 		
-		testInsertAs: function() {
-			var cid = 1;
+		testInsertDuplicateCID: function() {
 			var item = {
+				cid: 1,
 				fieldName: 'fieldValue'
 			};
 			
-			var returnedId = this.hash.insertAs( cid, item );
-			
-			Assert.areSame( cid, returnedId, 'insertAs returning same cid that we give it' );
-			
-		},
-		
-		testInsertAsNoID: function() {
-			var item = {
-				fieldName: 'fieldValue'
-			};
+			this.hash.insert( item );
 			
 			var except;
 			try {
 				// this should cause an exception
-				this.hash.insertAs( undefined, item );
-			}
-			catch( e ) {
-				except = e;
-			}
-			
-			Assert.areSame( 'no cid given', except, 'no cid given exception thrown' );
-		},
-		
-		testInsertAsDuplicate: function() {
-			var cid = 1;
-			var item = {
-				fieldName: 'fieldValue'
-			};
-			
-			this.hash.insertAs( cid, item );
-			
-			var except;
-			try {
-				// this should cause an exception
-				this.hash.insertAs( cid, item );
+				this.hash.insert( item );
 			}
 			catch( e ) {
 				except = e;

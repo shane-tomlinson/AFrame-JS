@@ -11,7 +11,7 @@ AFrame.MVCArray = function() {
 };
 AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
-		this.itemIDs = [];
+		this.itemCIDs = [];
 		this.hash = AFrame.construct( {
 			type: 'AFrame.MVCHash'
 		} );
@@ -21,10 +21,10 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	teardown: function() {
-		this.itemIDs.forEach( function( id, index ) {
-			this.itemIDs[ index ] = null;
+		this.itemCIDs.forEach( function( id, index ) {
+			this.itemCIDs[ index ] = null;
 		}, this );
-		AFrame.remove( this, 'itemIDs' );
+		AFrame.remove( this, 'itemCIDs' );
 		
 		this.hash.teardown();
 		
@@ -33,43 +33,34 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	
 	/**
 	* Insert an item into the array.  ID is assigned by hash unless specified
-	* 	in the meta parameter's id field.
+	* 	in the meta parameter's id field.  Index is retrieved from meta.index, if exists.  If
+	* 	not defined, insert at the end of the list.
 	* @method insert
-	* @param {number} index to insert into
 	* @param {variant} item to insert
 	* @param {object} meta information
+	* @return {id} cid of the item
 	*/
-	insert: function( index, item, meta ) {
+	insert: function( item, meta ) {
+		var index = meta && 'number' == typeof( meta.index ) ? meta.index : -1;
 		var realInsertIndex = this.getActualInsertIndex( index );
-		var id = this.hash.insert( item, this.getArrayMeta( realInsertIndex, meta ) );
+		var cid = this.hash.insert( item, this.getArrayMeta( realInsertIndex, meta ) );
 		
-		this.itemIDs.splice( realInsertIndex, 0, id );
+		this.itemCIDs.splice( realInsertIndex, 0, cid );
 		
-		return id;
-	},
-	
-	/**
-	 * Push an item onto the array.  ID is assigned by hash unless specified
-	 * 	in the meta parameter's id field.
-	* @method push
-	* @param {variant} item to insert
-	* @param {object} meta information
-	*/
-	push: function( item, meta ) {
-		return this.insert( -1, item, meta );
+		return cid;
 	},
 	
 	/**
 	* Get an item from the array.
 	* @method get
-	* @param {number || id} index - index or id of item to get
+	* @param {number || id} index - index or cid of item to get
 	* @return {variant} item if it exists, undefined otw.
 	*/
 	get: function( index ) {
-		var id = this.getID( index );
+		var cid = this.getCID( index );
 		var retval;
-		if( id ) {
-			retval = this.hash.get( id );
+		if( cid ) {
+			retval = this.hash.get( cid );
 		}
 		return retval;
 	},
@@ -81,21 +72,21 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	* @param {object} meta information
 	*/
 	remove: function( index, meta ) {
-		var id;
+		var cid;
 		if( 'string' == typeof( index ) ) {
-			id = index;
+			cid = index;
 			index = this.getIndex( index );
 		}
 		else {
 			index = this.getActualRemoveIndex( index );
-			id = this.getID( index );
+			cid = this.getCID( index );
 		}
 
 		
 		var retval;
 		if( index > -1 ) {
-			this.itemIDs.splice( index, 1 );
-			retval = this.hash.remove( id, this.getArrayMeta( index, meta ) );
+			this.itemCIDs.splice( index, 1 );
+			retval = this.hash.remove( cid, this.getArrayMeta( index, meta ) );
 		}
 		
 		return retval;
@@ -107,7 +98,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	* @return {number} current count
 	*/
 	getCount: function() {
-		return this.itemIDs.length;
+		return this.itemCIDs.length;
 	},
 	
 	/**
@@ -117,8 +108,8 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	*/
 	getArray: function() {
 		var array = [];
-		this.itemIDs.forEach( function( id, index ) {
-			array[ index ] = this.hash.get( id );
+		this.itemCIDs.forEach( function( cid, index ) {
+			array[ index ] = this.hash.get( cid );
 		} );
 		
 		return array;
@@ -134,31 +125,31 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
-	 * Given an index or id, get the id.
-	 * @method getID
+	 * Given an index or cid, get the cid.
+	 * @method getCID
 	 * @param {id || number} index
 	 * @private
 	 */
-	getID: function( index ) {
-		var id = index;
+	getCID: function( index ) {
+		var cid = index;
 		
 		if( 'number' == typeof( index ) ) {
-			id = this.itemIDs[ index ];
+			cid = this.itemCIDs[ index ];
 		}
 		
-		return id;
+		return cid;
 	},
 
 	/**
 	/**
-	 * Given an index or id, get the index.
+	 * Given an index or cid, get the index.
 	 * @method getIndex
 	 * @param {id || number} index
 	 * @private
 	 */
 	getIndex: function( index ) {
 		if( 'string' == typeof( index ) ) {
-			index = this.itemIDs.indexOf( index );
+			index = this.itemCIDs.indexOf( index );
 		}
 		
 		return index;

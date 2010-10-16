@@ -45,16 +45,16 @@ function testListPluginBindToCollection( Y ) {
 		},
 		
 		testInsert: function() {
-			this.store.push( { id: 'inserted0' } );
-			this.store.push( { id: 'inserted1' } );
+			this.store.insert( { id: 'inserted0' } );
+			this.store.insert( { id: 'inserted1' } );
 			
 			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
 			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
 		},
 		
 		testRemove: function() {
-			this.store.push( { id: 'inserted0' } );
-			this.store.push( { id: 'inserted1' } );
+			this.store.insert( { id: 'inserted0' } );
+			this.store.insert( { id: 'inserted1' } );
 			
 			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
 			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
