@@ -43,9 +43,9 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		var index = this.insertElement( rowElement, meta );
 		
 		this.triggerEvent( 'onInsert', {
-			index: index,
 			rowElement: rowElement, 
-			data: data 
+			data: data,
+			meta: meta
 		} );
 
 		return index;
@@ -75,8 +75,8 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		}
 
 		this.triggerEvent( 'onInsertElement', {
-			index: index,
-			rowElement: rowElement
+			rowElement: rowElement,
+			meta: meta
 		} );
 		
 		return index;
@@ -87,13 +87,15 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * @method remove
 	 * @param {number} index - index of item to remove
 	 */
-	remove: function( index ) {
+	remove: function( index, meta ) {
+		meta = meta || {};
 		var removeIndex = this.getActualRemoveIndex( index );
+		meta.index = removeIndex;
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
 		
 		this.triggerEvent( 'onRemoveElement', {
-			index: removeIndex,
-			rowElement: rowElement
+			rowElement: rowElement,
+			meta: meta
 		} );
 	},
 	

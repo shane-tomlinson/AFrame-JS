@@ -61,10 +61,10 @@ function testList( Y ) {
 
 			this.list.insert( { cid: 'insertWithObservable' }, { index: Infinity } );
 			Assert.areEqual( 'insertWithObservable', insertData.data.cid, 'onInsert data set correctly' );
-			Assert.isNotUndefined( insertData.index, 'onInsert data index set correctly' );
+			Assert.isNotUndefined( insertData.meta.index, 'onInsert data index set correctly' );
 			Assert.isNotUndefined( insertData.rowElement, 'onInsert rowElement set correctly' );
 			
-			Assert.isNotUndefined( insertElementData.index, 'onInsertElement data index set correctly' );
+			Assert.isNotUndefined( insertElementData.meta.index, 'onInsertElement data index set correctly' );
 			Assert.isNotUndefined( insertElementData.rowElement, 'onInsertElement rowElement set correctly' );
 			
 		},
@@ -108,7 +108,7 @@ function testList( Y ) {
 			Assert.areEqual( 0, $( '#AFrame_List .list > #li0' ).length, 'remove index 0' );
 
 
-			Assert.areEqual( 0, removeData.index, 'onRemoveElement data index correct' );
+			Assert.areEqual( 0, removeData.meta.index, 'onRemoveElement data index correct' );
 			Assert.isNotUndefined( 0, removeData.rowElement, 'onRemoveElement data rowElement exists' );
 			
 			this.list.remove( 1 );
