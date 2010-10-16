@@ -8,8 +8,11 @@ AFrame.ArrayCommonFuncsMixin = {
 	* Get the current count of items.  Should be overridden.
 	* @method getCount
 	* @return {number} current count
+	* @throw 'operation not supported' if not overridden properly.
 	*/
-	getCount: function() { /* Should be overridden */ },
+	getCount: function() { /* Should be overridden */ 
+		throw 'operation not supported';
+	},
 	
 	/**
 	 * @private
