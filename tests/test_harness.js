@@ -4,11 +4,12 @@ YUI().use( 'test', function( Y ) {
     testObservable( Y );
     testCore( Y );
     testAObject( Y );
+    testPlugin( Y );
     testMVCHash( Y );
     testMVCArray( Y );
     testDisplay( Y );
     testList( Y );
-	testListPluginBindToCollection( Y );
+    testListPluginBindToCollection( Y );
 	
     TestRunner.run();
 } );
