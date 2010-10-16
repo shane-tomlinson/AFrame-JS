@@ -33,7 +33,7 @@ AFrame.extend( AFrame.List, AFrame.Display, {
 	insert: function( index, data ) {
 		var insertIndex = this.getActualInsertIndex( index );
 		var rowElement = this.createListElementCallback( insertIndex, data );
-		var insertIndex = this.insertElement( insertIndex, rowElement );
+		this.insertElement( insertIndex, rowElement );
 		
 		this.triggerEvent( 'onInsert', {
 			index: insertIndex,
