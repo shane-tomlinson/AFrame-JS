@@ -141,7 +141,6 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	},
 
 	/**
-	/**
 	 * Given an index or cid, get the index.
 	 * @method getIndex
 	 * @param {id || number} index

@@ -40,7 +40,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		meta.index = index;
 		
 		var rowElement = this.createListElementCallback( meta, data );
-		var index = this.insertElement( rowElement, meta );
+		index = this.insertElement( rowElement, meta );
 		
 		this.triggerEvent( 'onInsert', {
 			rowElement: rowElement, 

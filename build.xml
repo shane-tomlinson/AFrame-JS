@@ -70,6 +70,9 @@
 			
 	</target>
 
+       <target name="all" depends="init,jslint,compress">
+       </target>
+       
 	<target name="clean"
 	       description="clean up">
 		<delete dir="${build}" />
