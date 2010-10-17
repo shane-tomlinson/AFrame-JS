@@ -1,0 +1,79 @@
+<project name="AFrame" basedir=".">
+	<description>
+		AFrame - The Application Framework
+	</description>
+
+	<property name="src" location="src" />
+	<property name="build" location="build" />
+	<property name="dist" location="aframe" />
+	<property name="js_combined" location="${dist}/aframe.js" />
+	<property name="js_min" location="${dist}/aframe.min.js" />
+	<property name="YUI" location="tools/yuicompressor-2.4.2.jar" />
+				
+       <target name="init">
+	       <tstamp/>
+	       <mkdir dir="${build}" />
+	       <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		       <classpath>
+			       <fileset dir="/usr/share/java" />
+		       </classpath>
+	       </taskdef>
+	</target>
+	       
+       
+
+       <target name="lintfile">
+	       <exec executable="tools/jsl" failonerror="true">
+		       <arg line="-conf tools/jsl.default.conf -process ${filename}"/>
+	       </exec>
+       </target>
+       
+       <target name="jslint" depends="init">
+
+		<echo level="info" message="JSLint: running..." />
+		<foreach param="filename" target="lintfile">
+			<path>
+				<fileset dir="${src}" includesfile="includes.list">
+				</fileset>
+			</path>
+			
+			
+		</foreach>
+		<echo level="info" message="JSLint: finished running...." />
+	       
+       </target>
+
+	<target name="concat" depends="init"
+		description="concatinate the script">
+			<echo message="Combining js files to ${js_combined}" />
+			<concat destfile="${js_combined}">
+				<fileset dir="${src}"/>
+			</concat>
+	</target>
+
+	<target name="compress" depends="concat"
+		description="Compress the script">
+			<echo message="Building ${js_min}" />
+			<apply executable="java" parallel="false" verbose="true" dest="${dist}">
+				<fileset dir="${dist}">
+					<include name="aframe.js" />
+				</fileset>
+				<arg line="-jar" />
+				<arg path="${YUI}" />
+				<arg value="--charset" />
+				<arg value="ANSI" />
+				<arg value="-o" />
+				<targetfile />
+				<mapper type="glob" from="aframe.js" to="aframe.min.js" />
+			</apply>
+			<echo message="${js_min} built." />
+			
+	</target>
+
+	<target name="clean"
+	       description="clean up">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+       </target>
+
+</project>

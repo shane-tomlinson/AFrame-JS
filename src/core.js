@@ -16,7 +16,7 @@ if( !Function.prototype.bind ) {
 * @class AFrame
 * @static
 */
-AFrame = {
+var AFrame = {
 	/**
 	* extend a class with another class and optional functions
 	* @method AFrame.extend
@@ -25,9 +25,9 @@ AFrame = {
 	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
 	*/
 	extend: function( derived, superclass ) {
-		var f = function() {};
-		f.prototype = superclass.prototype;
-		derived.prototype = new f();
+		var F = function() {};
+		F.prototype = superclass.prototype;
+		derived.prototype = new F();
 		derived.prototype.constructor = derived;
 		derived.superclass = superclass.prototype;
 		
