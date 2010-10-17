@@ -6,25 +6,26 @@
 	<property name="major" value="0" />
 	<property name="minor" value="0" />
 	<property name="src" location="src" />
-	<property name="build" location="build" />
 	<property name="dist" location="aframe" />
 	<property name="YUI" location="tools/yuicompressor-2.4.2.jar" />
 	<property name="docs" location="docs" />
 	<property name="docs_parse" location="docparse" />
 	
-       <target name="init">
+       <target name="init" depends="get_build_number">
 	       <tstamp/>
-	       <mkdir dir="${build}" />
 	       <taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		       <classpath>
 			       <fileset dir="/usr/share/java" />
 		       </classpath>
 	       </taskdef>
-	       <property file="build.number" />
+	</target>
+
+        <target name="get_build_number" >
+		<property file="build.number" />
 		<property name="js_combined" location="${dist}/aframe-${major}.${minor}.${build.number}.js" />
 		<property name="js_min" location="${dist}/aframe-${major}.${minor}.${build.number}.min.js" />
 	</target>
-	       
+       
 	<target name="increment_build_number">
 		<propertyfile file="build.number"
 			comment="Build Number for ANT. Edit not!">
@@ -32,8 +33,8 @@
 			operation="+"
 				default="1" />
 		</propertyfile>
-		<property name="js_combined" location="${dist}/aframe-${major}.${minor}.${build.number}.js" />
-		<property name="js_min" location="${dist}/aframe-${major}.${minor}.${build.number}.min.js" />
+
+		<antcall target="get_build_number" />
 	</target>
 
        <target name="lintfile">
@@ -89,12 +90,11 @@
 	       </exec>
        </target>
        
-       <target name="all" depends="init,jslint,increment_build_number,compress,docs">
+       <target name="all" depends="init,clean,jslint,increment_build_number,compress,docs">
        </target>
        
 	<target name="clean"
 	       description="clean up">
-		<delete dir="${build}" />
 		<!--delete dir="${dist}" /-->
 		<delete dir="${docs}" />
 		<delete dir="${docs_parse}" />
