@@ -2,7 +2,7 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     var TestRunner = Y.Test.Runner;
     
     testObservable( Y );
-    testCore( Y );
+    testAFrame( Y );
     testAObject( Y );
     testPlugin( Y );
     testMVCHash( Y );

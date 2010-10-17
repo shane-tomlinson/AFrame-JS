@@ -9,7 +9,9 @@
 	<property name="js_combined" location="${dist}/aframe.js" />
 	<property name="js_min" location="${dist}/aframe.min.js" />
 	<property name="YUI" location="tools/yuicompressor-2.4.2.jar" />
-				
+	<property name="docs" location="docs" />
+	<property name="docs_parse" location="docparse" />
+	
        <target name="init">
 	       <tstamp/>
 	       <mkdir dir="${build}" />
@@ -70,13 +72,21 @@
 			
 	</target>
 
-       <target name="all" depends="init,jslint,compress">
+       <target name="docs" depends="init">
+	       <exec executable="sh" failonerror="true">
+		       <arg line="tools/yuidoc/generateDocs.sh"/>
+	       </exec>
+       </target>
+       
+       <target name="all" depends="init,jslint,compress,docs">
        </target>
        
 	<target name="clean"
 	       description="clean up">
 		<delete dir="${build}" />
 		<delete dir="${dist}" />
+		<delete dir="${docs}" />
+		<delete dir="${docs_parse}" />
        </target>
 
 </project>

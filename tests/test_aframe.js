@@ -39,7 +39,7 @@ var A = {
     }
 };
 
-function testCore( Y ) {
+function testAFrame( Y ) {
  
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
