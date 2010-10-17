@@ -1,4 +1,5 @@
 /**
+ * The main AFrame module.  All AFrame related items are under this.
 * @module AFrame
 */
 
