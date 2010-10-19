@@ -3,9 +3,7 @@
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
-AFrame.AObject = function() {
-	this.events = {};
-};
+AFrame.AObject = function() {};
 AFrame.mixin( AFrame.AObject.prototype, {
 	constructor: AFrame.AObject,
 	/**

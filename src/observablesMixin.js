@@ -1,3 +1,8 @@
+/**
+ * Gives objects the ability to have a basic event system.  This must be mixed in to other classes and objects.
+ * @class AFrame.ObservablesMixin
+ * @static
+ */
 AFrame.ObservablesMixin = {
 	/**
 	 * Trigger an event.
