@@ -2,6 +2,7 @@
 core.js
 aframe.js
 observable.js
+observablesMixin.js
 aobject.js
 plugin.js
 arrayCommonFunctionsMixin.js
@@ -10,4 +11,5 @@ mvcArray.js
 display.js
 list.js
 listPluginBindToCollection.js
+collectionPluginPersistence.js
 
