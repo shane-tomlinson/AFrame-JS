@@ -12,6 +12,7 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     testList( Y );
     testListPluginBindToCollection( Y );
     testCollectionPluginPersistence( Y );
+    testForm( Y );
     
     //initialize the console
     var yconsole = new Y.Console( {
