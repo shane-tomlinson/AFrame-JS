@@ -19,6 +19,8 @@
 		<property name="build.version" value="${major}.${minor}.${build.number}" />
 		<property name="js_combined" location="${dist}/aframe-${build.version}.js" />
 		<property name="js_min" location="${dist}/aframe-${build.version}.min.js" />
+		<property name="js_combined_current" location="${dist}/aframe-current.js" />
+		<property name="js_min_current" location="${dist}/aframe-current.min.js" />
 		<echo level="info" message="AFrame Version: ${build.version}" />
 	</target>
        
@@ -67,7 +69,8 @@
 		description="concatinate the script">
 			<echo message="Combining js files to ${js_combined}" />
 			<concat destfile="${js_combined}">
-				<fileset dir="${src}"/>
+				<fileset dir="${src}" includesfile="includes.list">
+				</fileset>
 			</concat>
 	</target>
 
@@ -85,6 +88,8 @@
 				<mapper type="glob" from="*.js" to="*.min.js" />
 				<targetfile />
 			</apply>
+			<copy file="${js_combined}" tofile="${js_combined_current}" />
+			<copy file="${js_min}" tofile="${js_min_current}" />
 			<echo message="${js_min} built." />
 			
 	</target>
@@ -100,7 +105,6 @@
        
 	<target name="clean"
 	       description="clean up">
-		<!--delete dir="${dist}" /-->
 		<delete dir="${docs}" />
 		<delete dir="${docs_parse}" />
        </target>
