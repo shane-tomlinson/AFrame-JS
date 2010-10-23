@@ -1,13 +1,13 @@
 /**
- * A basic form.  Forms are bound to a collection.
+ * A basic form.  Forms are bound to a dataContainer.
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
  */
 /**
- * The collection to bind the form to
- * @config collection
- * @type {Collection}
+ * The DataContainer to bind the form to
+ * @config dataContainer
+ * @type {DataContainer}
  */
 /**
  * The factory to use to create form fields
@@ -24,7 +24,7 @@ AFrame.Form = function() {
 };
 AFrame.extend( AFrame.Form, AFrame.Display, {
 	init: function( config ) {
-		this.collection = config.collection;
+		this.dataContainer = config.dataContainer;
 		this.formFieldFactory = config.formFieldFactory;
 		this.fieldOptions = config.fieldOptions;
 		
@@ -40,7 +40,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 		this.formFields = [];
 		
 		this.formElements.each( function( index, formElement ) {
-			var field = this.formFieldFactory( $( formElement ), this.collection, this.fieldOptions );
+			var field = this.formFieldFactory( $( formElement ), this.dataContainer, this.fieldOptions );
 			this.formFields.push( field );
 		}.bind( this ) );
 	},
@@ -48,7 +48,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	/**
 	 * Get the form elements
 	 * @method getFormElements
-	 * @return {array} the form elements collection
+	 * @return {array} the form elements dataContainer
 	 */
 	getFormElements: function() {
 		return this.formElements;
@@ -57,7 +57,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	/**
 	 * Get the form fields
 	 * @method getFormFields
-	 * @return {array} the form fields collection
+	 * @return {array} the form fields dataContainer
 	 */
 	getFormFields: function() {
 		return this.formFields;
@@ -95,7 +95,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	},
 
 	/**
-	 * Save the form data to the collection.
+	 * Save the form data to the dataContainer.
 	 * @method save
 	 */
 	save: function() {

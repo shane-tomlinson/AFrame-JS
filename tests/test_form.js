@@ -8,8 +8,8 @@ function testForm( Y ) {
 		name: "TestCase AFrame.Form",
 		
 		setUp: function() {
-			this.hash = AFrame.construct( {
-				type: 'AFrame.MVCHash'
+			this.dataContainer = AFrame.construct( {
+				type: 'AFrame.DataContainer'
 			} );
 
 			this.validateCount = 0;
@@ -39,7 +39,7 @@ function testForm( Y ) {
 				type: 'AFrame.Form',
 				config: {
 					target: '#AFrame_Form',
-					collection: this.hash,
+					dataContainer: this.dataContainer,
 					fieldOptions: {
 						immediateSet: true
 					},
@@ -76,7 +76,7 @@ function testForm( Y ) {
 		},
 
 		testFactoryPassedWithCorrectData: function() {
-			Assert.areEqual( this.hash, this.factoryCollection, 'collection passed correctly' );
+			Assert.areEqual( this.dataContainer, this.factoryCollection, 'collection passed correctly' );
 			Assert.isTrue( this.factoryFieldOptions.immediateSet, 'fieldOptions passed correctly' );
 			
 			var expectedFormElement = $( '#textFormElement' )[ 0 ];
