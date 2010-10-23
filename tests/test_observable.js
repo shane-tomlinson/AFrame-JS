@@ -1,4 +1,4 @@
-function testObservable( Y ) {
+testsToRun.push( function testObservable( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -79,4 +79,4 @@ function testObservable( Y ) {
 	
 	
 	TestRunner.add( testObservable );
-}
+} );

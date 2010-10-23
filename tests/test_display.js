@@ -1,4 +1,4 @@
-function testDisplay( Y ) {
+testsToRun.push( function testDisplay( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -88,5 +88,4 @@ function testDisplay( Y ) {
 	} );
 
 	TestRunner.add( test );
-}
-    
+} );

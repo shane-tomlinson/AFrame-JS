@@ -1,5 +1,4 @@
-
-function testObservablesMixin( Y ) {
+testsToRun.push( function testObservablesMixin( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -74,4 +73,4 @@ function testObservablesMixin( Y ) {
 	} );
 
 	TestRunner.add( test );
-}
+} );

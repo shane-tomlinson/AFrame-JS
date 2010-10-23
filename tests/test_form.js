@@ -1,4 +1,4 @@
-function testForm( Y ) {
+testsToRun.push( function testForm( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -35,11 +35,7 @@ function testForm( Y ) {
 				type: 'AFrame.Form',
 				config: {
 					target: '#AFrame_Form',
-					dataContainer: this.dataContainer,
-					fieldOptions: {
-						immediateSet: true
-					},
-					formFieldFactory: function( formElement/*, collection, fieldOptions */) {
+					formFieldFactory: function( formElement ) {
 						this.factoryFormElement = formElement;
 						
 						return {
@@ -110,4 +106,4 @@ function testForm( Y ) {
 
 	
 	TestRunner.add( test );
-}
+} );

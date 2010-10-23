@@ -1,4 +1,4 @@
-function testDataContainer( Y ) {
+testsToRun.push( function testDataContainer( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -79,4 +79,4 @@ function testDataContainer( Y ) {
 	
 	TestRunner.add( test );
 
-}		
+} );

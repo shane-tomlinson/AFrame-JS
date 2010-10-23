@@ -1,9 +1,9 @@
 includes.list=core.js,\
 aframe.js,\
-dataContainer.js,\
 observable.js,\
 observablesMixin.js,\
 aobject.js,\
+dataContainer.js,\
 plugin.js,\
 arrayCommonFunctionsMixin.js,\
 mvcHash.js,\
@@ -12,5 +12,6 @@ display.js,\
 list.js,\
 listPluginBindToCollection.js,\
 collectionPluginPersistence.js,\
-form.js
+form.js,\
+field.js
 

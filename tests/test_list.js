@@ -1,4 +1,4 @@
-function testList( Y ) {
+testsToRun.push( function testList( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -134,5 +134,5 @@ function testList( Y ) {
 	} );
 
 	TestRunner.add( test );
-}
+} );
     

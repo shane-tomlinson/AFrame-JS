@@ -1,4 +1,4 @@
-function testMVCArray( Y ) {
+testsToRun.push( function testMVCArray( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -108,4 +108,4 @@ function testMVCArray( Y ) {
 	} );
 	
 	TestRunner.add( test );	
-}
+} );

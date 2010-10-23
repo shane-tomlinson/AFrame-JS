@@ -1,4 +1,4 @@
-function testAObject( Y ) {
+testsToRun.push( function testAObject( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -57,4 +57,4 @@ function testAObject( Y ) {
 	TestRunner.add( testAObject );
 	
 	
-}
+} );

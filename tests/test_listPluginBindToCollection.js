@@ -1,4 +1,4 @@
-function testListPluginBindToCollection( Y ) {
+testsToRun.push( function testListPluginBindToCollection( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -135,4 +135,4 @@ function testListPluginBindToCollection( Y ) {
 	
 	TestRunner.add( testWithMVCArray );
 	TestRunner.add( testWithMVCHash );
-}
+} );

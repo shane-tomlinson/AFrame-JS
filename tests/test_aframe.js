@@ -39,7 +39,7 @@ var A = {
     }
 };
 
-function testAFrame( Y ) {
+testsToRun.push( function testAFrame( Y ) {
  
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
@@ -163,4 +163,4 @@ function testAFrame( Y ) {
 	TestRunner.add( testConstruct );
 	TestRunner.add( testGetUniqueID );
 	
-}
+} );

@@ -1,4 +1,4 @@
-function testMVCHash( Y ) {
+testsToRun.push( function testMVCHash( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -209,4 +209,4 @@ function testMVCHash( Y ) {
 	
 	TestRunner.add( test );
 
-}
+} );

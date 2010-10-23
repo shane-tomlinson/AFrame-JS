@@ -1,5 +1,5 @@
 
-function testCollectionPluginPersistence( Y ) {
+testsToRun.push( function testCollectionPluginPersistence( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -67,4 +67,4 @@ function testCollectionPluginPersistence( Y ) {
 	} );
 
 	TestRunner.add( test );
-}
+} );

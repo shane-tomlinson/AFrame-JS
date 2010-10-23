@@ -1,4 +1,4 @@
-function testPlugin( Y ) {
+testsToRun.push( function testPlugin( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
@@ -43,4 +43,4 @@ function testPlugin( Y ) {
 	} );
 
 	TestRunner.add( test );
-}
+} );
