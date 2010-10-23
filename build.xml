@@ -12,7 +12,7 @@
 	<property name="docs_parse" location="docparse" />
 	<property file="per_user.properties" />
 	<property file="yuidoc.properties" />
-	
+	<property file="includes.list" />
 	
 	<target name="get_build_number" >
 		<property file="build.number" />
@@ -55,8 +55,8 @@
 		<echo level="info" message="JSLint: running..." />
 		<foreach param="filename" target="lintfile">
 			<path>
-				<fileset dir="${src}" includesfile="includes.list">
-				</fileset>
+				<filelist dir="${src}" files="${includes.list}">
+				</filelist>
 			</path>
 			
 			
@@ -69,8 +69,8 @@
 		description="concatinate the script">
 			<echo message="Combining js files to ${js_combined}" />
 			<concat destfile="${js_combined}">
-				<fileset dir="${src}" includesfile="includes.list">
-				</fileset>
+				<filelist dir="${src}" files="${includes.list}">
+				</filelist>
 			</concat>
 	</target>
 
