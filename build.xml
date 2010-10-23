@@ -10,22 +10,27 @@
 	<property name="YUI" location="tools/yuicompressor-2.4.2.jar" />
 	<property name="docs" location="docs" />
 	<property name="docs_parse" location="docparse" />
+	<property file="per_user.properties" />
+	<property file="yuidoc.properties" />
 	
-       <target name="init" depends="get_build_number">
+	
+	<target name="get_build_number" >
+		<property file="build.number" />
+		<property name="build.version" value="${major}.${minor}.${build.number}" />
+		<property name="js_combined" location="${dist}/aframe-${build.version}.js" />
+		<property name="js_min" location="${dist}/aframe-${build.version}.min.js" />
+		<echo level="info" message="AFrame Version: ${build.version}" />
+	</target>
+       
+   <target name="init" depends="get_build_number">
 	       <tstamp/>
 	       <taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		       <classpath>
-			       <fileset dir="/usr/share/java" />
+			       <pathelement location="${peruser.antcontrib.location}" />
 		       </classpath>
 	       </taskdef>
 	</target>
 
-        <target name="get_build_number" >
-		<property file="build.number" />
-		<property name="js_combined" location="${dist}/aframe-${major}.${minor}.${build.number}.js" />
-		<property name="js_min" location="${dist}/aframe-${major}.${minor}.${build.number}.min.js" />
-	</target>
-       
 	<target name="increment_build_number">
 		<propertyfile file="build.number"
 			comment="Build Number for ANT. Edit not!">
@@ -85,8 +90,8 @@
 	</target>
 
        <target name="docs" depends="init">
-	       <exec executable="sh" failonerror="true">
-		       <arg line="tools/yuidoc/generateDocs.sh"/>
+	       <exec executable="python" failonerror="true">
+		       <arg line="${yuidoc.home}/bin/yuidoc.py ${yuidoc.parser_in} -p ${yuidoc.parser_out} -o ${yuidoc.generator_out} -t ${yuidoc.template} -v ${build.version} -Y ${yuidoc.yuiversion} -s"/>
 	       </exec>
        </target>
        
