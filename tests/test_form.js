@@ -8,10 +8,6 @@ function testForm( Y ) {
 		name: "TestCase AFrame.Form",
 		
 		setUp: function() {
-			this.dataContainer = AFrame.construct( {
-				type: 'AFrame.DataContainer'
-			} );
-
 			this.validateCount = 0;
 			this.validateReturn = true;
 
@@ -43,10 +39,8 @@ function testForm( Y ) {
 					fieldOptions: {
 						immediateSet: true
 					},
-					formFieldFactory: function( formElement, collection, fieldOptions ) {
+					formFieldFactory: function( formElement/*, collection, fieldOptions */) {
 						this.factoryFormElement = formElement;
-						this.factoryCollection = collection;
-						this.factoryFieldOptions = fieldOptions;
 						
 						return {
 							validate: validate,
@@ -76,9 +70,6 @@ function testForm( Y ) {
 		},
 
 		testFactoryPassedWithCorrectData: function() {
-			Assert.areEqual( this.dataContainer, this.factoryCollection, 'collection passed correctly' );
-			Assert.isTrue( this.factoryFieldOptions.immediateSet, 'fieldOptions passed correctly' );
-			
 			var expectedFormElement = $( '#textFormElement' )[ 0 ];
 			Assert.areEqual( expectedFormElement, this.factoryFormElement[ 0 ], 'formElement passed correctly' );
 		},

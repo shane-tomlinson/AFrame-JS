@@ -5,28 +5,16 @@
  * @constructor
  */
 /**
- * The DataContainer to bind the form to
- * @config dataContainer
- * @type {DataContainer}
- */
-/**
  * The factory to use to create form fields
  * @config formFieldFactory
  * @type {function}
- */
-/**
- * Generic options to pass to the field constructor
- * @config fieldOptions
- * @type {object} (optional)
  */
 AFrame.Form = function() {
 	AFrame.Form.superclass.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.Form, AFrame.Display, {
 	init: function( config ) {
-		this.dataContainer = config.dataContainer;
 		this.formFieldFactory = config.formFieldFactory;
-		this.fieldOptions = config.fieldOptions;
 		
 		AFrame.Form.superclass.init.apply( this, arguments );
 
@@ -40,7 +28,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 		this.formFields = [];
 		
 		this.formElements.each( function( index, formElement ) {
-			var field = this.formFieldFactory( $( formElement ), this.dataContainer, this.fieldOptions );
+			var field = this.formFieldFactory( $( formElement ) );
 			this.formFields.push( field );
 		}.bind( this ) );
 	},
