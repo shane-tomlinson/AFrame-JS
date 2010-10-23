@@ -13,12 +13,13 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     testListPluginBindToCollection( Y );
     testCollectionPluginPersistence( Y );
     testForm( Y );
+    testDataContainer( Y );
     
     //initialize the console
     var yconsole = new Y.Console( {
-    	newestOnTop: false
+    	newestOnTop: true
     } );
-    yconsole.render('#log');
+	yconsole.render( '#log' );
 
     TestRunner.run();
 } );

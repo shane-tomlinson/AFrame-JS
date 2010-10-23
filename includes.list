@@ -1,6 +1,7 @@
 
 core.js
 aframe.js
+dataContainer.js
 observable.js
 observablesMixin.js
 aobject.js

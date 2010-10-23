@@ -7,7 +7,7 @@ AFrame.ObservablesMixin = {
 	/**
 	 * Trigger an event.
 	 * @method triggerEvent
-	 * @param {string} name - event name to trigger
+	 * @param {string} name event name to trigger
 	 * @param {variant} (optional) all other arguments are passed to any registered callbacks
 	 */
 	triggerEvent: function() {
@@ -23,7 +23,7 @@ AFrame.ObservablesMixin = {
 	/**
 	 * Check to see if an event has been triggered
 	 * @method isEventTriggered
-	 * @param {string} eventName - name of event to check.
+	 * @param {string} eventName name of event to check.
 	 * @return {boolean} true if event has been triggered, false otw.
 	 */
 	isEventTriggered: function( eventName ) {
@@ -40,11 +40,11 @@ AFrame.ObservablesMixin = {
 	/**
 	 * Bind a callback to an event
 	 * @method bindEvent
-	 * @param {string} eventName - name of event to register on
-	 * @param {function} callback - callback to call
-	 * @param {object} context (optional) - optional context to call the callback in.  If not given,
+	 * @param {string} eventName name of event to register on
+	 * @param {function} callback callback to call
+	 * @param {object} context (optional) optional context to call the callback in.  If not given,
 	 * 	use the 'this' object.
-	 * @return {id} - id that can be used to unbind the callback.
+	 * @return {id} id that can be used to unbind the callback.
 	 */
 	bindEvent: function( eventName, callback, context ) {
 		if( !this.events ) {
@@ -61,6 +61,7 @@ AFrame.ObservablesMixin = {
 	/**
 	 * Unbind an event
 	 * @method unbindEvent
+	 * @param {string} eventName name of event
 	 * @param {id} id returned by bindEvent
 	 */
 	unbindEvent: function( eventName, id ) {
@@ -74,8 +75,8 @@ AFrame.ObservablesMixin = {
 	/**
 	 * Proxy a list of events from another object as this object
 	 * @method proxyEvents
-	 * @param {object} proxyFrom - object to proxy events from
-	 * @param {array} eventList - list of event names to proxy
+	 * @param {object} proxyFrom object to proxy events from
+	 * @param {array} eventList list of event names to proxy
 	 */
 	proxyEvents: function( proxyFrom, eventList ) {
 		eventList.forEach( function( eventName, index ) {
