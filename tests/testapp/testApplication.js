@@ -28,4 +28,36 @@ $( function() {
 			formFieldFactory: formFieldFactory
 		}
 	} );
+	
+	var collection = AFrame.construct( {
+		type: 'AFrame.MVCArray',
+		plugins: [
+			{
+				type: 'AFrame.CollectionPluginPersistence',
+				config: {
+					loadCallback: PersistenceLayer.load
+				}
+			}
+		]
+	} );
+	
+	var list = AFrame.construct( {
+		type: 'AFrame.List',
+		config: {
+			target: $( '.userList' ),
+			createListElementCallback: function( index, data ) {
+				return $( '<li>' + data.id + ' - ' + data.name + '</li>' );
+			}
+		},
+		plugins: [
+			{
+				type: 'AFrame.ListPluginBindToCollection',
+				config: {
+					collection: collection
+				}
+			}
+		]
+	} );
+	
+	collection.load();
 } );
