@@ -48,7 +48,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	setPlugged: function( plugged ) {
 		plugged.add = this.add.bind( this );
 		plugged.load = this.load.bind( this );
-		plugged[ 'delete' ] = this[ 'delete' ].bind( this );
+		plugged.del = this.del.bind( this );
 		plugged.save = this.save.bind( this );
 		
 		AFrame.CollectionPluginPersistence.superclass.setPlugged.apply( this, arguments );
@@ -62,8 +62,10 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * 	meta information, the callback will be called when operation is complete.
 	 */
 	add: function( data, meta ) {
+		meta = this.getMeta( meta );
 		this.addCallback( data, meta, function() {
 			this.getPlugged().insert( data, meta );
+			meta.callback && meta.callback( data, meta );
 		}.bind( this ) );
 	},
 
@@ -74,7 +76,16 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * 	meta information, the callback will be called when operation is complete.
 	 */
 	load: function( meta ) {
-		
+		meta = this.getMeta( meta );
+		this.loadCallback( meta, function( items ) {
+			if( items ) {
+				var plugged = this.getPlugged();
+				items.forEach( function( item, index ) {
+					plugged.insert( item );
+				} );
+			}
+			meta.callback && meta.callback( items, meta );
+		}.bind( this ) );
 	},
 
 	/**
@@ -84,10 +95,16 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * @param {object} meta - meta information.  If callback is supplied in the
 	 * 	meta information, the callback will be called when operation is complete.
 	 */
-	'delete': function( itemID , meta ) {
-		this.deleteCallback( itemID, meta, function() {
-			this.getPlugged().remove( itemID, meta );
-		}.bind( this ) );
+	del: function( itemID , meta ) {
+		var data = this.getPlugged().get( itemID );
+		
+		if( data ) {
+			meta = this.getMeta( meta );
+			this.deleteCallback( data, meta, function() {
+				this.getPlugged().remove( itemID, meta );
+				meta.callback && meta.callback( data, meta );
+			}.bind( this ) );
+		}
 	},
 
 	/**
@@ -98,6 +115,19 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * 	meta information, the callback will be called when operation is complete.
 	 */
 	save: function( itemID, meta ) {
-		
+		var data = this.getPlugged().get( itemID );
+
+		if( data ) {
+			meta = this.getMeta( meta );
+			this.saveCallback( data, meta, function() {
+				meta.callback && meta.callback( data, meta );
+			}.bind( this ) );
+		}
+	},
+
+	getMeta: function( meta ) {
+		meta = meta || {};
+		meta.store = this;
+		return meta;
 	}
 } );

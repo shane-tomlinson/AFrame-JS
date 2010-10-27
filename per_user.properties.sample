@@ -1,0 +1,9 @@
+
+#User specific properties
+
+#The root directory of the installation
+peruser.root=/home/set117/development/aframe
+
+#The location of the jdk bin directory
+peruser.antcontrib.location=/usr/share/java/ant-contrib.jar
+
