@@ -102,8 +102,15 @@ var AFrame = {
 	getUniqueID: function() {
 		this.currentID++;
 		return 'cid' + this.currentID;
+	},
+
+	/**
+	 * Check whether an item is defined
+	 * @method defined
+	 * @param {variant} itemToCheck
+	 * @return {boolean} true if item is defined, false otw.
+	 */
+	 defined: function( itemToCheck ) {
+		return 'undefined' != typeof( itemToCheck );
 	}
-
-
 };
-

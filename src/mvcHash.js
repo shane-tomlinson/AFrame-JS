@@ -139,7 +139,7 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 		
 		return {
 			item: item,
-			meta: meta
+			meta: meta,
 			collection: this
 		};
 	}
