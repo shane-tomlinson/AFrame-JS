@@ -121,6 +121,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	getArrayMeta: function( index, meta ) {
 		meta = meta || {};
 		meta.index = index;
+		meta.collection = this;
 		return meta;
 	},
 	

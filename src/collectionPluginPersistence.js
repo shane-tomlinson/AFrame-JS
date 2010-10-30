@@ -127,7 +127,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 
 	getMeta: function( meta ) {
 		meta = meta || {};
-		meta.store = this;
+		meta.collection = this.getPlugged();
 		return meta;
 	}
 } );
