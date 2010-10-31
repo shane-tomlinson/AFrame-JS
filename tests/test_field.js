@@ -43,12 +43,10 @@ testsToRun.push( function testField( Y ) {
 
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set when field updated' );
-			Assert.areEqual( 'Preston the Penguin', this.dataContainer.get( 'name' ), 'dataContainer value correctly set when dataContainer updated' );
 
 			target.val( 'beezlebub' );
 			target.trigger( 'change' );
 			Assert.areEqual( 'beezlebub', this.dataContainer.get( 'name' ), 'dataContainer value correctly set value typed into field' );
-			
 		},
 
 		testText: function() {
@@ -69,7 +67,6 @@ testsToRun.push( function testField( Y ) {
 			
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', target.html(), 'element value correctly set when field updated' );
-			Assert.areEqual( 'Preston the Penguin', this.dataContainer.get( 'name' ), 'dataContainer value correctly set when dataContainer updated' );
 		},
 
 		testTextArea: function() {
@@ -90,7 +87,6 @@ testsToRun.push( function testField( Y ) {
 			
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set when field updated' );
-			Assert.areEqual( 'Preston the Penguin', this.dataContainer.get( 'name' ), 'dataContainer value correctly set when dataContainer updated' );
 
 			target.val( 'beezlebub' );
 			target.trigger( 'change' );
@@ -128,6 +124,55 @@ testsToRun.push( function testField( Y ) {
 			this.fieldValueRequired = null;
 			Assert.areEqual( false, isValid, 'field was required' );
 			
+		},
+
+		testClear: function() {
+			target = $( 'textarea[data-field=name]' );
+			this.field= AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target,
+					dataContainer: this.dataContainer,
+					fieldName: 'name'
+				}
+			} );
+			
+			this.dataContainer.set( 'name', 'Charlotte Tomlinson' );
+
+			this.field.clear();
+
+			Assert.areEqual( '', target.val(), 'field has been cleared' );
+			Assert.areEqual( 'Charlotte Tomlinson', this.dataContainer.get( 'name' ), 'store is not affected' );
+		},
+
+		testSet: function() {
+			target = $( 'textarea[data-field=name]' );
+			this.field= AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target,
+					dataContainer: this.dataContainer,
+					fieldName: 'name'
+				}
+			} );
+			
+			this.field.set( 'AFrame' );
+			Assert.areEqual( 'AFrame', target.val(), 'set sets the field correctly' );
+		},
+		
+		testGet: function() {	
+			target = $( 'textarea[data-field=name]' );
+			this.field= AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target,
+					dataContainer: this.dataContainer,
+					fieldName: 'name'
+				}
+			} );
+			
+			this.field.set( 'Shane Tomlinson' );
+			Assert.areEqual( 'Shane Tomlinson', this.field.get(), 'get gets field correctly' );
 		}
 	} );
 

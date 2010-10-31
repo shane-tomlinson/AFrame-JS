@@ -26,11 +26,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Display a value in the field
-	 * @method display
+	 * Display a value in the field.
+	 * @method set
 	 * @param {variant} val value to display
 	 */
-	display: function( val ) {
+	set: function( val ) {
 		var target = this.getTarget();
 
 		if( target.is( 'input' ) || target.is( 'textarea' ) ) {
@@ -42,24 +42,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Set the value of the field in the data container
-	 * @method set
-	 * @param {variant} val value to set
-	 */
-	set: function( val ) {
-		this.dataContainer.set( this.fieldName, val );
-	},
-
-	onDataChange: function( eventData ) {
-		this.display( eventData.value );
-	},
-
-	onFieldChange: function( event ) {
-		var val = this.getTarget().val();
-		this.set( val );
-	},
-
-	/**
 	 * Validate the field
 	 * @method validate
 	 * @return {boolean} true if field is valid, false otw.
@@ -67,11 +49,47 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	validate: function() {
 		var valid = true;
 		
-		var target = this.getTarget();
-		if( 'true' == target.attr( 'required' ) ) {
-			valid = !!target.val().length;
+		if( 'true' == this.getTarget().attr( 'required' ) ) {
+			valid = !!this.get().length;
 		}
 		
 		return valid;
+	},
+	
+	/**
+	 * Clear the field, does not affect the data container.
+	 * @method clear
+	 */
+	clear: function() {
+		this.set( '' );
+	},
+	
+	/**
+	 * Get the value displayed in the field.  Returns an empty string
+	 * if no value entered.
+	 * @method get
+	 * @return {variant} the value of the field
+	 */
+	get: function() {
+		return this.getTarget().val() || '';
+	},
+	
+	onDataChange: function( eventData ) {
+		this.set( eventData.value );
+	},
+
+	onFieldChange: function( event ) {
+		var val = this.getTarget().val();
+		this.setStoreValue( val );
+	},
+
+	/**
+	 * Set the value of the field in the data container.  This should be overridden in fields
+	 * that have to transform the data when updating the store (number fields for example)
+	 * @method setStoreValue
+	 * @param {variant} val value to set
+	 */
+	setStoreValue: function( val ) {
+		this.dataContainer.set( this.fieldName, val );
 	}
 } );
