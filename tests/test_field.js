@@ -95,6 +95,39 @@ testsToRun.push( function testField( Y ) {
 			target.val( 'beezlebub' );
 			target.trigger( 'change' );
 			Assert.areEqual( 'beezlebub', this.dataContainer.get( 'name' ), 'dataContainer value correctly set value typed into field' );
+		},
+
+		testValidate: function() {
+			var target = $( 'span[data-field=name]' );
+			this.field = AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target,
+					dataContainer: this.dataContainer,
+					fieldName: 'name'
+				}
+			} );
+
+			var isValid = this.field.validate();
+			Assert.areEqual( true, isValid, 'default validator returns true' );
+
+			target = $( 'textarea[data-field=name]' );
+			this.fieldValueRequired = AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target,
+					dataContainer: this.dataContainer,
+					fieldName: 'name'
+				}
+			} );
+
+			this.dataContainer.set( 'name', '' );
+
+			isValid = this.fieldValueRequired.validate();
+			this.fieldValueRequired.teardown();
+			this.fieldValueRequired = null;
+			Assert.areEqual( false, isValid, 'field was required' );
+			
 		}
 	} );
 

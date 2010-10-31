@@ -57,5 +57,21 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	onFieldChange: function( event ) {
 		var val = this.getTarget().val();
 		this.set( val );
+	},
+
+	/**
+	 * Validate the field
+	 * @method validate
+	 * @return {boolean} true if field is valid, false otw.
+	 */
+	validate: function() {
+		var valid = true;
+		
+		var target = this.getTarget();
+		if( 'true' == target.attr( 'required' ) ) {
+			valid = !!target.val().length;
+		}
+		
+		return valid;
 	}
 } );
