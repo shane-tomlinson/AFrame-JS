@@ -55,15 +55,14 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 	fixData: function( dataToFix ) {
 		var fixedData = {};
 
-		for( var key in this.schema ) {
-			var schemaRow = this.schema[ key ];
+		this.forEach( function( schemaRow, key ) {
 			var value = dataToFix[ key ];
-
+			
 			// no value, use default
 			if( !AFrame.defined( value ) ) {
 				value = schemaRow.def;
 			}
-
+			
 			// apply the fixup function if defined.
 			var fixup = schemaRow.fixup;
 			if( AFrame.defined( fixup ) ) {
@@ -73,10 +72,52 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 					fixed: fixedData
 				} );
 			}
-
+			
 			fixedData[ key ] = value;
-		}
+		} );
 		
 		return fixedData;
+	},
+
+	/**
+	 * Get an object suitable to send to persistence
+	 * @method getPersistenceObject
+	 * @param {object} dataToClean - data to cleanup for persistence
+	 * @return {object} cleanedData
+	 */
+	getPersistenceObject: function( dataToClean ) {
+		var cleanedData = {};
+		
+		this.forEach( function( schemaRow, key ) {
+			var value = dataToClean[ key ];
+
+			// apply the cleanup function if defined.
+			var cleanup = schemaRow.cleanup;
+			if( AFrame.defined( cleanup ) ) {
+				value = cleanup( {
+					value: value,
+					data: dataToClean,
+					cleaned: cleanedData
+				} );
+			}
+			
+			cleanedData[ key ] = value;
+		} );
+		
+		return cleanedData;
+	},
+
+	/**
+	 * An iterator.  Iterates over every row in the schema.
+	 * The callback is called with the schema row and the key of the row.
+	 * @method forEach
+	 * @param {function} callback - callback to call.
+	 * @param {object} context (optional) context to call callback in
+	 */
+	forEach: function( callback, context ) {
+		for( var key in this.schema ) {
+			var schemaRow = this.schema[ key ];
+			callback.call( context, schemaRow, key );
+		}
 	}
 } );

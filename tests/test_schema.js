@@ -9,15 +9,20 @@ testsToRun.push( function testAObject( Y ) {
 		name: "TestCase AFrame.Schema",
 		
 		setUp: function() {
-			var fixupStringFieldCleanup = function( data ) {
+			var fixupStringField = function( data ) {
 				var fieldValue = this.useFixedValue ? 'modified string field' : data.value;
+				return fieldValue;
+			}.bind( this );
+
+			var cleanStringField = function( data ) {
+				var fieldValue = this.useCleanedValue ? 'modified string field' : data.value;
 				return fieldValue;
 			}.bind( this );
 			
 			var schemaConfig = {
 				stringField: { type: 'string', def: 'stringField Default Value' },
-				stringFieldFixup: { type: 'string', def: 'stringFieldFixup Default Value', fixup: fixupStringFieldCleanup }
-				
+				stringFieldFixup: { type: 'string', def: 'stringFieldFixup Default Value',
+					fixup: fixupStringField, cleanup: cleanStringField }
 			};
 			
 			this.schema = AFrame.construct( {
@@ -65,6 +70,38 @@ testsToRun.push( function testAObject( Y ) {
 			
 			// fixup function modifies data
 			Assert.areEqual( 'modified string field', fixedData.stringFieldFixup, 'stringFieldFixup modified correctly' );
+		},
+
+		testForEach: function() {
+			this.forEachCallbackCallCount = 0;
+			this.schema.forEach( function( row, key ) {
+				this.forEachCallbackCallCount++;
+			}, this );
+
+			// fixup function modifies data
+			Assert.areEqual( 2, this.forEachCallbackCallCount, 'callback called twice' );
+		},
+
+		testGetPersistenceObject: function() {
+			var persistence = this.schema.getPersistenceObject( {
+				stringField: 'stringField value',
+				stringFieldFixup: 'stringFieldFixup value',
+				extraField: 'extra field'
+			} );
+
+			Assert.areEqual( 'stringField value', persistence.stringField, 'stringField added' );
+			Assert.areEqual( 'stringFieldFixup value', persistence.stringFieldFixup, 'stringFieldFixup added' );
+			Assert.isUndefined( persistence.extraField, 'extraField not added' );
+
+			this.useCleanedValue = true;
+			var persistence = this.schema.getPersistenceObject( {
+				stringField: 'stringField value',
+				stringFieldFixup: 'stringFieldFixup value'
+			} );
+			
+			Assert.areEqual( 'stringField value', persistence.stringField, 'stringField added' );
+			Assert.areEqual( 'modified string field', persistence.stringFieldFixup, 'fixup function value used' );
+			
 		}
 	} );
 
