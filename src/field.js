@@ -42,16 +42,29 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
+	 * Reset the field to the value in the store
+	 * @method reset
+	 */
+	reset: function() {
+		this.set( this.dataContainer.get( this.fieldName ) );
+	},
+
+	/**
+	 * Save the field value to the store
+	 * @method save
+	 */
+	save: function() {
+		var val = this.getTarget().val();
+		this.setStoreValue( val );
+	},
+
+	/**
 	 * Validate the field
 	 * @method validate
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	validate: function() {
-		var valid = true;
-		
-		if( 'true' == this.getTarget().attr( 'required' ) ) {
-			valid = !!this.get().length;
-		}
+		var valid = ( ( 'true' != this.getTarget().attr( 'required' ) ) || ( !!this.get().length ) );
 		
 		return valid;
 	},
@@ -79,8 +92,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	onFieldChange: function( event ) {
-		var val = this.getTarget().val();
-		this.setStoreValue( val );
+		this.save();
 	},
 
 	/**
