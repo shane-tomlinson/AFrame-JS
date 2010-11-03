@@ -48,7 +48,7 @@ testsToRun.push( function testObservablesMixin( Y ) {
 			};
 			
 			var callbackID = this.eventSource.bindEvent( 'onCallback', callback );
-			this.eventSource.unbindEvent( 'onCallback', callbackID );
+			this.eventSource.unbindEvent( callbackID );
 			
 			this.eventSource.triggerEvent( 'onCallback' );
 			Assert.isFalse( callbackCalled, 'callback unbound with ID' );
@@ -69,6 +69,48 @@ testsToRun.push( function testObservablesMixin( Y ) {
 			this.eventSource.triggerEvent( 'proxiedEvent', { proxiedField: 123 } );
 			
 			Assert.areEqual( 123, proxiedEventData.proxiedField, 'proxied event occured, correct data passed' );
+		},
+
+		testBindToUnbindToAll: function() {
+			
+			var bindToObject = AFrame.construct( {
+				type: 'AFrame.AObject'
+			} );
+			
+			var listenerCalls = 0;
+			this.eventSource.listener = function() {
+				listenerCalls++;
+			};
+			
+			this.eventSource.bindTo( bindToObject, 'eventName', this.eventSource.listener, this.eventSource );
+			
+			bindToObject.triggerEvent( 'eventName' );
+			Assert.areEqual( 1, listenerCalls, 'listener was called on another object' );
+			
+			this.eventSource.unbindToAll();
+			bindToObject.triggerEvent( 'eventName' );
+			Assert.areEqual( 1, listenerCalls, 'listener was not called after unbindToAll' );
+		},
+		
+		testBindToUnbindTo: function() {
+			
+			var bindToObject = AFrame.construct( {
+				type: 'AFrame.AObject'
+			} );
+			
+			var listenerCalls = 0;
+			this.eventSource.listener = function() {
+				listenerCalls++;
+			};
+			
+			var id = this.eventSource.bindTo( bindToObject, 'eventName', this.eventSource.listener, this.eventSource );
+			
+			bindToObject.triggerEvent( 'eventName' );
+			Assert.areEqual( 1, listenerCalls, 'listener was called on another object' );
+			
+			this.eventSource.unbindTo( id );
+			bindToObject.triggerEvent( 'eventName' );
+			Assert.areEqual( 1, listenerCalls, 'listener was not called after unbindTo' );
 		}
 	} );
 

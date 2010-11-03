@@ -52,7 +52,7 @@ testsToRun.push( function testDataContainer( Y ) {
 			Assert.areEqual( 'fieldValue', fieldValue, 'get correctly gets the data' );
 		},
 		
-		testBindField: function() {
+		testBindFieldUnbindField: function() {
 			var bindFieldData;
 			
 			var id = this.dataContainer.bindField( 'fieldName', function( data ) {
@@ -68,7 +68,7 @@ testsToRun.push( function testDataContainer( Y ) {
 			this.dataContainer.set( 'fieldName', 'value2' );
 			Assert.areEqual( 'value2', bindFieldData.value, 'bound callback called with data after set' );
 			
-			this.dataContainer.unbindField( 'fieldName', id );
+			this.dataContainer.unbindField( id );
 			
 			this.dataContainer.set( 'fieldName', 'value3' );
 			Assert.areEqual( 'value2', bindFieldData.value, 'bound callback not called after field is unbound' );

@@ -73,6 +73,16 @@ testsToRun.push( function testObservable( Y ) {
 		
 		testTeardown: function() {
 		    this.observable.teardown();
+		},
+
+		testUniqueIDsAcrossObservables: function() {
+			var observable1 = AFrame.Observable.getInstance();
+			var observable2 = AFrame.Observable.getInstance();
+
+			var id1 = observable1.bind( function() {} );
+			var id2 = observable2.bind( function() {} );
+
+			Assert.areNotEqual( id1, id2, 'ids are unique' );
 		}
 	} );
 	

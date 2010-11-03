@@ -94,6 +94,7 @@ var AFrame = {
 	},
 
 	currentID: 0,
+	
 	/**
 	 * Get a unique ID
 	 * @method getUniqueID
@@ -110,7 +111,7 @@ var AFrame = {
 	 * @param {variant} itemToCheck
 	 * @return {boolean} true if item is defined, false otw.
 	 */
-	 defined: function( itemToCheck ) {
+	defined: function( itemToCheck ) {
 		return 'undefined' != typeof( itemToCheck );
 	}
 };

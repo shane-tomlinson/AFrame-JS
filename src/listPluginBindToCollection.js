@@ -17,8 +17,8 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 		 * @type {collection}
 		 */
 		this.collection = config.collection;
-		this.collection.bindEvent( 'onInsert', this.onInsert, this );
-		this.collection.bindEvent( 'onRemove', this.onRemove, this );
+		this.bindTo( this.collection, 'onInsert', this.onInsert, this );
+		this.bindTo( this.collection, 'onRemove', this.onRemove, this );
 
 		this.cids = [];
 		

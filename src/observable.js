@@ -21,7 +21,6 @@ AFrame.Observable.prototype = {
 	 */
 	init: function() {
 		this.callbacks = {};
-		this.currID = 0;
 	},
 	
 	/**
@@ -49,11 +48,10 @@ AFrame.Observable.prototype = {
 	 * Bind a callback to the observable
 	 * @method bind
 	 * @param {function} callback - callback to register
-	 * @return {id} id that can be used to unbind the callback
+	 * @return {id} id that can be used to unbind the callback.  Note, all ids for all bindings are unique.
 	 */
 	bind: function( callback ) {
-		var id = this.currID;
-		this.currID++;
+		var id = AFrame.getUniqueID();
 		
 		this.callbacks[ id ] = callback;
 		

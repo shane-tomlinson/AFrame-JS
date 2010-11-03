@@ -67,11 +67,10 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	/**
 	* Unbind a field
 	* @method unbindField
-	* @param {string} fieldName name of field
-	* @param {string} id given by bindField
+	* @param {id} id given by bindField
 	*/
-	unbindField: function( fieldName, id ) {
-		return this.unbindEvent( 'onSet-' + fieldName, id );
+	unbindField: function( id ) {
+		return this.unbindEvent( id );
 	},
 	
 	getEventObject: function( fieldName, newValue, oldValue ) {
