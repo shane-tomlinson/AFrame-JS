@@ -38,8 +38,7 @@ AFrame.ObservablesMixin = {
 	},
 	
 	/**
-	 * Bind a callback to an event.  Note, if the object being bound from is AObject based, the preferred
-	 * method to bind is to use bindTo, as bindTo will automatically unbind when either object is torn down.
+	 * Bind a callback to an event.
 	 * @method bindEvent
 	 * @param {string} eventName name of event to register on
 	 * @param {function} callback callback to call
