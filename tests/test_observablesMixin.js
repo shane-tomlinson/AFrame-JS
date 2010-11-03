@@ -95,7 +95,7 @@ testsToRun.push( function testObservablesMixin( Y ) {
 				listenerCalls++;
 			};
 			
-			this.eventSource.bindTo( bindToObject, 'eventName', this.eventSource.listener, this.eventSource );
+			bindToObject.bindEvent( 'eventName', this.eventSource.listener, this.eventSource );
 			
 			bindToObject.triggerEvent( 'eventName' );
 			Assert.areEqual( 1, listenerCalls, 'listener was called on another object' );
@@ -116,7 +116,7 @@ testsToRun.push( function testObservablesMixin( Y ) {
 				listenerCalls++;
 			};
 			
-			var id = this.eventSource.bindTo( bindToObject, 'eventName', this.eventSource.listener, this.eventSource );
+			var id = bindToObject.bindEvent( 'eventName', this.eventSource.listener, this.eventSource );
 			
 			bindToObject.triggerEvent( 'eventName' );
 			Assert.areEqual( 1, listenerCalls, 'listener was called on another object' );

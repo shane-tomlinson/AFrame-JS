@@ -60,6 +60,10 @@ AFrame.ObservablesMixin = {
 			object: context,
 			observable: observable
 		};
+
+		if( context && context.bindTo ) {
+			context.bindTo( this, eid );
+		}
 		
 		return eid;
 	},
@@ -70,7 +74,7 @@ AFrame.ObservablesMixin = {
 	 * @param {id} id returned by bindEvent
 	 */
 	unbindEvent: function( id ) {
-		var binding = this.bindings[ id ];
+		var binding = this.bindings && this.bindings[ id ];
 		
 		if( binding ) {
 			AFrame.remove( this.bindings, id );
@@ -112,37 +116,28 @@ AFrame.ObservablesMixin = {
 	 */
 	proxyEvents: function( proxyFrom, eventList ) {
 		eventList.forEach( function( eventName, index ) {
-			this.bindTo( proxyFrom, eventName, function() {
+			proxyFrom.bindEvent( eventName, function() {
 				var args = Array.prototype.slice.call( arguments, 0 );
 				args.splice( 0, 0, eventName );
 				this.triggerEvent.apply( this, args );
-			}.bind( this ) );
+			}.bind( this ), this );
 		}, this );
 	},
 	
 	/**
-	 * Bind a callback to an event on another object.  This is the preferred method to use when binding
-	 * internally to another object as any items bound through this method will be unbound whenever this
-	 * object is torn down.
+	 * Create a binding between this object and another object.  This means this object
+	 * is listening to an event on another object.
 	 * @method bindTo
 	 * @param {AFrame.AObject} bindToObject object to bind to
-	 * @param {string} eventName name of event to register on
-	 * @param {function} callback callback to call
-	 * @param {object} context (optional) optional context to call the callback in.  If not given,
-	 * 	use the 'this' object.
-	 * @return {id} id that can be used to unbind the callback.
+	 * @param {id} id of event this object is listening for on the bindToObject
 	 */
-	bindTo: function( bindToObject, eventName, callback, context ) {
-		var id = bindToObject.bindEvent( eventName, callback, context );
-		
+	bindTo: function( bindToObject, id ) {
 		this.boundTo = this.boundTo || {};
-		this.boundTo[ id ] = {
+		this.boundTo[ id ] = this.boundTo[ id ] || {
 			object: bindToObject
 		};
-		
-		return id;
 	},
-
+	
 	/**
 	 * Unbind a listener bound from this object to another object
 	 * @method unbindTo
