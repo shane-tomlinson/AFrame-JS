@@ -48,14 +48,18 @@ AFrame.ObservablesMixin = {
 	 * @return {id} id that can be used to unbind the callback.
 	 */
 	bindEvent: function( eventName, callback, context ) {
-		this.cid = this.cid || AFrame.getUniqueID();
 		this.events = this.events || {};
-		this.events[ eventName ] = this.events[ eventName ] || AFrame.Observable.getInstance();
 		
-		var eid = this.events[ eventName ].bind( callback.bind( context || this ) );
+		var observable = this.events[ eventName ] || AFrame.Observable.getInstance();
+		this.events[ eventName ] = observable;
+		
+		var eid = observable.bind( callback.bind( context || this ) );
 
-		this.eventIDs = this.eventIDs || {};
-		this.eventIDs[ eid ] = this.events[ eventName ];
+		this.bindings = this.bindings || {};
+		this.bindings[ eid ] = {
+			object: context,
+			observable: observable
+		};
 		
 		return eid;
 	},
@@ -66,11 +70,37 @@ AFrame.ObservablesMixin = {
 	 * @param {id} id returned by bindEvent
 	 */
 	unbindEvent: function( id ) {
-		var observable = this.eventIDs[ id ];
+		var binding = this.bindings[ id ];
 		
-		if( observable ) {
-			AFrame.remove( this.eventIDs, id );
-			return observable.unbind( id );
+		if( binding ) {
+			AFrame.remove( this.bindings, id );
+
+			if( binding.object && binding.object.unbindTo ) {
+				binding.object.unbindTo( id );
+			}
+			
+			return binding.observable.unbind( id );
+		}
+	},
+
+	/**
+	 * Unbind all events on this object
+	 * @method unbindAll
+	 */
+	unbindAll: function() {
+		for( var key in this.events ) {
+			this.events[ key ].unbindAll();
+			AFrame.remove( this.events, key );
+		}
+
+		for( var id in this.bindings ) {
+			var binding = this.bindings[ id ];
+			AFrame.remove( this.bindings, id );
+			
+			if( binding.object && binding.object.unbindTo ) {
+				binding.object.unbindTo( id );
+			}
+			// no need to call the observable's unbind, it has already been torn down in unbindAll above
 		}
 	},
 

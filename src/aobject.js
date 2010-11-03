@@ -36,15 +36,13 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	 */
 	teardown: function() {
 	    /**
-	     * triggered whenever hte object is torn down
-	     * @method onTeardown
+	     * triggered whenever tte object is torn down
+	     * @event onTeardown
 	     */
 	    this.triggerEvent( 'onTeardown' );
-	    
-	    for( var key in this.events ) {
-			this.events[ key ].unbindAll();
-			AFrame.remove( this.events, key );
-	    }
+
+	    this.unbindAll();
+	    this.unbindToAll();
 	}
 } );
 

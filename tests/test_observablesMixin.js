@@ -53,6 +53,19 @@ testsToRun.push( function testObservablesMixin( Y ) {
 			this.eventSource.triggerEvent( 'onCallback' );
 			Assert.isFalse( callbackCalled, 'callback unbound with ID' );
 		},
+
+		testUnbindAll: function() {	
+			callbackCalled = false;
+			var callback = function() {
+				callbackCalled = true;
+			};
+			
+			this.eventSource.bindEvent( 'onCallback', callback );
+			this.eventSource.unbindAll();
+
+			this.eventSource.triggerEvent( 'onCallback' );
+			Assert.isFalse( callbackCalled, 'callback unbound with ID' );
+		},
 		
 		testProxyEvents: function() {
 			this.proxy = AFrame.construct( {
