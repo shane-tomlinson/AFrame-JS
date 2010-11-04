@@ -2,7 +2,7 @@
  * A plugin to a collection to give the collection db ops.  Provides
  * load, add, save, delete
  * @class AFrame.CollectionPluginPersistence
- * @extend AFrame.Plugin
+ * @extends AFrame.Plugin
  * @constructor
  */
 AFrame.CollectionPluginPersistence = function() {
