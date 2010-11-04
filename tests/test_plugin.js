@@ -39,6 +39,19 @@ testsToRun.push( function testPlugin( Y ) {
 
 			Assert.isObject( plugged, 'plugged is an object' );
 			Assert.areEqual( plugged, this.pluggedObject, 'plugged object correctly set' );
+		},
+		
+		testTeardownOnPluggedTeardown: function() {
+			this.plugin.setPlugged( this.pluggedObject );
+
+			var pluginTeardown = false;
+			this.plugin.bindEvent( 'onTeardown', function() {
+				pluginTeardown = true;
+			} );
+			
+			this.pluggedObject.teardown();
+			
+			Assert.isTrue( pluginTeardown, 'plugin was torn down' );
 		}
 	} );
 
