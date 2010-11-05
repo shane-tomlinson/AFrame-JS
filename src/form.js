@@ -1,5 +1,5 @@
 /**
- * A basic form.  Forms are bound to a dataContainer.
+ * A basic form.  Forms are made of form fields.  A field should contain at least the following functions, clear, save, reset, validate.
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
@@ -36,7 +36,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	/**
 	 * Get the form elements
 	 * @method getFormElements
-	 * @return {array} the form elements dataContainer
+	 * @return {array} the form elements
 	 */
 	getFormElements: function() {
 		return this.formElements;
@@ -45,7 +45,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	/**
 	 * Get the form fields
 	 * @method getFormFields
-	 * @return {array} the form fields dataContainer
+	 * @return {array} the form fields
 	 */
 	getFormFields: function() {
 		return this.formFields;
@@ -83,13 +83,17 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	},
 
 	/**
-	 * Save the form data to the dataContainer.
+	 * Have all fields save their data if the form is valid
 	 * @method save
+	 * @return {boolean} true if the form was valid and saved, false otw.
 	 */
 	save: function() {
-		if( this.validate() ) {
+		var valid = this.validate();
+		if( valid ) {
 			this.fieldAction( 'save' );
 		}
+		
+		return valid;
 	},
 
 	fieldAction: function( action ) {

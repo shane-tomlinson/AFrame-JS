@@ -11,7 +11,18 @@ AFrame.Field = function() {
 };
 AFrame.extend( AFrame.Field, AFrame.Display, {
 	init: function( config ) {
+		/**
+		* Data container to bind the field to
+		* @config dataContainer
+		* @type {AFrame.DataContainer}
+		*/
 		this.dataContainer = config.dataContainer;
+		
+		/**
+		* Name of field in dataContainer to bind to
+		* @config fieldName
+		* @type {string}
+		*/
 		this.fieldName = config.fieldName;
 
 		AFrame.Field.superclass.init.apply( this, arguments );

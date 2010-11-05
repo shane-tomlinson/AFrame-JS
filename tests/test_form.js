@@ -99,8 +99,18 @@ testsToRun.push( function testForm( Y ) {
 		
 		testSave: function() {
 			Assert.areEqual( 0, this.saveCount, 'save has not been called yet' );
-			this.form.save();
+			
+			this.validateReturn = true;
+			var valid = this.form.save();
+
 			Assert.areEqual( 1, this.saveCount, 'save has been called' );
+			Assert.isTrue( valid, 'form was valid' );
+			
+			this.validateReturn = false;
+			valid = this.form.save();
+
+			Assert.areEqual( 1, this.saveCount, 'form was not valid, save was not called' );
+			Assert.isFalse( valid, 'form was not valid' );
 		}
 	} );
 
