@@ -72,6 +72,20 @@ testsToRun.push( function testDataContainer( Y ) {
 			
 			this.dataContainer.set( 'fieldName', 'value3' );
 			Assert.areEqual( 'value2', bindFieldData.value, 'bound callback not called after field is unbound' );
+		},
+		
+		testForEach: function() {
+			var forEachCount = 0;
+			
+			this.dataContainer.set( 'field1', 1 );
+			this.dataContainer.set( 'field2', 1 );
+			this.dataContainer.set( 'field3', 1 );
+			
+			this.dataContainer.forEach( function( data, fieldName ) {
+				forEachCount++;
+			} );
+			
+			Assert.areEqual( 3, forEachCount, 'forEach called once for each field' );
 		}
 	} );
 	

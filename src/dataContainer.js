@@ -80,5 +80,17 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 			oldValue: oldValue,
 			value: newValue
 		};
+	},
+	
+	/**
+	* Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
+	* @method forEach
+	* @param {function} function to call
+	* @param {object} context (optional) optional context
+	*/
+	forEach: function( callback, context ) {
+		for( var key in this.data ) {
+			callback.call( context, this.data[ key ], key );
+		}
 	}
 } );
