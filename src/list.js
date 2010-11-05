@@ -42,6 +42,13 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		var rowElement = this.createListElementCallback( meta, data );
 		index = this.insertElement( rowElement, meta );
 		
+		/**
+		* Triggered whenever a row is inserted into the list
+		* @event onInsert
+		* @param {element} rowElement - the row's list element
+		* @param {object} data - row's data
+		* @param {object} meta - meta data
+		*/
 		this.triggerEvent( 'onInsert', {
 			rowElement: rowElement, 
 			data: data,
@@ -74,6 +81,12 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 			rowElement.insertBefore( insertBefore );
 		}
 
+		/**
+		* Triggered whenever an element is inserted into the list
+		* @event onInsertElement
+		* @param {element} rowElement - the row's list element
+		* @param {object} meta - meta data
+		*/
 		this.triggerEvent( 'onInsertElement', {
 			rowElement: rowElement,
 			meta: meta
@@ -93,6 +106,12 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		meta.index = removeIndex;
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
 		
+		/**
+		* Triggered whenever an element is removed from the list
+		* @event onRemoveElement
+		* @param {element} rowElement - the row's list element
+		* @param {object} meta - meta data
+		*/
 		this.triggerEvent( 'onRemoveElement', {
 			rowElement: rowElement,
 			meta: meta
