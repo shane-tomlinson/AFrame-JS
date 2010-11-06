@@ -20,6 +20,10 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
 
+	/**
+	 * Clear the list
+	 * @method clear
+	 */
 	clear: function() {
 		this.getTarget().html( '' );
 	},
