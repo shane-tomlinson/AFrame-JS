@@ -130,6 +130,16 @@ testsToRun.push( function testList( Y ) {
 
 			count = this.list.getCount();
 			Assert.areEqual( 1, count, 'List has 1 element' );
+		},
+		
+		testClear: function() {
+			this.list.insert( {} );
+			
+			Assert.areNotEqual( '', $( '#AFrame_List .list' ).html(), 'list has contents' );
+
+			this.list.clear();
+			
+			Assert.areEqual( '', $( '#AFrame_List .list' ).html(), 'list has been cleared' );
 		}
 	} );
 

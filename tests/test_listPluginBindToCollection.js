@@ -65,6 +65,17 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 
 			this.store.remove( 'inserted1' );
 			Assert.areEqual( 0, $( 'ul > li#inserted1' ).length, 'list element1 removed' );
+		},
+		
+		testGetIndex: function() {
+			this.store.insert( { cid: 'inserted0' } );
+			this.store.insert( { cid: 'inserted1' } );
+			
+			var index = this.list.getIndex( 'inserted1' );
+			Assert.areEqual( 1, index, 'correct index' );
+			
+			var index = this.list.getIndex( 0 );
+			Assert.areEqual( 0, index, 'correct index' );
 		}
 	} );
 	
@@ -130,6 +141,17 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 			
 			this.store.remove( 'inserted1' );
 			Assert.areEqual( 0, $( 'ul > li#inserted1' ).length, 'list element1 removed' );
+		},
+		
+		testGetIndex: function() {
+			this.store.insert( { cid: 'inserted0' } );
+			this.store.insert( { cid: 'inserted1' } );
+			
+			var index = this.list.getIndex( 'inserted1' );
+			Assert.areEqual( 1, index, 'correct index' );
+			
+			var index = this.list.getIndex( 0 );
+			Assert.areEqual( 0, index, 'correct index' );
 		}
 	} );
 	
