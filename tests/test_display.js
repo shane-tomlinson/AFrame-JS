@@ -51,9 +51,11 @@ testsToRun.push( function testDisplay( Y ) {
 			var id = this.display.bindDOMEvent( '.button', 'click', onClick, this );
 
 			$( '.button' ).trigger( 'click' );
-
 			Assert.areEqual( 1, this.callbackCount, 'event callback triggered' );
 			Assert.isNotUndefined( id, 'id is defined' );
+			
+			$( '.target' ).trigger( 'click' );
+			Assert.areEqual( 1, this.callbackCount, 'event bound to correct child item' );
 		},
 
 		testBindDOMOutsideTarget: function() {

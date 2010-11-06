@@ -60,6 +60,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * @param {object} data - data to add
 	 * @param {object} meta - meta information.  If callback is supplied in the
 	 * 	meta information, the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the data, and meta information.
 	 */
 	add: function( data, meta ) {
 		meta = this.getMeta( meta );
@@ -74,6 +75,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * @method load
 	 * @param {object} meta - meta information.  If callback is supplied in the
 	 * 	meta information, the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the items, and meta information.
 	 */
 	load: function( meta ) {
 		meta = this.getMeta( meta );
@@ -94,6 +96,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * @param {id} itemID - id of item to remove
 	 * @param {object} meta - meta information.  If callback is supplied in the
 	 * 	meta information, the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the data, and meta information.
 	 */
 	del: function( itemID , meta ) {
 		var data = this.getPlugged().get( itemID );
@@ -113,6 +116,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	 * @param {id} itemID - id of item to save
 	 * @param {object} meta - meta information.  If callback is supplied in the
 	 * 	meta information, the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the data, and meta information.
 	 */
 	save: function( itemID, meta ) {
 		var data = this.getPlugged().get( itemID );

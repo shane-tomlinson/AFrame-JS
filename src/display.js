@@ -51,7 +51,7 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	 */
 	bindDOMEvent: function( target, eventName, callback, context ) {
 		var eventCallback = callback.bind( context || this );
-		var eventTarget = this.getTarget( target );
+		var eventTarget = this.getEventTarget( target );
 		eventTarget.bind( eventName, eventCallback );
 
 		AFrame.Display.currDOMEventID++;
