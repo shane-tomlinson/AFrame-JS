@@ -93,6 +93,19 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
+	* Clear the array
+	* @method clear
+	*/
+	clear: function() {
+		this.itemCIDs.forEach( function( cid, index ) {
+			this.hash.remove( cid, this.getArrayMeta( index ) );
+			this.itemCIDs[ index ] = null;
+		}, this );
+		
+		this.itemCIDs = [];
+	},
+	
+	/**
 	* Get the current count of items
 	* @method getCount
 	* @return {number} current count

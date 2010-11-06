@@ -103,6 +103,17 @@ testsToRun.push( function testMVCArray( Y ) {
 
 		testInsertWithNegativeIndex: function() {
 			
+		},
+		
+		testClear: function() {
+			var cid = this.array.insert( this.item );
+			Assert.areEqual( 1, this.array.getCount(), 'item inserted' );
+			
+			this.array.clear();
+			Assert.areEqual( 0, this.array.getCount(), 'array cleared' );
+			
+			var item = this.array.get( cid );
+			Assert.isUndefined( item, 'could not get item' );
 		}
 		
 	} );

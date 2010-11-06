@@ -131,6 +131,16 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	},
 	
 	/**
+	* Clear the hash
+	* @method clear
+	*/
+	clear: function() {
+		for( var cid in this.hash ) {
+			this.remove( cid );
+		}
+	},
+	
+	/**
 	* @private
 	*/
 	getEventData: function( item, meta ) {

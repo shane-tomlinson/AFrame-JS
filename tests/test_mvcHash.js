@@ -202,7 +202,17 @@ testsToRun.push( function testMVCHash( Y ) {
 			}
 			
 			Assert.areSame( 'duplicate cid', except, 'duplicate cid exception thrown' );
-		}
+		},
+		
+		testClear: function() {
+			var cid = this.hash.insert( {
+				cid: 1,
+				fieldName: 'fieldValue'
+			} );
+			
+			this.hash.clear();
+			Assert.isUndefined( this.hash.get( cid ), 'could not get item' );
+		}		
 	} );
 	
 	
