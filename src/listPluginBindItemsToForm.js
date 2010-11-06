@@ -11,7 +11,9 @@ AFrame.ListPluginBindItemsToForm = function() {
 AFrame.extend( AFrame.ListPluginBindItemsToForm, AFrame.ListPluginBindToCollection, {
 	init: function( config ) {
 		/**
-		 * The factory to use to create form fields
+		 * The factory to use to create form fields.  For each form element in each form,
+		 * the factory function will be called with two parameters, the first is the element,
+		 * the second is the meta data.
 		 * @config formFieldFactory
 		 * @type {function}
 		 */
@@ -48,7 +50,9 @@ AFrame.extend( AFrame.ListPluginBindItemsToForm, AFrame.ListPluginBindToCollecti
 			type: 'AFrame.Form',
 			config: {
 				target: rowElement,
-				formFieldFactory: this.formFieldFactory
+				formFieldFactory: function( element ) {
+					return this.formFieldFactory( element, meta );
+				}.bind( this )
 			}
 		} );
 		
@@ -64,16 +68,17 @@ AFrame.extend( AFrame.ListPluginBindItemsToForm, AFrame.ListPluginBindToCollecti
 	 */
 	validate: function( indexCID ) {
 		var valid = true;
+		var index, form;
 		
 		if( AFrame.defined( indexCID ) ) {
-			var index = this.getIndex( indexCID );
-			var form = this.forms[ index ];
+			index = this.getIndex( indexCID );
+			form = this.forms[ index ];
 			if( form ) {
 				valid = form.validate();				
 			}
 		}
 		else {
-			for( var index = 0, form; valid && ( form = this.forms[ index ] ); ++index ) {
+			for( index = 0; valid && ( form = this.forms[ index ] ); ++index ) {
 				valid = form.validate();
 			}
 		}
