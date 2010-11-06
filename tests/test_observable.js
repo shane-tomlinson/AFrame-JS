@@ -51,12 +51,12 @@ testsToRun.push( function testObservable( Y ) {
 		    var secondBound = false;
 		    var secondBindFunc = function() {
 			secondBound = true;
-		    }
+		    };
 		    
 		    this.observable.bind( this.bindFunc );
 		    this.observable.bind( secondBound );
 		    
-		    this.observable.unbindAll()
+		    this.observable.unbindAll();
 		    
 		    this.observable.trigger();
 		    Assert.isFalse( this.boundCalled, 'bound function unbound' );

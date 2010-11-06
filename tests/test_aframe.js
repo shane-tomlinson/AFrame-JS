@@ -9,7 +9,7 @@ SuperClass.prototype = {
 	    this.sharedFuncCalled = true;
 	    return true;
 	}
-}
+};
 
 function SubClass() {
 }
