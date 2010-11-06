@@ -141,6 +141,21 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 	},
 	
 	/**
+	* Get the current count of items
+	* @method getCount
+	* @return {number} current count
+	*/
+	getCount: function() {
+		var count = 0;
+		
+		for( var cid in this.hash ) {
+			count++;
+		}
+		
+		return count;
+	},
+	
+	/**
 	* @private
 	*/
 	getEventData: function( item, meta ) {

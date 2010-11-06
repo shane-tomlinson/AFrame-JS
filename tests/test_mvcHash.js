@@ -212,7 +212,21 @@ testsToRun.push( function testMVCHash( Y ) {
 			
 			this.hash.clear();
 			Assert.isUndefined( this.hash.get( cid ), 'could not get item' );
-		}		
+		},
+		
+		testGetCount: function() {
+			var count = this.hash.getCount();
+			Assert.areSame( 0, count, 'emtpy gives correct count' );
+			
+			var cid = this.hash.insert( {} );
+			count = this.hash.getCount();
+			Assert.areEqual( 1, count, 'one added gives correct count' );
+			
+			this.hash.remove( cid );
+			count = this.hash.getCount();
+			Assert.areEqual( 0, count, 'one removed gives correct count' );
+		}
+
 	} );
 	
 	
