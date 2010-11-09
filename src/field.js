@@ -1,7 +1,5 @@
 /**
- * The base class for a field.  A field is a display that is bound to a field in a dataContainer.  When the
- * field in the dataContainer is updated, the field is updated as well.  When the user updates the data in
- * the field, it automatically updates the dataContainer.
+ * The base class for a field.  A field is a basic unit for a form.
  * @class AFrame.Field
  * @extends AFrame.Display
  * @constructor
@@ -14,6 +12,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		AFrame.Field.superclass.init.apply( this, arguments );
 
 		this.bindEvents();
+		
 		this.resetVal = this.get();
 	},
 
@@ -40,7 +39,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Reset the field to its original set value.
+	 * Reset the field to its last 'set' value.
 	 * @method reset
 	 */
 	reset: function() {
@@ -48,15 +47,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Save the field value
-	 * @method save
-	 */
-	save: function() {
-		this.resetVal = this.get();
-	},
-
-	/**
-	 * Validate the field
+	 * Validate the field.  A field will validate if 1) Its form element does not have the required attribute, or 2) the field has a length.
+	 *	sub classes can override this to perform more specific validation schemes.
 	 * @method validate
 	 * @return {boolean} true if field is valid, false otw.
 	 */
@@ -67,7 +59,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	/**
-	 * Clear the field, does not affect the data container.
+	 * Clear the field.  A reset after this will cause the field to go back to the blank state.
 	 * @method clear
 	 */
 	clear: function() {
@@ -94,11 +86,12 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		return retval;
 	},
 	
-	onDataChange: function( eventData ) {
-		this.set( eventData.value );
-	},
-
 	onFieldChange: function( event ) {
+		/**
+		* triggered whenever the field value changes
+		* @event onChange
+		* @param {string} fieldVal - the current field value.
+		*/
 		this.triggerEvent( 'onChange', this.get() );
 	},
 	
