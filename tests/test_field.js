@@ -8,27 +8,17 @@ testsToRun.push( function testField( Y ) {
 		name: "TestCase AFrame.Field",
 		
 		setUp: function() {
-			this.dataContainer = AFrame.construct( {
-				type: 'AFrame.DataContainer',
-				config: {
-					data: {
-						name: 'Shane Tomlinson'
-					}
-				}
-			} );
-
 			var target = $( 'input[data-field=name]' );
 			this.field = AFrame.construct( {
 				type: 'AFrame.Field',
 				config: {
-					target: target,
-					dataContainer: this.dataContainer,
-					fieldName: 'name'
+					target: target
 				}
 			} );
 		},
 
 		tearDown: function() {
+			this.field.clear();
 			this.field.teardown();
 			this.field = null;
 		},
@@ -36,17 +26,8 @@ testsToRun.push( function testField( Y ) {
 		testInput: function() {
 			var target = $( 'input[data-field=name]' );
 			
-			Assert.areEqual( 'Shane Tomlinson', target.val(), 'input element value correctly set' );
-
-			this.dataContainer.set( 'name', 'Charlotte Tomlinson' );
-			Assert.areEqual( 'Charlotte Tomlinson', target.val(), 'element value correctly set when dataContainer updated' );
-
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set when field updated' );
-
-			target.val( 'beezlebub' );
-			target.trigger( 'change' );
-			Assert.areEqual( 'beezlebub', this.dataContainer.get( 'name' ), 'dataContainer value correctly set value typed into field' );
 		},
 
 		testText: function() {
@@ -54,19 +35,17 @@ testsToRun.push( function testField( Y ) {
 			var textField = AFrame.construct( {
 				type: 'AFrame.Field',
 				config: {
-					target: target,
-					dataContainer: this.dataContainer,
-					fieldName: 'name'
+					target: target
 				}
 			} );
 			
-			Assert.areEqual( 'Shane Tomlinson', target.html(), 'input element value correctly set' );
+			textField.set( 'Shane Tomlinson' );
+			Assert.areEqual( 'Shane Tomlinson', target.html(), 'element value correctly set when field updated' );
 			
-			this.dataContainer.set( 'name', 'Charlotte Tomlinson' );
-			Assert.areEqual( 'Charlotte Tomlinson', target.html(), 'element value correctly set when dataContainer updated' );
+			Assert.areEqual( 'Shane Tomlinson', textField.get(), 'get works correctly on an HTML field' );
 			
-			textField.set( 'Preston the Penguin' );
-			Assert.areEqual( 'Preston the Penguin', target.html(), 'element value correctly set when field updated' );
+			textField.clear();
+			textField.teardown();
 		},
 
 		testTextArea: function() {
@@ -74,23 +53,14 @@ testsToRun.push( function testField( Y ) {
 			var textAreaField = AFrame.construct( {
 				type: 'AFrame.Field',
 				config: {
-					target: target,
-					dataContainer: this.dataContainer,
-					fieldName: 'name'
+					target: target
 				}
 			} );
+			textAreaField.set( 'Charlotte Tomlinson' );
+			Assert.areEqual( 'Charlotte Tomlinson', target.val(), 'element value correctly set when field updated' );
 			
-			Assert.areEqual( 'Shane Tomlinson', target.val(), 'input element value correctly set' );
-			
-			this.dataContainer.set( 'name', 'Charlotte Tomlinson' );
-			Assert.areEqual( 'Charlotte Tomlinson', target.val(), 'element value correctly set when dataContainer updated' );
-			
-			textAreaField.set( 'Preston the Penguin' );
-			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set when field updated' );
-
-			target.val( 'beezlebub' );
-			target.trigger( 'change' );
-			Assert.areEqual( 'beezlebub', this.dataContainer.get( 'name' ), 'dataContainer value correctly set value typed into field' );
+			textAreaField.clear();
+			textAreaField.teardown();
 		},
 
 		testValidate: function() {
@@ -98,14 +68,12 @@ testsToRun.push( function testField( Y ) {
 			var textField = AFrame.construct( {
 				type: 'AFrame.Field',
 				config: {
-					target: target,
-					dataContainer: this.dataContainer,
-					fieldName: 'name'
+					target: target
 				}
 			} );
 
 			var isValid = textField.validate();
-			Assert.areEqual( true, isValid, 'default validator returns true' );
+			Assert.isTrue( isValid, 'default validator returns true' );
 
 			textField.teardown();
 			textField = null;
@@ -114,16 +82,13 @@ testsToRun.push( function testField( Y ) {
 			var fieldValueRequired = AFrame.construct( {
 				type: 'AFrame.Field',
 				config: {
-					target: target,
-					dataContainer: this.dataContainer,
-					fieldName: 'name'
+					target: target
 				}
 			} );
 
-			this.dataContainer.set( 'name', '' );
-
+			fieldValueRequired.clear();
 			isValid = fieldValueRequired.validate();
-			Assert.areEqual( false, isValid, 'field was required' );
+			Assert.isFalse( isValid, 'field was required' );
 
 			fieldValueRequired.teardown();
 			fieldValueRequired = null;
@@ -131,12 +96,11 @@ testsToRun.push( function testField( Y ) {
 
 		testClear: function() {
 			var target = $( 'input[data-field=name]' );
-			this.dataContainer.set( 'name', 'Charlotte Tomlinson' );
+			target.val( 'Charlotte Tomlinson' );
 
 			this.field.clear();
 
 			Assert.areEqual( '', target.val(), 'field has been cleared' );
-			Assert.areEqual( 'Charlotte Tomlinson', this.dataContainer.get( 'name' ), 'store is not affected' );
 		},
 
 		testSet: function() {
@@ -150,24 +114,35 @@ testsToRun.push( function testField( Y ) {
 			this.field.set( 'Shane Tomlinson' );
 			Assert.areEqual( 'Shane Tomlinson', this.field.get(), 'get gets field correctly' );
 		},
-
-		testSave: function() {
-			this.dataContainer.set( 'name', 'Preston' );
-			this.field.set( 'Charlotte' );
-
-			Assert.areEqual( 'Preston', this.dataContainer.get( 'name' ), 'dataContainer has not been updated' );
-			
-			this.field.save();
-			Assert.areEqual( 'Charlotte', this.dataContainer.get( 'name' ), 'dataContainer has been updated' );
-		},
-
+		
 		testReset: function() {
 			var target = $( 'input[data-field=name]' );
 			
-			this.dataContainer.set( 'name', 'Shane' );
 			this.field.set( 'Charlotte' );
+			target.html( 'Shane' );
 			this.field.reset();
-			Assert.areEqual( 'Shane', this.field.get(), 'reset was successful' );
+			Assert.areEqual( 'Charlotte', this.field.get(), 'reset was successful' );
+		},
+		
+		testFieldWithInitialValue: function() {
+			var target = $( 'span[data-field=name]' );
+			target.html( 'Charlotte Tomlinson' );
+			
+			var textField = AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target
+				}
+			} );
+
+			Assert.areSame( 'Charlotte Tomlinson', textField.get(), 'field with initial value does correct get' );
+			
+			target.html( 'Shane Tomlinson' );
+			
+			textField.reset();
+			Assert.areSame( 'Charlotte Tomlinson', textField.get(), 'field with initial value resets correctly' );
+			
+			
 		}
 	} );
 

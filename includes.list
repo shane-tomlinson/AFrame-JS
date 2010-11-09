@@ -15,5 +15,5 @@ collectionPluginPersistence.js,\
 form.js,\
 field.js,\
 schema.js,\
-listPluginBindItemsToForm.js
+listPluginFormRow.js
 

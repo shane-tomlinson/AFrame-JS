@@ -11,28 +11,13 @@ AFrame.Field = function() {
 };
 AFrame.extend( AFrame.Field, AFrame.Display, {
 	init: function( config ) {
-		/**
-		* Data container to bind the field to
-		* @config dataContainer
-		* @type {AFrame.DataContainer}
-		*/
-		this.dataContainer = config.dataContainer;
-		
-		/**
-		* Name of field in dataContainer to bind to
-		* @config fieldName
-		* @type {string}
-		*/
-		this.fieldName = config.fieldName;
-
 		AFrame.Field.superclass.init.apply( this, arguments );
 
 		this.bindEvents();
+		this.resetVal = this.get();
 	},
 
 	bindEvents: function() {
-		this.dataContainer.bindField( this.fieldName, this.onDataChange, this );
-		
 		this.bindDOMEvent( this.getTarget(), 'change', this.onFieldChange, this );
 	},
 
@@ -44,29 +29,30 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	set: function( val ) {
 		var target = this.getTarget();
 
-		if( target.is( 'input' ) || target.is( 'textarea' ) ) {
+		if( this.isValBased( target ) ) {
 			target.val( val );
 		}
 		else {
 			target.html( val );
 		}
+		
+		this.resetVal = val;
 	},
 
 	/**
-	 * Reset the field to the value in the store
+	 * Reset the field to its original set value.
 	 * @method reset
 	 */
 	reset: function() {
-		this.set( this.dataContainer.get( this.fieldName ) );
+		this.set( this.resetVal );
 	},
 
 	/**
-	 * Save the field value to the store
+	 * Save the field value
 	 * @method save
 	 */
 	save: function() {
-		var val = this.getTarget().val();
-		this.setStoreValue( val );
+		this.resetVal = this.get();
 	},
 
 	/**
@@ -95,7 +81,17 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {variant} the value of the field
 	 */
 	get: function() {
-		return this.getTarget().val() || '';
+		var retval;
+		
+		var target = this.getTarget();
+		if( this.isValBased( target ) ) {
+			retval = target.val();
+		}
+		else {
+			retval = target.html();
+		}
+		
+		return retval;
 	},
 	
 	onDataChange: function( eventData ) {
@@ -103,16 +99,10 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	onFieldChange: function( event ) {
-		this.save();
+		this.triggerEvent( 'onChange', this.get() );
 	},
-
-	/**
-	 * Set the value of the field in the data container.  This should be overridden in fields
-	 * that have to transform the data when updating the store (number fields for example)
-	 * @method setStoreValue
-	 * @param {variant} val value to set
-	 */
-	setStoreValue: function( val ) {
-		this.dataContainer.set( this.fieldName, val );
+	
+	isValBased: function( target ) {
+		return target.is( 'input' ) || target.is( 'textarea' );
 	}
 } );
