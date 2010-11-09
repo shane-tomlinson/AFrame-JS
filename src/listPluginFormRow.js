@@ -1,14 +1,14 @@
 /**
  * Create a form for each item in the list.  Adds the functions validate, save, clear,
  * and reset to the plugged object.
- * @class AFrame.ListPluginBindItemsToForm
+ * @class AFrame.ListPluginFormRow
  * @extends AFrame.ListPluginBindToCollection
  * @constructor 
  */
-AFrame.ListPluginBindItemsToForm = function() {
-	AFrame.ListPluginBindItemsToForm.superclass.constructor.apply( this, arguments );
+AFrame.ListPluginFormRow = function() {
+	AFrame.ListPluginFormRow.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.ListPluginBindItemsToForm, AFrame.ListPluginBindToCollection, {
+AFrame.extend( AFrame.ListPluginFormRow, AFrame.ListPluginBindToCollection, {
 	init: function( config ) {
 		/**
 		 * The factory to use to create form fields.  For each form element in each form,
@@ -21,7 +21,7 @@ AFrame.extend( AFrame.ListPluginBindItemsToForm, AFrame.ListPluginBindToCollecti
 		
 		this.forms = [];
 		
-		AFrame.ListPluginBindItemsToForm.superclass.init.apply( this, arguments );
+		AFrame.ListPluginFormRow.superclass.init.apply( this, arguments );
 	},
 	
 	setPlugged: function( plugged ) {
@@ -33,7 +33,7 @@ AFrame.extend( AFrame.ListPluginBindItemsToForm, AFrame.ListPluginBindToCollecti
 		plugged.reset = this.reset.bind( this );
 		plugged.clear = this.clear.bind( this );
 		
-		AFrame.ListPluginBindItemsToForm.superclass.setPlugged.apply( this, arguments );		
+		AFrame.ListPluginFormRow.superclass.setPlugged.apply( this, arguments );		
 	},
 	
 	onInsertRow: function( data ) {

@@ -5,7 +5,7 @@ testsToRun.push( function test( Y ) {
 	
 	var testWithMVCArray = new TestCase( {
 		
-		name: "TestCase AFrame.ListPluginBindItemsToForm",
+		name: "TestCase AFrame.ListPluginFormRow",
 		
 		setUp: function() {
 			this.collection = AFrame.construct( {
@@ -27,7 +27,7 @@ testsToRun.push( function test( Y ) {
 				},
 				plugins: [
 					{
-						type: 'AFrame.ListPluginBindItemsToForm',
+						type: 'AFrame.ListPluginFormRow',
 						config: {
 							collection: this.collection,
 							formFieldFactory: function( element, collection ) {
