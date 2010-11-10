@@ -86,6 +86,14 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		return retval;
 	},
 	
+	/**
+	 * Save the current value as a reset point
+	 * @method save
+	 */
+	save: function() {
+		this.resetVal = this.get();
+	},
+	
 	onFieldChange: function( event ) {
 		/**
 		* triggered whenever the field value changes
