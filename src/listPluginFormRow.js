@@ -36,13 +36,28 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		AFrame.ListPluginFormRow.superclass.setPlugged.apply( this, arguments );		
 	},
 	
+	teardown: function() {
+		this.forms.forEach( function( form, index ) {
+			form.teardown();
+			this.forms[ index ] = null;
+		}, this );
+		
+		AFrame.ListPluginFormRow.superclass.teardown.apply( this, arguments );		
+	},
+	
 	onInsertRow: function( data ) {
 		var form = this.createForm( data.rowElement, data.meta );
 		this.forms.splice( data.meta.index, 0, form );
 	},
 	
 	onRemoveRow: function( data ) {
-		this.forms.splice( data.meta.index, 1 );
+		var index = data.meta.index;
+		
+		var form = this.forms[ index ];
+		form.teardown();
+		
+		this.forms[ index ] = null;
+		this.forms.splice( index, 1 );
 	},
 	
 	createForm: function( rowElement, meta ) {
