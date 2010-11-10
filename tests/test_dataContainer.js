@@ -86,6 +86,22 @@ testsToRun.push( function testDataContainer( Y ) {
 			} );
 			
 			Assert.areEqual( 3, forEachCount, 'forEach called once for each field' );
+		},
+		
+		testConstructor: function() {
+			var data = {
+				field1: 'value1',
+				field2: 'value2'
+			};
+			
+			var dataContainer = AFrame.DataContainer( data );
+			Assert.isTrue( ( dataContainer instanceof AFrame.DataContainer ), 'successful creation of DataContainer from data' );
+			
+			var secondDataContainer = AFrame.DataContainer( dataContainer );
+			Assert.isTrue( ( secondDataContainer instanceof AFrame.DataContainer ), 'successful creation of DataContainer from another DataContainer' );
+			
+			var thirdDataContainer = AFrame.DataContainer( data );
+			Assert.isTrue( ( thirdDataContainer === dataContainer ), 'making a second DataContainer from data gives back the same DataContainer' );
 		}
 	} );
 	

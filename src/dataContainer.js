@@ -1,14 +1,41 @@
 /**
 * A basic data container. Used like a hash. Provides functionality that allows the binding of callbacks
-*	to the change in a piece of data.
+*	to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
+*	do "dataContainer = AFrame.DataContainer( data );"  This ensures that only one DataContainer is
+*	ever created for a given object.
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @constructor
+* @param {object || AFrame.DataContainer} data (optional) If given, creates a new AFrame.DataContainer for the data.  
+*   If already an AFrame.DataContainer, returns self, if the data already has an AFrame.DataContainer associated with 
+*	it, then the original AFrame.DataContainer is used.
 */
-AFrame.DataContainer = function() {
+AFrame.DataContainer = function( data ) {
+	if( data instanceof AFrame.DataContainer ) {
+		return data;
+	}
+	else if( data ) {
+		var dataContainer = data.__dataContainer;
+		if( !dataContainer ) {
+			dataContainer = AFrame.construct( {
+				type: 'AFrame.DataContainer',
+				config: {
+					data: data
+				}
+			} );
+		}
+		return dataContainer;
+	}
 	AFrame.DataContainer.superclass.constructor.apply( this, arguments );
+
 };
+
+
 AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
+	/**
+	* Initialize the data container.
+	* @method init
+	*/
 	init: function( config ) {
 		/**
 		* Initial data
@@ -17,6 +44,12 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		* @default {}
 		*/
 		this.data = config.data || {};
+		
+		/*if( this.data.__dataContainer ) {
+			throw Error( 'Cannot create a second AFrame.DataContainer for an object' );
+		}
+		*/
+		this.data.__dataContainer = this;
 		this.fieldBindings = {};
 		
 		AFrame.DataContainer.superclass.init.apply( this, arguments );
@@ -90,7 +123,9 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	*/
 	forEach: function( callback, context ) {
 		for( var key in this.data ) {
-			callback.call( context, this.data[ key ], key );
+			if( key !== '__dataContainer' ) {
+				callback.call( context, this.data[ key ], key );
+			}
 		}
 	}
 } );
