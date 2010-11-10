@@ -1,5 +1,6 @@
 /**
- * A basic form.  Forms are made of form fields.  A field should contain at least the following functions, clear, save, reset, validate.
+ * A basic form.  Forms are made of form fields.  A field should contain at least 
+ * the following functions, clear, save, reset, validate.
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
@@ -15,6 +16,8 @@ AFrame.Form = function() {
 AFrame.extend( AFrame.Form, AFrame.Display, {
 	init: function( config ) {
 		this.formFieldFactory = config.formFieldFactory;
+		this.formElements = [];
+		this.formFields = [];
 		
 		AFrame.Form.superclass.init.apply( this, arguments );
 
@@ -22,17 +25,39 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	},
 
 	bindFormElements: function() {
-		var target = this.getTarget();
-
-		this.formElements = $( '[data-field]', target );
-		this.formFields = [];
+		var formElements = $( '[data-field]', this.getTarget() );
 		
-		this.formElements.each( function( index, formElement ) {
-			var field = this.formFieldFactory( $( formElement ) );
-			this.formFields.push( field );
+		formElements.each( function( index, formElement ) {
+			this.bindFormElement( formElement );
 		}.bind( this ) );
 	},
 
+	teardown: function() {
+		this.formFields && this.formFields.forEach( function( formField, index ) {
+			formField.teardown();
+			this.formFields[ index ] = null;
+		}, this );
+		this.formFields = null;
+		this.formElements = null;
+		AFrame.Form.superclass.teardown.apply( this, arguments );
+	},
+	
+	/**
+	 * bind a form element to the form
+	 * @method bindFormElement
+	 * @param {selector || element} formElement the form element to bind to.
+	 * @returns {AFrame.Field}
+	 */
+	bindFormElement: function( formElement ) {
+		var target = $( formElement );
+		this.formElements.push( target );
+
+		var formField = this.formFieldFactory( target );
+		this.formFields.push( formField );
+		
+		return formField;
+	},
+	
 	/**
 	 * Get the form elements
 	 * @method getFormElements

@@ -31,6 +31,11 @@ testsToRun.push( function testForm( Y ) {
 				this.clearCount++;
 			}.bind( this );
 			
+			this.teardownCount = 0;
+			var teardown = function() {
+				this.teardownCount++;
+			}.bind( this );
+			
 			this.form = AFrame.construct( {
 				type: 'AFrame.Form',
 				config: {
@@ -42,7 +47,8 @@ testsToRun.push( function testForm( Y ) {
 							validate: validate,
 							save: save,
 							reset: reset,
-							clear: clear
+							clear: clear,
+							teardown: teardown
 						};
 					}.bind( this )
 				}
@@ -111,6 +117,16 @@ testsToRun.push( function testForm( Y ) {
 
 			Assert.areEqual( 1, this.saveCount, 'form was not valid, save was not called' );
 			Assert.isFalse( valid, 'form was not valid' );
+		},
+		
+		testTeardown: function() {
+			this.form.teardown();
+			Assert.areEqual( 1, this.teardownCount, 'field teardown was called ' );
+		},
+		
+		testBindFormElement: function() {
+			var field = this.form.bindFormElement( $( '#formElement' ) );
+			Assert.isNotUndefined( field, 'field was created' );
 		}
 	} );
 
