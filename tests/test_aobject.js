@@ -27,6 +27,20 @@ testsToRun.push( function testAObject( Y ) {
 		    Assert.isTrue( objectConfig.configVal, 'configuration correctly set' );
 		},
 		
+		testCIDSetInConfig: function() {
+			this.aobject.init( {
+				cid: 'testcid'
+			} );
+			
+			Assert.areEqual( 'testcid', this.aobject.getCID(), 'CID assigned correctly' );
+		},
+		
+		testCIDAssigned: function() {
+			this.aobject.init( {} );
+			
+			Assert.isNotUndefined( this.aobject.getCID(), 'CID assigned automatically' );
+		},
+		
 		testIsTriggeredNoListener: function() {
 		    Assert.isFalse( this.aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered' );
 		    var callback = function() {};
@@ -49,6 +63,41 @@ testsToRun.push( function testAObject( Y ) {
 		    } );
 		    
 		    Assert.isTrue( this.aobject.isEventTriggered( 'onInit' ), 'onInit event triggered' );
+		},
+		
+		testAddChild: function() {
+			var tornDown = false;
+			var objectToTeardown = {
+				teardown: function() {
+					tornDown = true;
+				},
+				getCID: function() {
+					return 1;
+				}
+			};
+			
+			this.aobject.init( {} );
+			this.aobject.addChild( objectToTeardown );
+			this.aobject.teardown();
+			Assert.isTrue( tornDown, 'child\'s teardown called' );
+		},
+		
+		testRemoveChild: function() {
+			var tornDown = false;
+			var objectToRemove = {
+				teardown: function() {
+					tornDown = true;
+				},
+				getCID: function() {
+					return 1;
+				}
+			};
+			
+			this.aobject.init( {} );
+			this.aobject.addChild( objectToRemove );
+			this.aobject.removeChild( 1 );
+			this.aobject.teardown();
+			Assert.isFalse( tornDown, 'child\'s teardown not called since it was already removed' );
 		}
 	} );
 	
