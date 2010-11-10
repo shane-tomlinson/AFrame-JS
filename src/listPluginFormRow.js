@@ -2,13 +2,13 @@
  * Create a form for each item in the list.  Adds the functions validate, save, clear,
  * and reset to the plugged object.
  * @class AFrame.ListPluginFormRow
- * @extends AFrame.ListPluginBindToCollection
+ * @extends AFrame.Plugin
  * @constructor 
  */
 AFrame.ListPluginFormRow = function() {
 	AFrame.ListPluginFormRow.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.ListPluginFormRow, AFrame.ListPluginBindToCollection, {
+AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 	init: function( config ) {
 		/**
 		 * The factory to use to create form fields.  For each form element in each form,
@@ -62,16 +62,15 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.ListPluginBindToCollection, {
 	/**
 	 * Validate a form
 	 * @method validate
-	 * @param {index || cid} indexCID (optional) index or cid of row.  If not given,
+	 * @param {number} index (optional) index of row.  If not given,
 	 * validate all rows.
 	 * @return {boolean} true if form is valid, false otw.
 	 */
-	validate: function( indexCID ) {
+	validate: function( index ) {
 		var valid = true;
-		var index, form;
+		var form;
 		
-		if( AFrame.defined( indexCID ) ) {
-			index = this.getIndex( indexCID );
+		if( AFrame.defined( index ) ) {
 			form = this.forms[ index ];
 			if( form ) {
 				valid = form.validate();				
@@ -89,36 +88,35 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.ListPluginBindToCollection, {
 	/**
 	 * Save a form's data to its DataContainer
 	 * @method save
-	 * @param {index || cid} indexCID (optional) index or cid of row.  If not given,
+	 * @param {number} index (optional) index of row.  If not given,
 	 * save all rows.
 	 */
-	save: function( indexCID ) {
-		this.formFunc( indexCID, 'save' );
+	save: function( index ) {
+		this.formFunc( index, 'save' );
 	},
 	
 	/**
 	 * Reset a form
 	 * @method reset
-	 * @param {index || cid} indexCID (optional) index or cid of row.  If not given,
+	 * @param {number} index (optional) index of row.  If not given,
 	 * reset all rows.
 	 */
-	reset: function( indexCID ) {
-		this.formFunc( indexCID, 'reset' );
+	reset: function( index ) {
+		this.formFunc( index, 'reset' );
 	},
 	
 	/**
 	 * Clear a form
 	 * @method clear
-	 * @param {index || cid} indexCID (optional) index or cid of row.  If not given,
+	 * @param {number} index (optional) index of row.  If not given,
 	 * clear all rows.
 	 */
-	clear: function( indexCID ) {
-		this.formFunc( indexCID, 'clear' );
+	clear: function( index ) {
+		this.formFunc( index, 'clear' );
 	},
 	
-	formFunc: function( indexCID, funcName ) {
-		if( AFrame.defined( indexCID ) ) {
-			var index = this.getIndex( indexCID );
+	formFunc: function( index, funcName ) {
+		if( AFrame.defined( index ) ) {
 			var form = this.forms[ index ];
 			if( form ) {
 				form[ funcName ]();				

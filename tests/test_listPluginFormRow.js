@@ -8,10 +8,6 @@ testsToRun.push( function test( Y ) {
 		name: "TestCase AFrame.ListPluginFormRow",
 		
 		setUp: function() {
-			this.collection = AFrame.construct( {
-				type: 'AFrame.MVCArray'
-			} );
-			
 			this.list = AFrame.construct( {
 				type: 'AFrame.List',
 				config: {
@@ -29,7 +25,6 @@ testsToRun.push( function test( Y ) {
 					{
 						type: 'AFrame.ListPluginFormRow',
 						config: {
-							collection: this.collection,
 							formFieldFactory: function( element, collection ) {
 								this.field = {
 									reset: function() {
@@ -67,7 +62,6 @@ testsToRun.push( function test( Y ) {
 		},
 		
 		tearDown: function() {
-			this.collection.teardown();
 			this.list.clear();
 			this.list.teardown();
 			
@@ -83,9 +77,9 @@ testsToRun.push( function test( Y ) {
 		},
 		
 		testReset: function() {
-			this.collection.insert( {
+			this.list.insert( {
 				cid: 'cid0'
-			} );
+			}, 0 );
 			
 			this.field.resetTest();
 			this.list.reset();
@@ -94,9 +88,9 @@ testsToRun.push( function test( Y ) {
 		},
 		
 		testSave: function() {
-			this.collection.insert( {
+			this.list.insert( {
 				cid: 'cid0'
-			} );
+			}, 0 );
 			
 			this.field.resetTest();
 			this.list.save();
@@ -105,9 +99,9 @@ testsToRun.push( function test( Y ) {
 		},
 		
 		testValidate: function() {
-			this.collection.insert( {
+			this.list.insert( {
 				cid: 'cid0'
-			} );
+			}, 0);
 			
 			this.field.resetTest();
 			this.list.validate();
@@ -121,16 +115,6 @@ testsToRun.push( function test( Y ) {
 			
 			this.field.resetTest();
 			
-			this.list.validate( 'cid0' );
-			Assert.isTrue( this.validateCalled, 'Field\'s validate has been called' );
-			
-			this.field.resetTest();
-
-			this.list.validate( 'cid1' );
-			Assert.isFalse( this.validateCalled, 'Field\'s validate was not called' );
-			
-			this.field.resetTest();
-			
 			this.list.validate( 1 );
 			Assert.isFalse( this.validateCalled, 'Field\'s validate was not called' );
 			
@@ -138,9 +122,9 @@ testsToRun.push( function test( Y ) {
 		},
 		
 		testClear: function() {
-			this.collection.insert( {
+			this.list.insert( {
 				cid: 'cid0'
-			} );
+			}, 0 );
 
 			this.field.resetTest();
 			this.list.clear();
