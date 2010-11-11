@@ -119,9 +119,19 @@ testsToRun.push( function testField( Y ) {
 			var target = $( 'input[data-field=name]' );
 			
 			this.field.set( 'Charlotte' );
-			target.html( 'Shane' );
+			target.val( 'Shane' );
 			this.field.reset();
 			Assert.areEqual( 'Charlotte', this.field.get(), 'reset was successful' );
+		},
+		
+		testSave: function() {
+			var target = $( 'input[data-field=name]' );
+			
+			target.val( 'Shane' );
+			this.field.save();
+			target.val( 'Charlotte' );
+			this.field.reset();
+			Assert.areEqual( 'Shane', this.field.get(), 'save was successful' );
 		},
 		
 		testFieldWithInitialValue: function() {
