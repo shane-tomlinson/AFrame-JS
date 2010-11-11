@@ -1,5 +1,5 @@
 /**
- * Create an AFrame.DataForm for each item in the list.  Adds the functions validate, save, clear,
+ * Create an AFrame.Form based object for each item in the list.  Adds the functions validate, save, clear,
  * and reset to the plugged object.
  * @class AFrame.ListPluginFormRow
  * @extends AFrame.Plugin
@@ -11,13 +11,13 @@ AFrame.ListPluginFormRow = function() {
 AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 	init: function( config ) {
 		/**
-		 * The factory to use to create form fields.  For each form element in each form,
-		 * the factory function will be called with two parameters, the first is the element,
-		 * the second is the meta data.
-		 * @config formFieldFactory
+		 * The factory function used to create forms.  formFactory will be called once for each
+		 *	row in the list, it will be called with two parameters, the rowElement and the data
+		 *	passed in the list's onInsert call.  An AFrame.Form compatible object must be returned.
+		 * @config formFactory.
 		 * @type {function}
 		 */
-		this.formFieldFactory = config.formFieldFactory;
+		this.formFactory = config.formFactory;
 		
 		this.forms = [];
 		
@@ -61,16 +61,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 	},
 	
 	createForm: function( rowElement, data ) {
-		var form = AFrame.construct( {
-			type: 'AFrame.DataForm',
-			config: {
-				dataSource: data.data,
-				target: rowElement,
-				formFieldFactory: function( element ) {
-					return this.formFieldFactory( element, data.meta );
-				}.bind( this )
-			}
-		} );
+		var form = this.formFactory( rowElement, data );
 		
 		return form;
 	},

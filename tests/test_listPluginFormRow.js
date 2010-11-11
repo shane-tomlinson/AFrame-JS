@@ -25,8 +25,8 @@ testsToRun.push( function test( Y ) {
 					{
 						type: 'AFrame.ListPluginFormRow',
 						config: {
-							formFieldFactory: function( element, collection ) {
-								this.field = {
+							formFactory: function( rowElement, data ) {
+								this.form = {
 									reset: function() {
 										this.resetCalled = true;
 									}.bind( this ),
@@ -37,19 +37,11 @@ testsToRun.push( function test( Y ) {
 									}.bind( this ),
 									
 									clear: function() {
-										this.clearCalled = true;										
+										this.clearCalled = true;
 									}.bind( this ),
 									
-									set: function() {
-										this.setCalled = true;
-									},
-									
-									get: function() {
-										this.getCalled = true;
-									},
-									
 									save: function() {
-										this.saveCalled = true;										
+										this.saveCalled = true;
 									}.bind( this ),
 									
 									resetTest: function() {
@@ -57,15 +49,10 @@ testsToRun.push( function test( Y ) {
 										this.validateCalled = false;
 										this.clearCalled = false;
 										this.saveCalled = false;
-									}.bind( this ),
-									
-									getTarget: function() {
-										return element;
-									}
-									
+									}.bind( this )
 								};
 								
-								return this.field;
+								return this.form;
 							}.bind( this )
 						}
 					}
@@ -93,7 +80,7 @@ testsToRun.push( function test( Y ) {
 				cid: 'cid0'
 			}, 0 );
 			
-			this.field.resetTest();
+			this.form.resetTest();
 			this.list.reset();
 			
 			Assert.isTrue( this.resetCalled, 'Field\'s reset has been called' );
@@ -104,7 +91,7 @@ testsToRun.push( function test( Y ) {
 				cid: 'cid0'
 			}, 0 );
 			
-			this.field.resetTest();
+			this.form.resetTest();
 			this.list.save();
 			
 			Assert.isTrue( this.saveCalled, 'Field\'s save has been called' );
@@ -115,22 +102,22 @@ testsToRun.push( function test( Y ) {
 				cid: 'cid0'
 			}, 0);
 			
-			this.field.resetTest();
+			this.form.resetTest();
 			this.list.validate();
 			
 			Assert.isTrue( this.validateCalled, 'Field\'s validate has been called' );
 			
-			this.field.resetTest();
+			this.form.resetTest();
 			
 			this.list.validate( 0 );
 			Assert.isTrue( this.validateCalled, 'Field\'s validate has been called' );
 			
-			this.field.resetTest();
+			this.form.resetTest();
 			
 			this.list.validate( 1 );
 			Assert.isFalse( this.validateCalled, 'Field\'s validate was not called' );
 			
-			this.field.resetTest();
+			this.form.resetTest();
 		},
 		
 		testClear: function() {
@@ -138,7 +125,7 @@ testsToRun.push( function test( Y ) {
 				cid: 'cid0'
 			}, 0 );
 
-			this.field.resetTest();
+			this.form.resetTest();
 			this.list.clear();
 			
 			Assert.isTrue( this.clearCalled, 'Field\'s clear has been called' );			
