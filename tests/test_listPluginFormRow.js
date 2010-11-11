@@ -40,6 +40,14 @@ testsToRun.push( function test( Y ) {
 										this.clearCalled = true;										
 									}.bind( this ),
 									
+									set: function() {
+										this.setCalled = true;
+									},
+									
+									get: function() {
+										this.getCalled = true;
+									},
+									
 									save: function() {
 										this.saveCalled = true;										
 									}.bind( this ),
@@ -49,7 +57,11 @@ testsToRun.push( function test( Y ) {
 										this.validateCalled = false;
 										this.clearCalled = false;
 										this.saveCalled = false;
-									}.bind( this )
+									}.bind( this ),
+									
+									getTarget: function() {
+										return element;
+									}
 									
 								};
 								

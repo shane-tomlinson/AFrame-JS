@@ -1,5 +1,5 @@
 /**
- * Create a form for each item in the list.  Adds the functions validate, save, clear,
+ * Create an AFrame.DataForm for each item in the list.  Adds the functions validate, save, clear,
  * and reset to the plugged object.
  * @class AFrame.ListPluginFormRow
  * @extends AFrame.Plugin
@@ -46,7 +46,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 	},
 	
 	onInsertRow: function( data ) {
-		var form = this.createForm( data.rowElement, data.meta );
+		var form = this.createForm( data.rowElement, data );
 		this.forms.splice( data.meta.index, 0, form );
 	},
 	
@@ -60,13 +60,14 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		this.forms.splice( index, 1 );
 	},
 	
-	createForm: function( rowElement, meta ) {
+	createForm: function( rowElement, data ) {
 		var form = AFrame.construct( {
-			type: 'AFrame.Form',
+			type: 'AFrame.DataForm',
 			config: {
+				dataSource: data.data,
 				target: rowElement,
 				formFieldFactory: function( element ) {
-					return this.formFieldFactory( element, meta );
+					return this.formFieldFactory( element, data.meta );
 				}.bind( this )
 			}
 		} );
