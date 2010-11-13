@@ -21,11 +21,21 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Display a value in the field.
+	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
 	 * @method set
 	 * @param {variant} val value to display
 	 */
 	set: function( val ) {
+		this.display( val );
+		this.resetVal = val;
+	},
+	
+	/**
+	* Display a value, does not affect the reset value.
+	* @method display
+	* @param {variant} val value to dipslay
+	*/
+	display: function( val ) {
 		var target = this.getTarget();
 
 		if( this.isValBased( target ) ) {
@@ -34,8 +44,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		else {
 			target.html( val );
 		}
-		
-		this.resetVal = val;
 	},
 
 	/**

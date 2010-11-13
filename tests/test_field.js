@@ -27,7 +27,13 @@ testsToRun.push( function testField( Y ) {
 			var target = $( 'input[data-field=name]' );
 			
 			this.field.set( 'Preston the Penguin' );
-			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set when field updated' );
+			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set' );
+			
+			this.field.display( 'Charlotte' );
+			Assert.areEqual( 'Charlotte', target.val(), 'element value correctly displayed' );
+			
+			this.field.reset();
+			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly reset' );
 		},
 
 		testText: function() {
@@ -44,6 +50,12 @@ testsToRun.push( function testField( Y ) {
 			
 			Assert.areEqual( 'Shane Tomlinson', textField.get(), 'get works correctly on an HTML field' );
 			
+			textField.display( 'Charlotte' );
+			Assert.areEqual( 'Charlotte', target.html(), 'element value correctly displayed' );
+			
+			textField.reset();
+			Assert.areEqual( 'Shane Tomlinson', target.html(), 'element value correctly reset' );
+			
 			textField.clear();
 			textField.teardown();
 		},
@@ -58,6 +70,12 @@ testsToRun.push( function testField( Y ) {
 			} );
 			textAreaField.set( 'Charlotte Tomlinson' );
 			Assert.areEqual( 'Charlotte Tomlinson', target.val(), 'element value correctly set when field updated' );
+
+			textAreaField.display( 'Charlotte' );
+			Assert.areEqual( 'Charlotte', target.val(), 'element value correctly displayed' );
+			
+			textAreaField.reset();
+			Assert.areEqual( 'Charlotte Tomlinson', target.val(), 'element value correctly reset' );
 			
 			textAreaField.clear();
 			textAreaField.teardown();

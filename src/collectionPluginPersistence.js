@@ -1,6 +1,6 @@
 /**
  * A plugin to a collection to give the collection db ops.  Provides
- * load, add, save, delete.
+ * load, add, save, del on the collection.
  * @class AFrame.CollectionPluginPersistence
  * @extends AFrame.Plugin
  * @constructor
@@ -19,7 +19,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 		
 		/**
 		 * function to call to do save.  Will be called with three parameters, data, meta, and callback.
-		 * @config removeCallback
+		 * @config saveCallback
 		 * @type function
 		 */
 		this.saveCallback = config.saveCallback || this.noPersistenceOp;
