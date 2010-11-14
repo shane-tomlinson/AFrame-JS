@@ -169,8 +169,19 @@ testsToRun.push( function testField( Y ) {
 			
 			textField.reset();
 			Assert.areSame( 'Charlotte Tomlinson', textField.get(), 'field with initial value resets correctly' );
+		},
+		
+		testGetDisplayed: function() {
+			var target = $( 'input[data-field=name]' );
 			
+			this.field.set( 'Preston the Penguin' );
+			Assert.areEqual( 'Preston the Penguin', this.field.getDisplayed(), 'getDisplayed works' );
 			
+			this.field.display( 'Charlotte' );
+			Assert.areEqual( 'Charlotte', target.val(), 'element value correctly displayed' );
+			Assert.areEqual( 'Charlotte', this.field.getDisplayed(), 'getDisplayed returns same data as target.val' );
+			
+			Assert.areEqual( 'Preston the Penguin', this.field.get(), 'display nor getDisplayed affect get' );
 		}
 	} );
 

@@ -13,7 +13,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 		this.bindEvents();
 		
-		this.resetVal = this.get();
+		this.resetVal = this.getDisplayed();
 	},
 
 	bindEvents: function() {
@@ -31,7 +31,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	/**
-	* Display a value, does not affect the reset value.
+	* Display a value, does not affect the reset value.  Using this function can be useful to
+	*	change how a piece of data is visually represented on the screen.
 	* @method display
 	* @param {variant} val value to dipslay
 	*/
@@ -44,6 +45,24 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		else {
 			target.html( val );
 		}
+	},
+	
+	/**
+	* Get the value that is displayed in the field.  This can be different from what get returns
+	*	if the visual representation of the data is different from the data itself.
+	* @method getDisplayed
+	* @returns {string}
+	*/
+	getDisplayed: function() {
+		var target = this.getTarget();
+		var retval = '';
+		if( this.isValBased( target ) ) {
+			retval = target.val();
+		}
+		else {
+			retval = target.html();
+		}
+		return retval;
 	},
 
 	/**
@@ -75,23 +94,13 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	/**
-	 * Get the value displayed in the field.  Returns an empty string
-	 * if no value entered.
+	 * Get the value of the field.  The value returned can be different if the visual representation is 
+	 *	different from the underlying data.  Returns an empty string if no value entered.  
 	 * @method get
 	 * @return {variant} the value of the field
 	 */
 	get: function() {
-		var retval;
-		
-		var target = this.getTarget();
-		if( this.isValBased( target ) ) {
-			retval = target.val();
-		}
-		else {
-			retval = target.html();
-		}
-		
-		return retval;
+		return this.resetVal;
 	},
 	
 	/**
@@ -99,7 +108,13 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method save
 	 */
 	save: function() {
-		this.resetVal = this.get();
+		var target = this.getTarget();
+		if( this.isValBased( target ) ) {
+			this.resetVal = target.val();
+		}
+		else {
+			this.resetVal = target.html();
+		}
 	},
 	
 	onFieldChange: function( event ) {
