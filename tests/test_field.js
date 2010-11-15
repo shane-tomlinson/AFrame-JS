@@ -182,6 +182,39 @@ testsToRun.push( function testField( Y ) {
 			Assert.areEqual( 'Charlotte', this.field.getDisplayed(), 'getDisplayed returns same data as target.val' );
 			
 			Assert.areEqual( 'Preston the Penguin', this.field.get(), 'display nor getDisplayed affect get' );
+		},
+		
+		testNoValueText: function() {
+			var target = $( '#noValueFormElement' );
+			
+			var textField = AFrame.construct( {
+				type: 'AFrame.Field',
+				config: {
+					target: target
+				}
+			} );
+
+			Assert.areSame( '', textField.get(), 'correct get' );
+			Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed' );
+			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
+			
+			target.trigger( 'focus' );
+			Assert.areSame( '', textField.getDisplayed(), 'when a focus happens, help text is cleared' );
+			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to empty text' );
+			
+			target.trigger( 'blur' );
+			Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed on blur' );
+			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
+			
+			textField.display( 'New Value' );
+			Assert.isFalse( target.hasClass( 'empty' ), 'empty class name removed with normal text' );
+			
+			target.trigger( 'focus' );
+			Assert.areSame( 'New Value', textField.getDisplayed(), 'when a focus happens, updated value is not cleared' );
+			
+			target.trigger( 'blur' );
+			Assert.areSame( 'New Value', textField.getDisplayed(), 'when blur happens, updated text is not reverted to help text' );
+			
 		}
 	} );
 

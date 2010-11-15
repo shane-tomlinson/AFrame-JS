@@ -23,6 +23,8 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 		}
 
 		this.domEvents = {};
+		
+		AFrame.Display.superclass.init.apply( this, arguments );
 	},
 
 	teardown: function() {

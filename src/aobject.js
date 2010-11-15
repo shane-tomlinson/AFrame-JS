@@ -20,6 +20,8 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    this.cid = config.cid || AFrame.getUniqueID();
 	    this.children = {};
 	    
+	    this.bindEvents();
+	    
 	    /**
 	     * Triggered when the object is initialized
 	     * @event onInit
@@ -34,6 +36,14 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	 */
 	getConfig: function() {
 	    return this.config;
+	},
+	
+	/**
+	 * Override to do any event binding
+	 * @method bindEvents
+	 */
+	bindEvents: function() {
+		
 	},
 	
 	/**

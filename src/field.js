@@ -11,15 +11,29 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	init: function( config ) {
 		AFrame.Field.superclass.init.apply( this, arguments );
 
-		this.bindEvents();
-		
 		this.resetVal = this.getDisplayed();
+		this.display( this.getHelpText() );
 	},
 
 	bindEvents: function() {
-		this.bindDOMEvent( this.getTarget(), 'change', this.onFieldChange, this );
+		this.bindDOMEvent( this.getTarget(), 'keyup', this.onFieldChange, this );
+		this.bindDOMEvent( this.getTarget(), 'focus', this.onFieldFocus, this );
+		this.bindDOMEvent( this.getTarget(), 'blur', this.onFieldBlur, this );
+		
+		AFrame.Field.superclass.bindEvents.apply( this, arguments );
 	},
 
+	/**
+	 * Get the help text to display in the field.  If not overridden, looks
+	 * on the element for the value of the data-novalue-text attribute. 
+	 * @method getHelpText
+	 * @return {string}
+	 */
+	getHelpText: function() {
+		var target = this.getTarget();
+		return target.attr( 'data-novalue-text') || ''; 
+	},
+	
 	/**
 	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
 	 * @method set
@@ -39,6 +53,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	display: function( val ) {
 		var target = this.getTarget();
 
+		var func = val == this.getHelpText() || !val ? 'addClass' : 'removeClass';
+		target[ func ]( 'empty' );
+		
 		if( this.isValBased( target ) ) {
 			target.val( val );
 		}
@@ -108,13 +125,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method save
 	 */
 	save: function() {
-		var target = this.getTarget();
-		if( this.isValBased( target ) ) {
-			this.resetVal = target.val();
-		}
-		else {
-			this.resetVal = target.html();
-		}
+		this.resetVal = this.getDisplayed();
 	},
 	
 	onFieldChange: function( event ) {
@@ -124,6 +135,18 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		* @param {string} fieldVal - the current field value.
 		*/
 		this.triggerEvent( 'onChange', this.get() );
+	},
+	
+	onFieldFocus: function() {
+		if( this.getDisplayed() == this.getHelpText() ) {
+			this.display( '' );
+		}
+	},
+	
+	onFieldBlur: function() {
+		if( '' === this.getDisplayed() ) {
+			this.display( this.getHelpText() );
+		}
 	},
 	
 	isValBased: function( target ) {
