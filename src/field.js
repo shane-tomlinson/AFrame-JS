@@ -40,8 +40,10 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @param {variant} val value to display
 	 */
 	set: function( val ) {
-		this.display( val );
 		this.resetVal = val;
+		
+		val = val || this.getHelpText();
+		this.display( val );
 	},
 	
 	/**

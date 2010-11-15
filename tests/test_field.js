@@ -217,6 +217,11 @@ testsToRun.push( function testField( Y ) {
 			target.trigger( 'blur' );
 			Assert.areSame( 'New Value', textField.getDisplayed(), 'when blur happens, updated text is not reverted to help text' );
 			
+			textField.set( '' );
+			Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed when setting display to empty' );
+			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
+			
+			
 		}
 	} );
 
