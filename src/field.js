@@ -55,7 +55,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	display: function( val ) {
 		var target = this.getTarget();
 
-		var func = val == this.getHelpText() || !val ? 'addClass' : 'removeClass';
+		var func = val == this.getHelpText() ? 'addClass' : 'removeClass';
 		target[ func ]( 'empty' );
 		
 		if( this.isValBased( target ) ) {

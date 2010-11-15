@@ -200,7 +200,6 @@ testsToRun.push( function testField( Y ) {
 			
 			target.trigger( 'focus' );
 			Assert.areSame( '', textField.getDisplayed(), 'when a focus happens, help text is cleared' );
-			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to empty text' );
 			
 			target.trigger( 'blur' );
 			Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed on blur' );
