@@ -205,6 +205,8 @@ testsToRun.push( function testField( Y ) {
 			target.trigger( 'blur' );
 			Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed on blur' );
 			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
+			textField.save();
+			Assert.areSame( '', textField.get(), 'help text is not saved for get' );
 			
 			textField.display( 'New Value' );
 			Assert.isFalse( target.hasClass( 'empty' ), 'empty class name removed with normal text' );

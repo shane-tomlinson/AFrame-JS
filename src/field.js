@@ -125,7 +125,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method save
 	 */
 	save: function() {
-		this.resetVal = this.getDisplayed();
+		var displayed = this.getDisplayed();
+		if( displayed == this.getHelpText() ) {
+			displayed = '';			
+		}
+		this.resetVal = displayed;
 	},
 	
 	onFieldChange: function( event ) {
