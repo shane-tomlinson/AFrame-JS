@@ -34,14 +34,25 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 	getDefaults: function() {
 		var defaultObject = {};
 		for( var key in this.schema ) {
-			var defValue = this.schema[ key ].def;
-			if( AFrame.defined( defValue ) ) {
-				defaultObject[ key ] = defValue;
-			}
+			defaultObject[ key ] = this.getDefaultValue( key );
 		}
 		return defaultObject;
 	},
 
+	/**
+	* Get the default value for a particular item
+	* @method getDefaultValue
+	* @param {string} key - name of item to get default value for
+	* @return {variant} default value if one is defined
+	*/
+	getDefaultValue: function( key ) {
+		var defValue = this.schema[ key ].def;
+		if( AFrame.func( defValue ) ) {
+			defValue = defValue();
+		}
+		return defValue;
+	},
+	
 	/**
 	 * Fix a data object for use.  Creates a new object using the specified data as a basis
 	 * for values.  If a value is not specified but a default value is specified in the schema,
@@ -60,7 +71,7 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 			
 			// no value, use default
 			if( !AFrame.defined( value ) ) {
-				value = schemaRow.def;
+				value = this.getDefaultValue( key );
 			}
 			
 			// apply the fixup function if defined.
@@ -74,7 +85,7 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 			}
 			
 			fixedData[ key ] = value;
-		} );
+		}, this );
 		
 		return fixedData;
 	},

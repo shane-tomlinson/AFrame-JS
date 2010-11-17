@@ -19,10 +19,15 @@ testsToRun.push( function testAObject( Y ) {
 				return fieldValue;
 			}.bind( this );
 			
+			var defaultString = function() {
+				return 'returned by function';
+			};
+			
 			var schemaConfig = {
 				stringField: { type: 'string', def: 'stringField Default Value' },
 				stringFieldFixup: { type: 'string', def: 'stringFieldFixup Default Value',
-					fixup: fixupStringField, cleanup: cleanStringField }
+					fixup: fixupStringField, cleanup: cleanStringField },
+				stringFieldFixupFunc: { type: 'string', def: defaultString }
 			};
 			
 			this.schema = AFrame.construct( {
@@ -42,6 +47,7 @@ testsToRun.push( function testAObject( Y ) {
 
 			Assert.areEqual( 'stringField Default Value', defaultObject.stringField, 'Default value set for stringField' );
 			Assert.areEqual( 'stringFieldFixup Default Value', defaultObject.stringFieldFixup, 'Default value set for stringFieldFixup' );
+			Assert.areEqual( 'returned by function', defaultObject.stringFieldFixupFunc, 'can get default value using function' );
 		},
 
 		testFixData: function() {
@@ -50,16 +56,20 @@ testsToRun.push( function testAObject( Y ) {
 			// with no data, should return same as default items unless a fixup function modifies a value
 			Assert.areEqual( 'stringField Default Value', fixedData.stringField, 'Default value set for stringField' );
 			Assert.areEqual( 'stringFieldFixup Default Value', fixedData.stringFieldFixup, 'Default value set for stringFieldFixup' );
+			Assert.areEqual( 'returned by function', fixedData.stringFieldFixupFunc, 'Default func called for stringFieldFixupFunc' );
 
+			
 			fixedData = this.schema.fixData( {
 				stringField: 'this is a string',
 				stringFieldFixup: 'run through fixup',
+				stringFieldFixupFunc: 'default func not used',
 				extraField: 'extra'
 			} );
 
 			// all values should be the same as defined, extraField should not be in result set
 			Assert.areEqual( 'this is a string', fixedData.stringField, 'specified value used for stringField' );
 			Assert.areEqual( 'run through fixup', fixedData.stringFieldFixup, 'specified value used for stringFieldFixup' );
+			Assert.areEqual( 'default func not used', fixedData.stringFieldFixupFunc, 'Default func not used if there is already data' );
 			Assert.isFalse( fixedData.hasOwnProperty( 'extraField' ), 'extraField is not on object' );
 
 			// make the fixup function modify value
@@ -79,7 +89,7 @@ testsToRun.push( function testAObject( Y ) {
 			}, this );
 
 			// fixup function modifies data
-			Assert.areEqual( 2, this.forEachCallbackCallCount, 'callback called twice' );
+			Assert.areEqual( 3, this.forEachCallbackCallCount, 'callback called twice' );
 		},
 
 		testGetPersistenceObject: function() {

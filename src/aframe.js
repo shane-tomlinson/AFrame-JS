@@ -113,5 +113,15 @@ var AFrame = {
 	 */
 	defined: function( itemToCheck ) {
 		return 'undefined' != typeof( itemToCheck );
+	},
+	
+	/**
+	* Check whether an item is a function
+	* @method func
+	* @param {variant} itemToCheck
+	* @return {boolean} true if item is a function, false otw.
+	*/
+	func: function( itemToCheck ) {
+		return 'function' == typeof( itemToCheck );
 	}
 };
