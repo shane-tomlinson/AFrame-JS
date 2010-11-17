@@ -5,6 +5,12 @@
  * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
  * running data through the cleanData will create an object with only the fields specified in the schema.  If
  * a row has a cleanup function defined, the corresponding data value will be run through the cleanup function.
+ * Generic fixup and persistence functions can be set for a type using the AFrame.Schema.addFixer and 
+ * AFrame.Schema.addPersistencer.  Every item that has a given type and has a value will have the
+ * fixer or persistencer function called, this is useful for doing conversions where the data persistence
+ * layer saves data in a different format than the internal application representation.  A useful
+ * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
+ * and 'iso8601'.
  * @class AFrame.Schema
  * @extends AFrame.AObject
  * @constructor
@@ -176,6 +182,39 @@ AFrame.mixin( AFrame.Schema, {
 AFrame.Schema.addFixer( 'number', function( value ) {
 	return parseFloat( value );
 } );
+
 AFrame.Schema.addFixer( 'integer', function( value ) {
 	return parseInt( value, 10 );
 } );
+
+AFrame.Schema.addFixer( 'iso8601', function( str ) {
+	// we assume str is a UTC date ending in 'Z'
+	try{
+		var parts = str.split('T'),
+		dateParts = parts[0].split('-'),
+		timeParts = parts[1].split('Z'),
+		timeSubParts = timeParts[0].split(':'),
+		timeSecParts = timeSubParts[2].split('.'),
+		timeHours = Number(timeSubParts[0]),
+		_date = new Date;
+		
+		_date.setUTCFullYear(Number(dateParts[0]));
+		_date.setUTCMonth(Number(dateParts[1])-1);
+		_date.setUTCDate(Number(dateParts[2]));
+		_date.setUTCHours(Number(timeHours));
+		_date.setUTCMinutes(Number(timeSubParts[1]));
+		_date.setUTCSeconds(Number(timeSecParts[0]));
+		if (timeSecParts[1]) {
+			_date.setUTCMilliseconds(Number(timeSecParts[1]));
+		}
+		
+		// by using setUTC methods the date has already been converted to local time(?)
+		return _date;
+	}
+	catch(e) {}
+} );
+
+AFrame.Schema.addPersistencer( 'iso8601', function( date ) {
+	return date.toISOString();
+} );
+

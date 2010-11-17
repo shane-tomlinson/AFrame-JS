@@ -31,7 +31,8 @@ testsToRun.push( function testAObject( Y ) {
 				numberField: { type: 'number' },
 				integerField: { type: 'integer' },
 				fixer: { type: 'fixer' },
-				persistence: { type: 'persistencer' }
+				persistence: { type: 'persistencer' },
+				isodatetime: { type: 'iso8601' }
 			};
 			
 			this.schema = AFrame.construct( {
@@ -93,7 +94,7 @@ testsToRun.push( function testAObject( Y ) {
 			}, this );
 
 			// fixup function modifies data
-			Assert.areEqual( 7, this.forEachCallbackCallCount, 'callback called for each' );
+			Assert.areEqual( 8, this.forEachCallbackCallCount, 'callback called for each' );
 		},
 
 		testGetPersistenceObject: function() {
@@ -199,6 +200,21 @@ testsToRun.push( function testAObject( Y ) {
 			} );
 			Assert.areEqual( 'persistence', persistence.persistence, 'new value used' );
 			Assert.areEqual( 'initial', persistencerValue, 'persistencer function passed value correctly' );
+		},
+		
+		testISO8601: function() {
+			fixedData = this.schema.fixData( {
+				isodatetime: '2010-06-06T15:30:00.00Z'
+			} );
+			
+			Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
+			
+			var now = new Date();
+			var persistence = this.schema.getPersistenceObject( { 
+				isodatetime: now 
+			} );
+			
+			Assert.isString( persistence.isodatetime, 'isodatetime converted to string' );
 		}
 		
 		
