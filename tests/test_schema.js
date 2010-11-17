@@ -27,7 +27,11 @@ testsToRun.push( function testAObject( Y ) {
 				stringField: { type: 'string', def: 'stringField Default Value' },
 				stringFieldFixup: { type: 'string', def: 'stringFieldFixup Default Value',
 					fixup: fixupStringField, cleanup: cleanStringField },
-				stringFieldFixupFunc: { type: 'string', def: defaultString }
+				stringFieldFixupFunc: { type: 'string', def: defaultString },
+				numberField: { type: 'number' },
+				integerField: { type: 'integer' },
+				fixer: { type: 'fixer' },
+				persistence: { type: 'persistencer' }
 			};
 			
 			this.schema = AFrame.construct( {
@@ -89,7 +93,7 @@ testsToRun.push( function testAObject( Y ) {
 			}, this );
 
 			// fixup function modifies data
-			Assert.areEqual( 3, this.forEachCallbackCallCount, 'callback called twice' );
+			Assert.areEqual( 7, this.forEachCallbackCallCount, 'callback called for each' );
 		},
 
 		testGetPersistenceObject: function() {
@@ -112,7 +116,92 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.areEqual( 'stringField value', persistence.stringField, 'stringField added' );
 			Assert.areEqual( 'modified string field', persistence.stringFieldFixup, 'fixup function value used' );
 			
+		},
+		
+		testNumberTypeFixer: function() {
+			var fixedData = this.schema.fixData( {
+				numberField: '1.25'
+			} );
+			Assert.areEqual( 1.25, fixedData.numberField, 'converted a float string to number' );
+			
+			fixedData = this.schema.fixData( {
+				numberField: '2'
+			} );
+			Assert.areEqual( 2, fixedData.numberField, 'converted a integer string to number' );
+			
+			fixedData = this.schema.fixData( {
+				numberField: 3.25
+			} );
+			Assert.areEqual( 3.25, fixedData.numberField, 'keep a number a number' );
+			
+			fixedData = this.schema.fixData( {
+				numberField: 4
+			} );
+			Assert.areEqual( 4, fixedData.numberField, 'keep an integer a number' );
+			
+			fixedData = this.schema.fixData( {
+				numberField: 'a'
+			} );
+			Assert.isTrue( isNaN( fixedData.numberField ), 'converting a letter returns NaN' );
+			
+		},
+		
+		testIntegerTypeFixer: function() {
+			var fixedData = this.schema.fixData( {
+				integerField: '1.25'
+			} );
+			Assert.areEqual( 1, fixedData.integerField, 'converted a float string to integer' );
+			
+			fixedData = this.schema.fixData( {
+				integerField: '2'
+			} );
+			Assert.areEqual( 2, fixedData.integerField, 'converted a integer string to integer' );
+			
+			fixedData = this.schema.fixData( {
+				integerField: 3.25
+			} );
+			Assert.areEqual( 3, fixedData.integerField, 'convert a number to an integer' );
+			
+			fixedData = this.schema.fixData( {
+				integerField: 4
+			} );
+			Assert.areEqual( 4, fixedData.integerField, 'keep an integer an integer' );
+			
+			fixedData = this.schema.fixData( {
+				integerField: 'a'
+			} );
+			Assert.isTrue( isNaN( fixedData.integerField ), 'converting a letter returns NaN' );
+		},
+		
+		testFixer: function() {
+			var fixerValue;
+			AFrame.Schema.addFixer( 'fixer', function( data ) {
+				fixerValue = data;
+				return 'fixed';
+			} );
+			
+			fixedData = this.schema.fixData( {
+				fixer: 'value'
+			} );
+			Assert.areEqual( 'fixed', fixedData.fixer, 'fix function value applied' );
+			Assert.areEqual( 'value', fixerValue, 'fix function passed value correctly' );
+		},
+		
+		testPersistencer: function() {
+			var persistencerValue;
+			AFrame.Schema.addPersistencer( 'persistencer', function( data ) {
+				persistencerValue = data;
+				return 'persistence';
+			} );
+			
+			var persistence = this.schema.getPersistenceObject( { 
+				persistence: 'initial' 
+			} );
+			Assert.areEqual( 'persistence', persistence.persistence, 'new value used' );
+			Assert.areEqual( 'initial', persistencerValue, 'persistencer function passed value correctly' );
 		}
+		
+		
 	} );
 
 	TestRunner.add( testAObject );

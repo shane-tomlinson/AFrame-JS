@@ -74,9 +74,17 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 				value = this.getDefaultValue( key );
 			}
 			
+			if( AFrame.defined( value ) ) {
+				// call the generic type fixup/conversion function
+				var convert = AFrame.Schema.fixFuncs[ schemaRow.type ];
+				if( AFrame.func( convert ) ) {
+					value = convert( value );
+				}
+			}
+			
 			// apply the fixup function if defined.
 			var fixup = schemaRow.fixup;
-			if( AFrame.defined( fixup ) ) {
+			if( AFrame.func( fixup ) ) {
 				value = fixup( {
 					value: value,
 					data: dataToFix,
@@ -111,6 +119,13 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 					cleaned: cleanedData
 				} );
 			}
+
+			if( AFrame.defined( value ) ) {
+				var convert = AFrame.Schema.persistenceFuncs[ schemaRow.type ];
+				if( AFrame.func( convert ) ) {
+					value = convert( value );
+				}
+			}
 			
 			cleanedData[ key ] = value;
 		} );
@@ -131,4 +146,36 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 			callback.call( context, schemaRow, key );
 		}
 	}
+} );
+AFrame.mixin( AFrame.Schema, {
+	fixFuncs: {},
+	persistenceFuncs: {},
+	/**
+	 * Add a universal function that fixes data in fixDataObject. This is used to convert
+	 * data from a version the backend sends to one that is used internally.
+	 * @method AFrame.Schema.addFixer
+	 * @param {string} type - type of field.
+	 * @param {function} callback - to call
+	 */
+	addFixer: function( type, callback ) {
+		AFrame.Schema.fixFuncs[ type ] = callback;
+	},
+	/**
+	 * Add a universal function that gets data ready to save to persistence.  This is used
+	 * to convert data from an internal representation of a piece of data to a 
+	 * representation the backend is expecting.
+	 * @method AFrame.Schema.addPersistencer
+	 * @param {string} type - type of field.
+	 * @param {function} callback - to call
+	 */
+	addPersistencer: function( type, callback ) {
+		AFrame.Schema.persistenceFuncs[ type ] = callback;
+	}
+} );
+
+AFrame.Schema.addFixer( 'number', function( value ) {
+	return parseFloat( value );
+} );
+AFrame.Schema.addFixer( 'integer', function( value ) {
+	return parseInt( value, 10 );
 } );
