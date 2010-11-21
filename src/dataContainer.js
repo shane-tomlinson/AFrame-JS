@@ -106,12 +106,20 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		return this.unbindEvent( id );
 	},
 	
-	getEventObject: function( fieldName, newValue, oldValue ) {
+	/**
+	* Get an object used when triggering events.
+	* @param {string} fieldName - name of field affected.
+	* @param {variant} value - the current value of the field.
+	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
+	* @return {object} an object with 4 fields, container, fieldName, oldValue, value
+	* @private
+	*/
+	getEventObject: function( fieldName, value, oldValue ) {
 		return {
 			container: this,
 			fieldName: fieldName,
 			oldValue: oldValue,
-			value: newValue
+			value: value
 		};
 	},
 	
