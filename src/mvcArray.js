@@ -13,7 +13,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
 		this.hash = AFrame.construct( {
-			type: 'AFrame.MVCHash'
+			type: AFrame.MVCHash
 		} );
 		this.proxyEvents( this.hash, [ 'onBeforeInsert', 'onInsert', 'onBeforeRemove', 'onRemove', 'onBeforeSet', 'onSet' ] );
 		

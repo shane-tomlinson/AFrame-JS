@@ -37,7 +37,7 @@ testsToRun.push( function testForm( Y ) {
 			}.bind( this );
 			
 			this.form = AFrame.construct( {
-				type: 'AFrame.Form',
+				type: AFrame.Form,
 				config: {
 					target: '#AFrame_Form',
 					formFieldFactory: function( formElement ) {

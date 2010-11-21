@@ -16,7 +16,7 @@ var AFrame = {
 		var F = function() {};
 		F.prototype = superclass.prototype;
 		derived.prototype = new F();
-		derived.prototype.constructor = derived;
+		derived.prototype.constuct = derived;
 		derived.superclass = superclass.prototype;
 
 		var mixins = Array.prototype.slice.call( arguments, 2 );
@@ -43,14 +43,17 @@ var AFrame = {
 	* @return {object} - created object.
 	*/
 	construct: function( obj_config ) {
-		var type = obj_config.type;
+		var constuct = obj_config.type;
 		var config = obj_config.config || {};
 		var plugins = obj_config.plugins || [];
 		var retval;
-		var constructor = getConstructor( type );
 
-		if( constructor ) {
-			retval = new constructor();
+		if( constuct ) {
+			try {
+				retval = new constuct();
+			} catch ( e ) {
+				console.log( e.toString() );
+			}
 
 			for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
 				var pluginObj = AFrame.construct( plugin );
@@ -61,24 +64,10 @@ var AFrame = {
 			retval.init( config );
 		}
 		else {
-			throw 'Class: ' + type + ' does not exist.';
+			throw 'Class does not exist.';
 		}
 
 		return retval;
-
-		function getConstructor( name ) {
-			var constructor = window;
-			var parts = name.split( '.' );
-
-			for( var index = 0, part; part = parts[ index ]; ++index ) {
-				constructor = constructor[ part ];
-				if( !constructor ) {
-					break;
-				}
-			}
-
-			return constructor;
-		}
 	},
 
 	/**

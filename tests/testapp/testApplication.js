@@ -1,6 +1,6 @@
 $( function() {
 	var dataContainer = AFrame.construct( {
-		type: 'AFrame.DataContainer',
+		type: AFrame.DataContainer,
 		config: {
 			data: {
 				name: 'First Field'
@@ -10,7 +10,7 @@ $( function() {
 
 	var formFieldFactory = function( element ) {
 		var field = AFrame.construct( {
-			type: 'AFrame.Field',
+			type: AFrame.Field,
 			config: {
 				target: element,
 				fieldName: $( element ).attr( 'data-field' ),
@@ -22,7 +22,7 @@ $( function() {
 	};
 
 	var form = AFrame.construct( {
-		type: 'AFrame.Form',
+		type: AFrame.Form,
 		config: {
 			target: $( 'body' ),
 			formFieldFactory: formFieldFactory
@@ -30,10 +30,10 @@ $( function() {
 	} );
 	
 	var collection = AFrame.construct( {
-		type: 'AFrame.MVCArray',
+		type: AFrame.MVCArray,
 		plugins: [
 			{
-				type: 'AFrame.CollectionPluginPersistence',
+				type: AFrame.CollectionPluginPersistence,
 				config: {
 					loadCallback: PersistenceLayer.load
 				}
@@ -42,7 +42,7 @@ $( function() {
 	} );
 	
 	var list = AFrame.construct( {
-		type: 'AFrame.List',
+		type: AFrame.List,
 		config: {
 			target: $( '.userList' ),
 			createListElementCallback: function( index, data ) {
@@ -51,7 +51,7 @@ $( function() {
 		},
 		plugins: [
 			{
-				type: 'AFrame.ListPluginBindToCollection',
+				type: AFrame.ListPluginBindToCollection,
 				config: {
 					collection: collection
 				}

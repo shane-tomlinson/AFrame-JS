@@ -10,7 +10,7 @@ testsToRun.push( function testField( Y ) {
 		setUp: function() {
 			var target = $( 'input[data-field=name]' );
 			this.field = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}
@@ -39,7 +39,7 @@ testsToRun.push( function testField( Y ) {
 		testText: function() {
 			var target = $( 'span[data-field=name]' );
 			var textField = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}
@@ -63,7 +63,7 @@ testsToRun.push( function testField( Y ) {
 		testTextArea: function() {
 			var target = $( 'textarea[data-field=name]' );
 			var textAreaField = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}
@@ -84,7 +84,7 @@ testsToRun.push( function testField( Y ) {
 		testValidate: function() {
 			var target = $( 'span[data-field=name]' );
 			var textField = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}
@@ -98,7 +98,7 @@ testsToRun.push( function testField( Y ) {
 			
 			target = $( 'textarea[data-field=name]' );
 			var fieldValueRequired = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}
@@ -157,7 +157,7 @@ testsToRun.push( function testField( Y ) {
 			target.html( 'Charlotte Tomlinson' );
 			
 			var textField = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}
@@ -188,7 +188,7 @@ testsToRun.push( function testField( Y ) {
 			var target = $( '#noValueFormElement' );
 			
 			var textField = AFrame.construct( {
-				type: 'AFrame.Field',
+				type: AFrame.Field,
 				config: {
 					target: target
 				}

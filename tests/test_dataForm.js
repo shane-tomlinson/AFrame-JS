@@ -13,13 +13,13 @@ testsToRun.push( function testForm( Y ) {
 			} );
 			
 			this.form = AFrame.construct( {
-				type: 'AFrame.DataForm',
+				type: AFrame.DataForm,
 				config: {
 					target: '#AFrame_Form',
 					formFieldFactory: function( formElement ) {
 						this.factoryFormElement = formElement;
 						this.field = AFrame.construct( {
-							type: 'AFrame.Field',
+							type: AFrame.Field,
 							config: {
 								target: formElement
 							}

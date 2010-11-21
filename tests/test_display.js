@@ -9,7 +9,7 @@ testsToRun.push( function testDisplay( Y ) {
 		
 		setUp: function() {
 			this.display = AFrame.construct( {
-				type: 'AFrame.Display',
+				type: AFrame.Display,
 				config: {
 					target: '.target'
 				}
@@ -26,7 +26,7 @@ testsToRun.push( function testDisplay( Y ) {
 			var except;
 			try {
 				var display = AFrame.construct( {
-					type: 'AFrame.Display'
+					type: AFrame.Display
 				} );
 			} catch ( e ) {
 				except = e;

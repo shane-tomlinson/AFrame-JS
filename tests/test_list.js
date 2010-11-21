@@ -9,7 +9,7 @@ testsToRun.push( function testList( Y ) {
 		
 		setUp: function() {
 			this.list = AFrame.construct( {
-				type: 'AFrame.List',
+				type: AFrame.List,
 				config: {
 					target: '#AFrame_List .list',
 					createListElementCallback: function( meta, data ) {

@@ -9,7 +9,7 @@ testsToRun.push( function testDataContainer( Y ) {
 
 		setUp: function() {
 		    this.dataContainer = AFrame.construct( {
-			type: 'AFrame.DataContainer'
+			type: AFrame.DataContainer
 		    } );
 		},
 		

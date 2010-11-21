@@ -36,7 +36,7 @@ testsToRun.push( function testAObject( Y ) {
 			};
 			
 			this.schema = AFrame.construct( {
-				type: 'AFrame.Schema',
+				type: AFrame.Schema,
 				config: {
 					schema: schemaConfig
 				}

@@ -10,15 +10,15 @@ testsToRun.push( function testPlugin( Y ) {
 		setUp: function() {
 			
 			this.pluggedObject = AFrame.construct( {
-				type: 'AFrame.AObject',
+				type: AFrame.AObject,
 				plugins: [
 					{
-						type: 'AFrame.Plugin'
+						type: AFrame.Plugin
 					}
 				]
 			} );
 			this.plugin = AFrame.construct( {
-				type: 'AFrame.Plugin'
+				type: AFrame.Plugin
 			} );
 		},
 		

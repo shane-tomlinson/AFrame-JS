@@ -126,7 +126,7 @@ testsToRun.push( function testAFrame( Y ) {
 	 
 		testConstructOneLevel: function() {
 		    this.subInstance = AFrame.construct( {
-			type: 'SubClass'
+				type: SubClass
 		    } );
 		    
 		    Assert.isTrue( this.subInstance.initCalled, 'init called' );
@@ -137,7 +137,7 @@ testsToRun.push( function testAFrame( Y ) {
 		
 		testTypeWithDot: function() {
 		    var instance = AFrame.construct( {
-			type: 'A.SubClass'
+				type: A.SubClass
 		    } );
 		    
 		    Assert.isObject( instance, 'object with dot created' );

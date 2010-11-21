@@ -9,11 +9,11 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 		
 		setUp: function() {
 			this.store = AFrame.construct( {
-				type: 'AFrame.MVCArray'
+				type: AFrame.MVCArray
 			} );
 			
 			this.list = AFrame.construct( {
-				type: 'AFrame.List',
+				type: AFrame.List,
 				config: {
 					target: '#AFrame_List .list',
 					createListElementCallback: function( index, data ) {
@@ -26,7 +26,7 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 				},
 				plugins: [
 					{
-						type: 'AFrame.ListPluginBindToCollection',
+						type: AFrame.ListPluginBindToCollection,
 						config: {
 							collection: this.store
 						}
@@ -85,11 +85,11 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 		
 		setUp: function() {
 			this.store = AFrame.construct( {
-				type: 'AFrame.MVCHash'
+				type: AFrame.MVCHash
 			} );
 			
 			this.list = AFrame.construct( {
-				type: 'AFrame.List',
+				type: AFrame.List,
 				config: {
 					target: '#AFrame_List .list',
 					createListElementCallback: function( index, data ) {
@@ -102,7 +102,7 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 				},
 				plugins: [
 				{
-					type: 'AFrame.ListPluginBindToCollection',
+					type: AFrame.ListPluginBindToCollection,
 					config: {
 						collection: this.store
 					}

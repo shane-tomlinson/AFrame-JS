@@ -9,7 +9,7 @@ testsToRun.push( function testMVCHash( Y ) {
 
 		setUp: function() {
 		    this.hash = AFrame.construct( {
-			type: 'AFrame.MVCHash'
+			type: AFrame.MVCHash
 		    } );
 		},
 		

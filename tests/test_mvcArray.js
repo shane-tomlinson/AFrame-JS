@@ -9,7 +9,7 @@ testsToRun.push( function testMVCArray( Y ) {
 
 		setUp: function() {
 		    this.array = AFrame.construct( {
-				type: 'AFrame.MVCArray'
+				type: AFrame.MVCArray
 		    } );
 			
 			this.item = {

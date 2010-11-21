@@ -17,7 +17,7 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 			this.loadCallbackCalled = false;
 			
 			this.mixin = AFrame.construct( {
-				type: 'AFrame.CollectionPluginPersistence',
+				type: AFrame.CollectionPluginPersistence,
 				config: {
 					deleteCallback: function( data, meta, callback ) {
 						this.delCallbackCalled = true;
