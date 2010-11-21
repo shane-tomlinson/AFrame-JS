@@ -14,7 +14,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		 * The factory function used to create forms.  formFactory will be called once for each
 		 *	row in the list, it will be called with two parameters, the rowElement and the data
 		 *	passed in the list's onInsert call.  An AFrame.Form compatible object must be returned.
-		 * @config formFactory.
+		 * @config formFactory
 		 * @type {function}
 		 */
 		this.formFactory = config.formFactory;

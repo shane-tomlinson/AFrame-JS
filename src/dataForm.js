@@ -1,5 +1,8 @@
 /**
-* A form that is bound to data
+* A Form that is bound to data.  Each DataForm is bound to a DataContainer, the DataContainer
+*	is used as the data source for all form Fields.  When a Field in the form is created, it
+*	has its value set to be that of the corresponding field in the DataContainer.  When Fields
+*	are updated, the DataContainer is not updated until the form's save function is called.
 * @class AFrame.DataForm
 * @extends AFrame.Form
 * @constructor

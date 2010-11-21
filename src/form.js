@@ -1,6 +1,7 @@
 /**
- * A basic form.  Forms are made of form fields.  A field should contain at least 
- * the following functions, clear, save, reset, validate.
+ * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
+ * the following functions, clear, save, reset, validate.  A generic Form is not 
+ * bound to any data, it is only a collection of form fields.
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
