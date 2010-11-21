@@ -67,7 +67,18 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		this.data[ fieldName ] = fieldValue;
 		
 		var eventObject = this.getEventObject( fieldName, fieldValue, oldValue );
+		/**
+		* Triggered whenever any item on the object is set.
+		* @event onSet
+		* @param {object} eventObject - an event object. @see getEventObject
+		*/
 		this.triggerEvent( 'onSet', eventObject );
+		/**
+		* Triggered whenever an item on the object is set.  This is useful to bind
+		*	to whenever a particular field is being changed.
+		* @event onSet-fieldName
+		* @param {object} eventObject - an event object.  @see getEventObject
+		*/
 		this.triggerEvent( 'onSet-' + fieldName, eventObject );
 		
 		return oldValue;
@@ -112,7 +123,6 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @param {variant} value - the current value of the field.
 	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
 	* @return {object} an object with 4 fields, container, fieldName, oldValue, value
-	* @private
 	*/
 	getEventObject: function( fieldName, value, oldValue ) {
 		return {
