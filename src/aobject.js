@@ -1,5 +1,11 @@
 /**
- * The base object of nearly everything.
+ * The base object of nearly everything.  It is recommended to create all new classes as a subclass
+ * of AObject since it provides general functionality such as event binding and teardown housekeeping.
+ * All AObjects in the system have a cid, a cid is a unique identifier within the application.  
+ * If an AObject creates and is responsible for maintaining AObjects, addChild should be called for
+ *	the created children.  When this object is torn down, the child object added via addChild will 
+ *	have its teardown function called as well.  This can ensure that all memory is freed and that
+ *	no references are kept when the object's lifespan has ended.
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
@@ -13,7 +19,8 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Initialize the object
 	 * @method init
-	 * @param {object} config - configuration
+	 * @param config {object} - configuration
+	 * @param config.cid {id} - cid to give to the object, if not given, one is generated.
 	 */
 	init: function( config ) {
 	    this.config = config;
@@ -60,6 +67,7 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    this.unbindAll();
 	    this.unbindToAll();
 	    this.teardownChildren();
+		this.config = this.cid = this.children = null;
 	},
 	
 	teardownChildren: function() {
