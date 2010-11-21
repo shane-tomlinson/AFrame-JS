@@ -16,7 +16,7 @@ var AFrame = {
 		var F = function() {};
 		F.prototype = superclass.prototype;
 		derived.prototype = new F();
-		derived.prototype.constuct = derived;
+		derived.prototype.constuctor = derived;
 		derived.superclass = superclass.prototype;
 
 		var mixins = Array.prototype.slice.call( arguments, 2 );
