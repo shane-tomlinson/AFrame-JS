@@ -186,7 +186,7 @@ testsToRun.push( function testField( Y ) {
 			Assert.areEqual( 'Preston the Penguin', this.field.get(), 'display nor getDisplayed affect get' );
 		},
 		
-		testNoValueText: function() {
+		testPlaceholderText: function() {
 			var target = $( '#noValueFormElement' );
 			
 			var textField = AFrame.construct( {

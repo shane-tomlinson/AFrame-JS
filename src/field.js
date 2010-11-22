@@ -12,7 +12,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		AFrame.Field.superclass.init.apply( this, arguments );
 
 		this.resetVal = this.getDisplayed();
-		this.display( this.getHelpText() );
+		this.display( this.getPlaceholder() );
 	},
 
 	bindEvents: function() {
@@ -24,14 +24,14 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Get the help text to display in the field.  If not overridden, looks
-	 * on the element for the value of the data-novalue-text attribute. 
-	 * @method getHelpText
+	 * Get the placeholder text to display in the field.  If not overridden, looks
+	 * on the element for the value of the placeholder attribute. 
+	 * @method getPlaceholder
 	 * @return {string}
 	 */
-	getHelpText: function() {
+	getPlaceholder: function() {
 		var target = this.getTarget();
-		return target.attr( 'data-novalue-text') || ''; 
+		return target.attr( 'placeholder' ) || ''; 
 	},
 	
 	/**
@@ -42,7 +42,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	set: function( val ) {
 		this.resetVal = val;
 		
-		val = val || this.getHelpText();
+		val = val || this.getPlaceholder();
 		this.display( val );
 	},
 	
@@ -55,7 +55,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	display: function( val ) {
 		var target = this.getTarget();
 
-		var func = val == this.getHelpText() ? 'addClass' : 'removeClass';
+		var func = val == this.getPlaceholder() ? 'addClass' : 'removeClass';
 		target[ func ]( 'empty' );
 		
 		if( this.isValBased( target ) ) {
@@ -99,7 +99,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, an object with two fields, error and field.
 	 */
 	validate: function() {
-		var isRequired = ( 'true' == this.getTarget().attr( 'required' ) );
+		var isRequired = this.getTarget().hasAttr( 'required' );
 		var valid = ( !isRequired || !!this.get().length );
 		if( !valid ) {
 			valid = this.getErrorObject( 'Field is required' );
@@ -145,7 +145,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 */
 	save: function() {
 		var displayed = this.getDisplayed();
-		if( displayed == this.getHelpText() ) {
+		if( displayed == this.getPlaceholder() ) {
 			displayed = '';			
 		}
 		this.resetVal = displayed;
@@ -161,14 +161,14 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	onFieldFocus: function() {
-		if( this.getDisplayed() == this.getHelpText() ) {
+		if( this.getDisplayed() == this.getPlaceholder() ) {
 			this.display( '' );
 		}
 	},
 	
 	onFieldBlur: function() {
 		if( '' === this.getDisplayed() ) {
-			this.display( this.getHelpText() );
+			this.display( this.getPlaceholder() );
 		}
 	},
 	
@@ -176,3 +176,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		return target.is( 'input' ) || target.is( 'textarea' );
 	}
 } );
+
+$.fn.hasAttr = function(name) {  
+   return typeof( this.attr(name) ) != 'undefined';
+};
