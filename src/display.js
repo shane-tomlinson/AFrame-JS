@@ -66,7 +66,23 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 		
 		return id;
 	},
-
+	
+	/**
+ 	* a convenience function for binding click events.  The event has it's default prevented so that
+	*	if binding to an anchor with an href of "#", the screen does not jump.
+	* @method bindClick
+	* @param {element || selector} target - the target.  If a string, searches the DOM
+	* @param {function} callback - the callback to callback
+	* @param {object} context (optional)- the context to call the callback in, if not given, use this.
+	* @return {id} id that can be used to unbind the event.
+	*/
+	bindClick: function( target, callback, context ) {
+		return this.bindDOMEvent( target, 'click', function( event ) {
+			event.preventDefault();
+			callback.call( context, event );
+		}, context );
+	},
+	
 	/**
 	 * Unbind a DOM event
 	 * @method unbindDOMEvent

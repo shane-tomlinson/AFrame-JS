@@ -85,6 +85,21 @@ testsToRun.push( function testDisplay( Y ) {
 			Assert.areEqual( 0, this.callbackCount2, 'event callback correctly unbound' );
 			
 			Assert.areEqual( 0, this.callbackCount, 'event callback correctly unbound on teardown' );
+		},
+		
+		testBindClick: function() {
+			this.callbackCount = 0;
+			var defaultPrevented = false;
+			var onClick = function( event ) {
+				this.callbackCount++;
+				defaultPrevented = event.isDefaultPrevented();
+			};
+			this.display.bindClick( '.button', onClick, this );
+
+			$( '.button' ).trigger( 'click' );
+			Assert.areEqual( 1, this.callbackCount, 'event callback triggered' );
+			Assert.isTrue( defaultPrevented, 'default has been prevented' );
+			
 		}
 
 	} );
