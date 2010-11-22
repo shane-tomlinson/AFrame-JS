@@ -85,7 +85,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	validate: function() {
 		var valid = true;
 
-		for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
+		for( var index = 0, formField; ( formField = this.formFields[ index ] ) && true === valid; ++index ) {
 			valid = formField.validate();
 		}
 		

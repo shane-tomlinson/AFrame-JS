@@ -96,12 +96,29 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * Validate the field.  A field will validate if 1) Its form element does not have the required attribute, or 2) the field has a length.
 	 *	sub classes can override this to perform more specific validation schemes.
 	 * @method validate
-	 * @return {boolean} true if field is valid, false otw.
+	 * @return {boolean} true if field is valid, an object with two fields, error and field.
 	 */
 	validate: function() {
-		var valid = ( ( 'true' != this.getTarget().attr( 'required' ) ) || ( !!this.get().length ) );
+		var isRequired = ( 'true' == this.getTarget().attr( 'required' ) );
+		var valid = ( !isRequired || !!this.get().length );
+		if( !valid ) {
+			valid = this.getErrorObject( 'Field is required' );
+		}
 		
 		return valid;
+	},
+	
+	/**
+	* Get an error object
+	* @method getErrorObject
+	* @param {string} error - error message
+	* @return {object} error object with two fields, error and field.
+	*/
+	getErrorObject: function( error ) {
+		return {
+			field: this,
+			error: error
+		};
 	},
 	
 	/**

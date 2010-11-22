@@ -5,11 +5,12 @@ testsToRun.push( function testForm( Y ) {
 	
 	var test = new TestCase( {
 		
-		name: "TestCase AFrame.Form",
+		name: "TestCase AFrame.DataForm",
 		
 		setUp: function() {
 			this.dataSource = AFrame.DataContainer( {
-				name: 'AFrame'
+				name: 'AFrame',
+				field2: 'Field2'
 			} );
 			
 			this.form = AFrame.construct( {
@@ -48,11 +49,11 @@ testsToRun.push( function testForm( Y ) {
 		testSave: function() {
 			this.field.set( 'Charlotte' );
 
-			Assert.areEqual( 'AFrame', this.dataSource.get( 'name' ), 'dataSource has not been updated before save' );
+			Assert.areEqual( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
 						
 			this.form.save();
 			
-			Assert.areEqual( 'Charlotte', this.dataSource.get( 'name' ), 'dataSource updated after save' );
+			Assert.areEqual( 'Charlotte', this.dataSource.get( 'field2' ), 'dataSource updated after save' );
 		}
 		
 		

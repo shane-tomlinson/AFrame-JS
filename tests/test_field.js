@@ -106,8 +106,10 @@ testsToRun.push( function testField( Y ) {
 
 			fieldValueRequired.clear();
 			isValid = fieldValueRequired.validate();
-			Assert.isFalse( isValid, 'field was required' );
-
+			Assert.isObject( isValid, 'field was required' );
+			Assert.isString( isValid.error, 'validation error is a string' );
+			Assert.isObject( isValid.field, 'field is returned' );
+			
 			fieldValueRequired.teardown();
 			fieldValueRequired = null;
 		},
