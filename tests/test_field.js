@@ -81,7 +81,7 @@ testsToRun.push( function testField( Y ) {
 			textAreaField.teardown();
 		},
 
-		testValidate: function() {
+		testCheckValidity: function() {
 			var target = $( 'span[data-field=name]' );
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
@@ -90,7 +90,7 @@ testsToRun.push( function testField( Y ) {
 				}
 			} );
 
-			var isValid = textField.validate();
+			var isValid = textField.checkValidity();
 			Assert.isTrue( isValid, 'default validator returns true' );
 
 			textField.teardown();
@@ -105,11 +105,11 @@ testsToRun.push( function testField( Y ) {
 			} );
 
 			fieldValueRequired.clear();
-			isValid = fieldValueRequired.validate();
-			Assert.isObject( isValid, 'field was required' );
-			Assert.isString( isValid.error, 'validation error is a string' );
+			isValid = fieldValueRequired.checkValidity();
+			Assert.isFalse( isValid, 'field was required' );
+			/*Assert.isString( isValid.error, 'validation error is a string' );
 			Assert.isObject( isValid.field, 'field is returned' );
-			
+			*/	
 			fieldValueRequired.teardown();
 			fieldValueRequired = null;
 		},

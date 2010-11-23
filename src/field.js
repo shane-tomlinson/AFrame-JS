@@ -95,14 +95,18 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	 * Validate the field.  A field will validate if 1) Its form element does not have the required attribute, or 2) the field has a length.
 	 *	sub classes can override this to perform more specific validation schemes.
-	 * @method validate
-	 * @return {boolean} true if field is valid, an object with two fields, error and field.
+	 * @method checkValidity
+	 * @return {boolean} true if field is valid, false otw.
 	 */
-	validate: function() {
-		var isRequired = this.getTarget().hasAttr( 'required' );
-		var valid = ( !isRequired || !!this.get().length );
-		if( !valid ) {
-			valid = this.getErrorObject( 'Field is required' );
+	checkValidity: function() {
+		var valid = true;
+		
+		if( this.getTarget()[ 0 ].checkValidity ) {
+			// browser supports native validity
+			valid = this.getTarget()[ 0 ].checkValidity();
+		} else {
+			var isRequired = this.getTarget().hasAttr( 'required' );
+			valid = ( !isRequired || !!this.get().length );
 		}
 		
 		return valid;
@@ -113,14 +117,14 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* @method getErrorObject
 	* @param {string} error - error message
 	* @return {object} error object with two fields, error and field.
-	*/
+	*//*
 	getErrorObject: function( error ) {
 		return {
 			field: this,
 			error: error
 		};
 	},
-	
+	*/
 	/**
 	 * Clear the field.  A reset after this will cause the field to go back to the blank state.
 	 * @method clear
@@ -135,6 +139,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method get
 	 * @return {variant} the value of the field
 	 */
+	 
 	get: function() {
 		return this.resetVal;
 	},

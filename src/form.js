@@ -79,14 +79,14 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Validate the form.
-	 * @method validate
+	 * @method checkValidity
 	 * @return {boolean} true if form is valid, false otw.
 	 */
-	validate: function() {
+	checkValidity: function() {
 		var valid = true;
 
-		for( var index = 0, formField; ( formField = this.formFields[ index ] ) && true === valid; ++index ) {
-			valid = formField.validate();
+		for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
+			valid = formField.checkValidity();
 		}
 		
 		return valid;
@@ -114,7 +114,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	 * @return {boolean} true if the form was valid and saved, false otw.
 	 */
 	save: function() {
-		var valid = this.validate();
+		var valid = this.checkValidity();
 		if( valid ) {
 			this.fieldAction( 'save' );
 		}

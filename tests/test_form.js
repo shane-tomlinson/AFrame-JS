@@ -44,7 +44,7 @@ testsToRun.push( function testForm( Y ) {
 						this.factoryFormElement = formElement;
 						
 						return {
-							validate: validate,
+							checkValidity: validate,
 							save: save,
 							reset: reset,
 							clear: clear,
@@ -77,23 +77,24 @@ testsToRun.push( function testForm( Y ) {
 		},
 
 		testValidate: function() {
-			Assert.areEqual( 0, this.validateCount, 'field\'s validate has not been called' );
+			Assert.areEqual( 0, this.validateCount, 'field\'s checkValidity has not been called' );
 
 			this.validateReturn = true;
-			var valid = this.form.validate();
+			var valid = this.form.checkValidity();
 			
 			Assert.areEqual( true, valid, 'valid correctly returns form is valid' );
-			Assert.areEqual( 2, this.validateCount, 'field\'s validate has been called' );
+			Assert.areEqual( 2, this.validateCount, 'field\'s checkValidity has been called' );
 
-			this.validateReturn = {
+			this.validateReturn = false;/*{
 				field: this,
 				error: 'some error'
-			};
+			};*/
 			this.validateCount = 0;
-			valid = this.form.validate();
-			Assert.isObject( valid, 'valid correctly returns form is invalid as object return value' );
-			Assert.areEqual( this.validateReturn, valid, 'valid correctly returns validateReturn' );
+			valid = this.form.checkValidity();
+			Assert.isFalse( valid, 'valid correctly returns form is invalid as object return value' );
+			/*Assert.areEqual( this.validateReturn, valid, 'valid correctly returns checkValidityReturn' );
 			Assert.areEqual( 1, this.validateCount, 'validate has been called once' );
+			*/
 		},
 		
 		testClear: function() {
