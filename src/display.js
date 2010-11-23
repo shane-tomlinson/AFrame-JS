@@ -41,6 +41,15 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	getTarget: function() {
 		return this.target;
 	},
+	
+	/**
+	* Get the display's native DOM Element
+	* @method getDOMElement
+	* @return {HTMLElement} - the DOM Element
+	*/
+	getDOMElement: function() {
+		return this.getTarget()[ 0 ];
+	},
 
 	/**
 	 * Bind to a DOM event

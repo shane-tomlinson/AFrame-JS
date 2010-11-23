@@ -100,6 +100,13 @@ testsToRun.push( function testDisplay( Y ) {
 			Assert.areEqual( 1, this.callbackCount, 'event callback triggered' );
 			Assert.isTrue( defaultPrevented, 'default has been prevented' );
 			
+		},
+		
+		testGetDOMElement: function() {
+			var domElement = this.display.getDOMElement();
+			
+			Assert.isObject( domElement, 'got an object' );
+			Assert.isTrue( 'nodeType' in domElement, 'it has a nodeType, good enough' );
 		}
 
 	} );
