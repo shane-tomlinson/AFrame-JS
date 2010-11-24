@@ -28,11 +28,21 @@ AFrame.FieldValidityState.prototype = {
 	customError: false,
 	valid: true,
 	
+	/**
+	* Set an error on the state
+	* @method setError
+	* @param {string} errorType - type of error
+	*/
 	setError: function( errorType ) {
 		this[ errorType ] = true;
 		this.valid = false;
 	},
 	
+	/**
+	* Set the custom error message
+	* @method setCustomError
+	* @param {string} customError - the error message
+	*/
 	setCustomError: function( customError ) {
 		if( customError ) {
 			this.valid = false;

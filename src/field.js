@@ -146,7 +146,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	* Set an error on the field.
-	* @setError
+	* @method setError
 	* @param {string} errorType - @see AFrame.FieldValidityState
 	*/
 	setError: function( errorType ) {
