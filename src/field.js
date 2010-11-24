@@ -101,7 +101,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	checkValidity: function() {
-		this.validityState = AFrame.FieldValidity.getInstance( this.getTarget()[ 0 ].validity );
+		this.validityState = AFrame.FieldValidityState.getInstance( this.getTarget()[ 0 ].validity );
 
 		var valid = this.validate();		
 		this.validityStateIsCurrent = true;
@@ -134,7 +134,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	* Get the current validity status of an object.
 	* @method getValidityState
-	* @return {AFrame.FieldValidity}
+	* @return {AFrame.FieldValidityState}
 	*/
 	getValidityState: function() {
 		if( !this.validityStateIsCurrent ) {
@@ -147,14 +147,14 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	* Set an error on the field.
 	* @setError
-	* @param {string} errorType - @see AFrame.FieldValidity
+	* @param {string} errorType - @see AFrame.FieldValidityState
 	*/
 	setError: function( errorType ) {
 		this.validityState.setError( errorType );
 	},
 	
 	/**
-	* Set a custom error on the field.  In the AFrame.FieldValidity object returned
+	* Set a custom error on the field.  In the AFrame.FieldValidityState object returned
 	*	by getValidityState, a custom error will have the customError field set to this 
 	*	message
 	* @method setCustomError

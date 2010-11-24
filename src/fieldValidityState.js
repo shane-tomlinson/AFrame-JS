@@ -1,23 +1,23 @@
 /**
 * An object that keeps track of a field's validity, mirrors the HTML5 spec
-* @class AFrame.FieldValidity
+* @class AFrame.FieldValidityState
 * @constructor
 */
-AFrame.FieldValidity = function( config ) {
+AFrame.FieldValidityState = function( config ) {
 	if( config ) {
 		AFrame.mixin( this, config );
 	}
 };
 /**
-* Get an instance of the FieldValidity object
-* @method AFrame.FieldValidity.getInstance
+* Get an instance of the FieldValidityState object
+* @method AFrame.FieldValidityState.getInstance
 * @param {object} config - object with a list of fields to set on the validity object
-* @returns {AFrame.FieldValidity}
+* @returns {AFrame.FieldValidityState}
 */
-AFrame.FieldValidity.getInstance = function( config ) {
-	return new AFrame.FieldValidity( config || {} );
+AFrame.FieldValidityState.getInstance = function( config ) {
+	return new AFrame.FieldValidityState( config || {} );
 };
-AFrame.FieldValidity.prototype = {
+AFrame.FieldValidityState.prototype = {
 	valueMissing: false,
 	typeMismatch: false,
 	patternMismatch: false,
