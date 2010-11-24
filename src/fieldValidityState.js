@@ -25,5 +25,18 @@ AFrame.FieldValidity.prototype = {
 	rangeUnderflow: false,
 	rangeOverflow: false,
 	stepMismatch: false,
-	valid: true
+	customError: false,
+	valid: true,
+	
+	setError: function( errorType ) {
+		this[ errorType ] = true;
+		this.valid = false;
+	},
+	
+	setCustomError: function( customError ) {
+		if( customError ) {
+			this.valid = false;
+			this.customError = customError;
+		}
+	}
 };

@@ -14,7 +14,7 @@ listPluginBindToCollection.js,\
 collectionPluginPersistence.js,\
 form.js,\
 field.js,\
-fieldValidity.js,\
+fieldValidityState.js,\
 schema.js,\
 listPluginFormRow.js,\
 dataForm.js

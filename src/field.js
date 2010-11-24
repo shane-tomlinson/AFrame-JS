@@ -13,6 +13,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 		this.resetVal = this.getDisplayed();
 		this.display( this.getPlaceholder() );
+		
+		this.html5Validate = !!this.getTarget()[ 0 ].checkValidity;
 	},
 
 	bindEvents: function() {
@@ -99,17 +101,67 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	checkValidity: function() {
+		this.validityState = AFrame.FieldValidity.getInstance( this.getTarget()[ 0 ].validity );
+
+		var valid = this.validate();		
+		this.validityStateIsCurrent = true;
+		return valid;
+	},
+	
+	/**
+	* Do the actual validation on the field.  Should be overridden to do validations.  Calling this will
+	*	reset any validation errors previously set and start with a new state.
+	* @method validate
+	*/
+	validate: function() {
 		var valid = true;
 		
-		if( this.getTarget()[ 0 ].checkValidity ) {
+		if( this.html5Validate ) {
 			// browser supports native validity
 			valid = this.getTarget()[ 0 ].checkValidity();
 		} else {
 			var isRequired = this.getTarget().hasAttr( 'required' );
 			valid = ( !isRequired || !!this.get().length );
+			
+			if( !valid ) {
+				this.setError( 'valueMissing' );
+			}
 		}
 		
 		return valid;
+	},
+	
+	/**
+	* Get the current validity status of an object.
+	* @method getValidityState
+	* @return {AFrame.FieldValidity}
+	*/
+	getValidityState: function() {
+		if( !this.validityStateIsCurrent ) {
+			this.checkValidity();
+		}
+		
+		return this.validityState;
+	},
+	
+	/**
+	* Set an error on the field.
+	* @setError
+	* @param {string} errorType - @see AFrame.FieldValidity
+	*/
+	setError: function( errorType ) {
+		this.validityState.setError( errorType );
+	},
+	
+	/**
+	* Set a custom error on the field.  In the AFrame.FieldValidity object returned
+	*	by getValidityState, a custom error will have the customError field set to this 
+	*	message
+	* @method setCustomError
+	* @param {string} customError - the error message to display
+	*/
+	setCustomError: function( customError ) {
+		this.validityState.setCustomError( customError );
 	},
 	
 	/**
@@ -163,6 +215,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		* @param {string} fieldVal - the current field value.
 		*/
 		this.triggerEvent( 'onChange', this.get() );
+		
+		this.validityStateIsCurrent = false;
 	},
 	
 	onFieldFocus: function() {

@@ -93,6 +93,9 @@ testsToRun.push( function testField( Y ) {
 			var isValid = textField.checkValidity();
 			Assert.isTrue( isValid, 'default validator returns true' );
 
+			var validity = textField.getValidityState();
+			Assert.isTrue( validity.valid, 'validities valid is true' );
+			
 			textField.teardown();
 			textField = null;
 			
@@ -105,11 +108,16 @@ testsToRun.push( function testField( Y ) {
 			} );
 
 			fieldValueRequired.clear();
+			// note that this test checks whether HTML5 validation is working in compatible browsers as well so
+			//	there may be different results in browsers supporting HTML5 validation vs those that do not.
 			isValid = fieldValueRequired.checkValidity();
 			Assert.isFalse( isValid, 'field was required' );
-			/*Assert.isString( isValid.error, 'validation error is a string' );
-			Assert.isObject( isValid.field, 'field is returned' );
-			*/	
+
+			validity = fieldValueRequired.getValidityState();
+			Assert.isFalse( validity.valid, 'validities valid is false' );
+			Assert.isTrue( validity.valueMissing, 'value was missing' );
+			
+			
 			fieldValueRequired.teardown();
 			fieldValueRequired = null;
 		},
@@ -220,9 +228,37 @@ testsToRun.push( function testField( Y ) {
 			
 			textField.set( '' );
 			Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed when setting display to empty' );
-			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
+			Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );			
+		},
+		
+		testSetError: function() {
+			this.field.checkValidity();
 			
+			this.field.setError( 'randomError' );
 			
+			var validityState = this.field.getValidityState();
+			Assert.isFalse( validityState.valid, 'no longer valid' );
+			Assert.isTrue( validityState.randomError, 'random error got set' );
+			
+			this.field.checkValidity();
+			validityState = this.field.getValidityState();
+			Assert.isTrue( validityState.valid, 'valid after reset' );
+			Assert.isUndefined( validityState.randomError, 'after reset, randomError is undefined' );
+		},
+		
+		testSetCustomError: function() {
+			this.field.checkValidity();
+			
+			this.field.setCustomError( 'This is a random error message' );
+			
+			var validityState = this.field.getValidityState();
+			Assert.isFalse( validityState.valid, 'no longer valid' );
+			Assert.areEqual( 'This is a random error message', validityState.customError, 'customError got set' );
+			
+			this.field.checkValidity();
+			validityState = this.field.getValidityState();
+			Assert.isTrue( validityState.valid, 'valid after reset' );
+			Assert.isFalse( validityState.customError, 'after reset, customError is reset' );
 		}
 	} );
 
