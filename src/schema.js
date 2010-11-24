@@ -11,6 +11,9 @@
  * layer saves data in a different format than the internal application representation.  A useful
  * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
  * and 'iso8601'.
+ * If a row in the schema config has the has_many field, the field is made into an array and the fixup/cleanup functions
+ *	are called on each item in the array.  The default default item for these fields is an empty array.  If
+ *	there is no data for the field in getPersistenceObject, the field is left out of the output.
  * @class AFrame.Schema
  * @extends AFrame.AObject
  * @constructor
@@ -56,6 +59,12 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 		if( AFrame.func( defValue ) ) {
 			defValue = defValue();
 		}
+		else if( this.schema[ key ].has_many ) {
+			defValue = [];
+		}
+		else if( AFrame.Schema.getSchema( this.schema[ key ].type ) ) {
+			defValue = {};
+		}
 		return defValue;
 	},
 	
@@ -80,22 +89,13 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 				value = this.getDefaultValue( key );
 			}
 			
-			if( AFrame.defined( value ) ) {
-				// call the generic type fixup/conversion function
-				var convert = AFrame.Schema.fixFuncs[ schemaRow.type ];
-				if( AFrame.func( convert ) ) {
-					value = convert( value );
-				}
+			if( schemaRow.has_many ) {
+				value && value.forEach && value.forEach( function( current, index ) {
+					value[ index ] = this.fixValue( current, schemaRow, dataToFix, fixedData );
+				}, this );
 			}
-			
-			// apply the fixup function if defined.
-			var fixup = schemaRow.fixup;
-			if( AFrame.func( fixup ) ) {
-				value = fixup( {
-					value: value,
-					data: dataToFix,
-					fixed: fixedData
-				} );
+			else {
+				value = this.fixValue( value, schemaRow, dataToFix, fixedData );
 			}
 			
 			fixedData[ key ] = value;
@@ -104,6 +104,33 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 		return fixedData;
 	},
 
+	fixValue: function( value, schemaRow, dataToFix, fixedData ) {
+		if( AFrame.defined( value ) ) {
+			// call the generic type fixup/conversion function
+			var convert = AFrame.Schema.fixFuncs[ schemaRow.type ];
+			if( AFrame.func( convert ) ) {
+				value = convert( value );
+			}
+		}
+		
+		// apply the fixup function if defined.
+		var fixup = schemaRow.fixup;
+		if( AFrame.func( fixup ) ) {
+			value = fixup( {
+				value: value,
+				data: dataToFix,
+				fixed: fixedData
+			} );
+		}
+		
+		var schema = AFrame.Schema.getSchema( schemaRow.type );
+		if( schema ) {
+			value = schema.fixData( value );
+		}
+		
+		return value;
+	},
+	
 	/**
 	 * Get an object suitable to send to persistence
 	 * @method getPersistenceObject
@@ -116,28 +143,49 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 		this.forEach( function( schemaRow, key ) {
 			var value = dataToClean[ key ];
 
-			// apply the cleanup function if defined.
-			var cleanup = schemaRow.cleanup;
-			if( AFrame.defined( cleanup ) ) {
-				value = cleanup( {
-					value: value,
-					data: dataToClean,
-					cleaned: cleanedData
-				} );
+			if( schemaRow.has_many ) {
+				value && value.forEach && value.forEach( function( current, index ) {
+					value[ index ] = this.cleanValue( current, schemaRow, dataToClean, cleanedData );
+				}, this );
 			}
-
-			if( AFrame.defined( value ) ) {
-				var convert = AFrame.Schema.persistenceFuncs[ schemaRow.type ];
-				if( AFrame.func( convert ) ) {
-					value = convert( value );
-				}
+			else {
+				value = this.cleanValue( value, schemaRow, dataToClean, cleanedData );
 			}
 			
 			cleanedData[ key ] = value;
-		} );
+		}, this );
 		
 		return cleanedData;
 	},
+	
+	cleanValue: function( value, schemaRow, dataToClean, cleanedData ) {
+		// apply the cleanup function if defined.
+		var cleanup = schemaRow.cleanup;
+		if( AFrame.defined( cleanup ) ) {
+			value = cleanup( {
+				value: value,
+				data: dataToClean,
+				cleaned: cleanedData
+			} );
+		}
+
+		if( AFrame.defined( value ) ) {
+			var convert = AFrame.Schema.persistenceFuncs[ schemaRow.type ];
+			if( AFrame.func( convert ) ) {
+				value = convert( value );
+			}
+		}
+		
+		if( AFrame.defined( value ) ) {
+			var schema = AFrame.Schema.getSchema( schemaRow.type );
+			if( schema ) {
+				value = schema.getPersistenceObject( value );
+			}
+		}
+		
+		return value;
+	},
+	
 
 	/**
 	 * An iterator.  Iterates over every row in the schema.
@@ -156,6 +204,9 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 AFrame.mixin( AFrame.Schema, {
 	fixFuncs: {},
 	persistenceFuncs: {},
+	schemaConfigs: {},
+	schemaCache: {},
+	
 	/**
 	 * Add a universal function that fixes data in fixDataObject. This is used to convert
 	 * data from a version the backend sends to one that is used internally.
@@ -176,6 +227,35 @@ AFrame.mixin( AFrame.Schema, {
 	 */
 	addPersistencer: function( type, callback ) {
 		AFrame.Schema.persistenceFuncs[ type ] = callback;
+	},
+	
+	/**
+	* Add a schema config
+	* @method AFrame.Schema.addSchemaConfig
+	* @param {id} type - identifier type
+	* @param {SchemaConfig} config - the schema configuration
+	*/
+	addSchemaConfig: function( type, config ) {
+		AFrame.Schema.schemaConfigs[ type ] = config;
+	},
+	
+	/**
+	* Get a schema
+	* @method getSchema
+	* @param {id} type - type of schema to get, a config must be registered for type.
+	* @return {AFrame.Schema}
+	*/
+	getSchema: function( type ) {
+		if( !AFrame.Schema.schemaCache[ type ] && AFrame.Schema.schemaConfigs[ type ] ) {
+			AFrame.Schema.schemaCache[ type ] = AFrame.construct( {
+				type: AFrame.Schema,
+				config: {
+					schema: AFrame.Schema.schemaConfigs[ type ]
+				}
+			} );
+		}
+		
+		return AFrame.Schema.schemaCache[ type ];
 	}
 } );
 

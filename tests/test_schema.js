@@ -215,6 +215,92 @@ testsToRun.push( function testAObject( Y ) {
 			} );
 			
 			Assert.isString( persistence.isodatetime, 'isodatetime converted to string' );
+		},
+		
+		
+		testNestedSchema: function() {
+			var innerSchemaConfig = {
+				innerField: { type: 'string', def: 'inner value' }
+			};
+			
+			AFrame.Schema.addSchemaConfig( 'inner', innerSchemaConfig );
+			
+			var outerSchemaConfig = {
+				schemaField: { type: 'inner' },
+			};
+			AFrame.Schema.addSchemaConfig( 'outer', outerSchemaConfig );
+			
+			var schema = AFrame.Schema.getSchema( 'outer' );
+		
+			var data = schema.fixData( {} );
+			
+			Assert.isObject( data.schemaField, 'schemaField created' );
+			Assert.areEqual( 'inner value', data.schemaField.innerField, 'schemaField.innerField has correct value' );
+			
+			var persist = schema.getPersistenceObject( {
+				schemaField: {
+					innerField: 'inner there',
+					extraField: 'extra field'
+				}
+			} );
+			
+			Assert.areEqual( 'inner there', persist.schemaField.innerField, 'schemaField.innerField is there' );
+			Assert.isUndefined( persist.schemaField.extraField, 'schemaField.extraField is not there' );
+			
+			persist = schema.getPersistenceObject( {
+				schemaField: {}
+			} );
+			
+			Assert.isObject( persist.schemaField, 'schemaField made it' );
+			
+			persist = schema.getPersistenceObject( {} );
+			
+			Assert.isUndefined( persist.schemaField, 'schemaField not there' );
+		},
+		
+		
+		
+		testHasMany: function() {
+			var schemaConfig = {
+				arrayField: { type: 'integer', has_many: true },
+				dateArrayField: { type: 'iso8601', has_many: true }
+			}
+			
+			var schema = AFrame.construct( {
+				type: AFrame.Schema,
+				config: {
+					schema: schemaConfig
+				}
+			} );
+			
+			var data = schema.fixData( {} );
+			
+			Assert.isArray( data.arrayField, 'created an array for arrayField' );
+			Assert.areEqual( 0, data.arrayField.length, 'array is empty' );
+			
+			data = schema.fixData( {
+				arrayField: [ 1.24, 2, 'a' ]
+			} );
+			
+			Assert.areEqual( 3, data.arrayField.length, 'array has length of 3' );
+			Assert.areEqual( 1, data.arrayField[ 0 ], 'item converted to integer' );
+			Assert.isTrue( isNaN( data.arrayField[ 2 ] ), 'item could not be converted to integer' );
+			
+			
+			data = schema.getPersistenceObject( {
+			} );
+			
+			Assert.isUndefined( data.arrayField, 'arrayField wasn\'t in the data' );
+			data = schema.getPersistenceObject( {
+				dateArrayField: [
+					new Date(), new Date()
+				]
+			} );
+			
+			Assert.areEqual( 2, data.dateArrayField.length, 'two date items converted' );
+			Assert.isString( data.dateArrayField[ 0 ], 'date item converted to string' );
+			Assert.isString( data.dateArrayField[ 1 ], 'date item converted to string' );
+			
 		}
 		
 		

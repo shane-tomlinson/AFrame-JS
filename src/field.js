@@ -165,19 +165,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	/**
-	* Get an error object
-	* @method getErrorObject
-	* @param {string} error - error message
-	* @return {object} error object with two fields, error and field.
-	*//*
-	getErrorObject: function( error ) {
-		return {
-			field: this,
-			error: error
-		};
-	},
-	*/
-	/**
 	 * Clear the field.  A reset after this will cause the field to go back to the blank state.
 	 * @method clear
 	 */
