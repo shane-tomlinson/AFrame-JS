@@ -23,7 +23,7 @@ testsToRun.push( function testAObject( Y ) {
 				return 'returned by function';
 			};
 			
-			var schemaConfig = {
+			this.schemaConfig = {
 				stringField: { type: 'string', def: 'stringField Default Value' },
 				stringFieldFixup: { type: 'string', def: 'stringFieldFixup Default Value',
 					fixup: fixupStringField, cleanup: cleanStringField },
@@ -32,13 +32,14 @@ testsToRun.push( function testAObject( Y ) {
 				integerField: { type: 'integer' },
 				fixer: { type: 'fixer' },
 				persistence: { type: 'persistencer' },
-				isodatetime: { type: 'iso8601' }
+				isodatetime: { type: 'iso8601' },
+				noSaveField: { type: 'string', save: false, def: 'this field will not be saved in getFormData' }
 			};
 			
 			this.schema = AFrame.construct( {
 				type: AFrame.Schema,
 				config: {
-					schema: schemaConfig
+					schema: this.schemaConfig
 				}
 			} );
 		},
@@ -55,8 +56,8 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.areEqual( 'returned by function', defaultObject.stringFieldFixupFunc, 'can get default value using function' );
 		},
 
-		testFixData: function() {
-			var fixedData = this.schema.fixData( {} );
+		testGetAppData: function() {
+			var fixedData = this.schema.getAppData( {} );
 			
 			// with no data, should return same as default items unless a fixup function modifies a value
 			Assert.areEqual( 'stringField Default Value', fixedData.stringField, 'Default value set for stringField' );
@@ -64,7 +65,7 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.areEqual( 'returned by function', fixedData.stringFieldFixupFunc, 'Default func called for stringFieldFixupFunc' );
 
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				stringField: 'this is a string',
 				stringFieldFixup: 'run through fixup',
 				stringFieldFixupFunc: 'default func not used',
@@ -79,7 +80,7 @@ testsToRun.push( function testAObject( Y ) {
 
 			// make the fixup function modify value
 			this.useFixedValue = true;
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				stringFieldFixup: 'should be modified'
 			} );
 			
@@ -94,22 +95,28 @@ testsToRun.push( function testAObject( Y ) {
 			}, this );
 
 			// fixup function modifies data
-			Assert.areEqual( 8, this.forEachCallbackCallCount, 'callback called for each' );
+			var fields = 0;
+			for( var key in this.schemaConfig ) {
+				fields++;
+			}
+			Assert.areEqual( fields, this.forEachCallbackCallCount, 'callback called for each' );
 		},
 
-		testGetPersistenceObject: function() {
-			var persistence = this.schema.getPersistenceObject( {
+		testGetFormData: function() {
+			var persistence = this.schema.getFormData( {
 				stringField: 'stringField value',
 				stringFieldFixup: 'stringFieldFixup value',
-				extraField: 'extra field'
+				extraField: 'extra field',
+				noSaveField: 'field not saved'
 			} );
 
 			Assert.areEqual( 'stringField value', persistence.stringField, 'stringField added' );
 			Assert.areEqual( 'stringFieldFixup value', persistence.stringFieldFixup, 'stringFieldFixup added' );
 			Assert.isUndefined( persistence.extraField, 'extraField not added' );
+			Assert.isUndefined( persistence.noSaveField, 'noSaveField not added with the save: false' );
 
 			this.useCleanedValue = true;
-			var persistence = this.schema.getPersistenceObject( {
+			var persistence = this.schema.getFormData( {
 				stringField: 'stringField value',
 				stringFieldFixup: 'stringFieldFixup value'
 			} );
@@ -120,27 +127,27 @@ testsToRun.push( function testAObject( Y ) {
 		},
 		
 		testNumberTypeFixer: function() {
-			var fixedData = this.schema.fixData( {
+			var fixedData = this.schema.getAppData( {
 				numberField: '1.25'
 			} );
 			Assert.areEqual( 1.25, fixedData.numberField, 'converted a float string to number' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				numberField: '2'
 			} );
 			Assert.areEqual( 2, fixedData.numberField, 'converted a integer string to number' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				numberField: 3.25
 			} );
 			Assert.areEqual( 3.25, fixedData.numberField, 'keep a number a number' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				numberField: 4
 			} );
 			Assert.areEqual( 4, fixedData.numberField, 'keep an integer a number' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				numberField: 'a'
 			} );
 			Assert.isTrue( isNaN( fixedData.numberField ), 'converting a letter returns NaN' );
@@ -148,54 +155,54 @@ testsToRun.push( function testAObject( Y ) {
 		},
 		
 		testIntegerTypeFixer: function() {
-			var fixedData = this.schema.fixData( {
+			var fixedData = this.schema.getAppData( {
 				integerField: '1.25'
 			} );
 			Assert.areEqual( 1, fixedData.integerField, 'converted a float string to integer' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				integerField: '2'
 			} );
 			Assert.areEqual( 2, fixedData.integerField, 'converted a integer string to integer' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				integerField: 3.25
 			} );
 			Assert.areEqual( 3, fixedData.integerField, 'convert a number to an integer' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				integerField: 4
 			} );
 			Assert.areEqual( 4, fixedData.integerField, 'keep an integer an integer' );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				integerField: 'a'
 			} );
 			Assert.isTrue( isNaN( fixedData.integerField ), 'converting a letter returns NaN' );
 		},
 		
-		testFixer: function() {
+		testAppDataCleaner: function() {
 			var fixerValue;
-			AFrame.Schema.addFixer( 'fixer', function( data ) {
+			AFrame.Schema.addAppDataCleaner( 'fixer', function( data ) {
 				fixerValue = data;
 				return 'fixed';
 			} );
 			
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				fixer: 'value'
 			} );
 			Assert.areEqual( 'fixed', fixedData.fixer, 'fix function value applied' );
 			Assert.areEqual( 'value', fixerValue, 'fix function passed value correctly' );
 		},
 		
-		testPersistencer: function() {
+		testFormDataCleaner: function() {
 			var persistencerValue;
-			AFrame.Schema.addPersistencer( 'persistencer', function( data ) {
+			AFrame.Schema.addFormDataCleaner( 'persistencer', function( data ) {
 				persistencerValue = data;
 				return 'persistence';
 			} );
 			
-			var persistence = this.schema.getPersistenceObject( { 
+			var persistence = this.schema.getFormData( { 
 				persistence: 'initial' 
 			} );
 			Assert.areEqual( 'persistence', persistence.persistence, 'new value used' );
@@ -203,14 +210,14 @@ testsToRun.push( function testAObject( Y ) {
 		},
 		
 		testISO8601: function() {
-			fixedData = this.schema.fixData( {
+			fixedData = this.schema.getAppData( {
 				isodatetime: '2010-06-06T15:30:00.00Z'
 			} );
 			
 			Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
 			
 			var now = new Date();
-			var persistence = this.schema.getPersistenceObject( { 
+			var persistence = this.schema.getFormData( { 
 				isodatetime: now 
 			} );
 			
@@ -232,12 +239,12 @@ testsToRun.push( function testAObject( Y ) {
 			
 			var schema = AFrame.Schema.getSchema( 'outer' );
 		
-			var data = schema.fixData( {} );
+			var data = schema.getAppData( {} );
 			
 			Assert.isObject( data.schemaField, 'schemaField created' );
 			Assert.areEqual( 'inner value', data.schemaField.innerField, 'schemaField.innerField has correct value' );
 			
-			var persist = schema.getPersistenceObject( {
+			var persist = schema.getFormData( {
 				schemaField: {
 					innerField: 'inner there',
 					extraField: 'extra field'
@@ -247,13 +254,13 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.areEqual( 'inner there', persist.schemaField.innerField, 'schemaField.innerField is there' );
 			Assert.isUndefined( persist.schemaField.extraField, 'schemaField.extraField is not there' );
 			
-			persist = schema.getPersistenceObject( {
+			persist = schema.getFormData( {
 				schemaField: {}
 			} );
 			
 			Assert.isObject( persist.schemaField, 'schemaField made it' );
 			
-			persist = schema.getPersistenceObject( {} );
+			persist = schema.getFormData( {} );
 			
 			Assert.isUndefined( persist.schemaField, 'schemaField not there' );
 		},
@@ -273,12 +280,12 @@ testsToRun.push( function testAObject( Y ) {
 				}
 			} );
 			
-			var data = schema.fixData( {} );
+			var data = schema.getAppData( {} );
 			
 			Assert.isArray( data.arrayField, 'created an array for arrayField' );
 			Assert.areEqual( 0, data.arrayField.length, 'array is empty' );
 			
-			data = schema.fixData( {
+			data = schema.getAppData( {
 				arrayField: [ 1.24, 2, 'a' ]
 			} );
 			
@@ -287,11 +294,11 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.isTrue( isNaN( data.arrayField[ 2 ] ), 'item could not be converted to integer' );
 			
 			
-			data = schema.getPersistenceObject( {
+			data = schema.getFormData( {
 			} );
 			
 			Assert.isUndefined( data.arrayField, 'arrayField wasn\'t in the data' );
-			data = schema.getPersistenceObject( {
+			data = schema.getFormData( {
 				dateArrayField: [
 					new Date(), new Date()
 				]

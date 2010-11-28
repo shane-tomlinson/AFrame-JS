@@ -1,19 +1,20 @@
 /**
  * A basic data schema, useful for loading/saving data to a persistence store.  When loading data from
- * persistence, if the data is run through the fixData function, it will make an object with only the fields
+ * persistence, if the data is run through the getAppData function, it will make an object with only the fields
  * defined in the schema, and any missing fields will get default values.  If a fixup function is defined
  * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
- * running data through the cleanData will create an object with only the fields specified in the schema.  If
- * a row has a cleanup function defined, the corresponding data value will be run through the cleanup function.
- * Generic fixup and persistence functions can be set for a type using the AFrame.Schema.addFixer and 
- * AFrame.Schema.addPersistencer.  Every item that has a given type and has a value will have the
+ * running data through the getFormData will create an object with only the fields specified in the schema.  If
+ * a row has save: false defined, the row will not be added to the form data object. If a row has a cleanup 
+ * function defined, the corresponding data value will be run through the cleanup function.
+ * Generic fixup and persistence functions can be set for a type using the AFrame.Schema.addAppDataCleaner and 
+ * AFrame.Schema.addFormDataCleaner.  Every item that has a given type and has a value will have the
  * fixer or persistencer function called, this is useful for doing conversions where the data persistence
  * layer saves data in a different format than the internal application representation.  A useful
  * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
  * and 'iso8601'.
  * If a row in the schema config has the has_many field, the field is made into an array and the fixup/cleanup functions
  *	are called on each item in the array.  The default default item for these fields is an empty array.  If
- *	there is no data for the field in getPersistenceObject, the field is left out of the output.
+ *	there is no data for the field in getFormData, the field is left out of the output.
  * @class AFrame.Schema
  * @extends AFrame.AObject
  * @constructor
@@ -69,16 +70,16 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 	},
 	
 	/**
-	 * Fix a data object for use.  Creates a new object using the specified data as a basis
-	 * for values.  If a value is not specified but a default value is specified in the schema,
-	 * the default value is used for that item.  Items are finally run through an optionally defined
+	 * Fix a data object for use in the application.  Creates a new object using the specified data 
+	 * as a template for values.  If a value is not specified but a default value is specified in the 
+	 * schema, the default value is used for that item.  Items are finally run through an optionally defined
 	 * fixup function.  If defined, the fixup function should return cleaned data.  If the fixup function
 	 * does not return data, the field will be undefined.
-	 * @method fixData
+	 * @method getAppData
 	 * @param {object} dataToFix
 	 * @return {object} fixedData
 	 */
-	fixData: function( dataToFix ) {
+	getAppData: function( dataToFix ) {
 		var fixedData = {};
 
 		this.forEach( function( schemaRow, key ) {
@@ -91,11 +92,11 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 			
 			if( schemaRow.has_many ) {
 				value && value.forEach && value.forEach( function( current, index ) {
-					value[ index ] = this.fixValue( current, schemaRow, dataToFix, fixedData );
+					value[ index ] = this.getAppDataValue( current, schemaRow, dataToFix, fixedData );
 				}, this );
 			}
 			else {
-				value = this.fixValue( value, schemaRow, dataToFix, fixedData );
+				value = this.getAppDataValue( value, schemaRow, dataToFix, fixedData );
 			}
 			
 			fixedData[ key ] = value;
@@ -104,10 +105,17 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 		return fixedData;
 	},
 
-	fixValue: function( value, schemaRow, dataToFix, fixedData ) {
-		if( AFrame.defined( value ) ) {
+	getAppDataValue: function( value, schemaRow, dataToFix, fixedData ) {
+		// If the object has a type and there is a schema for the type,
+		//	fix up the value.  If there is no schema for the type, but the value
+		//	is defined and there is a type converter fix function, convert the value.
+		var schema = AFrame.Schema.getSchema( schemaRow.type );
+		if( schema ) {
+			value = schema.getAppData( value );
+		}
+		else if( AFrame.defined( value ) ) {
 			// call the generic type fixup/conversion function
-			var convert = AFrame.Schema.fixFuncs[ schemaRow.type ];
+			var convert = AFrame.Schema.appDataCleaners[ schemaRow.type ];
 			if( AFrame.func( convert ) ) {
 				value = convert( value );
 			}
@@ -123,42 +131,40 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 			} );
 		}
 		
-		var schema = AFrame.Schema.getSchema( schemaRow.type );
-		if( schema ) {
-			value = schema.fixData( value );
-		}
-		
 		return value;
 	},
 	
 	/**
-	 * Get an object suitable to send to persistence
-	 * @method getPersistenceObject
+	 * Get an object suitable to send to persistence.  This is based roughly on converting
+	 *	the data to a FormData "like" object - see https://developer.mozilla.org/en/XMLHttpRequest/FormData
+	 * @method getFormData
 	 * @param {object} dataToClean - data to cleanup for persistence
 	 * @return {object} cleanedData
 	 */
-	getPersistenceObject: function( dataToClean ) {
+	getFormData: function( dataToClean ) {
 		var cleanedData = {};
 		
 		this.forEach( function( schemaRow, key ) {
-			var value = dataToClean[ key ];
+			if( schemaRow.save !== false ) {
+				var value = dataToClean[ key ];
 
-			if( schemaRow.has_many ) {
-				value && value.forEach && value.forEach( function( current, index ) {
-					value[ index ] = this.cleanValue( current, schemaRow, dataToClean, cleanedData );
-				}, this );
+				if( schemaRow.has_many ) {
+					value && value.forEach && value.forEach( function( current, index ) {
+						value[ index ] = this.getFormDataValue( current, schemaRow, dataToClean, cleanedData );
+					}, this );
+				}
+				else {
+					value = this.getFormDataValue( value, schemaRow, dataToClean, cleanedData );
+				}
+				
+				cleanedData[ key ] = value;
 			}
-			else {
-				value = this.cleanValue( value, schemaRow, dataToClean, cleanedData );
-			}
-			
-			cleanedData[ key ] = value;
 		}, this );
 		
 		return cleanedData;
 	},
 	
-	cleanValue: function( value, schemaRow, dataToClean, cleanedData ) {
+	getFormDataValue: function( value, schemaRow, dataToClean, cleanedData ) {
 		// apply the cleanup function if defined.
 		var cleanup = schemaRow.cleanup;
 		if( AFrame.defined( cleanup ) ) {
@@ -170,16 +176,20 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 		}
 
 		if( AFrame.defined( value ) ) {
-			var convert = AFrame.Schema.persistenceFuncs[ schemaRow.type ];
-			if( AFrame.func( convert ) ) {
-				value = convert( value );
-			}
-		}
-		
-		if( AFrame.defined( value ) ) {
 			var schema = AFrame.Schema.getSchema( schemaRow.type );
+			/*
+			* first, check if there is a schema, if there is a schema let the schema
+			*	take care of things.  If there is no schema but there is a value and
+			*  a saveCleaner, run the value through the save cleaner.
+			*/
 			if( schema ) {
-				value = schema.getPersistenceObject( value );
+				value = schema.getFormData( value );
+			}
+			else {
+				var convert = AFrame.Schema.formDataCleaners[ schemaRow.type ];
+				if( AFrame.func( convert ) ) {
+					value = convert( value );
+				}
 			}
 		}
 		
@@ -202,31 +212,31 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 	}
 } );
 AFrame.mixin( AFrame.Schema, {
-	fixFuncs: {},
-	persistenceFuncs: {},
+	appDataCleaners: {},
+	formDataCleaners: {},
 	schemaConfigs: {},
 	schemaCache: {},
 	
 	/**
-	 * Add a universal function that fixes data in fixDataObject. This is used to convert
+	 * Add a universal function that fixes data in getAppDataObject. This is used to convert
 	 * data from a version the backend sends to one that is used internally.
-	 * @method AFrame.Schema.addFixer
+	 * @method AFrame.Schema.addAppDataCleaner
 	 * @param {string} type - type of field.
 	 * @param {function} callback - to call
 	 */
-	addFixer: function( type, callback ) {
-		AFrame.Schema.fixFuncs[ type ] = callback;
+	addAppDataCleaner: function( type, callback ) {
+		AFrame.Schema.appDataCleaners[ type ] = callback;
 	},
 	/**
 	 * Add a universal function that gets data ready to save to persistence.  This is used
 	 * to convert data from an internal representation of a piece of data to a 
 	 * representation the backend is expecting.
-	 * @method AFrame.Schema.addPersistencer
+	 * @method AFrame.Schema.addFormDataCleaner
 	 * @param {string} type - type of field.
 	 * @param {function} callback - to call
 	 */
-	addPersistencer: function( type, callback ) {
-		AFrame.Schema.persistenceFuncs[ type ] = callback;
+	addFormDataCleaner: function( type, callback ) {
+		AFrame.Schema.formDataCleaners[ type ] = callback;
 	},
 	
 	/**
@@ -241,7 +251,7 @@ AFrame.mixin( AFrame.Schema, {
 	
 	/**
 	* Get a schema
-	* @method getSchema
+	* @method AFrame.Schema.getSchema
 	* @param {id} type - type of schema to get, a config must be registered for type.
 	* @return {AFrame.Schema}
 	*/
@@ -259,15 +269,15 @@ AFrame.mixin( AFrame.Schema, {
 	}
 } );
 
-AFrame.Schema.addFixer( 'number', function( value ) {
+AFrame.Schema.addAppDataCleaner( 'number', function( value ) {
 	return parseFloat( value );
 } );
 
-AFrame.Schema.addFixer( 'integer', function( value ) {
+AFrame.Schema.addAppDataCleaner( 'integer', function( value ) {
 	return parseInt( value, 10 );
 } );
 
-AFrame.Schema.addFixer( 'iso8601', function( str ) {
+AFrame.Schema.addAppDataCleaner( 'iso8601', function( str ) {
 	// we assume str is a UTC date ending in 'Z'
 	try{
 		var parts = str.split('T'),
@@ -294,7 +304,7 @@ AFrame.Schema.addFixer( 'iso8601', function( str ) {
 	catch(e) {}
 } );
 
-AFrame.Schema.addPersistencer( 'iso8601', function( date ) {
+AFrame.Schema.addFormDataCleaner( 'iso8601', function( date ) {
 	return date.toISOString();
 } );
 
