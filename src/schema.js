@@ -137,8 +137,10 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 	/**
 	 * Get an object suitable to send to persistence.  This is based roughly on converting
 	 *	the data to a FormData "like" object - see https://developer.mozilla.org/en/XMLHttpRequest/FormData
+	 *	All items in the schema that do not have save parameter set to false and have values defined in dataToClean 
+	 *	will have values returned.
 	 * @method getFormData
-	 * @param {object} dataToClean - data to cleanup for persistence
+	 * @param {object} dataToClean - data to clean up
 	 * @return {object} cleanedData
 	 */
 	getFormData: function( dataToClean ) {
