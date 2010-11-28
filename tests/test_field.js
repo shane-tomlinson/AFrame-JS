@@ -253,12 +253,44 @@ testsToRun.push( function testField( Y ) {
 			
 			var validityState = this.field.getValidityState();
 			Assert.isFalse( validityState.valid, 'no longer valid' );
-			Assert.areEqual( 'This is a random error message', validityState.customError, 'customError got set' );
+			Assert.isTrue( validityState.customError, 'customError is set' );
+			Assert.areEqual( 'This is a random error message', validityState.validationMessage, 'validationMessage got set' );
 			
 			this.field.checkValidity();
 			validityState = this.field.getValidityState();
 			Assert.isTrue( validityState.valid, 'valid after reset' );
-			Assert.isFalse( validityState.customError, 'after reset, customError is reset' );
+			Assert.isFalse( validityState.customError, 'customError is reset' );
+			Assert.areEqual( '', validityState.validationMessage, 'after reset, validationMessage is reset' );
+		},
+		
+		testInvalidCancellable: function() {
+			target = $( 'textarea[data-field=name]' );
+			
+			var fieldValueRequired = AFrame.construct( {
+				type: AFrame.Field,
+				config: {
+					target: target
+				}
+			} );
+
+			
+			var defaultPrevented = false;
+			target.bind( 'invalid', function( event ) {
+				defaultPrevented = event.isDefaultPrevented();
+			} );
+			
+			// We cancel the browser handle the invalid event, no browser will show the error message
+			AFrame.Field.cancelInvalid = true;
+			target.trigger( 'invalid' );
+			
+			Assert.isTrue( defaultPrevented, 'with AFrame.Field.cancelInvalid = true, invalid\'s default is prevented' );
+
+			// We let the browser handle the invalid event, some browsers show an error message.
+			AFrame.Field.cancelInvalid = false;
+			target.trigger( 'invalid' );
+			
+			Assert.isFalse( defaultPrevented, 'with AFrame.Field.cancelInvalid = false, invalid occurs normally' );
+
 		}
 	} );
 

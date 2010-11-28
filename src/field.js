@@ -1,5 +1,11 @@
 /**
- * The base class for a field.  A field is a basic unit for a form.
+ * The base class for a field.  A field is a basic unit for a form.  With the new HTML5 spec,
+ * each form field has an invalid event.  Some browsers display an error message whenever the
+ * invalid event is triggered.  If custom error message processing is desired, set 
+ * AFrame.Field.cancelInvalid = false and the default action will be prevented and no browser error.
+ * Field validation does not occur in real time, for validation to occur, the checkValidity
+ * function must be called.
+ * messages will still be displayed.
  * @class AFrame.Field
  * @extends AFrame.Display
  * @constructor
@@ -7,6 +13,7 @@
 AFrame.Field = function() {
 	AFrame.Field.superclass.constructor.apply( this, arguments );
 };
+AFrame.Field.cancelInvalid = false;
 AFrame.extend( AFrame.Field, AFrame.Display, {
 	init: function( config ) {
 		AFrame.Field.superclass.init.apply( this, arguments );
@@ -18,9 +25,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	bindEvents: function() {
-		this.bindDOMEvent( this.getTarget(), 'keyup', this.onFieldChange, this );
-		this.bindDOMEvent( this.getTarget(), 'focus', this.onFieldFocus, this );
-		this.bindDOMEvent( this.getTarget(), 'blur', this.onFieldBlur, this );
+		var target = this.getTarget();
+		this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
+		this.bindDOMEvent( target, 'focus', this.onFieldFocus, this );
+		this.bindDOMEvent( target, 'blur', this.onFieldBlur, this );
+		this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
 		
 		AFrame.Field.superclass.bindEvents.apply( this, arguments );
 	},
@@ -215,6 +224,12 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	onFieldBlur: function() {
 		if( '' === this.getDisplayed() ) {
 			this.display( this.getPlaceholder() );
+		}
+	},
+	
+	onFieldInvalid: function( event ) {
+		if( AFrame.Field.cancelInvalid ) {
+			event.preventDefault();
 		}
 	},
 	
