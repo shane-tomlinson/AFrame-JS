@@ -96,7 +96,7 @@
 
        <target name="docs" depends="init,clean">
 	       <exec executable="python" failonerror="true">
-		       <arg line="${yuidoc.home}/bin/yuidoc.py ${yuidoc.parser_in} -p ${yuidoc.parser_out} -o ${yuidoc.generator_out} -t ${yuidoc.template} -v ${build.version} -Y ${yuidoc.yuiversion}  -m ${yuidoc.projectname} -u ${yuidoc.projecturl} -C ${yuidoc.copyrighttag} -s"/>
+		       <arg line="${yuidoc.home}/bin/yuidoc.py ${yuidoc.parser_in} -p ${yuidoc.parser_out} -o ${yuidoc.generator_out} -t ${yuidoc.template} -v ${build.version} -Y ${yuidoc.yuiversion} -s"/>
 	       </exec>
        </target>
        
