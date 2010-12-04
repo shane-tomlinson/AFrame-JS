@@ -6,7 +6,7 @@
 	<property name="major" value="0" />
 	<property name="minor" value="0" />
 	<property name="src" location="src" />
-	<property name="dist" location="aframe" />
+	<property name="dist" location="dist" />
 	<property name="YUI" location="tools/yuicompressor-2.4.2.jar" />
 	<property name="docs" location="docs" />
 	<property name="docs_parse" location="docparse" />
