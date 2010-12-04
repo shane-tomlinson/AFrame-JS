@@ -1,7 +1,7 @@
 AFrame JS - The Javascript Application Framework
 ================================================
 
-http://www.aframejs.com
+[http://www.aframejs.com](http://www.aframejs.com)
 -----------------------
 
 AFrame is being developed out of the frustration of not having a proper application framework at my disposal when I first
@@ -18,15 +18,14 @@ To use AFrame without compilation, you can grab the current version in dist/afra
 Unit tests use the YUI Unit test library.  These can be run by browsing to the tests directory and opening index.html
 
 
-To download and build the libraries and docs
---------------------------------------------
+###To download and build the libraries and docs###
+
 1) Apache Ant is required.  Go get it.
 2) The sample per_user.properties.sample must be personalized and copied to per_user.properties
 3) Since I do development both in Linux and Windows, the build script works with both.
 4) run "ant all" to do a full build.
 
-Build options
---------------------------------------------
+###Build options###
 1) "ant all" does a full build.
 2) "ant compress" concatinates and compresses javascript
 3) "ant docs" builds the docs
