@@ -35,22 +35,19 @@ if (!Array.prototype.forEach)
   };
 }
 
-if (!Array.prototype.indexOf)
-{
-	/**
-	* if not included in the browsers implementation, add it - finds the index of an element in the array
-	* @method indexOf
-	* @param {variant} element to search for
-	* @return {number} index if found, -1 otw.
-	*/
+/**
+* if not included in the browsers implementation, add it - finds the index of an element in the array
+* @method Array.prototype.indexOf
+* @param {variant} element to search for
+* @return {number} index if found, -1 otw.
+*/
+if (!Array.prototype.indexOf) {
   Array.prototype.indexOf = function(elt /*, from*/)
   {
     var len = this.length >>> 0;
 
     var from = Number(arguments[1]) || 0;
-    from = (from < 0)
-         ? Math.ceil(from)
-         : Math.floor(from);
+	from = from < 0 ? Math.ceil(from) : Math.floor(from);
     if (from < 0) {
       from += len;
 	}
@@ -64,7 +61,37 @@ if (!Array.prototype.indexOf)
   };
 }
 
-
+/**
+* Convert a Date object to an ISO8601 formatted string
+* @method Date.prototype.toISOString
+* @return {string} ISO8601 formatted date
+*/
+if(!Date.prototype.toISOString) {
+	Date.prototype.toISOString = function() {
+		var pad_two = function(n) {
+			return (n < 10 ? '0' : '') + n;
+		};
+		var pad_three = function(n) {
+			return (n < 100 ? '0' : '') + (n < 10 ? '0' : '') + n;
+		};
+		return [
+			this.getUTCFullYear(),
+			'-',
+			pad_two(this.getUTCMonth() + 1),
+			'-',
+			pad_two(this.getUTCDate()),
+			'T',
+			pad_two(this.getUTCHours()),
+			':',
+			pad_two(this.getUTCMinutes()),
+			':',
+			pad_two(this.getUTCSeconds()),
+			'.',
+			pad_three(this.getUTCMilliseconds()),
+			'Z'
+		].join('');
+	};
+}
 
 if( !window.console ) {
 	window.console = function() {	// do a whole lotta nothin 

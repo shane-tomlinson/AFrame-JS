@@ -196,6 +196,7 @@ testsToRun.push( function testField( Y ) {
 		
 		testPlaceholderText: function() {
 			var target = $( '#noValueFormElement' );
+			target.val( '' );
 			
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
