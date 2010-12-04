@@ -3,7 +3,7 @@
 # vim: et sw=4 ts=4
 
 '''
-Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.net/yui/license.html
 version: 1.0.0b1
@@ -22,6 +22,7 @@ def main():
                            showprivate=False,
                            project="Yahoo! UI Library",
                            version="",
+                           copyrighttag="Yahoo! Inc.",
                            projecturl="http://developer.yahoo.com/yui/",
                            yuiversion=False,
                            ydn=False
@@ -41,6 +42,9 @@ def main():
     optparser.add_option( "-c", "--crosslink",
         action="store", dest="crosslinkdir", type="string",
         help="The directory containing json data for other modules to crosslink" )
+    optparser.add_option( "-C", "--copyright",
+        action="store", dest="copyrighttag", type="string",
+        help="The name to use in the copyright line at the bottom of the pages." )
     optparser.add_option( "-s", "--showprivate",
         action="store_true", dest="showprivate",
         help="Should private properties/methods be in the docs?" )
@@ -94,7 +98,8 @@ def main():
                                opts.project,
                                opts.version,
                                opts.projecturl,
-                               opts.ydn
+                               opts.ydn,
+                               opts.copyrighttag
                                )
         gen.process()
     else:

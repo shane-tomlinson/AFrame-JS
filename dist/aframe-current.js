@@ -1921,7 +1921,6 @@ $.fn.hasAttr = function(name) {
  *	are called on each item in the array.  The default default item for these fields is an empty array.  If
  *	there is no data for the field in getFormData, the field is left out of the output.
  * @class AFrame.Schema
- * @extends AFrame.AObject
  * @constructor
  */
 
@@ -1931,13 +1930,10 @@ $.fn.hasAttr = function(name) {
  * @type {object}
  */
 AFrame.Schema = function() {
-	AFrame.Schema.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.Schema, AFrame.AObject, {
+AFrame.Schema.prototype = {
 	init: function( config ) {
 		this.schema = config.schema;
-
-		AFrame.Schema.superclass.init.apply( this, arguments );
 	},
 
 	/**
@@ -2117,7 +2113,7 @@ AFrame.extend( AFrame.Schema, AFrame.AObject, {
 			callback.call( context, schemaRow, key );
 		}
 	}
-} );
+};
 AFrame.mixin( AFrame.Schema, {
 	appDataCleaners: {},
 	formDataCleaners: {},

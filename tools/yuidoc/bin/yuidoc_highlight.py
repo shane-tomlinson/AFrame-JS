@@ -3,22 +3,21 @@
 # vim: et sw=4 ts=4
 
 '''
-Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.net/yui/license.html
 version: 1.0.0b1
 '''
 
 import os, re, string, logging, logging.config
-import const
-from cStringIO import StringIO 
+from const import *
 from optparse import OptionParser
 from pygments import highlight
-from pygments.lexers import JavascriptLexer
 from pygments.formatters import HtmlFormatter
+import codecs
 
 try:
-    logging.config.fileConfig(os.path.join(sys.path[0], const.LOGCONFIG))
+    logging.config.fileConfig(os.path.join(sys.path[0], LOGCONFIG))
 except:
     pass
 
@@ -41,20 +40,43 @@ class DocHighlighter(object):
 
         def highlightString(src):
             try:
-                return highlight(src, JavascriptLexer(), HtmlFormatter())
+                if self.currentExt == 'php':
+                    from pygments.lexers import PhpLexer
+                    return highlight(src, PhpLexer(), HtmlFormatter())
+                elif self.currentExt == 'py':
+                    from pygments.lexers import PythonLexer
+                    return highlight(src, PythonLexer(), HtmlFormatter())
+                elif self.currentExt == 'rb':
+                    from pygments.lexers import RubyLexer
+                    return highlight(src, RubyLexer(), HtmlFormatter())
+                elif self.currentExt == 'pl':
+                    from pygments.lexers import PerlLexer
+                    return highlight(src, PerlLexer(), HtmlFormatter())
+                elif self.currentExt == 'java':
+                    from pygments.lexers import JavaLexer
+                    return highlight(src, JavaLexer(), HtmlFormatter())
+                elif self.currentExt == 'cs':
+                    from pygments.lexers import CSharpLexer
+                    return highlight(src, CSharpLexer(), HtmlFormatter())
+                else:
+                    from pygments.lexers import JavascriptLexer
+                    return highlight(src, JavascriptLexer(), HtmlFormatter())
             except: 
                 return "File could not be highlighted"
 
         def highlightFile(path, file):
             f=open(os.path.join(path, file))
-            fileStr=StringIO(f.read()).getvalue()
+            fileStr = codecs.open( os.path.join(path, file), "r", "utf-8" ).read()
+
             f.close()
             log.info("highlighting " + file)
 
+            self.currentExt = os.path.splitext(file)[1].replace('.', '')
+
             highlighted = highlightString(fileStr)
 
-            out = open(os.path.join(self.outputdir, file + self.newext), "w")
-            out.writelines(highlighted)
+            out = codecs.open( os.path.join(self.outputdir, file + self.newext), "w", "utf-8" )
+            out.write(highlighted)
             out.close()
 
         def highlightDir(path):
@@ -64,8 +86,10 @@ class DocHighlighter(object):
                 fullname = os.path.join(path, i)
                 if os.path.isdir(fullname):
                     subdirs.append(fullname)
-                elif i.lower().endswith(self.ext):
-                    highlightFile(path, i)
+                else:
+                    for ext in self.ext_check:
+                        if i.lower().endswith(ext):
+                            highlightFile(path, i)
 
             for i in subdirs:
                 highlightDir(i)
@@ -74,6 +98,8 @@ class DocHighlighter(object):
         self.outputdir = os.path.abspath(outputdir)
         _mkdir(self.outputdir)
         self.ext = ext
+        self.currentExt = ''
+        self.ext_check = ext.split(',')
         self.newext = newext
 
         log.info("-------------------------------------------------------")

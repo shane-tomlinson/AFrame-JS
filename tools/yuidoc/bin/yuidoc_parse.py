@@ -3,7 +3,7 @@
 # vim: et sw=4 ts=4
 
 '''
-Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.net/yui/license.html
 version: 1.0.0b1
@@ -11,13 +11,21 @@ version: 1.0.0b1
 
 ''' A class to parse Javadoc style comments out of javascript to document 
     an API. It is designed to parse one module at a time ''' 
-import os, re, simplejson, string, sys, pprint, logging, logging.config
-import const
-from cStringIO import StringIO 
-from optparse import OptionParser
+
 
 try:
-    logging.config.fileConfig(os.path.join(sys.path[0], const.LOGCONFIG))
+   import json as simplejson
+except:
+   import simplejson
+
+import os, re, string, sys, pprint, logging, logging.config
+from const import *
+# from cStringIO import StringIO 
+from optparse import OptionParser
+import codecs
+
+try:
+    logging.config.fileConfig(os.path.join(sys.path[0], LOGCONFIG))
 except:
     pass
 
@@ -27,7 +35,7 @@ log = logging.getLogger('yuidoc.parse')
 class DocParser(object):
 
     def __init__(self, inputdirs, outputdir, outputfile, extension, version, yuiversion):
-
+        
         def _mkdir(newdir):
             if os.path.isdir(newdir): pass
             elif os.path.isfile(newdir):
@@ -39,14 +47,15 @@ class DocParser(object):
                 if tail: os.mkdir(newdir)
 
         def parseFile(path, file):
-            f=open(os.path.join(path, file))
-            fileStr=StringIO(f.read()).getvalue()
+            f = codecs.open(os.path.join(path, file), "r", "utf-8" )
+            fileStr = f.read()
             log.info("parsing " + file)
             # add a file marker token so the parser can keep track of what is in what file
-            content = "\n/** @%s %s \n*/" % (const.FILE_MARKER, file)
+            content = "\n/** @%s %s \n*/\n" % (FILE_MARKER, file)
 
             # copy
-            out = open(os.path.join(self.outputdir, file), "w")
+            # out = open(os.path.join(self.outputdir, file), "w")
+            out = codecs.open( os.path.join(self.outputdir, file), "w", "utf-8" )
             out.writelines(fileStr)
             out.close()
 
@@ -55,12 +64,21 @@ class DocParser(object):
         def parseDir(path):
             subdirs = []
             dircontent = ""
-            for i in os.listdir(path):
-                fullname = os.path.join(path, i)
-                if os.path.isdir(fullname):
-                    subdirs.append(fullname)
-                elif i.lower().endswith(self.extension):
-                    dircontent += parseFile(path, i)
+            dirfiles = os.listdir(path)
+            dirfiles.sort()
+            for i in dirfiles:
+                # Checking for directories that start with a '.'
+                # Windows doesn't hide these directories by default
+                if not i.startswith('.'):
+                    # Checking for known bad directory: CVS
+                    if i != 'CVS':
+                        fullname = os.path.join(path, i)
+                        if os.path.isdir(fullname):
+                            subdirs.append(fullname)
+                        else:
+                            for ext in self.extension_check:
+                                if i.lower().endswith(ext):
+                                    dircontent += parseFile(path, i)
 
             for i in subdirs:
                 dircontent += parseDir(i)
@@ -94,15 +112,17 @@ class DocParser(object):
 
         # Dictionary of parsed data
         self.data = { 
-            const.VERSION: version, 
-            const.MAJOR_VERSION: majorVersion, 
-            const.CLASS_MAP: {}, 
-            const.MODULES: {} }
+            VERSION: version, 
+            MAJOR_VERSION: majorVersion, 
+            CLASS_MAP: {}, 
+            MODULES: {} }
 
         self.inputdirs = inputdirs
         self.outputdir = os.path.abspath(outputdir)
         _mkdir(self.outputdir)
         self.extension = extension
+        self.extension_check = extension.split(',')
+
         self.script=""
         self.subModName = False
         self.deferredModuleClasses=[]
@@ -122,34 +142,32 @@ class DocParser(object):
             path = os.path.abspath(i)
             self.script = parseDir(path)
             self.extract()
-
+            
             # log.info("\n\n%s:\n\n%s\n" %("matches", unicode(self.matches)))
 
             for match in self.matches:
                 self.parse(self.tokenize(match))
-            
 
-        out = open(os.path.join(self.outputdir, outputfile), "w")
+        
+        out = codecs.open( os.path.join(self.outputdir, outputfile), "w", "utf-8" )
 
-        out.writelines(simplejson.dumps(self.data))
+        out.writelines(simplejson.dumps(self.data, ensure_ascii=False))
         out.close()
 
 
     def getClassName(self, classString, namespace):
         shortName = classString.replace(namespace + ".", "")
-        #nss = self.data[const.NAMESPACES]
+        #nss = self.data[NAMESPACES]
         #for i in nss:
             # log.warn('asdf ' + i);
             #shortName = shortName.replace(i + ".", "")
         longName  = namespace + "." + shortName
         return shortName, longName
         
-    # extract string literals in case they contain the documentation pattern
+    # extract string literals in case they contain the doc comment pattern
     literals_pat = re.compile(r'(\'.*?(?<=[^\\])\')|(\".*?(?<=[^\\])\")')
 
-    # extract regex literals in case they contain 
-    #regex_pat = re.compile(r'(\/.*?(?<=[^\\])\/)')
-    #regex_pat = re.compile(r'(\/[^\s\/\*][^\n]*?(?<=[^\\])\/)')
+    # extract regex literals in case they contain the doc comment pattern
     regex_pat = re.compile(r'(\/[^\s\/\*][^\n]*\/)')
     
     # the token we will use to restore the string literals
@@ -180,7 +198,7 @@ class DocParser(object):
 
     # tags that do not require a description, used by the tokenizer so that these
     # tags can be used above the block description without breaking things
-    singleTags = "constructor public private protected static final beta experimental writeonce global chainable"
+    singleTags = "constructor public private protected static final beta experimental writeonce readonly global chainable"
 
     # guess the name and type of a block based upon the code following it
     guess_pat = re.compile('\s*?(var|function)?\s*?(\w+)\s*?[=:]\s*?(function)?.*', re.S)
@@ -205,10 +223,10 @@ class DocParser(object):
 
         # guesses name and type
         def guess_sub(mo):
-            type = const.PROPERTY
+            type = PROPERTY
             #log.debug(mo.group(2))
             if mo.group(1) or mo.group(3):
-                type = const.FUNCTION
+                type = FUNCTION
 
             self.guessedtype = type
             self.guessedname = mo.group(2) 
@@ -236,12 +254,12 @@ class DocParser(object):
                     nextline = match.group(4)
                     mo = self.guess_pat.search(nextline)
                     if mo:
-                        type = const.PROPERTY
-                        if string.find(nextline, const.FUNCTION) > 0:
-                            type = const.FUNCTION
+                        type = PROPERTY
+                        if string.find(nextline, FUNCTION) > 0:
+                            type = FUNCTION
 
-                        block += "@" + const.GUESSEDTYPE + " " + type + "\n"
-                        block += "@" + const.GUESSEDNAME + " " + mo.group(2) + "\n"
+                        block += "@" + GUESSEDTYPE + " " + type + "\n"
+                        block += "@" + GUESSEDNAME + " " + mo.group(2) + "\n"
 
                 if len(block) > 0:
                     self.matches.append(block)
@@ -288,7 +306,7 @@ class DocParser(object):
             """ identify an attribute tag vs a description block """
             return token.strip()[:1] == "@"
 
-        def parseParams(tokenMap, dict, srctag=const.PARAM, desttag=const.PARAMS):
+        def parseParams(tokenMap, dict, srctag=PARAM, desttag=PARAMS):
             if srctag in tokenMap:
                 # params must be an array because they need to stay in order
                 if not desttag in dict: dict[desttag] = []
@@ -300,9 +318,9 @@ class DocParser(object):
 
                         if match:
                             if match.group(4):
-                                type, description = "", unicode(match.group(4) + match.group(5), 'utf-8', 'xmlcharrefreplace')
+                                type, description = "", match.group(4) + match.group(5)
                             else:
-                                type, description = unicode(match.group(2), 'utf-8', 'xmlcharrefreplace'), unicode((match.group(1) + match.group(3)).strip(), 'utf-8', 'xmlcharrefreplace')
+                                type, description = match.group(2), (match.group(1) + match.group(3)).strip()
 
                         else:
                             type, description = "", ""
@@ -312,20 +330,16 @@ class DocParser(object):
                         log.error("\nError, a parameter could not be parsed:\n\n %s\n\n %s\n" %(i, pprint.pformat(tokenMap)))
                         sys.exit()
 
-                    # description.encode('utf-8', 'xmlcharrefreplace')
-                    # description = unicode(description, 'utf-8', 'xmlcharrefreplace')
-
-
                     mo = self.param_pat.match(description)
                     if mo:
                         name = mo.group(1)
                         description = mo.group(2)
-                        description.encode('utf-8', 'xmlcharrefreplace')
+                        # description.encode('utf-8', 'xmlcharrefreplace')
 
                         dict[desttag].append({  
-                                const.NAME:        name,
-                                const.TYPE:        type, 
-                                const.DESCRIPTION: description 
+                                NAME:        name,
+                                TYPE:        type, 
+                                DESCRIPTION: description 
                             })
                     else:
                         log.error("Error, could not parse param -- %s, %s --" %(type, description))
@@ -334,8 +348,8 @@ class DocParser(object):
             return dict 
  
         def parseReturn(tokenMap, dict):
-            if const.RETURN in tokenMap:
-                ret = tokenMap[const.RETURN][0]
+            if RETURN in tokenMap:
+                ret = tokenMap[RETURN][0]
                 try:
                     # type, description = self.compound_pat.sub(compound_sub, ret)
 
@@ -343,9 +357,9 @@ class DocParser(object):
 
                     if match:
                         if match.group(4):
-                            type, description = "", unicode(match.group(4) + match.group(5), 'utf-8', 'xmlcharrefreplace')
+                            type, description = "", match.group(4) + match.group(5)
                         else:
-                            type, description = unicode(match.group(2), 'utf-8', 'xmlcharrefreplace'), unicode((match.group(1) + match.group(3)).strip(), 'utf-8', 'xmlcharrefreplace')
+                            type, description = match.group(2), (match.group(1) + match.group(3)).strip()
                     else:
                         type, description = "", ""
 
@@ -353,8 +367,8 @@ class DocParser(object):
                     log.error("\nError, a return statement could not be parsed:\n\n %s\n\n %s\n" %(ret, pprint.pformat(tokenMap)))
                     sys.exit()
 
-                dict[const.RETURN] = { const.TYPE: type , const.DESCRIPTION: description }
-                tokenMap.pop(const.RETURN)
+                dict[RETURN] = { TYPE: type , DESCRIPTION: description }
+                tokenMap.pop(RETURN)
             return dict
 
         def defineClass(name):
@@ -363,14 +377,14 @@ class DocParser(object):
                 shortName, longName = self.getClassName(name, self.currentNamespace)
             else:
                 shortName = longName = name
-            c = { const.SHORTNAME: shortName, const.NAME: longName, const.NAMESPACE: self.currentNamespace }
+            c = { SHORTNAME: shortName, NAME: longName, NAMESPACE: self.currentNamespace }
             self.currentClass = longName
                
-            if longName in self.data[const.CLASS_MAP]:
+            if longName in self.data[CLASS_MAP]:
                 # print "WARNING: %s - Class %s was redefined" %(tokens, longName)
                 log.warn("WARNING: Class %s was redefined" %(longName))
             else:
-                self.data[const.CLASS_MAP][longName] = c
+                self.data[CLASS_MAP][longName] = c
 
             return shortName, longName 
 
@@ -410,7 +424,7 @@ it was empty" % token
 
                 # There are key pieces of info we need to have before we 
                 # can properly set up the documemtation for this block
-                if token == const.MODULE: 
+                if token == MODULE: 
                     if desc:
 
                         # log.info("\nModule: " + desc)
@@ -421,57 +435,55 @@ it was empty" % token
             else:
                 # the first block without a description should be the description
                 # for the block
-                if token and const.DESCRIPTION not in tokenMap:
+                if token and DESCRIPTION not in tokenMap:
 
-                    token = unicode(token, 'utf-8', 'xmlcharrefreplace')
-                    # token.encode('utf-8', 'xmlcharrefreplace')
-                    tokenMap[const.DESCRIPTION] = [token]
+                    tokenMap[DESCRIPTION] = [token]
                 else: pass # I don't think this can happen any longer
 
             token = next()
 
         self.blocks.append(tokenMap);
         
-        if const.NAMESPACE in tokenMap:
-            if not const.NAMESPACES in self.data: self.data[const.NAMESPACES] = []
-            ns = tokenMap[const.NAMESPACE][0]
+        if NAMESPACE in tokenMap:
+            if not NAMESPACES in self.data: self.data[NAMESPACES] = []
+            ns = tokenMap[NAMESPACE][0]
             self.currentNamespace = ns
-            if ns not in self.data[const.NAMESPACES]:
-                self.data[const.NAMESPACES].append(ns)
-            tokenMap.pop(const.NAMESPACE)
+            if ns not in self.data[NAMESPACES]:
+                self.data[NAMESPACES].append(ns)
+            tokenMap.pop(NAMESPACE)
 
         # @for tells the parser either that the class that is being parsed is an inner class
         # or, in the case of it being defined outside of a class definition, that an inner
         # class definition is complete and we need to resume processing the remainder of the
         # outer class
-        if const.FOR in tokenMap:
-            name = tokenMap[const.FOR][0]
+        if FOR in tokenMap:
+            name = tokenMap[FOR][0]
             longName = name
             currentFor = longName
-            if const.CLASS not in tokenMap:
-                if longName in self.data[const.CLASS_MAP]:
+            if CLASS not in tokenMap:
+                if longName in self.data[CLASS_MAP]:
                     self.currentClass = longName
                 else:
                     defineClass(name)
                     
-                tokenMap.pop(const.FOR)
+                tokenMap.pop(FOR)
 
 
         # use the guessed name and type if a block type was not found
-        if const.CLASS not in tokenMap \
-            and const.METHOD not in tokenMap \
-            and const.PROPERTY not in tokenMap \
-            and const.CONSTRUCTOR not in tokenMap \
-            and const.EVENT not in tokenMap \
-            and const.CONFIG not in tokenMap \
-            and const.ATTRIBUTE not in tokenMap \
-            and const.MODULE not in tokenMap:
-            if const.GUESSEDNAME in tokenMap:
-                if const.GUESSEDTYPE in tokenMap:
-                    if tokenMap[const.GUESSEDTYPE][0] == const.FUNCTION:
-                        tokenMap[const.METHOD] = tokenMap[const.GUESSEDNAME]
+        if CLASS not in tokenMap \
+            and METHOD not in tokenMap \
+            and PROPERTY not in tokenMap \
+            and CONSTRUCTOR not in tokenMap \
+            and EVENT not in tokenMap \
+            and CONFIG not in tokenMap \
+            and ATTRIBUTE not in tokenMap \
+            and MODULE not in tokenMap:
+            if GUESSEDNAME in tokenMap:
+                if GUESSEDTYPE in tokenMap:
+                    if tokenMap[GUESSEDTYPE][0] == FUNCTION:
+                        tokenMap[METHOD] = tokenMap[GUESSEDNAME]
                     else:
-                        tokenMap[const.PROPERTY] = tokenMap[const.GUESSEDNAME]
+                        tokenMap[PROPERTY] = tokenMap[GUESSEDNAME]
 
 
         
@@ -482,111 +494,133 @@ it was empty" % token
 
         def parseModule(tokenMap):
 
-            log.info("\n\n%s:\n\n%s\n" %("tokenMap", unicode(tokenMap)))
+            log.debug("\n\n%s:\n\n%s\n" %("tokenMap", unicode(tokenMap)))
 
             target = None
             self.subModName = False
-            if not const.MODULES in self.data: self.data[const.MODULES] = {}
-            for module in tokenMap[const.MODULE]:
+            if not MODULES in self.data: self.data[MODULES] = {}
+            for module in tokenMap[MODULE]:
+                if module not in self.data[MODULES]:
+                    self.data[MODULES][module] = { NAME: module, CLASS_LIST: [], FILE_LIST: [], SUBMODULES: [], SUBDATA: {} }
 
-                if module not in self.data[const.MODULES]:
-                    self.data[const.MODULES][module] = { const.NAME: module, const.CLASS_LIST: [], const.FILE_LIST: [], const.SUBMODULES: [], const.SUBDATA: {} }
+                target = self.data[MODULES][module]
 
-                target = self.data[const.MODULES][module]
+            if SUBMODULE in tokenMap:
 
-            if const.SUBMODULE in tokenMap:
-                target[const.SUBMODULES].append(tokenMap[const.SUBMODULE][0]);
-                self.subModName = tokenMap[const.SUBMODULE][0];
-                target[const.SUBDATA][self.subModName] = { const.NAME: self.currentClass }
+                subname = tokenMap[SUBMODULE][0]
 
-                if const.DESCRIPTION in tokenMap:
-                    target[const.SUBDATA][self.subModName][const.DESCRIPTION] = tokenMap[const.DESCRIPTION][0]
+                if not target[SUBMODULES].count(subname):
+                    target[SUBMODULES].append(subname)
+
+                self.subModName = subname;
+                target[SUBDATA][subname] = { NAME: self.currentClass }
+
+                if DESCRIPTION in tokenMap:
+                    log.debug("\n\nSubmodule: %s, description: %s\n" %(self.subModName, tokenMap[DESCRIPTION][0]))
+                    target[SUBDATA][subname][DESCRIPTION] = tokenMap[DESCRIPTION][0]
                     
-                tokenMap.pop(const.SUBMODULE)
+                tokenMap.pop(SUBMODULE)
                 
-            elif const.DESCRIPTION in tokenMap:
-                target[const.DESCRIPTION] = tokenMap[const.DESCRIPTION][0]
+            elif DESCRIPTION in tokenMap:
+                target[DESCRIPTION] = tokenMap[DESCRIPTION][0]
 
             if len(self.deferredModuleFiles) > 0:
                 for i in self.deferredModuleFiles:
-                    self.data[const.FILE_MAP][i][const.MODULE] = self.currentModule
-                    self.data[const.MODULES][self.currentModule][const.FILE_LIST].append(i)
+                    self.data[FILE_MAP][i][MODULE] = self.currentModule
+                    if not self.data[MODULES][self.currentModule][FILE_LIST].count(i):
+                        self.data[MODULES][self.currentModule][FILE_LIST].append(i)
 
                 self.deferredModuleFiles = []
 
             if len(self.deferredModuleClasses) > 0:
                 for i in self.deferredModuleClasses:
-                    self.data[const.CLASS_MAP][i][const.MODULE] = self.currentModule
-                    self.data[const.MODULES][self.currentModule][const.CLASS_LIST].append(i)
+                    self.data[CLASS_MAP][i][MODULE] = self.currentModule
+                    if not self.data[MODULES][self.currentModule][CLASS_LIST].count(i):
+                        self.data[MODULES][self.currentModule][CLASS_LIST].append(i)
 
                 self.deferredModuleClasses = []
 
-            tokenMap.pop(const.MODULE)
+            tokenMap.pop(MODULE)
 
             return target, tokenMap
 
-        if const.FILE_MARKER in tokenMap:
-            if not const.FILE_MAP in self.data: self.data[const.FILE_MAP] = {}
+        # print "DAV: %s" % tokenMap
+        if FILE_MARKER in tokenMap:
+            if not FILE_MAP in self.data: self.data[FILE_MAP] = {}
             self.currentFile = desc
-            file_name = tokenMap[const.FILE_MARKER][0]
-            target = { const.NAME: file_name, const.CLASS_LIST:[] }
-            self.data[const.FILE_MAP][file_name] = target
+            file_name = tokenMap[FILE_MARKER][0]
+            target = { NAME: file_name, CLASS_LIST:[] }
+            self.data[FILE_MAP][file_name] = target
 
- 
             if self.currentModule:
-                target[const.MODULE] = self.currentModule
-                self.data[const.MODULES][self.currentModule][const.FILE_LIST].append(file_name)
+                target[MODULE] = self.currentModule
+                if not self.data[MODULES][self.currentModule][FILE_LIST].count(file_name):
+                    self.data[MODULES][self.currentModule][FILE_LIST].append(file_name)
             else:
                 """ defer the module assignment until we find the token """
                 log.info('deferred module file: ' + file_name)
-                self.deferredModuleFiles.append(file_name);
+                if not self.deferredModuleFiles.count(file_name):
+                    self.deferredModuleFiles.append(file_name)
 
 
-            tokenMap.pop(const.FILE_MARKER)
+            tokenMap.pop(FILE_MARKER)
 
-        elif const.CLASS in tokenMap:
+        elif CLASS in tokenMap:
 
-            name = tokenMap[const.CLASS][0]
+            name = tokenMap[CLASS][0]
 
             shortName, longName = defineClass(name)
 
-            if const.MODULE in tokenMap:
+            if MODULE in tokenMap:
                 target, tokenMap = parseModule(tokenMap)
             
             if self.subModName:
-                self.data[const.MODULES][self.currentModule][const.SUBDATA][self.subModName][const.NAME] = longName
-                if const.DESCRIPTION in tokenMap:
-                    d = tokenMap[const.DESCRIPTION][0]
-                    try: 
-                        encoded = unicode(d, 'utf-8', 'xmlcharrefreplace')
-                        d = encoded
-                    except: pass
-                    self.data[const.MODULES][self.currentModule][const.SUBDATA][self.subModName][const.DESCRIPTION] = d
+                # provides a place to link to on the module landing page
+                try:
+                    self.data[MODULES][self.currentModule][SUBDATA][self.subModName][NAME] = longName
+                except:
+                    pass
 
-            if const.GLOBAL in tokenMap:
+                # this was overwriting the submodule description
+                # if DESCRIPTION in tokenMap:
+                #     d = tokenMap[DESCRIPTION][0]
+                #     try: 
+                #         encoded = unicode(d, 'utf-8', 'xmlcharrefreplace')
+                #         d = encoded
+                #     except: pass
+                #     self.data[MODULES][self.currentModule][SUBDATA][self.subModName][DESCRIPTION] = d
+
+            if GLOBAL in tokenMap:
                 self.globals[longName] = True
                 self.currentGlobal = longName
 
-            target = self.data[const.CLASS_MAP][longName]
+            target = self.data[CLASS_MAP][longName]
 
             if currentFor and currentFor != longName: # this is an inner class
                 if "innerClasses" not in target:
                     target["innerClasses"] = []
-
-                target["innerClasses"].append(currentFor)
+                if not target["innerClasses"].count(currentFor):
+                    target["innerClasses"].append(currentFor)
  
             if self.currentModule:
                 
-                target[const.MODULE] = self.currentModule
-                self.data[const.MODULES][self.currentModule][const.CLASS_LIST].append(longName)
+                target[MODULE] = self.currentModule
+                if not self.data[MODULES][self.currentModule][CLASS_LIST].count(longName):
+                    self.data[MODULES][self.currentModule][CLASS_LIST].append(longName)
             else:
                 """ defer the module assignment until we find the token """
                 log.info('deferred module CLASS: ' + longName)
-                self.deferredModuleClasses.append(longName);
+                if not self.deferredModuleClasses.count(longName):
+                    self.deferredModuleClasses.append(longName)
 
             if self.currentFile:
-                target[const.FILE] = self.currentFile
-                self.data[const.FILE_MAP][self.currentFile][const.CLASS_LIST].append(longName)
+                target[FILE] = self.currentFile
+
+            try:
+                if not self.data[FILE_MAP][self.currentFile][CLASS_LIST].count(longName):
+                    self.data[FILE_MAP][self.currentFile][CLASS_LIST].append(longName)
+            except:
+                pass
 
             # if "mixes" in tokenMap:
             if "extends" in tokenMap:
@@ -599,135 +633,139 @@ it was empty" % token
                 for i in tokenMap["uses"]:
                     # shortName, longName = self.getClassName(i, self.currentNamespace)
                     longName = i
-                    target["uses"].append(longName)
+                    if not target["uses"].count(longName):
+                        target["uses"].append(longName)
 
             ###############
-            # if not const.CLASS_LIST in self.data:
-                # self.data[const.CLASS_LIST] = []
+            # if not CLASS_LIST in self.data:
+                # self.data[CLASS_LIST] = []
 
-            # self.data[const.CLASS_LIST].append(target)
+            # self.data[CLASS_LIST].append(target)
             ############
             
-            tokenMap.pop(const.CLASS)
+            tokenMap.pop(CLASS)
                 
-        elif const.METHOD in tokenMap:
+        elif METHOD in tokenMap:
 
-            method = tokenMap[const.METHOD][0]
+            method = tokenMap[METHOD][0]
 
             if not self.currentClass:
                 log.warn("WARNING: @method tag found before @class was found.\n****\n" + method + ", making global " + self.currentGlobal + " current class")
                 self.currentClass = self.currentGlobal
                 #sys.exit()
-                # if const.FOR in tokenMap:
-                    # self.currentClass = tokenMap[const.FOR][0]
+                # if FOR in tokenMap:
+                    # self.currentClass = tokenMap[FOR][0]
 
-            c = self.data[const.CLASS_MAP][self.currentClass]
+            c = self.data[CLASS_MAP][self.currentClass]
 
             # log.info(" @method "  + method)
 
-            if not const.METHODS in c: c[const.METHODS] = {}
+            if not METHODS in c: c[METHODS] = {}
             
-            if method in c[const.METHODS]:
+            if method in c[METHODS]:
                 log.warn("WARNING: method %s was redefined" %(method))
             else:
-                c[const.METHODS][method] = parseParams(tokenMap, {})
-                c[const.METHODS][method] = parseReturn(tokenMap, c[const.METHODS][method])
+                c[METHODS][method] = parseParams(tokenMap, {})
+                c[METHODS][method] = parseReturn(tokenMap, c[METHODS][method])
 
-            target = c[const.METHODS][method]
+            target = c[METHODS][method]
 
-            tokenMap.pop(const.METHOD)
+            tokenMap.pop(METHOD)
 
-        elif const.EVENT in tokenMap:
+        elif EVENT in tokenMap:
             if not self.currentClass:
                 log.error("Error: @event tag found before @class was found.\n****\n")
-                sys.exit()
+                self.currentClass = self.currentGlobal
+                # sys.exit()
 
-            c = self.data[const.CLASS_MAP][self.currentClass]
-            event = tokenMap[const.EVENT][0]
+            c = self.data[CLASS_MAP][self.currentClass]
+            event = tokenMap[EVENT][0]
 
-            if not const.EVENTS in c: c[const.EVENTS] = {}
+            if not EVENTS in c: c[EVENTS] = {}
             
-            if event in c[const.EVENTS]:
+            if event in c[EVENTS]:
                 log.warn("WARNING: event %s was redefined" %(event))
             else:
-                c[const.EVENTS][event] = parseParams(tokenMap, {})
+                c[EVENTS][event] = parseParams(tokenMap, {})
 
-            target = c[const.EVENTS][event]
+            target = c[EVENTS][event]
 
-            tokenMap.pop(const.EVENT)
+            tokenMap.pop(EVENT)
 
-        elif const.PROPERTY in tokenMap:
+        elif PROPERTY in tokenMap:
 
             if not self.currentClass:
-                log.error("Error: @property tag found before @class was found.\n****\n")
-                sys.exit()
+                log.warn("Error: @property tag found before @class was found.\n****\n")
+                self.currentClass = self.currentGlobal
+                #sys.exit()
 
-            c = self.data[const.CLASS_MAP][self.currentClass]
-            property = tokenMap[const.PROPERTY][0]
+            c = self.data[CLASS_MAP][self.currentClass]
+            property = tokenMap[PROPERTY][0]
 
-            if not const.PROPERTIES in c: c[const.PROPERTIES] = {}
+            if not PROPERTIES in c: c[PROPERTIES] = {}
             
-            if property in c[const.PROPERTIES]:
+            if property in c[PROPERTIES]:
                 log.warn("WARNING: Property %s was redefined" %(property))
             else:
-                c[const.PROPERTIES][property] = {}
+                c[PROPERTIES][property] = {}
 
-            target = c[const.PROPERTIES][property]
+            target = c[PROPERTIES][property]
 
-            tokenMap.pop(const.PROPERTY)
+            tokenMap.pop(PROPERTY)
 
-        elif const.CONFIG in tokenMap or const.ATTRIBUTE in tokenMap:
+        elif CONFIG in tokenMap or ATTRIBUTE in tokenMap:
         
             if not self.currentClass:
-                log.error("Error: @config tag found before @class was found.\n****\n")
-                sys.exit()
+                log.warn("Error: @config tag found before @class was found.\n****\n")
+                # sys.exit()
+                self.currentClass = self.currentGlobal
 
-            c = self.data[const.CLASS_MAP][self.currentClass]
-            if const.ATTRIBUTE in tokenMap:
-                config = tokenMap[const.ATTRIBUTE][0]
+            c = self.data[CLASS_MAP][self.currentClass]
+            if ATTRIBUTE in tokenMap:
+                config = tokenMap[ATTRIBUTE][0]
             else:
-                config = tokenMap[const.CONFIG][0]
+                config = tokenMap[CONFIG][0]
 
 
-            if not const.CONFIGS in c: c[const.CONFIGS] = {}
+            if not CONFIGS in c: c[CONFIGS] = {}
             
-            if config in c[const.CONFIGS]:
+            if config in c[CONFIGS]:
                 log.warn("WARNING: Property %s was redefined" %(config))
             else:
-                c[const.CONFIGS][config] = {}
+                c[CONFIGS][config] = {}
 
-            target = c[const.CONFIGS][config]
+            target = c[CONFIGS][config]
 
-            if const.ATTRIBUTE in tokenMap:
-                tokenMap.pop(const.ATTRIBUTE)
+            if ATTRIBUTE in tokenMap:
+                tokenMap.pop(ATTRIBUTE)
 
-                if not const.EVENTS in c: c[const.EVENTS] = {}
+                if not EVENTS in c: c[EVENTS] = {}
 
                 def getAttEvt(eventname, desc):
 
                     return {
-                        const.NAME: eventname,
-                        const.DESCRIPTION: desc,
-                        const.PARAMS: [{
-                            const.NAME: const.EVENT,
-                            const.TYPE: "{oldValue: any, newValue: any}",
-                            const.DESCRIPTION: "An object containing the previous attribute value and the new value."
+                        NAME: eventname,
+                        DESCRIPTION: desc,
+                        PARAMS: [{
+                            NAME: EVENT,
+                            TYPE: "{oldValue: any, newValue: any}",
+                            DESCRIPTION: "An object containing the previous attribute value and the new value."
                         }]
                     }
 
                 def get3xAttEvt(eventname, config):
 
                     return {
-                        const.NAME: eventname,
-                        const.DESCRIPTION: 'Fires when the value for the configuration attribute \'%s\' is \
+                        NAME: eventname,
+                        DESCRIPTION: 'Fires when the value for the configuration attribute \'%s\' is \
 changed. You can listen for the event using the <a href="Attribute.html#method_on">on</a> \
 method if you wish to be notified before the attribute\'s value has changed, or using the \
 <a href="Event.Target.html#method_after">after</a> method if you wish to be notified after \
 the attribute\'s value has changed.' %(config),
-                        const.PARAMS: [{
-                            const.NAME: const.EVENT,
-                            const.TYPE: "Event.Facade",
-                            const.DESCRIPTION: 'An Event Facade object with \
+                        PARAMS: [{
+                            NAME: EVENT,
+                            TYPE: "Event.Facade",
+                            DESCRIPTION: 'An Event Facade object with \
      the following attribute specific properties added:\
 	<dl>\
 		<dt>prevVal</dt>\
@@ -744,27 +782,27 @@ the attribute\'s value has changed.' %(config),
                     }
 
                 # auto-document '[configname]ChangeEvent' and 'before[Configname]ChangeEvent'
-                if self.data[const.MAJOR_VERSION] > 2:
+                if self.data[MAJOR_VERSION] > 2:
 
-                    eventname = config + const.CHANGEEVENT
-                    c[const.EVENTS][eventname] = get3xAttEvt(eventname, config)
+                    eventname = config + CHANGEEVENT
+                    c[EVENTS][eventname] = get3xAttEvt(eventname, config)
 
                 else:
 
-                    eventname = config + const.CHANGEEVENT
+                    eventname = config + CHANGEEVENT
                     desc = "Fires when the value for the configuration attribute '" + config + "' changes."
-                    c[const.EVENTS][eventname] = getAttEvt(eventname, desc)
+                    c[EVENTS][eventname] = getAttEvt(eventname, desc)
 
-                    eventname = const.BEFORE + config[0].upper() + config[1:] + const.CHANGEEVENT
+                    eventname = BEFORE + config[0].upper() + config[1:] + CHANGEEVENT
                     desc = "Fires before the value for the configuration attribute '" + config + "' changes." + " Return false to cancel the attribute change."
-                    c[const.EVENTS][eventname] = getAttEvt(eventname, desc)
+                    c[EVENTS][eventname] = getAttEvt(eventname, desc)
 
                 
             else:
-                tokenMap.pop(const.CONFIG)
+                tokenMap.pop(CONFIG)
 
         # module blocks won't be picked up unless they are standalone
-        elif const.MODULE in tokenMap:
+        elif MODULE in tokenMap:
             target, tokenMap = parseModule(tokenMap)
 
         else:
@@ -775,17 +813,18 @@ the attribute\'s value has changed.' %(config),
         # constructors are added as an array to the currentClass.  This makes it so
         # multiple constructors can be supported even though that is out of scope
         # for documenting javascript
-        if const.CONSTRUCTOR in tokenMap:
+        if CONSTRUCTOR in tokenMap:
 
             if not self.currentClass:
                 log.error("Error: @constructor tag found but @class was not found.\n****\n")
                 sys.exit(1)
 
-            c = self.data[const.CLASS_MAP][self.currentClass]
-            if not const.CONSTRUCTORS in c: c[const.CONSTRUCTORS] = []
-            constructor = parseParams(tokenMap, { const.DESCRIPTION: tokenMap[const.DESCRIPTION][0] })
-            c[const.CONSTRUCTORS].append(constructor)
-            tokenMap.pop(const.CONSTRUCTOR)
+            c = self.data[CLASS_MAP][self.currentClass]
+            if not CONSTRUCTORS in c: c[CONSTRUCTORS] = []
+            constructor = parseParams(tokenMap, { DESCRIPTION: tokenMap[DESCRIPTION][0] })
+            if not c[CONSTRUCTORS].count(constructor):
+                c[CONSTRUCTORS].append(constructor)
+            tokenMap.pop(CONSTRUCTOR)
 
         # process the rest of the tags
         if target != None:

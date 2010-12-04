@@ -1,5 +1,5 @@
 '''
-Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Copyright (c) 2010, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.net/yui/license.html
 version: 1.0.0b1
@@ -40,6 +40,7 @@ GUESSEDNAME='guessedname'
 GUESSEDTYPE='guessedtype'
 HASEVENTS='hasevents'
 HOST='host'
+IGNORE_PATTERNS = ('*.pyc','CVS','^.git','.svn')
 LONGNAME='longname'
 LOGCONFIG='yuidoclog.conf'
 METHOD='method'

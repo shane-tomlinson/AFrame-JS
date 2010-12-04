@@ -45,7 +45,7 @@ testsToRun.push( function testAObject( Y ) {
 		},
 		
 		tearDown : function () {
-			this.schema.teardown();
+			this.schema = null;
 		},
 
 		testSchemaGetDefault: function() {
