@@ -11,7 +11,7 @@ testsToRun.push( function test( Y ) {
 			this.list = AFrame.construct( {
 				type: AFrame.List,
 				config: {
-					target: '#AFrame_List .list',
+					target: '.list',
 					createListElementCallback: function( index, data ) {
 						this.insertedIndex = index;
 						this.insertedData = data;

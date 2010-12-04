@@ -11,7 +11,7 @@ testsToRun.push( function testList( Y ) {
 			this.list = AFrame.construct( {
 				type: AFrame.List,
 				config: {
-					target: '#AFrame_List .list',
+					target: '.list',
 					createListElementCallback: function( meta, data ) {
 						this.insertedIndex = meta.index;
 						this.insertedData = data;
@@ -24,7 +24,7 @@ testsToRun.push( function testList( Y ) {
 		},
 		
 		tearDown : function () {
-			$( '#AFrame_List .list' ).html( '' );
+			$( '.list' ).html( '' );
 			
 			this.list.teardown();
 			this.list= null;
@@ -97,29 +97,29 @@ testsToRun.push( function testList( Y ) {
 				removeData = data;
 			} );
 			
-			Assert.areEqual( 4, $( '#AFrame_List .list > li' ).length, 'correct number of start items' );
-			Assert.areEqual( 1, $( '#AFrame_List .list > #li0' ).length, 'check for #li0' );
-			Assert.areEqual( 1, $( '#AFrame_List .list > #li1' ).length, 'check for #li1' );
-			Assert.areEqual( 1, $( '#AFrame_List .list > #li2' ).length, 'check for #li2' );
-			Assert.areEqual( 1, $( '#AFrame_List .list > #li3' ).length, 'check for #li3' );
+			Assert.areEqual( 4, $( '.list > li' ).length, 'correct number of start items' );
+			Assert.areEqual( 1, $( '.list > #li0' ).length, 'check for #li0' );
+			Assert.areEqual( 1, $( '.list > #li1' ).length, 'check for #li1' );
+			Assert.areEqual( 1, $( '.list > #li2' ).length, 'check for #li2' );
+			Assert.areEqual( 1, $( '.list > #li3' ).length, 'check for #li3' );
 			
 			this.list.remove( 0 );
-			Assert.areEqual( 3, $( '#AFrame_List .list > li' ).length, 'remove index 0' );
-			Assert.areEqual( 0, $( '#AFrame_List .list > #li0' ).length, 'remove index 0' );
+			Assert.areEqual( 3, $( '.list > li' ).length, 'remove index 0' );
+			Assert.areEqual( 0, $( '.list > #li0' ).length, 'remove index 0' );
 
 
 			Assert.areEqual( 0, removeData.meta.index, 'onRemoveElement data index correct' );
 			Assert.isNotUndefined( 0, removeData.rowElement, 'onRemoveElement data rowElement exists' );
 			
 			this.list.remove( 1 );
-			Assert.areEqual( 2, $( '#AFrame_List .list > li' ).length, 'remove index 1' );
-			Assert.areEqual( 0, $( '#AFrame_List .list > #li2' ).length, 'remove index 1 correctly removes #li2' );
+			Assert.areEqual( 2, $( '.list > li' ).length, 'remove index 1' );
+			Assert.areEqual( 0, $( '.list > #li2' ).length, 'remove index 1 correctly removes #li2' );
 			
 			this.list.remove( -1 );
-			Assert.areEqual( 1, $( '#AFrame_List .list > li' ).length, 'remove index -1' );
-			Assert.areEqual( 0, $( '#AFrame_List .list > #li3' ).length, 'remove index -1 correctly removes #li3' );
+			Assert.areEqual( 1, $( '.list > li' ).length, 'remove index -1' );
+			Assert.areEqual( 0, $( '.list > #li3' ).length, 'remove index -1 correctly removes #li3' );
 			
-			Assert.areEqual( 1, $( '#AFrame_List .list > #li1' ).length, '#li1 still remains' );
+			Assert.areEqual( 1, $( '.list > #li1' ).length, '#li1 still remains' );
 		},
 		
 		testGetCount: function() {
@@ -135,11 +135,11 @@ testsToRun.push( function testList( Y ) {
 		testClear: function() {
 			this.list.insert( {} );
 			
-			Assert.areNotEqual( '', $( '#AFrame_List .list' ).html(), 'list has contents' );
+			Assert.areNotEqual( '', $( '.list' ).html(), 'list has contents' );
 
 			this.list.clear();
 			
-			Assert.areEqual( '', $( '#AFrame_List .list' ).html(), 'list has been cleared' );
+			Assert.areEqual( '', $( '.list' ).html(), 'list has been cleared' );
 		}
 	} );
 

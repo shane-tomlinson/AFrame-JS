@@ -15,7 +15,7 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 			this.list = AFrame.construct( {
 				type: AFrame.List,
 				config: {
-					target: '#AFrame_List .list',
+					target: '.list',
 					createListElementCallback: function( index, data ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
@@ -91,7 +91,7 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 			this.list = AFrame.construct( {
 				type: AFrame.List,
 				config: {
-					target: '#AFrame_List .list',
+					target: '.list',
 					createListElementCallback: function( index, data ) {
 						this.insertedIndex = index;
 						this.insertedData = data;

@@ -233,7 +233,7 @@ testsToRun.push( function testAObject( Y ) {
 			AFrame.Schema.addSchemaConfig( 'inner', innerSchemaConfig );
 			
 			var outerSchemaConfig = {
-				schemaField: { type: 'inner' },
+				schemaField: { type: 'inner' }
 			};
 			AFrame.Schema.addSchemaConfig( 'outer', outerSchemaConfig );
 			
