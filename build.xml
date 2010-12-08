@@ -104,7 +104,7 @@
        <target name="all" depends="init,clean,jslint,increment_build_number,compress,docs">
 	</target>
 	
-	<target name="site" description="build the site">
+	<target name="site" description="build the site" depends="docs">
 		<mkdir dir="${site}" />
 		
 		<delete dir="${site}/docs" />

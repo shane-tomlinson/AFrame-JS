@@ -1,6 +1,6 @@
 /**
  * The main AFrame module.  All AFrame related items are under this.
-* @module AFrame
+ * @module AFrame
 */
 
 if( !Function.prototype.bind ) {

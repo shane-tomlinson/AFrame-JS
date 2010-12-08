@@ -1,8 +1,10 @@
 /**
 * A basic data container. Used like a hash. Provides functionality that allows the binding of callbacks
-*	to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
-*	do "dataContainer = AFrame.DataContainer( data );"  This ensures that only one DataContainer is
-*	ever created for a given object.
+* to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
+* do 
+*
+*    dataContainer = AFrame.DataContainer( data );
+* This ensures that only one DataContainer is ever created for a given object.
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @constructor
@@ -56,7 +58,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Set an item of data
+	* Set an item of data.  
+    *
+    * Example usage:
+    *
+    *    dataContainer.set( 'name', 'Shane Tomlinson' );
 	* @method set
 	* @param {string} fieldName name of field
 	* @param {variant} fieldValue value of field

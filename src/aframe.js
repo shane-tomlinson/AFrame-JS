@@ -1,13 +1,25 @@
 
 /**
-* The AFrame namespace
-* @class AFrame
-* @static
+ * The AFrame base namespace.  Provides some useful utility functions.
+ *
+ *
+ * @class AFrame
+ * @static
 */
 var AFrame = {
 	/**
-	* extend a class with another class and optional functions
-	* @method AFrame.extend
+	* Used to extend a class with another class and optional functions.
+    *
+    *    AFrame.NewClass = function() {
+    *        AFrame.NewClass.superclass.constructor.apply( this, arguments );
+    *    }
+    *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
+    *        someFunc: function() { 
+    *            // do something here
+    *        }
+    *    } );
+    *
+	* @method extend
 	* @param {function} derived - class to extend
 	* @param {function} superclass - class to extend with.
 	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
@@ -27,7 +39,13 @@ var AFrame = {
 
 	/**
 	* extend an object with the members of another object.
-	* @method AFrame.mixin
+    *
+    *    var objectToMixinTo = {
+    *         name: 'AFrame'
+    *    };
+    *    AFrame.mixin( objectToMixinTo, '{ version: 1.0 } );
+    *
+	* @method mixin
 	* @param {object} toExtend - object to extend
 	* @param {object} mixin (optional) - object with optional functions to extend bc with
 	*/
@@ -37,9 +55,23 @@ var AFrame = {
 
 
 	/**
-	* Construct some objects
-	* @method AFrame.construct
+	* Construct an AObject based object.
+    *
+    *    var newObj = construct( {
+    *       type: AFrame.SomeObject,
+    *       config: {
+    *           param1: val1
+    *       },
+    *       plugins: [ {
+    *         type: AFrame.SomePlugin
+    *       } ]
+    *    } );
+    *
+    * @method construct
 	* @param {object} obj_config - configuration.
+	* @param {function} obj_config.type - Function to use as the constructor
+	* @param {object} obj_config.config - configuration to pass to object's init function
+	* @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
 	* @return {object} - created object.
 	*/
 	construct: function( obj_config ) {
@@ -73,7 +105,12 @@ var AFrame = {
 	/**
 	 * Remove an item from an object freeing the reference to the item.
 	 *
-	 * @method AFrame.remove
+     *     var obj = {
+     *        name: 'AFrame'
+     *     };
+     *     AFrame.remove( obj, 'name' );
+     *     
+	 * @method remove
 	 * @param {object} object to remove item from.
 	 * @param {string} key of item to remove
 	 */
@@ -86,6 +123,9 @@ var AFrame = {
 	
 	/**
 	 * Get a unique ID
+	 *
+     *     var uniqueID = AFrame.getUniqueID();
+     *     
 	 * @method getUniqueID
 	 * @return {id} a unique id
 	 */
@@ -96,6 +136,9 @@ var AFrame = {
 
 	/**
 	 * Check whether an item is defined
+	 *
+     *     var isDefined = AFrame.func( valueToCheck );
+     *     
 	 * @method defined
 	 * @param {variant} itemToCheck
 	 * @return {boolean} true if item is defined, false otw.
@@ -106,6 +149,9 @@ var AFrame = {
 	
 	/**
 	* Check whether an item is a function
+	 *
+     *     var isFunc = AFrame.func( valueToCheck );
+     *     
 	* @method func
 	* @param {variant} itemToCheck
 	* @return {boolean} true if item is a function, false otw.

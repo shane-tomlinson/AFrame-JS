@@ -99,3 +99,28 @@ section > p {
 	margin: 10px 0;
 	line-height: 1.6em;
 }
+
+td.description {
+    position: relative;
+}
+
+td.description > .btnSeeExample {
+    margin-bottom: 1em;
+    display: block;
+}
+
+td.description > .example {
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #eee;
+    min-width: 500px;
+}
+
+td.description > .example > .btnClose {
+    margin-left: .5em;
+}
+
+td.description > .example > pre {
+    margin: 0 .5em .5em;
+}
