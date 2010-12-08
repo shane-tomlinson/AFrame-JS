@@ -9,6 +9,7 @@
 	<property name="dist" location="dist" />
 	<property name="YUI" location="tools/yuicompressor-2.4.2.jar" />
 	<property name="docs" location="docs" />
+	<property name="site" location="site" />
 	<property name="docs_parse" location="docparse" />
 	<property file="per_user.properties" />
 	<property file="yuidoc.properties" />
@@ -101,12 +102,33 @@
        </target>
        
        <target name="all" depends="init,clean,jslint,increment_build_number,compress,docs">
-       </target>
+	</target>
+	
+	<target name="site" description="build the site">
+		<mkdir dir="${site}" />
+		
+		<delete dir="${site}/docs" />
+		<delete dir="${site}/src" />
+		<delete dir="${site}/tests" />
+		
+		<copy todir="${site}/docs" >
+			<fileset dir="${docs}" />
+		</copy>
+
+		<copy todir="${site}/src" >
+			<fileset dir="${src}" />
+		</copy>
+
+		<copy todir="${site}/tests" >
+			<fileset dir="tests" />
+		</copy>
+		
+	</target>
        
 	<target name="clean"
 	       description="clean up">
 		<delete dir="${docs}" />
 		<delete dir="${docs_parse}" />
-       </target>
+	</target>
 
 </project>

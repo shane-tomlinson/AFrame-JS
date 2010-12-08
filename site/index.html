@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=UTF-8>
+	<title>AFrameJS - Javascript Application Framework</title>
+
+	<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	
+	
+	<link rel="stylesheet" type="text/css" href="stylesheets/cssreset.css">
+	<link rel="stylesheet" type="text/css" href="stylesheets/grid.css">
+	<link rel="stylesheet" type="text/css" href="stylesheets/aframejs.css">
+</head>
+
+<body>
+	<div class="container container_12">
+		<header class="clearfix">
+			<h1>AFrameJS</h1>
+			<h2>A Javascript <strong>Application</strong> Framework</h2>
+
+			<nav class="grid_12">
+				<ul>
+					<li><a href="https://github.com/stomlinson/AFrame-JS/zipball/master">Download Zip File</a></li>
+					<li><a href="https://github.com/stomlinson/AFrame-JS">Source on GitHub</a></li>
+					<li><a href="docs/index.html">API Documentation</a></li>
+					<li><a href="tests/index.html">Unit Tests</a></li>
+				</ul>
+			</nav>
+			
+		</header>
+		
+		
+		<section class="grid_12">
+			<h2>Not Another DOM Manipulation Library!</h2>
+
+			<p>
+				AFrame is an <strong>application development framework</strong>, not another DOM manipulation library!  AFrame provides functionality
+				found in more traditional frameworks like .NET or the Java JDK- items like models, views, observables, plugins, schemas, data containers,
+				data collections, forms, and fields.  These items provide a way of developing event driven MVC applications where complexity is managed
+				through clean code, and where generic, reusable components enable more work to be done with less code.
+			</p>
+
+			<p>
+				AFrame is being developed out of the frustration of not having a proper application framework at my disposal when I first
+				started using Javascript to write web applications.  There are plenty of DOM manipulation libraries (jQuery, Prototype, Dojo, YUI),
+				but these do not provide the functionality necessary to write MVC applications.  There are some frameworks that provide hundreds of 
+				widgets (Dojo, YUI, Sencha Labs), but these are so heavyweight that they can be confusing and cumbersome. There are still others 
+				that completely shield you from writing Javascript (Cappachino) but what is the point, I want to write my Javascript in Javascript, not Objective-C.
+				All these frameworks have the added drawback of being hundreds of kilobytes.  The web is about Javascript, and developers have
+				for too long been building unmaintainable web sites using procedural methodologies that went out of style 15 years ago.
+			</p>
+			
+			<p>	There is a need for a light weight Object Oriented <strong>application</strong> framework which provides a clean way to write
+				full fledged applications in a traditional MVC style.  It is time for web-app development to mature and use ideas that other languages
+				have been using for years.  Backbone and Knockout-JS are two similar libraries that address this need, and now AFrame does too.
+			</p>
+
+			<p>
+				AFrame right now depends on jQuery, this is used to work with displays.  I am hoping to remove this
+				dependency to keep things as flexible as possible.  All of the data related items work without jQuery.
+			</p>
+
+			<p>
+			To use AFrame without compilation, you can grab the current version from <a href="https://github.com/stomlinson/AFrame-JS">GitHub</a> in dist/aframe-current.js or dist/aframe-current.min.js
+			</p>
+
+			<p>
+				Unit tests use the <a href="http://developer.yahoo.com/yui/3/test/">YUI 3: Test</a> library.  These can be run by browsing to the tests directory and opening index.html
+			</p>
+		</section>
+		
+		<section class="grid_12">
+			<h2>To download and build the libraries and docs</h2>
+
+			<ol>
+				<li>Apache Ant is required.  <a href="http://ant.apache.org/">Go get it.</a>  Ant allows for concurrent development in both Unix/Linux and Windows flavored OSes.</li>
+				<li>Download the source from <a href="https://github.com/stomlinson/AFrame-JS/zipball/master">GitHub</a> or pull a copy using <a href="https://github.com/stomlinson/AFrame-JS">Git</a></li>
+				<li>The sample per_user.properties.sample must be personalized and copied to per_user.properties</li>
+				<li>run "ant all" to do a full build.</li>
+			</ol>
+		</section>
+		
+
+		<section class="grid_12">
+			<h2>Build options</h2>
+
+			<ol>
+				<li>"ant all" does a full build.</li>
+				<li>"ant compress" concatinates and compresses javascript</li>
+				<li>"ant docs" builds the docs</li>
+				<li>"and jslint" runs a javascript linter to check for errors</li>
+				<li>"ant clean" cleans up any messes</li>
+			</ol>
+			
+		</section>
+
+		<footer class="clearfix">
+			<p class="grid_5">
+				Copyright &copy; 2010 Shane Tomlinson. All rights reserved.
+			</p>
+			<ul>
+				<li class="grid_3 push_4"><a href="http://www.shanetomlinson.com">http://www.shanetomlinson.com</a></li>
+			</ul>
+		</footer>
+	</div>
+	
+	<script type="text/javascript">
+
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-20062047-1']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		if(window.location.protocol != "file:") {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		}
+	})();
+
+	</script>
+</body>
+</html>
