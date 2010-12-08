@@ -121,7 +121,7 @@ def print_params( params ):
 
     <!-- SIDEBAR NAVIGATION -->
     <nav>
-      <div id="navigation" class="grid_4">
+      <div id="navigation" class="grid_3">
         <div>
 
           #if $modulenames
@@ -257,17 +257,37 @@ def print_params( params ):
     </nav>
 
 
-    <div id="content" class="grid_8">
+    <div id="content" class="grid_9">
       
       #if $index
         <div class="summary description">
+		<h2>This is the API documentation for <a href="$projecturl">$projectname</a>.
+		</h2>
           <p>
-            This is the API documentation for
-            <a href="$projecturl">$projectname</a>.
+			AFrame is both an Object Oriented and Aspect Oriented framework that is being built to fill the huge hole in Javascript libraries - one that allows traditional
+			<strong>applications</strong> to be built.  Most people using Javascript do not realize its full power, still thinking of Javascript as a toy language used only
+			to do DOM manipulation.  Since so many people do not understand its incredible flexibility as an OOP or AOP language, most of the code out there is written using 
+			procedural methodologies - methodologies that went out of fashion many years ago.
           </p>
-          <p>
-            Choose a module name from the list for more information.
-          </p>
+		  
+		  <p>
+			AFrame is being developed to address the need of having a true OOP/AOP framework to develop real applications with.
+		  </p>
+		  
+		  <p>
+			  The underlying principles of development in AFrame are:
+			  <ul>
+				<li>Create the basic classes necessary to create an MVC application</li>
+				<li>A powerful event system makes life much simpler and more flexible than chains of callbacks</li>
+				<li>Favor composition over inheritance, use AOP to augment OOP whenever it makes sense</li>
+				<li>Clean up references when objects are torn down so that memory leaks are minimized</li>
+				<li>Be database agnostic - who knows what data persistence schemes are going to be used</li>
+				<li>Forms are central to nearly all web applications</li>
+				<li>Use features/standards from HTML5 where possible</li>
+				<li>Make AFrame as easy to add on to as possible</li>
+			  </ul>
+		  </p>
+		  
         </div>
       #end if
 
@@ -1079,6 +1099,7 @@ def print_params( params ):
   <script src="js/jquery-ui-1.8.4.custom.min.js" type="text/javascript"></script>
   <script src="js/jquery.cookie.min.js" type="text/javascript"></script>
   <script src="js/main.js" type="text/javascript"></script>
+  <script src="../scripts/apidocs.js" type="text/javascript"></script>
 
 	<script type="text/javascript">
 

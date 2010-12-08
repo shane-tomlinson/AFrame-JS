@@ -23,6 +23,7 @@ from const import *
 from Cheetah.Template import Template
 from sets import Set
 import codecs
+from markdown import markdown
 
 try:
     logging.config.fileConfig(os.path.join(sys.path[0], LOGCONFIG))
@@ -171,7 +172,10 @@ class DocGenerator(object):
         def transferToTemplate(prop, dict, template, valOverride=''):
             val = ""
             if prop in dict:
-                val = dict[prop]
+                if type( dict[prop] ).__name__ == "unicode":
+                    val = markdown( dict[prop] )
+                else:
+                    val = dict[prop]
 
                 if valOverride:
                     val = valOverride
@@ -184,6 +188,8 @@ class DocGenerator(object):
                 val = dict1[prop]
                 if not val: 
                     val = default
+                if prop == DESCRIPTION:
+                    val = markdown(val)
             else:
                 if skipOverrideIfNoMatch:
                     pass
@@ -286,7 +292,7 @@ class DocGenerator(object):
         def completeProp(main, ext):
             data = main.copy()
             if DESCRIPTION in ext:
-                data[DESCRIPTION] = ext[DESCRIPTION]
+                data[DESCRIPTION] = markdown( ext[DESCRIPTION] )
             else:
                 data[DESCRIPTION] = ''
 
@@ -734,6 +740,8 @@ class DocGenerator(object):
                 pkgMap[i] = self.data[CLASS_MAP][i][MODULE]
             except:
                 try:
+                    import pprint
+                    pprint.pprint( self.data[CLASS_MAP][i] )
                     log.warn('class map ' + i + ' failure (no module declaration?)')
                 except: pass
 
@@ -811,4 +819,3 @@ def main():
            
 if __name__ == '__main__':
     main()
-

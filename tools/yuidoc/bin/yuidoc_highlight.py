@@ -69,7 +69,7 @@ class DocHighlighter(object):
             fileStr = codecs.open( os.path.join(path, file), "r", "utf-8" ).read()
 
             f.close()
-            log.info("highlighting " + file)
+            log.info("highlighting " + os.path.join(path, file))
 
             self.currentExt = os.path.splitext(file)[1].replace('.', '')
 
