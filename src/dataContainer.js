@@ -11,6 +11,20 @@
 *   Views bound to a particular field.  When a field is updated that has multiple Views registered, all Views are notified
 *   of the change.
 *
+* Example:
+*
+*    var dataObject = {
+*        firstName: 'Shane',
+*        lastName: 'Tomlinson'
+*    };
+*    
+*    var dataContainer = AFrame.DataContainer( dataObject );
+*    dataContainer.bindField( 'firstName', function( notification ) {
+*        alert( 'new name: ' + notification.value );
+*    } );
+*    
+*    dataContainer.set( 'firstName', 'Charlotte' );
+*    
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @constructor
@@ -77,20 +91,20 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		var oldValue = this.data[ fieldName ];
 		this.data[ fieldName ] = fieldValue;
 		
-		var eventObject = this.getEventObject( fieldName, fieldValue, oldValue );
+		var fieldNotificationObject = this.getFieldNotificationObject( fieldName, fieldValue, oldValue );
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
-		* @param {object} eventObject - an event object. @see getEventObject
+		* @param {object} fieldNotificationObject - an event object. @see getFieldNotificationObject
 		*/
-		this.triggerEvent( 'onSet', eventObject );
+		this.triggerEvent( 'onSet', fieldNotificationObject );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
 		* @event onSet-fieldName
-		* @param {object} eventObject - an event object.  @see getEventObject
+		* @param {object} fieldNotificationObject - an event object.  @see getFieldNotificationObject
 		*/
-		this.triggerEvent( 'onSet-' + fieldName, eventObject );
+		this.triggerEvent( 'onSet-' + fieldName, fieldNotificationObject );
 		
 		return oldValue;
 	},
@@ -101,6 +115,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
     *    var value = dataContainer.get( 'name' );
     *
 	* @method get
+	* @param {string} fieldName - name of the field to get
 	* @return {variant} value of field
 	*/
 	get: function( fieldName ) {
@@ -108,10 +123,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Bind a callback to a field.  When function is called, it is called with an EventObject.
+	* Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
+    *   When function is called, it is called with an FieldNotificationObject.
     *
-    *    var onChange = function( eventObject ) {
-    *        console.log( 'Name: "' + eventObject.fieldName + '" + value: "' + eventObject.value + '" oldValue: "' + eventObject.oldValue + '"' );
+    *    var onChange = function( fieldNotificationObject ) {
+    *        console.log( 'Name: "' + fieldNotificationObject.fieldName + '" + value: "' + fieldNotificationObject.value + '" oldValue: "' + fieldNotificationObject.oldValue + '"' );
     *    };
     *    var id = dataContainer.bindField( 'name', onChange );
     *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
@@ -123,8 +139,8 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @return {id} id that can be used to unbind the field
 	*/
 	bindField: function( fieldName, callback, context ) {
-		var eventObject = this.getEventObject( fieldName, this.get( fieldName ), undefined );
-		callback.call( context, eventObject );
+		var fieldNotificationObject = this.getFieldNotificationObject( fieldName, this.get( fieldName ), undefined );
+		callback.call( context, fieldNotificationObject );
 		
 		return this.bindEvent( 'onSet-' + fieldName, callback, context );
 	},
@@ -143,8 +159,8 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Get an object used when triggering events.
-    * An EventObject has four fields:
+	* Get an object used when notifying listeners of changes to the field.
+    * A FieldNotificationObject has four fields:
     * 
     * 1. container
     * 2. fieldName
@@ -156,7 +172,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
 	* @return {object} an object with 4 fields, container, fieldName, oldValue, value
 	*/
-	getEventObject: function( fieldName, value, oldValue ) {
+	getFieldNotificationObject: function( fieldName, value, oldValue ) {
 		return {
 			container: this,
 			fieldName: fieldName,

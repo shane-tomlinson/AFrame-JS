@@ -315,12 +315,14 @@ def print_params( params ):
             
             <h3>Views</h3>
             <p>
-                A View in MVC is called a <a href="AFrame.Display.html">Display</a>.  There are several types of Displays, but the basic Display provides very basic DOM and DOM event functionality.  Currently
-                the DOM manipulation functions rely on <a href="jquery.com">jQuery</a> but the hope is to remove this dependency.
-                A <a href="AFrame.Field.html">Field</a> provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user, validate the data, clean up the data,
-                and display helpful hints when there are problems.  A <a href="AFrame.Form.html">Form</a> is a composite of <a href="AFrame.Field.html">Fields</a>.  A <a href="AFrame.DataForm.html">DataForm</a> takes 
-                this one step further and binds a form to a <a href="AFrame.DataContainer.html">DataContainer</a> allowing changes in input to automatically update its corresponding model when all fields are
-                valid.
+                MVC Views are called a <a href="AFrame.Display.html">Displays</a>.  There are several types of Displays, but the basic 
+                Display provides very basic DOM and DOM event functionality.  Currently the DOM manipulation functions rely on 
+                <a href="jquery.com">jQuery</a> but the hope is to remove this dependency.  A <a href="AFrame.Field.html">Field</a> 
+                provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user, 
+                validate the data, clean up the data, and display helpful hints when there are problems.  A <a href="AFrame.Form.html">Form</a> 
+                is a composite of <a href="AFrame.Field.html">Fields</a>.  A <a href="AFrame.DataForm.html">DataForm</a> takes 
+                this one step further and binds a form to a <a href="AFrame.DataContainer.html">DataContainer</a> allowing 
+                changes in input to automatically update its corresponding model when all fields are valid.
             </p>
             
             <p>
@@ -335,15 +337,112 @@ def print_params( params ):
             <h3>Did you say AOP?</h3>
             <p>
                 Since AFrame tries to be <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect Oriented</a> as much as 
-                <a href="http://en.wikipedia.org/wiki/Object_oriented_programming">Object Oriented</a>, it provides strong <a href="AFrame.Observable.html">Observable</a>(events) and <a href="AFrame.Plugin.html">Plugin</a> systems.
-                Observables make it easy to listen for specific events that happen on an object, anybody who has worked with DOM Events already has an intrinsic understanding of how Observables work.
-                Plugins are a way of extending the functionality of an object through composition instead of directly subclassing that object.  This means a small piece of functionality can be written once and
-                may be shared across several seemingly unrelated classes.  It also means that configuring an object is incredibly flexible.  When writing an object, you no longer need to write one gigantic class
-                that does everything and configuration switches control whether a bit of functionality is used.  With plugins, you can write a small base class and put all the peripheral functionality into
-                plugins, when the time comes to create an object, only create an object with the bits of functionality that are needed.  Developing this way makes testing and debugging much easier and faster.  It also
-                means if a piece of functionality is no longer needed, you can bin just the bit you don't want and not mess with the rest.
+                <a href="http://en.wikipedia.org/wiki/Object_oriented_programming">Object Oriented</a>, it provides strong <a href="AFrame.Observable.html">Observable</a>(events) 
+                and <a href="AFrame.Plugin.html">Plugin</a> systems.  Observables make it easy to listen for specific events that happen on an object, anybody 
+                who has worked with DOM Events already has an intrinsic understanding of how Observables work.
+                Plugins are a way of extending the functionality of an object through composition instead of directly subclassing that object.  
+                This means a small piece of functionality can be written once and may be shared across several seemingly unrelated classes.  
+                It also means that configuring an object is incredibly flexible.  When writing an object, you no longer need to write one gigantic class
+                that does everything.  With plugins, you can write a small base class and put all the peripheral functionality into
+                plugins, when the time comes to create an object, only create an object with the bits of functionality that are needed.  
+                Developing this way makes testing and debugging much easier and faster.  It also means if a piece of functionality is no longer needed, 
+                you can bin just the bit you don't want and not mess with the rest.
             </p>
         </section>
+        
+        <section>
+            <h2>Getting Started</h2>
+            <p>
+                First, get the <a href="https://github.com/stomlinson/AFrame-JS/tree/master/dist">code.</a>
+            </p>
+            
+            <p>
+                <h3>Constructing an object</h3>
+                Since AFrame tries to be somewhat AOP with its use of Plugins, and often times those Plugins depend on knowing 
+                when the plugged object is initialized, it is recommended to use <a href="AFrame.html#method_construct">AFrame.construct</a> instead
+                of the 'new' operator to do object construction.  All <a href="AFrame.AObject.html">AFrame.AObject</a> based classes do very little in
+                their constructors, and do their initialization in the 'init' function.  This allows us to create an object and all of its plugins, then
+                have the plugins take action whenever their plugged object is initialized.
+            </p>
+            <p>
+                <h4>Example of object creation</h4>
+<pre>
+<code>
+    var object = AFrame.construct( {
+        type: AFrame.SomeAObject,
+        config: {
+            configConfig1: val1,
+            configConfig2: val2
+        },
+        plugins: [
+           {
+                type: AFrame.SomePlugin,
+                config: {
+                    pluginConfig1: val1,
+                    pluginConfig2: val2
+                }
+           }
+    } );
+    
+    object.someOperation();
+</code>
+</pre>
+
+                What this does under the hood is create an instance of AFrame.SomeAObject and an instance of AFrame.SomePlugin.  AFrame.SomePlugin is bound to AFrame.SomeObject.  
+                AFrame.SomePlugin finally has its init function called.
+            </p>
+            
+            <p>
+                <h4>Using Observables within AFrame.AObjects</h4>
+                An <a href="AFrame.Observable.html">Observable</a> is the way events are done.  Observables are very similar to DOM Events in that 
+                each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
+                called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
+                to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
+                objects that care about it.
+            </p>
+            <p>
+            <h4>Example of Binding to an AObject's Observable</h4>
+Example
+<pre>                
+<code>
+    // Assume anObject is an AFrame.AObject based object
+    // Every AFrame.AObject based object triggers an onInit 
+    // event when its init function is called.
+    
+    var onObjectInit = function() {
+        // called whenever anObject.init is called.
+    };
+    
+    anObject.bindEvent( 'onInit', onObjectInit );
+    anObject.init();    // calls onObjectInit function
+</code>
+</pre>
+            </p>
+            
+            <p>
+                <h4>Using DataContainers</h4>
+                A <a href="AFrame.DataContainer.html">DataContainer</a> is AFrame's basic unit of storage.  A DataContainer
+                allows many listeners to be notified when a field changes.  This is important in an MVC system where one
+                item of data could have several distinct Views.
+<pre>
+<code>
+    var dataObject = {
+        firstName: 'Shane',
+        lastName: 'Tomlinson'
+    };
+    
+    var dataContainer = AFrame.DataContainer( dataObject );
+    dataContainer.bindField( 'firstName', function( eventObject ) {
+        alert( 'new name: ' + eventObject.value );
+    } );
+    
+    dataContainer.set( 'firstName', 'Charlotte' );
+</code>
+</pre>
+            </p>
+        </section>
+        
+        
       #end if
 
       #if $filename

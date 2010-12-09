@@ -1,11 +1,20 @@
 /**
- * An observable class.  The framework for a basic event system.
+ * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
+ * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
+ * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
+ * to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
+ * objects that care about it.
+ * 
  * @class AFrame.Observable
  */
 AFrame.Observable = function() {
 };
 /**
  * Get an instance of the observable
+ *
+ *    var observable = AFrame.Observable.getInstance();
+ *    var id = observable.bind( this.onInit, this );
+ 
  * @method AFrame.Observable.getInstance
  * @return {AFrame.Observable}
  */

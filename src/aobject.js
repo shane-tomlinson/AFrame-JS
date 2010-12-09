@@ -6,6 +6,27 @@
  *	the created children.  When this object is torn down, the child object added via addChild will 
  *	have its teardown function called as well.  This can ensure that all memory is freed and that
  *	no references are kept when the object's lifespan has ended.
+ *
+ * Events
+ *=========
+ *
+ * All AFrame.AObject based classes have a built in event mechanism.  Events are dynamically created, there is
+ *  no need to explicitly create an Observable for each event, all that is needed is to call either
+ *  triggerEvent or bindEvent.
+ *
+ * Example Usage:
+ *
+ *    // Assume anObject is an AFrame.AObject based object.
+ *    // Every AFrame.AObject based object triggers an onInit event 
+ *    // when its init function is called.
+ *    var onObjectInit = function() {
+ *       // called whenever anObject.init is called.
+ *    };
+ *   
+ *    anObject.bindEvent( 'onInit', onObjectInit );
+ *    anObject.init();    // calls onObjectInit function
+ *
+
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
