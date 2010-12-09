@@ -1,4 +1,9 @@
 /**
+* Note, this class does not really exist!  It is a placeholder for extensions to system prototypes like Function, Array, Date.  
+* @class SystemExtensions
+*/
+
+/**
  * The main AFrame module.  All AFrame related items are under this.
  * @module AFrame
 */
