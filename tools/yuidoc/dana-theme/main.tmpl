@@ -260,9 +260,8 @@ def print_params( params ):
     <div id="content" class="grid_9">
       
       #if $index
-        <div class="summary description">
-		<h2>This is the API documentation for <a href="$projecturl">$projectname</a>.
-		</h2>
+        <section class="summary description">
+		<h2>This is the API documentation for <a href="$projecturl">$projectname</a>.</h2>
           <p>
 			AFrame is both an Object Oriented and Aspect Oriented framework that is being built to fill the huge hole in Javascript libraries - one that allows traditional
 			<strong>applications</strong> to be built.  Most people using Javascript do not realize its full power, still thinking of Javascript as a toy language used only
@@ -283,6 +282,7 @@ def print_params( params ):
 				<li>Clean up references when objects are torn down so that memory leaks are minimized</li>
 				<li>Be database agnostic - who knows what data persistence schemes are going to be used</li>
 				<li>Forms are central to nearly all web applications</li>
+                <li>Collections of related data are essential</li>
 				<li>Use features/standards from HTML5 where possible</li>
 				<li>Make AFrame as easy to add on to as possible</li>
 			  </ul>
@@ -292,8 +292,58 @@ def print_params( params ):
             Check out these docs, select the classes on the left to see what they are about.  They are full of examples to quickly learn, and more are being added 
             all of the time.  Examine the <a href="../tests/index.html">unit tests</a> to get a better idea of how the parts fit together.
           </p>
-		  
-        </div>
+          
+        </section>
+        
+        <section>
+            <h2>Overview</h2>
+            
+            <p>
+                AFrame provides base level components necessary to start creating full <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>(MVC) style applications.
+            </p>
+            
+            <h3>Models</h3>
+            <p>
+                In AFrame parlance, a Model is made up of a <a href="AFrame.DataContainer.html">DataContainer</a> and possibly a <a href="AFrame.Schema.html">Schema.</a>  A <a href="AFrame.DataContainer.html">DataContainer</a> 
+                is the object that holds data.  A <a href="AFrame.Schema.html">Schema</a> acts as both a template and a filter when working with data objects.  
+            </p>
+            
+            <p>
+                Models often times are part of a larger collection,
+                grouped in either hashes or arrays.  This is why AFrame provides two data collections, <a href="AFrame.MVCHash.html">MVCHash</a> and <a href="AFrame.MVCArray.html">MVCArray</a>
+            </p>
+            
+            <h3>Views</h3>
+            <p>
+                A View in MVC is called a <a href="AFrame.Display.html">Display</a>.  There are several types of Displays, but the basic Display provides very basic DOM and DOM event functionality.  Currently
+                the DOM manipulation functions rely on <a href="jquery.com">jQuery</a> but the hope is to remove this dependency.
+                A <a href="AFrame.Field.html">Field</a> provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user, validate the data, clean up the data,
+                and display helpful hints when there are problems.  A <a href="AFrame.Form.html">Form</a> is a composite of <a href="AFrame.Field.html">Fields</a>.  A <a href="AFrame.DataForm.html">DataForm</a> takes 
+                this one step further and binds a form to a <a href="AFrame.DataContainer.html">DataContainer</a> allowing changes in input to automatically update its corresponding model when all fields are
+                valid.
+            </p>
+            
+            <p>
+                Just as models are parts of a larger collection, often times Displays need to be part of a larger <a href="AFrame.List.html">List</a>.
+            </p>
+            
+            <h3>Controllers</h3>
+            <p>
+                There has to be some fun in programming.  You get to write whatever controllers you want.
+            </p>
+            
+            <h3>Did you say AOP?</h3>
+            <p>
+                Since AFrame tries to be <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect Oriented</a> as much as 
+                <a href="http://en.wikipedia.org/wiki/Object_oriented_programming">Object Oriented</a>, it provides strong <a href="AFrame.Observable.html">Observable</a>(events) and <a href="AFrame.Plugin.html">Plugin</a> systems.
+                Observables make it easy to listen for specific events that happen on an object, anybody who has worked with DOM Events already has an intrinsic understanding of how Observables work.
+                Plugins are a way of extending the functionality of an object through composition instead of directly subclassing that object.  This means a small piece of functionality can be written once and
+                may be shared across several seemingly unrelated classes.  It also means that configuring an object is incredibly flexible.  When writing an object, you no longer need to write one gigantic class
+                that does everything and configuration switches control whether a bit of functionality is used.  With plugins, you can write a small base class and put all the peripheral functionality into
+                plugins, when the time comes to create an object, only create an object with the bits of functionality that are needed.  Developing this way makes testing and debugging much easier and faster.  It also
+                means if a piece of functionality is no longer needed, you can bin just the bit you don't want and not mess with the rest.
+            </p>
+        </section>
       #end if
 
       #if $filename

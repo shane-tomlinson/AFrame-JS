@@ -1,6 +1,6 @@
 
 /**
- * The AFrame base namespace.  Provides some useful utility functions.
+ * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [extend](#method_extend) and [construct](#method_construct).
  *
  *
  * @class AFrame
@@ -55,7 +55,8 @@ var AFrame = {
 
 
 	/**
-	* Construct an AObject based object.
+	* Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
+    *   and init is called on the created object.
     *
     *    var newObj = construct( {
     *       type: AFrame.SomeObject,
