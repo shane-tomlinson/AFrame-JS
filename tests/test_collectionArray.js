@@ -1,15 +1,15 @@
-testsToRun.push( function testMVCArray( Y ) {
+testsToRun.push( function testCollectionArray( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
 		
 	var test = new TestCase( {
 	 
-		name: "TestCase AFrame.MVCArray",
+		name: "TestCase AFrame.CollectionArray",
 
 		setUp: function() {
 		    this.array = AFrame.construct( {
-				type: AFrame.MVCArray
+				type: AFrame.CollectionArray
 		    } );
 			
 			this.item = {

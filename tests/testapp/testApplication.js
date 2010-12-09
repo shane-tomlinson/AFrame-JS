@@ -30,7 +30,7 @@ $( function() {
 	} );
 	
 	var collection = AFrame.construct( {
-		type: AFrame.MVCArray,
+		type: AFrame.CollectionArray,
 		plugins: [
 			{
 				type: AFrame.CollectionPluginPersistence,

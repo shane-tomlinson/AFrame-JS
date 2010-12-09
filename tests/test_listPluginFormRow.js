@@ -3,7 +3,7 @@ testsToRun.push( function test( Y ) {
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
 	
-	var testWithMVCArray = new TestCase( {
+	var testWithCollectionArray = new TestCase( {
 		
 		name: "TestCase AFrame.ListPluginFormRow",
 		
@@ -135,5 +135,5 @@ testsToRun.push( function test( Y ) {
 		
 	} );
 
-	TestRunner.add( testWithMVCArray );
+	TestRunner.add( testWithCollectionArray );
 } );

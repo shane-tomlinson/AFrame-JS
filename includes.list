@@ -6,8 +6,8 @@ aobject.js,\
 dataContainer.js,\
 plugin.js,\
 arrayCommonFunctionsMixin.js,\
-mvcHash.js,\
-mvcArray.js,\
+collectionHash.js,\
+collectionArray.js,\
 display.js,\
 list.js,\
 listPluginBindToCollection.js,\

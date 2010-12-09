@@ -1,23 +1,23 @@
 /**
 * an array to be used MVC style.  The item's index will be added to all meta information in all events.  Items
 * are inserted by index, but can be retreived either by index or by id.
-* @class AFrame.MVCArray
-* @extends AFrame.MVCHash
+* @class AFrame.CollectionArray
+* @extends AFrame.CollectionHash
 * @uses AFrame.ArrayCommonFuncsMixin
 * @constructor
 */
-AFrame.MVCArray = function() {
-	AFrame.MVCArray.superclass.constructor.apply( this, arguments );
+AFrame.CollectionArray = function() {
+	AFrame.CollectionArray.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
+AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
 		this.hash = AFrame.construct( {
-			type: AFrame.MVCHash
+			type: AFrame.CollectionHash
 		} );
 		this.proxyEvents( this.hash, [ 'onBeforeInsert', 'onInsert', 'onBeforeRemove', 'onRemove', 'onBeforeSet', 'onSet' ] );
 		
-		AFrame.MVCArray.superclass.init.apply( this, arguments );
+		AFrame.CollectionArray.superclass.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -28,7 +28,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 		
 		this.hash.teardown();
 		
-		AFrame.MVCArray.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -115,9 +115,9 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
-	* Get an array representation of the MVCArray
+	* Get an array representation of the CollectionArray
 	* @method getArray
-	* @return {array} array representation of MVCArray
+	* @return {array} array representation of CollectionArray
 	*/
 	getArray: function() {
 		var array = [];

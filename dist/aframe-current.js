@@ -1,6 +1,6 @@
 /**
  * The main AFrame module.  All AFrame related items are under this.
-* @module AFrame
+ * @module AFrame
 */
 
 if( !Function.prototype.bind ) {
@@ -99,14 +99,26 @@ if( !window.console ) {
 }
 
 /**
-* The AFrame namespace
-* @class AFrame
-* @static
+ * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [extend](#method_extend) and [construct](#method_construct).
+ *
+ *
+ * @class AFrame
+ * @static
 */
 var AFrame = {
 	/**
-	* extend a class with another class and optional functions
-	* @method AFrame.extend
+	* Used to extend a class with another class and optional functions.
+    *
+    *    AFrame.NewClass = function() {
+    *        AFrame.NewClass.superclass.constructor.apply( this, arguments );
+    *    }
+    *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
+    *        someFunc: function() { 
+    *            // do something here
+    *        }
+    *    } );
+    *
+	* @method extend
 	* @param {function} derived - class to extend
 	* @param {function} superclass - class to extend with.
 	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
@@ -126,7 +138,13 @@ var AFrame = {
 
 	/**
 	* extend an object with the members of another object.
-	* @method AFrame.mixin
+    *
+    *    var objectToMixinTo = {
+    *         name: 'AFrame'
+    *    };
+    *    AFrame.mixin( objectToMixinTo, '{ version: 1.0 } );
+    *
+	* @method mixin
 	* @param {object} toExtend - object to extend
 	* @param {object} mixin (optional) - object with optional functions to extend bc with
 	*/
@@ -136,9 +154,24 @@ var AFrame = {
 
 
 	/**
-	* Construct some objects
-	* @method AFrame.construct
+	* Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
+    *   and init is called on the created object.
+    *
+    *    var newObj = construct( {
+    *       type: AFrame.SomeObject,
+    *       config: {
+    *           param1: val1
+    *       },
+    *       plugins: [ {
+    *         type: AFrame.SomePlugin
+    *       } ]
+    *    } );
+    *
+    * @method construct
 	* @param {object} obj_config - configuration.
+	* @param {function} obj_config.type - Function to use as the constructor
+	* @param {object} obj_config.config - configuration to pass to object's init function
+	* @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
 	* @return {object} - created object.
 	*/
 	construct: function( obj_config ) {
@@ -172,7 +205,12 @@ var AFrame = {
 	/**
 	 * Remove an item from an object freeing the reference to the item.
 	 *
-	 * @method AFrame.remove
+     *     var obj = {
+     *        name: 'AFrame'
+     *     };
+     *     AFrame.remove( obj, 'name' );
+     *     
+	 * @method remove
 	 * @param {object} object to remove item from.
 	 * @param {string} key of item to remove
 	 */
@@ -185,6 +223,9 @@ var AFrame = {
 	
 	/**
 	 * Get a unique ID
+	 *
+     *     var uniqueID = AFrame.getUniqueID();
+     *     
 	 * @method getUniqueID
 	 * @return {id} a unique id
 	 */
@@ -195,6 +236,9 @@ var AFrame = {
 
 	/**
 	 * Check whether an item is defined
+	 *
+     *     var isDefined = AFrame.func( valueToCheck );
+     *     
 	 * @method defined
 	 * @param {variant} itemToCheck
 	 * @return {boolean} true if item is defined, false otw.
@@ -205,6 +249,9 @@ var AFrame = {
 	
 	/**
 	* Check whether an item is a function
+	 *
+     *     var isFunc = AFrame.func( valueToCheck );
+     *     
 	* @method func
 	* @param {variant} itemToCheck
 	* @return {boolean} true if item is a function, false otw.
@@ -485,7 +532,12 @@ AFrame.AObject = function() {};
 AFrame.mixin( AFrame.AObject.prototype, {
 	constructor: AFrame.AObject,
 	/**
-	 * Initialize the object
+	 * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
+     *
+     *    var obj = new AFrame.SomeObject();
+     *    obj.init( { name: 'value' } );
+     *
+     * 
 	 * @method init
 	 * @param config {object} - configuration
 	 * @param config.cid {id} - cid to give to the object, if not given, one is generated.
@@ -506,6 +558,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Return the configuration object
+     *
+     *     var config = obj.getConfig();
+     *
 	 * @method getConfig
 	 * @return {object} the configuration object
 	 */
@@ -523,6 +578,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Tear the object down, free any references
+     *
+     *    obj.teardown();
+     *
 	 * @method teardown
 	 */
 	teardown: function() {
@@ -548,6 +606,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Get the CID of the object
+     *
+     *     var cid = obj.getCID();
+     *
 	 * @method getCID
 	 * @returns {cid}
 	 */
@@ -557,8 +618,11 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Add a child.  All children are torn down on this object's teardown
+     *
+     *     obj.addChild( childToBeTornDown );
+     *
 	 * @method addChild
-	 * @param {AFrame.AObject} child (option) - child object
+	 * @param {AFrame.AObject} child - child object
 	 */
 	addChild: function( child ) {
 		this.children[ child.getCID() ] = child;
@@ -566,6 +630,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Remove a child.
+     *
+     *    obj.removeChild( childToRemove.getCID() );
+     *
 	 * @method removeChild
 	 * @param {cid} cid - cid of item to remove
 	 */
@@ -576,9 +643,17 @@ AFrame.mixin( AFrame.AObject.prototype, {
 
 AFrame.mixin( AFrame.AObject.prototype, AFrame.ObservablesMixin );/**
 * A basic data container. Used like a hash. Provides functionality that allows the binding of callbacks
-*	to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
-*	do "dataContainer = AFrame.DataContainer( data );"  This ensures that only one DataContainer is
-*	ever created for a given object.
+* to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
+* do 
+*
+*    dataContainer = AFrame.DataContainer( data );
+* This ensures that only one DataContainer is ever created for a given object.
+*
+* DataContainers are very important in the AFrame world.  They act as the basic data container, they can be created out of
+*   any object.  They are the "Model" in Model-View-Controller.  What is possible with a DataContainer is to have multiple
+*   Views bound to a particular field.  When a field is updated that has multiple Views registered, all Views are notified
+*   of the change.
+*
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @constructor
@@ -632,7 +707,10 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Set an item of data
+	* Set an item of data.  
+    *
+    *    dataContainer.set( 'name', 'Shane Tomlinson' );
+    *
 	* @method set
 	* @param {string} fieldName name of field
 	* @param {variant} fieldValue value of field
@@ -662,6 +740,9 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Get the value of a field
+    *
+    *    var value = dataContainer.get( 'name' );
+    *
 	* @method get
 	* @return {variant} value of field
 	*/
@@ -670,7 +751,14 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Bind a callback to a field
+	* Bind a callback to a field.  When function is called, it is called with an EventObject.
+    *
+    *    var onChange = function( eventObject ) {
+    *        console.log( 'Name: "' + eventObject.fieldName + '" + value: "' + eventObject.value + '" oldValue: "' + eventObject.oldValue + '"' );
+    *    };
+    *    var id = dataContainer.bindField( 'name', onChange );
+    *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
+    *
 	* @method bindField
 	* @param {string} fieldName name of field
 	* @param {function} callback callback to call
@@ -685,7 +773,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Unbind a field
+	* Unbind a field.
+    *
+    *    var id = dataContainer.bindField(...
+    *    dataContainer.unbindField( id );
+    *
 	* @method unbindField
 	* @param {id} id given by bindField
 	*/
@@ -695,6 +787,13 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Get an object used when triggering events.
+    * An EventObject has four fields:
+    * 
+    * 1. container
+    * 2. fieldName
+    * 3. oldValue
+    * 4. value
+    *
 	* @param {string} fieldName - name of field affected.
 	* @param {variant} value - the current value of the field.
 	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
@@ -711,6 +810,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
+    *
+    *    dataCollection.forEach( function( item, index ) {
+    *       // process item here
+    *    } );
+    *
 	* @method forEach
 	* @param {function} function to call
 	* @param {object} context (optional) optional context
@@ -825,19 +929,19 @@ AFrame.ArrayCommonFuncsMixin = {
 *	events triggered natively by this will have one parameter, data.  This object parameter
 *	will have two fields, item and meta.
 *
-* @class AFrame.MVCHash
+* @class AFrame.CollectionHash
 * @extends AFrame.AObject
 * @constructor
 */
-AFrame.MVCHash = function() {
-	AFrame.MVCHash.superclass.constructor.apply( this, arguments );
+AFrame.CollectionHash = function() {
+	AFrame.CollectionHash.superclass.constructor.apply( this, arguments );
 };
-AFrame.MVCHash.currID = 0;
-AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
+AFrame.CollectionHash.currID = 0;
+AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	init: function( config ) {
 		this.hash = {};
 		
-		AFrame.MVCHash.superclass.init.apply( this, arguments );
+		AFrame.CollectionHash.superclass.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -846,7 +950,7 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 		}
 		AFrame.remove( this, 'hash' );
 		
-		AFrame.MVCHash.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionHash.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -993,23 +1097,23 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 } );/**
 * an array to be used MVC style.  The item's index will be added to all meta information in all events.  Items
 * are inserted by index, but can be retreived either by index or by id.
-* @class AFrame.MVCArray
-* @extends AFrame.MVCHash
+* @class AFrame.CollectionArray
+* @extends AFrame.CollectionHash
 * @uses AFrame.ArrayCommonFuncsMixin
 * @constructor
 */
-AFrame.MVCArray = function() {
-	AFrame.MVCArray.superclass.constructor.apply( this, arguments );
+AFrame.CollectionArray = function() {
+	AFrame.CollectionArray.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
+AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
 		this.hash = AFrame.construct( {
-			type: AFrame.MVCHash
+			type: AFrame.CollectionHash
 		} );
 		this.proxyEvents( this.hash, [ 'onBeforeInsert', 'onInsert', 'onBeforeRemove', 'onRemove', 'onBeforeSet', 'onSet' ] );
 		
-		AFrame.MVCArray.superclass.init.apply( this, arguments );
+		AFrame.CollectionArray.superclass.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -1020,7 +1124,7 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 		
 		this.hash.teardown();
 		
-		AFrame.MVCArray.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -1107,9 +1211,9 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
-	* Get an array representation of the MVCArray
+	* Get an array representation of the CollectionArray
 	* @method getArray
-	* @return {array} array representation of MVCArray
+	* @return {array} array representation of CollectionArray
 	*/
 	getArray: function() {
 		var array = [];
@@ -1160,7 +1264,9 @@ AFrame.extend( AFrame.MVCArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
 		return index;
 	}
 } );/**
- * A base class for a display.  Provides base target and DOM functionality.
+ * A base class for a display.  Provides base target and DOM functionality.  A Display is completely
+ *  generic, but can be used as the View in the Model-View-Controller paradigm.  See [Field](AFrame.Field.html) for
+ *  Views that are tied to specific pieces of data.
  * 
  * @class AFrame.Display
  * @extends AFrame.AObject
@@ -1195,7 +1301,10 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	},
 	
 	/**
-	 * Get the display's target
+	 * Get the display's target.
+     *
+     *    var target = display.getTarget();
+     *
 	 * @method getTarget
 	 * @return {element} target
 	 */
@@ -1204,7 +1313,10 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	},
 	
 	/**
-	* Get the display's native DOM Element
+	* Get the display's native DOM Element.
+    * 
+    *    var element = display.getDOMElement();
+    *
 	* @method getDOMElement
 	* @return {HTMLElement} - the DOM Element
 	*/
@@ -1214,6 +1326,13 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 
 	/**
 	 * Bind to a DOM event
+     *
+     *    var onClose = function( event ) {
+     *      // close something here
+     *    };
+     *    var id = display.bindDOMEvent( '.btnClose', 'click', onClose );
+     *    // use id to unbind DOM event
+     *
 	 * @method bindDOMEvent
 	 * @param {element || selector} target - the target.  If a string, searches the DOM
 	 * @param {string} eventName - the name of the event to bind to
@@ -1240,6 +1359,14 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	/**
  	* a convenience function for binding click events.  The event has it's default prevented so that
 	*	if binding to an anchor with an href of "#", the screen does not jump.
+    *
+    *    var onClose = function( event ) {
+    *      // event's default is already prevented
+    *      // close something here
+    *    };
+    *    var id = display.bindClick( '.btnClose', onClose );
+    *    // use id to unbind DOM event
+    *
 	* @method bindClick
 	* @param {element || selector} target - the target.  If a string, searches the DOM
 	* @param {function} callback - the callback to callback
@@ -1255,6 +1382,10 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	
 	/**
 	 * Unbind a DOM event
+     *
+     *    var id = display.bindDOMEvent( ... );
+     *    display.unbindDOMEvent( id );
+     *
 	 * @method unbindDOMEvent
 	 * @param {id} id - id of event to unbind
 	 */
@@ -1748,7 +1879,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
  * AFrame.Field.cancelInvalid = false and the default action will be prevented and no browser error.
  * Field validation does not occur in real time, for validation to occur, the checkValidity
  * function must be called.
- * messages will still be displayed.
+ *
  * @class AFrame.Field
  * @extends AFrame.Display
  * @constructor
@@ -1780,6 +1911,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	 * Get the placeholder text to display in the field.  If not overridden, looks
 	 * on the element for the value of the placeholder attribute. 
+     *
+     *    var placeholder = field.getPlaceholder();
+     *
 	 * @method getPlaceholder
 	 * @return {string}
 	 */
@@ -1790,6 +1924,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
+     * 
+     *    nameField.set( 'AFrame' );
+     *
 	 * @method set
 	 * @param {variant} val value to display
 	 */
@@ -1803,6 +1940,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	* Display a value, does not affect the reset value.  Using this function can be useful to
 	*	change how a piece of data is visually represented on the screen.
+    *
+    *    nameField.display( 'AFrame' );
+    *
 	* @method display
 	* @param {variant} val value to dipslay
 	*/
@@ -1823,6 +1963,10 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	* Get the value that is displayed in the field.  This can be different from what get returns
 	*	if the visual representation of the data is different from the data itself.
+    *
+    *    var displayed = nameField.getDisplayed();
+    *    console.log( 'displayedValue: ' + displayed );
+    *
 	* @method getDisplayed
 	* @returns {string}
 	*/
@@ -1840,6 +1984,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 	/**
 	 * Reset the field to its last 'set' value.
+     *
+     *    nameField.reset();
+     *
 	 * @method reset
 	 */
 	reset: function() {
@@ -1848,7 +1995,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 	/**
 	 * Validate the field.  A field will validate if 1) Its form element does not have the required attribute, or 2) the field has a length.
-	 *	sub classes can override this to perform more specific validation schemes.
+	 *	sub classes can override this to perform more specific validation schemes.  The HTML5 spec specifies
+     *  checkValidity as the method to use to check the validity of a form field.
+     *
+     *    var isValid = nameField.checkValidity();
+     *
 	 * @method checkValidity
 	 * @return {boolean} true if field is valid, false otw.
 	 */
@@ -1862,8 +2013,13 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	* Do the actual validation on the field.  Should be overridden to do validations.  Calling this will
-	*	reset any validation errors previously set and start with a new state.
+	*	reset any validation errors previously set and start with a new state.  This should not be called
+    *   directly, instead [checkValidity](#method_checkValidity) should be
+    *
+    *   var isValid = nameField.validate();
+    *
 	* @method validate
+	* @return {boolean} true if field is valid, false otw.
 	*/
 	validate: function() {
 		var valid = true;
@@ -1885,6 +2041,10 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	* Get the current validity status of an object.
+    *
+    *    var validityState = nameField.getValidityState();
+    *    // do something with the validityState
+    *
 	* @method getValidityState
 	* @return {AFrame.FieldValidityState}
 	*/
@@ -1897,9 +2057,12 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	/**
-	* Set an error on the field.
+	* Set an error on the field.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    *
+    *   nameField.setError( 'valueMissing' );
+    *
 	* @method setError
-	* @param {string} errorType - @see AFrame.FieldValidityState
+	* @param {string} errorType
 	*/
 	setError: function( errorType ) {
 		this.validityState.setError( errorType );
@@ -1909,6 +2072,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* Set a custom error on the field.  In the AFrame.FieldValidityState object returned
 	*	by getValidityState, a custom error will have the customError field set to this 
 	*	message
+    *
+    *   nameField.setCustomError( 'Names must start with a letter' );
+    *
 	* @method setCustomError
 	* @param {string} customError - the error message to display
 	*/
@@ -1918,6 +2084,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	 * Clear the field.  A reset after this will cause the field to go back to the blank state.
+     *
+     *    nameField.clear();
+     *
 	 * @method clear
 	 */
 	clear: function() {
@@ -1927,6 +2096,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	 * Get the value of the field.  The value returned can be different if the visual representation is 
 	 *	different from the underlying data.  Returns an empty string if no value entered.  
+     *
+     *    var val = nameField.get();
+     *
 	 * @method get
 	 * @return {variant} the value of the field
 	 */
@@ -1937,6 +2109,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	 * Save the current value as a reset point
+     *
+     *    nameField.save();
+     *
 	 * @method save
 	 */
 	save: function() {

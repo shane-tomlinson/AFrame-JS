@@ -3,13 +3,13 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
 	
-	var testWithMVCArray = new TestCase( {
+	var testWithCollectionArray = new TestCase( {
 		
-		name: "TestCase AFrame.ListPluginBindToCollection with MVCArray",
+		name: "TestCase AFrame.ListPluginBindToCollection with CollectionArray",
 		
 		setUp: function() {
 			this.store = AFrame.construct( {
-				type: AFrame.MVCArray
+				type: AFrame.CollectionArray
 			} );
 			
 			this.list = AFrame.construct( {
@@ -79,13 +79,13 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 		}
 	} );
 	
-	var testWithMVCHash = new TestCase( {
+	var testWithCollectionHash = new TestCase( {
 		
-		name: "TestCase AFrame.ListPluginBindToCollection with MVCHash",
+		name: "TestCase AFrame.ListPluginBindToCollection with CollectionHash",
 		
 		setUp: function() {
 			this.store = AFrame.construct( {
-				type: AFrame.MVCHash
+				type: AFrame.CollectionHash
 			} );
 			
 			this.list = AFrame.construct( {
@@ -155,6 +155,6 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 		}
 	} );
 	
-	TestRunner.add( testWithMVCArray );
-	TestRunner.add( testWithMVCHash );
+	TestRunner.add( testWithCollectionArray );
+	TestRunner.add( testWithCollectionHash );
 } );

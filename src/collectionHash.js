@@ -3,19 +3,19 @@
 *	events triggered natively by this will have one parameter, data.  This object parameter
 *	will have two fields, item and meta.
 *
-* @class AFrame.MVCHash
+* @class AFrame.CollectionHash
 * @extends AFrame.AObject
 * @constructor
 */
-AFrame.MVCHash = function() {
-	AFrame.MVCHash.superclass.constructor.apply( this, arguments );
+AFrame.CollectionHash = function() {
+	AFrame.CollectionHash.superclass.constructor.apply( this, arguments );
 };
-AFrame.MVCHash.currID = 0;
-AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
+AFrame.CollectionHash.currID = 0;
+AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	init: function( config ) {
 		this.hash = {};
 		
-		AFrame.MVCHash.superclass.init.apply( this, arguments );
+		AFrame.CollectionHash.superclass.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -24,7 +24,7 @@ AFrame.extend( AFrame.MVCHash, AFrame.AObject, {
 		}
 		AFrame.remove( this, 'hash' );
 		
-		AFrame.MVCHash.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionHash.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**

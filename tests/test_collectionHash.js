@@ -1,15 +1,15 @@
-testsToRun.push( function testMVCHash( Y ) {
+testsToRun.push( function testCollectionHash( Y ) {
 	var TestRunner = Y.Test.Runner;
 	var Assert = Y.Assert;
 	var TestCase = Y.Test.Case;
 		
 	var test = new TestCase( {
 	 
-		name: "TestCase AFrame.MVCHash",
+		name: "TestCase AFrame.CollectionHash",
 
 		setUp: function() {
 		    this.hash = AFrame.construct( {
-			type: AFrame.MVCHash
+			type: AFrame.CollectionHash
 		    } );
 		},
 		
