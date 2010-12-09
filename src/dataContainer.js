@@ -5,6 +5,12 @@
 *
 *    dataContainer = AFrame.DataContainer( data );
 * This ensures that only one DataContainer is ever created for a given object.
+*
+* DataContainers are very important in the AFrame world.  They act as the basic data container, they can be created out of
+*   any object.  They are the "Model" in Model-View-Controller.  What is possible with a DataContainer is to have multiple
+*   Views bound to a particular field.  When a field is updated that has multiple Views registered, all Views are notified
+*   of the change.
+*
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @constructor
@@ -60,9 +66,8 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	/**
 	* Set an item of data.  
     *
-    * Example usage:
-    *
     *    dataContainer.set( 'name', 'Shane Tomlinson' );
+    *
 	* @method set
 	* @param {string} fieldName name of field
 	* @param {variant} fieldValue value of field
@@ -92,6 +97,9 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Get the value of a field
+    *
+    *    var value = dataContainer.get( 'name' );
+    *
 	* @method get
 	* @return {variant} value of field
 	*/
@@ -100,7 +108,14 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Bind a callback to a field
+	* Bind a callback to a field.  When function is called, it is called with an EventObject.
+    *
+    *    var onChange = function( eventObject ) {
+    *        console.log( 'Name: "' + eventObject.fieldName + '" + value: "' + eventObject.value + '" oldValue: "' + eventObject.oldValue + '"' );
+    *    };
+    *    var id = dataContainer.bindField( 'name', onChange );
+    *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
+    *
 	* @method bindField
 	* @param {string} fieldName name of field
 	* @param {function} callback callback to call
@@ -115,7 +130,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Unbind a field
+	* Unbind a field.
+    *
+    *    var id = dataContainer.bindField(...
+    *    dataContainer.unbindField( id );
+    *
 	* @method unbindField
 	* @param {id} id given by bindField
 	*/
@@ -125,6 +144,13 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Get an object used when triggering events.
+    * An EventObject has four fields:
+    * 
+    * 1. container
+    * 2. fieldName
+    * 3. oldValue
+    * 4. value
+    *
 	* @param {string} fieldName - name of field affected.
 	* @param {variant} value - the current value of the field.
 	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
@@ -141,6 +167,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
+    *
+    *    dataCollection.forEach( function( item, index ) {
+    *       // process item here
+    *    } );
+    *
 	* @method forEach
 	* @param {function} function to call
 	* @param {object} context (optional) optional context

@@ -1,5 +1,7 @@
 /**
- * A base class for a display.  Provides base target and DOM functionality.
+ * A base class for a display.  Provides base target and DOM functionality.  A Display is completely
+ *  generic, but can be used as the View in the Model-View-Controller paradigm.  See [Field](AFrame.Field.html) for
+ *  Views that are tied to specific pieces of data.
  * 
  * @class AFrame.Display
  * @extends AFrame.AObject
@@ -34,7 +36,10 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	},
 	
 	/**
-	 * Get the display's target
+	 * Get the display's target.
+     *
+     *    var target = display.getTarget();
+     *
 	 * @method getTarget
 	 * @return {element} target
 	 */
@@ -43,7 +48,10 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	},
 	
 	/**
-	* Get the display's native DOM Element
+	* Get the display's native DOM Element.
+    * 
+    *    var element = display.getDOMElement();
+    *
 	* @method getDOMElement
 	* @return {HTMLElement} - the DOM Element
 	*/
@@ -53,6 +61,13 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 
 	/**
 	 * Bind to a DOM event
+     *
+     *    var onClose = function( event ) {
+     *      // close something here
+     *    };
+     *    var id = display.bindDOMEvent( '.btnClose', 'click', onClose );
+     *    // use id to unbind DOM event
+     *
 	 * @method bindDOMEvent
 	 * @param {element || selector} target - the target.  If a string, searches the DOM
 	 * @param {string} eventName - the name of the event to bind to
@@ -79,6 +94,14 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	/**
  	* a convenience function for binding click events.  The event has it's default prevented so that
 	*	if binding to an anchor with an href of "#", the screen does not jump.
+    *
+    *    var onClose = function( event ) {
+    *      // event's default is already prevented
+    *      // close something here
+    *    };
+    *    var id = display.bindClick( '.btnClose', onClose );
+    *    // use id to unbind DOM event
+    *
 	* @method bindClick
 	* @param {element || selector} target - the target.  If a string, searches the DOM
 	* @param {function} callback - the callback to callback
@@ -94,6 +117,10 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	
 	/**
 	 * Unbind a DOM event
+     *
+     *    var id = display.bindDOMEvent( ... );
+     *    display.unbindDOMEvent( id );
+     *
 	 * @method unbindDOMEvent
 	 * @param {id} id - id of event to unbind
 	 */

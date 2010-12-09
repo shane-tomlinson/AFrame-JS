@@ -100,6 +100,13 @@ section > p {
 	line-height: 1.6em;
 }
 
+.summary.description > ul,
+.summary.description > ul > li {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+
 td.description {
     position: relative;
 }

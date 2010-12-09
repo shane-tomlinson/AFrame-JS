@@ -17,7 +17,12 @@ AFrame.AObject = function() {};
 AFrame.mixin( AFrame.AObject.prototype, {
 	constructor: AFrame.AObject,
 	/**
-	 * Initialize the object
+	 * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
+     *
+     *    var obj = new AFrame.SomeObject();
+     *    obj.init( { name: 'value' } );
+     *
+     * 
 	 * @method init
 	 * @param config {object} - configuration
 	 * @param config.cid {id} - cid to give to the object, if not given, one is generated.
@@ -38,6 +43,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Return the configuration object
+     *
+     *     var config = obj.getConfig();
+     *
 	 * @method getConfig
 	 * @return {object} the configuration object
 	 */
@@ -55,6 +63,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Tear the object down, free any references
+     *
+     *    obj.teardown();
+     *
 	 * @method teardown
 	 */
 	teardown: function() {
@@ -80,6 +91,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Get the CID of the object
+     *
+     *     var cid = obj.getCID();
+     *
 	 * @method getCID
 	 * @returns {cid}
 	 */
@@ -89,8 +103,11 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Add a child.  All children are torn down on this object's teardown
+     *
+     *     obj.addChild( childToBeTornDown );
+     *
 	 * @method addChild
-	 * @param {AFrame.AObject} child (option) - child object
+	 * @param {AFrame.AObject} child - child object
 	 */
 	addChild: function( child ) {
 		this.children[ child.getCID() ] = child;
@@ -98,6 +115,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	
 	/**
 	 * Remove a child.
+     *
+     *    obj.removeChild( childToRemove.getCID() );
+     *
 	 * @method removeChild
 	 * @param {cid} cid - cid of item to remove
 	 */

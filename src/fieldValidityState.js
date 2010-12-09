@@ -1,6 +1,6 @@
 /**
-* An object that keeps track of a field's validity, mirrors the HTML5 spec.  See
-* http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api
+* An object that keeps track of a field's validity, mirrors the [HTML5](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api) spec.
+* 
 * @class AFrame.FieldValidityState
 * @constructor
 */

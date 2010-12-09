@@ -5,7 +5,7 @@
  * AFrame.Field.cancelInvalid = false and the default action will be prevented and no browser error.
  * Field validation does not occur in real time, for validation to occur, the checkValidity
  * function must be called.
- * messages will still be displayed.
+ *
  * @class AFrame.Field
  * @extends AFrame.Display
  * @constructor
@@ -37,6 +37,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	 * Get the placeholder text to display in the field.  If not overridden, looks
 	 * on the element for the value of the placeholder attribute. 
+     *
+     *    var placeholder = field.getPlaceholder();
+     *
 	 * @method getPlaceholder
 	 * @return {string}
 	 */
@@ -47,6 +50,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
+     * 
+     *    nameField.set( 'AFrame' );
+     *
 	 * @method set
 	 * @param {variant} val value to display
 	 */
@@ -60,6 +66,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	* Display a value, does not affect the reset value.  Using this function can be useful to
 	*	change how a piece of data is visually represented on the screen.
+    *
+    *    nameField.display( 'AFrame' );
+    *
 	* @method display
 	* @param {variant} val value to dipslay
 	*/
@@ -80,6 +89,10 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	* Get the value that is displayed in the field.  This can be different from what get returns
 	*	if the visual representation of the data is different from the data itself.
+    *
+    *    var displayed = nameField.getDisplayed();
+    *    console.log( 'displayedValue: ' + displayed );
+    *
 	* @method getDisplayed
 	* @returns {string}
 	*/
@@ -97,6 +110,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 	/**
 	 * Reset the field to its last 'set' value.
+     *
+     *    nameField.reset();
+     *
 	 * @method reset
 	 */
 	reset: function() {
@@ -105,7 +121,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 	/**
 	 * Validate the field.  A field will validate if 1) Its form element does not have the required attribute, or 2) the field has a length.
-	 *	sub classes can override this to perform more specific validation schemes.
+	 *	sub classes can override this to perform more specific validation schemes.  The HTML5 spec specifies
+     *  checkValidity as the method to use to check the validity of a form field.
+     *
+     *    var isValid = nameField.checkValidity();
+     *
 	 * @method checkValidity
 	 * @return {boolean} true if field is valid, false otw.
 	 */
@@ -119,8 +139,13 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	* Do the actual validation on the field.  Should be overridden to do validations.  Calling this will
-	*	reset any validation errors previously set and start with a new state.
+	*	reset any validation errors previously set and start with a new state.  This should not be called
+    *   directly, instead [checkValidity](#method_checkValidity) should be
+    *
+    *   var isValid = nameField.validate();
+    *
 	* @method validate
+	* @return {boolean} true if field is valid, false otw.
 	*/
 	validate: function() {
 		var valid = true;
@@ -142,6 +167,10 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	* Get the current validity status of an object.
+    *
+    *    var validityState = nameField.getValidityState();
+    *    // do something with the validityState
+    *
 	* @method getValidityState
 	* @return {AFrame.FieldValidityState}
 	*/
@@ -154,9 +183,12 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 	
 	/**
-	* Set an error on the field.
+	* Set an error on the field.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    *
+    *   nameField.setError( 'valueMissing' );
+    *
 	* @method setError
-	* @param {string} errorType - @see AFrame.FieldValidityState
+	* @param {string} errorType
 	*/
 	setError: function( errorType ) {
 		this.validityState.setError( errorType );
@@ -166,6 +198,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* Set a custom error on the field.  In the AFrame.FieldValidityState object returned
 	*	by getValidityState, a custom error will have the customError field set to this 
 	*	message
+    *
+    *   nameField.setCustomError( 'Names must start with a letter' );
+    *
 	* @method setCustomError
 	* @param {string} customError - the error message to display
 	*/
@@ -175,6 +210,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	 * Clear the field.  A reset after this will cause the field to go back to the blank state.
+     *
+     *    nameField.clear();
+     *
 	 * @method clear
 	 */
 	clear: function() {
@@ -184,6 +222,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	/**
 	 * Get the value of the field.  The value returned can be different if the visual representation is 
 	 *	different from the underlying data.  Returns an empty string if no value entered.  
+     *
+     *    var val = nameField.get();
+     *
 	 * @method get
 	 * @return {variant} the value of the field
 	 */
@@ -194,6 +235,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	
 	/**
 	 * Save the current value as a reset point
+     *
+     *    nameField.save();
+     *
 	 * @method save
 	 */
 	save: function() {
