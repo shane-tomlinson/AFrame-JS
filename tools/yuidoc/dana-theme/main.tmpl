@@ -393,7 +393,7 @@ def print_params( params ):
             </p>
             
             <p>
-                <h4>Using Observables within AFrame.AObjects</h4>
+                <h3>Using Observables within AFrame.AObjects</h3>
                 An <a href="AFrame.Observable.html">Observable</a> is the way events are done.  Observables are very similar to DOM Events in that 
                 each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
                 called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
@@ -420,7 +420,7 @@ Example
             </p>
             
             <p>
-                <h4>Using DataContainers</h4>
+                <h3>Using DataContainers</h3>
                 A <a href="AFrame.DataContainer.html">DataContainer</a> is AFrame's basic unit of storage.  A DataContainer
                 allows many listeners to be notified when a field changes.  This is important in an MVC system where one
                 item of data could have several distinct Views.
@@ -437,6 +437,44 @@ Example
     } );
     
     dataContainer.set( 'firstName', 'Charlotte' );
+</code>
+</pre>
+            </p>
+            
+            <p>
+                <h3>Using Schemas to Define the Data's Structure</h3>
+                A <a href="AFrame.Schema.html">Schema</a> acts as a template to define the structure of a piece of data.  
+                A Schema, combined with a DataContainer, provide a what is traditionally thought of as a Model.  Schemas are
+                useful for more than just modelling data, they can be used to clean up or transmogrify data either coming from 
+                or going to persistence.
+            </p>
+            
+            <p>
+                <h4>An example Schema</h4>
+<pre>
+<code>
+    /**
+    * A simple schema for a note.
+    * the integer and text types are self explanatory, iso8601 means ISO8601
+    *    formatted date.  Dates using the iso8601 type format will be 
+    *    automatically converted to Javascript Date objects.
+    *
+    * def means "default value"
+    */
+    var noteSchemaConfig = {
+        id: { type: 'integer' },
+        title: { type: 'text', def: 'Note Title' },
+        contents: { type: 'text' },
+        date: { type: 'iso8601' },
+        edit_date: { type: 'iso8601' }
+    };
+
+    var noteSchema = AFrame.construct( {
+        type: AFrame.Schema,
+        config: {
+            schema: noteSchemaConfig
+        }
+    } );
 </code>
 </pre>
             </p>
