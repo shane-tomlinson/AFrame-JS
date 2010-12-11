@@ -1,4 +1,9 @@
 /**
+* Note, this class does not really exist!  It is a placeholder for extensions to system prototypes like Function, Array, Date.  
+* @class SystemExtensions
+*/
+
+/**
  * The main AFrame module.  All AFrame related items are under this.
  * @module AFrame
 */
@@ -261,13 +266,22 @@ var AFrame = {
 	}
 };
 /**
- * An observable class.  The framework for a basic event system.
+ * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
+ * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
+ * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
+ * to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
+ * objects that care about it.
+ * 
  * @class AFrame.Observable
  */
 AFrame.Observable = function() {
 };
 /**
  * Get an instance of the observable
+ *
+ *    var observable = AFrame.Observable.getInstance();
+ *    var id = observable.bind( this.onInit, this );
+ 
  * @method AFrame.Observable.getInstance
  * @return {AFrame.Observable}
  */
@@ -521,6 +535,27 @@ AFrame.ObservablesMixin = {
  *	the created children.  When this object is torn down, the child object added via addChild will 
  *	have its teardown function called as well.  This can ensure that all memory is freed and that
  *	no references are kept when the object's lifespan has ended.
+ *
+ * Events
+ *=========
+ *
+ * All AFrame.AObject based classes have a built in event mechanism.  Events are dynamically created, there is
+ *  no need to explicitly create an Observable for each event, all that is needed is to call either
+ *  triggerEvent or bindEvent.
+ *
+ * Example Usage:
+ *
+ *    // Assume anObject is an AFrame.AObject based object.
+ *    // Every AFrame.AObject based object triggers an onInit event 
+ *    // when its init function is called.
+ *    var onObjectInit = function() {
+ *       // called whenever anObject.init is called.
+ *    };
+ *   
+ *    anObject.bindEvent( 'onInit', onObjectInit );
+ *    anObject.init();    // calls onObjectInit function
+ *
+
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
@@ -654,6 +689,20 @@ AFrame.mixin( AFrame.AObject.prototype, AFrame.ObservablesMixin );/**
 *   Views bound to a particular field.  When a field is updated that has multiple Views registered, all Views are notified
 *   of the change.
 *
+* Example:
+*
+*    var dataObject = {
+*        firstName: 'Shane',
+*        lastName: 'Tomlinson'
+*    };
+*    
+*    var dataContainer = AFrame.DataContainer( dataObject );
+*    dataContainer.bindField( 'firstName', function( notification ) {
+*        alert( 'new name: ' + notification.value );
+*    } );
+*    
+*    dataContainer.set( 'firstName', 'Charlotte' );
+*    
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @constructor
@@ -720,20 +769,20 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		var oldValue = this.data[ fieldName ];
 		this.data[ fieldName ] = fieldValue;
 		
-		var eventObject = this.getEventObject( fieldName, fieldValue, oldValue );
+		var fieldNotificationObject = this.getFieldNotificationObject( fieldName, fieldValue, oldValue );
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
-		* @param {object} eventObject - an event object. @see getEventObject
+		* @param {object} fieldNotificationObject - an event object. @see getFieldNotificationObject
 		*/
-		this.triggerEvent( 'onSet', eventObject );
+		this.triggerEvent( 'onSet', fieldNotificationObject );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
 		* @event onSet-fieldName
-		* @param {object} eventObject - an event object.  @see getEventObject
+		* @param {object} fieldNotificationObject - an event object.  @see getFieldNotificationObject
 		*/
-		this.triggerEvent( 'onSet-' + fieldName, eventObject );
+		this.triggerEvent( 'onSet-' + fieldName, fieldNotificationObject );
 		
 		return oldValue;
 	},
@@ -744,6 +793,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
     *    var value = dataContainer.get( 'name' );
     *
 	* @method get
+	* @param {string} fieldName - name of the field to get
 	* @return {variant} value of field
 	*/
 	get: function( fieldName ) {
@@ -751,10 +801,11 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Bind a callback to a field.  When function is called, it is called with an EventObject.
+	* Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
+    *   When function is called, it is called with an FieldNotificationObject.
     *
-    *    var onChange = function( eventObject ) {
-    *        console.log( 'Name: "' + eventObject.fieldName + '" + value: "' + eventObject.value + '" oldValue: "' + eventObject.oldValue + '"' );
+    *    var onChange = function( fieldNotificationObject ) {
+    *        console.log( 'Name: "' + fieldNotificationObject.fieldName + '" + value: "' + fieldNotificationObject.value + '" oldValue: "' + fieldNotificationObject.oldValue + '"' );
     *    };
     *    var id = dataContainer.bindField( 'name', onChange );
     *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
@@ -766,8 +817,8 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @return {id} id that can be used to unbind the field
 	*/
 	bindField: function( fieldName, callback, context ) {
-		var eventObject = this.getEventObject( fieldName, this.get( fieldName ), undefined );
-		callback.call( context, eventObject );
+		var fieldNotificationObject = this.getFieldNotificationObject( fieldName, this.get( fieldName ), undefined );
+		callback.call( context, fieldNotificationObject );
 		
 		return this.bindEvent( 'onSet-' + fieldName, callback, context );
 	},
@@ -786,8 +837,8 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	},
 	
 	/**
-	* Get an object used when triggering events.
-    * An EventObject has four fields:
+	* Get an object used when notifying listeners of changes to the field.
+    * A FieldNotificationObject has four fields:
     * 
     * 1. container
     * 2. fieldName
@@ -799,7 +850,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
 	* @return {object} an object with 4 fields, container, fieldName, oldValue, value
 	*/
-	getEventObject: function( fieldName, value, oldValue ) {
+	getFieldNotificationObject: function( fieldName, value, oldValue ) {
 		return {
 			container: this,
 			fieldName: fieldName,
@@ -926,8 +977,7 @@ AFrame.ArrayCommonFuncsMixin = {
 	}
 };/**
 * A hash object that triggers events whenever inserting, removing, etc.  Note, all
-*	events triggered natively by this will have one parameter, data.  This object parameter
-*	will have two fields, item and meta.
+*	events triggered natively by this will have one parameter, data.
 *
 * @class AFrame.CollectionHash
 * @extends AFrame.AObject
@@ -954,33 +1004,6 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	},
 	
 	/**
-	* set an item in the hash
-	* @method set
-	* @param {id} cid - cid to set item at.
-	* @param {variant} item - item to set
-	* @param {variant} meta - meta data to pass to events.
-	*/
-	set: function( cid, item, meta ) {
-		item.cid = cid;
-		var data = this.getEventData( item, meta );
-		data.meta.previousItem = this.get( cid );
-
-		/**
-		* Triggered before set happens.
-		* @event onBeforeSet
-		* @param {object} data - data has two fields, item and meta.
-		*/
-		this.triggerEvent( 'onBeforeSet', data );
-		this.hash[ cid ] = item;
-		/**
-		* Triggered after set happens.
-		* @event onSet
-		* @param {object} data - data has two fields, item and meta.
-		*/
-		this.triggerEvent( 'onSet', data );
-	},
-	
-	/**
 	* Get an item from the hash
 	* @method get
 	* @param {id} cid - cid of item to get
@@ -996,11 +1019,11 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	* @param {id} cid - cid of item to remove
 	* @return {variant} item if it exists, undefined otw.
 	*/
-	remove: function( cid, meta ) {
+	remove: function( cid ) {
 		var item = this.get( cid );
 		
 		if( item ) {
-			var data = this.getEventData( item, meta );
+			var data = this.getEventData( item );
 			
 			/**
 			* Triggered before remove happens.
@@ -1022,26 +1045,25 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
-	* it is looked for from meta.cid.  If not found, it is then assigned.
+	* it is then assigned.
 	* @method insert
-	* @param {variant} item to insert
-	* @param {object} meta data object to pass to events.
+	* @param {variant} item - item to insert
 	* @return {id} cid of the item.
 	*/
-	insert: function( item, meta ) {
-		var cid = item.cid || meta && meta.cid || AFrame.getUniqueID();
+	insert: function( item ) {
+		var cid = item.cid || AFrame.getUniqueID();
 
 		if( 'undefined' != typeof( this.get( cid ) ) ) {
 			throw 'duplicate cid';
 		}
 		
 		item.cid = cid;
-		var data = this.getEventData( item, meta );
+		var data = this.getEventData( item );
 		
 		/**
 		 * Triggered before insertion happens.
 		 * @event onBeforeInsert
-		 * @param {object} data - data has two fields, item and meta.
+		 * @param {object} data - data has two fields.
 		 */
 		this.triggerEvent( 'onBeforeInsert', data );
 		this.hash[ cid ] = item;
@@ -1084,18 +1106,19 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	/**
 	* @private
 	*/
-	getEventData: function( item, meta ) {
-		meta = meta || {};
-		meta.cid = item.cid;
+	getEventData: function( item, data ) {
+		data = data || {};
+        
+        data = jQuery.extend( data, {
+            cid: item.cid,
+            collection: this,
+            item: item
+        } );
 		
-		return {
-			item: item,
-			meta: meta,
-			collection: this
-		};
+		return data;
 	}
 } );/**
-* an array to be used MVC style.  The item's index will be added to all meta information in all events.  Items
+* An array collection.  The item's index will be added to all meta information in all events.  Items
 * are inserted by index, but can be retreived either by index or by id.
 * @class AFrame.CollectionArray
 * @extends AFrame.CollectionHash
@@ -1105,14 +1128,10 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 AFrame.CollectionArray = function() {
 	AFrame.CollectionArray.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
+AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
-		this.hash = AFrame.construct( {
-			type: AFrame.CollectionHash
-		} );
-		this.proxyEvents( this.hash, [ 'onBeforeInsert', 'onInsert', 'onBeforeRemove', 'onRemove', 'onBeforeSet', 'onSet' ] );
-		
+
 		AFrame.CollectionArray.superclass.init.apply( this, arguments );
 	},
 	
@@ -1122,26 +1141,25 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 		}, this );
 		AFrame.remove( this, 'itemCIDs' );
 		
-		this.hash.teardown();
+		//this.hash.teardown();
 		
 		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**
-	* Insert an item into the array.  ID is assigned by hash unless specified
-	* 	in the meta parameter's id field.  Index is retrieved from meta.index, if exists.  If
-	* 	not defined, insert at the end of the list.
+	* Insert an item into the array.  
 	* @method insert
 	* @param {variant} item to insert
-	* @param {object} meta information
+	* @param {integer} index (optional) - index to insert into.  If
+	* 	not defined, insert at the end of the list.
 	* @return {id} cid of the item
 	*/
-	insert: function( item, meta ) {
-		var index = meta && 'number' == typeof( meta.index ) ? meta.index : -1;
-		var realInsertIndex = this.getActualInsertIndex( index );
-		var cid = this.hash.insert( item, this.getArrayMeta( realInsertIndex, meta ) );
-		
-		this.itemCIDs.splice( realInsertIndex, 0, cid );
+	insert: function( item, index ) {
+		index = 'number' == typeof( index ) ? index : -1;
+		this.currentIndex = this.getActualInsertIndex( index );
+        
+		var cid = AFrame.CollectionArray.superclass.insert.call( this, item );
+		this.itemCIDs.splice( this.currentIndex, 0, cid );
 		
 		return cid;
 	},
@@ -1156,7 +1174,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 		var cid = this.getCID( index );
 		var retval;
 		if( cid ) {
-			retval = this.hash.get( cid );
+			retval = AFrame.CollectionArray.superclass.get.call( this, cid );
 		}
 		return retval;
 	},
@@ -1165,9 +1183,8 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 	* Remove an item from the array
 	* @method remove
 	* @param {number || id} index of item to remove.
-	* @param {object} meta information
 	*/
-	remove: function( index, meta ) {
+	remove: function( index ) {
 		var cid;
 		if( 'string' == typeof( index ) ) {
 			cid = index;
@@ -1182,7 +1199,8 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 		var retval;
 		if( index > -1 ) {
 			this.itemCIDs.splice( index, 1 );
-			retval = this.hash.remove( cid, this.getArrayMeta( index, meta ) );
+            this.currentIndex = index;
+			retval = AFrame.CollectionArray.superclass.remove.call( this, cid );
 		}
 		
 		return retval;
@@ -1193,10 +1211,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 	* @method clear
 	*/
 	clear: function() {
-		this.itemCIDs.forEach( function( cid, index ) {
-			this.hash.remove( cid, this.getArrayMeta( index ) );
-			this.itemCIDs[ index ] = null;
-		}, this );
+        AFrame.CollectionArray.superclass.clear.call( this );
 		
 		this.itemCIDs = [];
 	},
@@ -1227,11 +1242,14 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 	/**
 	 * @private
 	 */
-	getArrayMeta: function( index, meta ) {
-		meta = meta || {};
-		meta.index = index;
-		meta.collection = this;
-		return meta;
+	getEventData: function( item, data ) {
+        data = data || {};
+        
+        data = jQuery.extend( data, {
+            index: this.currentIndex
+        } );
+
+		return AFrame.CollectionArray.superclass.getEventData.call( this, item, data );
 	},
 	
 	/**
@@ -1444,21 +1462,19 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	
 	/**
 	 * Insert a data item into the list, the list item is created using the createListElementCallback.
-	 * If meta.index > current highest index, inserts at end.
-	 * 	If meta.index is negative, item is inserted from end.
-	 * 	-1 is at the end.  If not given, inserts at end.
 	 * @method insert
 	 * @param {object} data - data to use for list item
-	 * @param {object} meta (optional) - optional meta data.
-	 * return {number} index the item is inserted at.
+	 * @param {number} index (optional) - index to insert at
+	 * If index > current highest index, inserts at end.
+	 * 	If index is negative, item is inserted from end.
+	 * 	-1 is at the end.  If not given, inserts at end.
+	 * @return {number} index the item is inserted at.
 	 */
-	insert: function( data, meta ) {
-		meta = meta || {};
-		var index = this.getActualInsertIndex( meta.index );
-		meta.index = index;
-		
-		var rowElement = this.createListElementCallback( meta, data );
-		index = this.insertElement( rowElement, meta );
+	insert: function( data, index ) {
+		index = this.getActualInsertIndex( index );
+
+		var rowElement = this.createListElementCallback( data, index );
+		index = this.insertElement( rowElement, index );
 		
 		/**
 		* Triggered whenever a row is inserted into the list
@@ -1470,7 +1486,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		this.triggerEvent( 'onInsert', {
 			rowElement: rowElement, 
 			data: data,
-			meta: meta
+			index: index
 		} );
 
 		return index;
@@ -1480,17 +1496,16 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * Insert an element into the list.
 	 * @method insertRow
 	 * @param {element} rowElement - element to insert
-	 * @param {object} meta (optional) - meta data to insert the element.
-	 * index is looked for at meta.index.  If index > current highest index, inserts at end.
+	 * @param {number} index (optional) - index where to insert element.
+	 * If index > current highest index, inserts at end.
 	 * 	If index is negative, item is inserted from end.  -1 is at the end.
 	 * @return {number} index - the index the item is inserted at.
 	 */
-	insertElement: function( rowElement, meta ) {
-		meta = meta || {};
+	insertElement: function( rowElement, index ) {
 		var target = this.getTarget();
 		var children = target.children();
 		
-		var index = this.getActualInsertIndex( meta.index );
+		index = this.getActualInsertIndex( index );
 		if( index === children.length ) {
 			target.append( rowElement );
 		}
@@ -1503,11 +1518,11 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		* Triggered whenever an element is inserted into the list
 		* @event onInsertElement
 		* @param {element} rowElement - the row's list element
-		* @param {object} meta - meta data
+		* @param {number} index - index where to insert element
 		*/
 		this.triggerEvent( 'onInsertElement', {
 			rowElement: rowElement,
-			meta: meta
+			index: index
 		} );
 		
 		return index;
@@ -1518,10 +1533,8 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * @method remove
 	 * @param {number} index - index of item to remove
 	 */
-	remove: function( index, meta ) {
-		meta = meta || {};
+	remove: function( index ) {
 		var removeIndex = this.getActualRemoveIndex( index );
-		meta.index = removeIndex;
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
 		
 		/**
@@ -1532,7 +1545,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		*/
 		this.triggerEvent( 'onRemoveElement', {
 			rowElement: rowElement,
-			meta: meta
+			index: index
 		} );
 	},
 	
@@ -1579,13 +1592,13 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 	},
 	
 	onInsert: function( data ) {
-		var index = this.getPlugged().insert( data.item, data.meta );
+		var index = this.getPlugged().insert( data.item, data.index || -1 );
 
-		this.cids.splice( index, 0, data.meta.cid );
+		this.cids.splice( index, 0, data.cid );
 	},
 	
 	onRemove: function( data ) {
-		var index = this.cids.indexOf( data.meta.cid );
+		var index = this.cids.indexOf( data.cid );
 		
 		this.getPlugged().remove( index );
 		
@@ -2293,7 +2306,7 @@ AFrame.Schema.prototype = {
 	
 	/**
 	 * Get an object suitable to send to persistence.  This is based roughly on converting
-	 *	the data to a FormData "like" object - see https://developer.mozilla.org/en/XMLHttpRequest/FormData
+	 *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
 	 *	All items in the schema that do not have save parameter set to false and have values defined in dataToClean 
 	 *	will have values returned.
 	 * @method getFormData
@@ -2514,14 +2527,12 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		AFrame.ListPluginFormRow.superclass.teardown.apply( this, arguments );		
 	},
 	
-	onInsertRow: function( data ) {
+	onInsertRow: function( data, index ) {
 		var form = this.createForm( data.rowElement, data );
-		this.forms.splice( data.meta.index, 0, form );
+		this.forms.splice( index, 0, form );
 	},
 	
-	onRemoveRow: function( data ) {
-		var index = data.meta.index;
-		
+	onRemoveRow: function( data, index ) {
 		var form = this.forms[ index ];
 		form.teardown();
 		

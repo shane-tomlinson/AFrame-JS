@@ -1,5 +1,5 @@
 /**
-* an array to be used MVC style.  The item's index will be added to all meta information in all events.  Items
+* An array collection.  The item's index will be added to all meta information in all events.  Items
 * are inserted by index, but can be retreived either by index or by id.
 * @class AFrame.CollectionArray
 * @extends AFrame.CollectionHash
@@ -9,14 +9,10 @@
 AFrame.CollectionArray = function() {
 	AFrame.CollectionArray.superclass.constructor.apply( this, arguments );
 };
-AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMixin, {
+AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
-		this.hash = AFrame.construct( {
-			type: AFrame.CollectionHash
-		} );
-		this.proxyEvents( this.hash, [ 'onBeforeInsert', 'onInsert', 'onBeforeRemove', 'onRemove', 'onBeforeSet', 'onSet' ] );
-		
+
 		AFrame.CollectionArray.superclass.init.apply( this, arguments );
 	},
 	
@@ -26,26 +22,25 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 		}, this );
 		AFrame.remove( this, 'itemCIDs' );
 		
-		this.hash.teardown();
+		//this.hash.teardown();
 		
 		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
 	},
 	
 	/**
-	* Insert an item into the array.  ID is assigned by hash unless specified
-	* 	in the meta parameter's id field.  Index is retrieved from meta.index, if exists.  If
-	* 	not defined, insert at the end of the list.
+	* Insert an item into the array.  
 	* @method insert
 	* @param {variant} item to insert
-	* @param {object} meta information
+	* @param {integer} index (optional) - index to insert into.  If
+	* 	not defined, insert at the end of the list.
 	* @return {id} cid of the item
 	*/
-	insert: function( item, meta ) {
-		var index = meta && 'number' == typeof( meta.index ) ? meta.index : -1;
-		var realInsertIndex = this.getActualInsertIndex( index );
-		var cid = this.hash.insert( item, this.getArrayMeta( realInsertIndex, meta ) );
-		
-		this.itemCIDs.splice( realInsertIndex, 0, cid );
+	insert: function( item, index ) {
+		index = 'number' == typeof( index ) ? index : -1;
+		this.currentIndex = this.getActualInsertIndex( index );
+        
+		var cid = AFrame.CollectionArray.superclass.insert.call( this, item );
+		this.itemCIDs.splice( this.currentIndex, 0, cid );
 		
 		return cid;
 	},
@@ -60,7 +55,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 		var cid = this.getCID( index );
 		var retval;
 		if( cid ) {
-			retval = this.hash.get( cid );
+			retval = AFrame.CollectionArray.superclass.get.call( this, cid );
 		}
 		return retval;
 	},
@@ -69,9 +64,8 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 	* Remove an item from the array
 	* @method remove
 	* @param {number || id} index of item to remove.
-	* @param {object} meta information
 	*/
-	remove: function( index, meta ) {
+	remove: function( index ) {
 		var cid;
 		if( 'string' == typeof( index ) ) {
 			cid = index;
@@ -86,7 +80,8 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 		var retval;
 		if( index > -1 ) {
 			this.itemCIDs.splice( index, 1 );
-			retval = this.hash.remove( cid, this.getArrayMeta( index, meta ) );
+            this.currentIndex = index;
+			retval = AFrame.CollectionArray.superclass.remove.call( this, cid );
 		}
 		
 		return retval;
@@ -97,10 +92,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 	* @method clear
 	*/
 	clear: function() {
-		this.itemCIDs.forEach( function( cid, index ) {
-			this.hash.remove( cid, this.getArrayMeta( index ) );
-			this.itemCIDs[ index ] = null;
-		}, this );
+        AFrame.CollectionArray.superclass.clear.call( this );
 		
 		this.itemCIDs = [];
 	},
@@ -131,11 +123,14 @@ AFrame.extend( AFrame.CollectionArray, AFrame.AObject, AFrame.ArrayCommonFuncsMi
 	/**
 	 * @private
 	 */
-	getArrayMeta: function( index, meta ) {
-		meta = meta || {};
-		meta.index = index;
-		meta.collection = this;
-		return meta;
+	getEventData: function( item, data ) {
+        data = data || {};
+        
+        data = jQuery.extend( data, {
+            index: this.currentIndex
+        } );
+
+		return AFrame.CollectionArray.superclass.getEventData.call( this, item, data );
 	},
 	
 	/**

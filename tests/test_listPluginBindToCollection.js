@@ -16,7 +16,7 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 				type: AFrame.List,
 				config: {
 					target: '.list',
-					createListElementCallback: function( index, data ) {
+					createListElementCallback: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
 						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + '">Inserted Element</li>' );
@@ -92,7 +92,7 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 				type: AFrame.List,
 				config: {
 					target: '.list',
-					createListElementCallback: function( index, data ) {
+					createListElementCallback: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
 						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + '">Inserted Element</li>' );

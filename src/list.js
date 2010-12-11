@@ -30,21 +30,19 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	
 	/**
 	 * Insert a data item into the list, the list item is created using the createListElementCallback.
-	 * If meta.index > current highest index, inserts at end.
-	 * 	If meta.index is negative, item is inserted from end.
-	 * 	-1 is at the end.  If not given, inserts at end.
 	 * @method insert
 	 * @param {object} data - data to use for list item
-	 * @param {object} meta (optional) - optional meta data.
-	 * return {number} index the item is inserted at.
+	 * @param {number} index (optional) - index to insert at
+	 * If index > current highest index, inserts at end.
+	 * 	If index is negative, item is inserted from end.
+	 * 	-1 is at the end.  If not given, inserts at end.
+	 * @return {number} index the item is inserted at.
 	 */
-	insert: function( data, meta ) {
-		meta = meta || {};
-		var index = this.getActualInsertIndex( meta.index );
-		meta.index = index;
-		
-		var rowElement = this.createListElementCallback( meta, data );
-		index = this.insertElement( rowElement, meta );
+	insert: function( data, index ) {
+		index = this.getActualInsertIndex( index );
+
+		var rowElement = this.createListElementCallback( data, index );
+		index = this.insertElement( rowElement, index );
 		
 		/**
 		* Triggered whenever a row is inserted into the list
@@ -56,7 +54,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		this.triggerEvent( 'onInsert', {
 			rowElement: rowElement, 
 			data: data,
-			meta: meta
+			index: index
 		} );
 
 		return index;
@@ -66,17 +64,16 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * Insert an element into the list.
 	 * @method insertRow
 	 * @param {element} rowElement - element to insert
-	 * @param {object} meta (optional) - meta data to insert the element.
-	 * index is looked for at meta.index.  If index > current highest index, inserts at end.
+	 * @param {number} index (optional) - index where to insert element.
+	 * If index > current highest index, inserts at end.
 	 * 	If index is negative, item is inserted from end.  -1 is at the end.
 	 * @return {number} index - the index the item is inserted at.
 	 */
-	insertElement: function( rowElement, meta ) {
-		meta = meta || {};
+	insertElement: function( rowElement, index ) {
 		var target = this.getTarget();
 		var children = target.children();
 		
-		var index = this.getActualInsertIndex( meta.index );
+		index = this.getActualInsertIndex( index );
 		if( index === children.length ) {
 			target.append( rowElement );
 		}
@@ -89,11 +86,11 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		* Triggered whenever an element is inserted into the list
 		* @event onInsertElement
 		* @param {element} rowElement - the row's list element
-		* @param {object} meta - meta data
+		* @param {number} index - index where to insert element
 		*/
 		this.triggerEvent( 'onInsertElement', {
 			rowElement: rowElement,
-			meta: meta
+			index: index
 		} );
 		
 		return index;
@@ -104,10 +101,8 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * @method remove
 	 * @param {number} index - index of item to remove
 	 */
-	remove: function( index, meta ) {
-		meta = meta || {};
+	remove: function( index ) {
 		var removeIndex = this.getActualRemoveIndex( index );
-		meta.index = removeIndex;
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
 		
 		/**
@@ -118,7 +113,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		*/
 		this.triggerEvent( 'onRemoveElement', {
 			rowElement: rowElement,
-			meta: meta
+			index: index
 		} );
 	},
 	

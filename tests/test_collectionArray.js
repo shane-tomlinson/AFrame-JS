@@ -30,7 +30,7 @@ testsToRun.push( function testCollectionArray( Y ) {
 		testInsertGet: function() {
 			
 			var index = 0;
-			var id = this.array.insert( this.item, { index: index } );
+			var id = this.array.insert( this.item, index );
 			
 			var retrievedByIndexItem = this.array.get( index );
 			Assert.areSame( this.item, retrievedByIndexItem, 'insert then retrieval by index works' );
@@ -46,14 +46,14 @@ testsToRun.push( function testCollectionArray( Y ) {
 			} );
 
 			var index = 0;
-			this.array.insert( this.item, { index: index } );
+			this.array.insert( this.item, index );
 			
-			Assert.areEqual( index, insertData.meta.index, 'index set in the meta data' );
+			Assert.areEqual( index, insertData.index, 'index set in the meta data' );
 		},
 		
 		testRemove: function() {
 			var index = 0;
-			var id = this.array.insert( this.item, { index: index } );
+			var id = this.array.insert( this.item, index );
 			
 			var removedItem = this.array.remove( index );
 			Assert.areSame( this.item, removedItem, 'removedItem and original item are the same');
@@ -64,7 +64,7 @@ testsToRun.push( function testCollectionArray( Y ) {
 		
 		testRemoveByID: function() {
 			var index = 0;
-			var id = this.array.insert( this.item, { index: index } );
+			var id = this.array.insert( this.item, index );
 			
 			var removedItem = this.array.remove( id );
 			
@@ -77,7 +77,7 @@ testsToRun.push( function testCollectionArray( Y ) {
 			Assert.areSame( 0, count, 'emtpy gives correct count' );
 			
 			var index = 0;
-			this.array.insert( this.item, { index: index } );
+			this.array.insert( this.item, index );
 			count = this.array.getCount();
 			Assert.areEqual( 1, count, 'one added gives correct count' );
 			

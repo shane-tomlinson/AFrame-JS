@@ -9,7 +9,7 @@ testsToRun.push( function testCollectionHash( Y ) {
 
 		setUp: function() {
 		    this.hash = AFrame.construct( {
-			type: AFrame.CollectionHash
+                type: AFrame.CollectionHash
 		    } );
 		},
 		
@@ -18,59 +18,29 @@ testsToRun.push( function testCollectionHash( Y ) {
 		    this.hash = null;
 		    delete this.hash;
 		},
-		
-		testSet: function() {
-		    var beforeSetData;
-		    var onBeforeSet = function( data ) {
-			beforeSetData = data;
-			
-			// adding a field to the data, making sure we get it in onSet
-			data.item.field2 = "field2";
-		    };
-		    
-		    var setData;
-		    var onSet = function( data ) {
-			setData = data;
-		    };
-		    
-		    this.hash.bindEvent( 'onBeforeSet', onBeforeSet );
-		    this.hash.bindEvent( 'onSet', onSet );
-		    
-		    var cid = 1;
-		    this.hash.set( cid, {
-		      field: 'fieldValue'
-		    } );
-		    
-		    Assert.isObject( beforeSetData, 'onBeforeSet sets data' );
-		    Assert.areSame( cid, beforeSetData.meta.cid, 'onBeforeSet gives same cid as insert' );
-		    Assert.areSame( 'fieldValue', beforeSetData.item.field, 'onBeforeSet gives data we pass in' );
-		    
-		    Assert.isObject( setData, 'onSet sets data' );
-		    Assert.areSame( cid, setData.meta.cid, 'onSet gives same cid as insert' );
-		    Assert.areSame( 'fieldValue', setData.item.field, 'onSet gives data we pass in' );
-		    Assert.areSame( 'field2', setData.item.field2, 'onSet gets data set by onBeforeInsert' );
-		},
-		
+
 		testGet: function() {
+            var cid = 1;
 		    var item = {
-			fieldName: 'fieldValue'
+                cid: cid,
+                fieldName: 'fieldValue'
 		    };
 		    
-		    var cid = 1;
-		    this.hash.set( cid, item );
+		    this.hash.insert( item );
 		    var retrievedItem = this.hash.get( cid );
 		    
 		    Assert.areSame( item, retrievedItem, 'item and the retrievedItem are the same' );
 		},
 		
 		testRemove: function() {
-		    var item = {
-			fieldName: 'fieldValue'
-		    };
-		    
 		    var cid = 1;
 		    
-		    this.hash.set( cid, item );
+		    var item = {
+                cid: cid,
+                fieldName: 'fieldValue'
+		    };
+		    
+		    this.hash.insert( item );
 		    var deletedItem = this.hash.remove( cid );
 		    Assert.areSame( item, deletedItem, 'got the correct deleted item' );
 		    
@@ -83,13 +53,14 @@ testsToRun.push( function testCollectionHash( Y ) {
 		},
 		
 		testRemoveEvents: function() {
+		    var cid = 1;
+		    
 		    var item = {
+                cid: cid,
 				fieldName: 'fieldValue'
 		    };
 		    
-		    var cid = 1;
-		    
-		    this.hash.set( cid, item );
+		    this.hash.insert( item );
 		  
 		    var beforeRemoveData;
 		    var onBeforeRemove = function( data ) {
@@ -106,64 +77,14 @@ testsToRun.push( function testCollectionHash( Y ) {
 		    
 		    this.hash.remove( cid );
 		    
-		    Assert.areSame( cid, beforeRemoveData.meta.cid, 'onBeforeRemove ids are the same' );
+		    Assert.areSame( cid, beforeRemoveData.cid, 'onBeforeRemove ids are the same' );
 		    Assert.areSame( item, beforeRemoveData.item, 'onBeforeRemove items are the same' );
 		    
-		    Assert.areSame( cid, removeData.meta.cid, 'onRemove ids are the same' );
+		    Assert.areSame( cid, removeData.cid, 'onRemove ids are the same' );
 		    Assert.areSame( item, removeData.item, 'onRemove items are the same' );
 		},
 		
 		testInsert: function() {
-			var item = {
-				fieldName: 'fieldValue'
-			};
-			
-			var meta = {
-				metaField: 'metaValue'
-			};
-			
-			var beforeInsertData;
-			this.hash.bindEvent( 'onBeforeInsert', function( data ) {
-				beforeInsertData = data;
-			} );
-
-			var insertData;
-			this.hash.bindEvent( 'onInsert', function( data ) {
-				insertData = data;
-			} );
-			
-			var cid = this.hash.insert( item, meta );
-			
-			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
-			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
-			
-			Assert.areSame( insertData.meta.cid, cid, 'ids are the same' );
-
-		},
-
-		testInsertWithExistingCID: function() {
-			var dataWithCID = {
-				cid: 'externalcid',
-				fieldName: 'fieldValue'
-			};
-			var cid = this.hash.insert( dataWithCID );
-			
-			Assert.areSame( 'externalcid', cid, 'item with cid retains cid' );
-
-			var dataWithoutCID = {
-				fieldName: 'fieldValue'
-			};
-
-			var metaWithCID = {
-				cid: 'metacid'
-			};
-
-			cid = this.hash.insert( dataWithoutCID, metaWithCID );
-			Assert.areSame( 'metacid', cid, 'meta with cid retains cid' );
-			
-		},
-		
-		testInsertNoMeta: function() {
 			var item = {
 				fieldName: 'fieldValue'
 			};
@@ -182,8 +103,20 @@ testsToRun.push( function testCollectionHash( Y ) {
 			
 			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
 			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
+			
+			//Assert.areSame( cid, insertData.cid, 'ids are the same' );
 		},
-		
+
+		testInsertWithExistingCID: function() {
+			var dataWithCID = {
+				cid: 'externalcid',
+				fieldName: 'fieldValue'
+			};
+			var cid = this.hash.insert( dataWithCID );
+			
+			Assert.areSame( 'externalcid', cid, 'item with cid retains cid' );
+        },
+				
 		testInsertDuplicateCID: function() {
 			var item = {
 				cid: 1,

@@ -33,13 +33,13 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 	},
 	
 	onInsert: function( data ) {
-		var index = this.getPlugged().insert( data.item, data.meta );
+		var index = this.getPlugged().insert( data.item, data.index || -1 );
 
-		this.cids.splice( index, 0, data.meta.cid );
+		this.cids.splice( index, 0, data.cid );
 	},
 	
 	onRemove: function( data ) {
-		var index = this.cids.indexOf( data.meta.cid );
+		var index = this.cids.indexOf( data.cid );
 		
 		this.getPlugged().remove( index );
 		

@@ -45,14 +45,12 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		AFrame.ListPluginFormRow.superclass.teardown.apply( this, arguments );		
 	},
 	
-	onInsertRow: function( data ) {
+	onInsertRow: function( data, index ) {
 		var form = this.createForm( data.rowElement, data );
-		this.forms.splice( data.meta.index, 0, form );
+		this.forms.splice( index, 0, form );
 	},
 	
-	onRemoveRow: function( data ) {
-		var index = data.meta.index;
-		
+	onRemoveRow: function( data, index ) {
 		var form = this.forms[ index ];
 		form.teardown();
 		

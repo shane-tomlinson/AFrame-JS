@@ -1,7 +1,6 @@
 /**
 * A hash object that triggers events whenever inserting, removing, etc.  Note, all
-*	events triggered natively by this will have one parameter, data.  This object parameter
-*	will have two fields, item and meta.
+*	events triggered natively by this will have one parameter, data.
 *
 * @class AFrame.CollectionHash
 * @extends AFrame.AObject
@@ -28,33 +27,6 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	},
 	
 	/**
-	* set an item in the hash
-	* @method set
-	* @param {id} cid - cid to set item at.
-	* @param {variant} item - item to set
-	* @param {variant} meta - meta data to pass to events.
-	*/
-	set: function( cid, item, meta ) {
-		item.cid = cid;
-		var data = this.getEventData( item, meta );
-		data.meta.previousItem = this.get( cid );
-
-		/**
-		* Triggered before set happens.
-		* @event onBeforeSet
-		* @param {object} data - data has two fields, item and meta.
-		*/
-		this.triggerEvent( 'onBeforeSet', data );
-		this.hash[ cid ] = item;
-		/**
-		* Triggered after set happens.
-		* @event onSet
-		* @param {object} data - data has two fields, item and meta.
-		*/
-		this.triggerEvent( 'onSet', data );
-	},
-	
-	/**
 	* Get an item from the hash
 	* @method get
 	* @param {id} cid - cid of item to get
@@ -70,11 +42,11 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	* @param {id} cid - cid of item to remove
 	* @return {variant} item if it exists, undefined otw.
 	*/
-	remove: function( cid, meta ) {
+	remove: function( cid ) {
 		var item = this.get( cid );
 		
 		if( item ) {
-			var data = this.getEventData( item, meta );
+			var data = this.getEventData( item );
 			
 			/**
 			* Triggered before remove happens.
@@ -96,26 +68,25 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
-	* it is looked for from meta.cid.  If not found, it is then assigned.
+	* it is then assigned.
 	* @method insert
-	* @param {variant} item to insert
-	* @param {object} meta data object to pass to events.
+	* @param {variant} item - item to insert
 	* @return {id} cid of the item.
 	*/
-	insert: function( item, meta ) {
-		var cid = item.cid || meta && meta.cid || AFrame.getUniqueID();
+	insert: function( item ) {
+		var cid = item.cid || AFrame.getUniqueID();
 
 		if( 'undefined' != typeof( this.get( cid ) ) ) {
 			throw 'duplicate cid';
 		}
 		
 		item.cid = cid;
-		var data = this.getEventData( item, meta );
+		var data = this.getEventData( item );
 		
 		/**
 		 * Triggered before insertion happens.
 		 * @event onBeforeInsert
-		 * @param {object} data - data has two fields, item and meta.
+		 * @param {object} data - data has two fields.
 		 */
 		this.triggerEvent( 'onBeforeInsert', data );
 		this.hash[ cid ] = item;
@@ -158,14 +129,15 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	/**
 	* @private
 	*/
-	getEventData: function( item, meta ) {
-		meta = meta || {};
-		meta.cid = item.cid;
+	getEventData: function( item, data ) {
+		data = data || {};
+        
+        data = jQuery.extend( data, {
+            cid: item.cid,
+            collection: this,
+            item: item
+        } );
 		
-		return {
-			item: item,
-			meta: meta,
-			collection: this
-		};
+		return data;
 	}
 } );

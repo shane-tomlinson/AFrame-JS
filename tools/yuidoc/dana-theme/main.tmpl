@@ -446,11 +446,11 @@ Example
                 A <a href="AFrame.Schema.html">Schema</a> acts as a template to define the structure of a piece of data.  
                 A Schema, combined with a DataContainer, provide a what is traditionally thought of as a Model.  Schemas are
                 useful for more than just modelling data, they can be used to clean up or transmogrify data either coming from 
-                or going to persistence.
+                or going to persistence.  Schemas can even be nested to create complex data structures.
             </p>
             
             <p>
-                <h4>An example Schema</h4>
+                <h4>An Example Schema</h4>
 <pre>
 <code>
     /**
@@ -478,8 +478,45 @@ Example
 </code>
 </pre>
             </p>
+            
+            <p>
+                <h3>Using DataContainers and Schemas Together = Model</3>
+                
+            </p>
+            
+            <p>
+                <h4>Example of Schema and DataContainer Together</h4>
+<pre>
+<code>
+    /** 
+    * Using the above noteSchema.
+    * 
+    * Taking some text-only data from persistence and converting it 
+    *   for use within the app
+    */
+    var noteData = noteSchema.getAppData( {
+        id: '1',
+        title: 'Get some milk',
+        contents: 'Go to the supermarket and grab some milk.',
+        date: '2010-12-10T18:09Z',
+        edit_date: '2010-12-10T18:23Z'
+        extra_field: 'this field does not get through'
+    } );
+    
+    /**
+    * Here: 
+    *    noteData.id is the integer 1
+    *    noteData.date is a Javascript Date
+    *    noteData.edit_date is a Javascript Date
+    *    extra_field does not exist
+    */
+    
+    var noteModel = AFrame.DataContainer( noteData );
+</code>
+</pre>
+            </p>
+            
         </section>
-        
         
       #end if
 
