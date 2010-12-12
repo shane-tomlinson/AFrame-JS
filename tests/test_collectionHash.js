@@ -158,7 +158,14 @@ testsToRun.push( function testCollectionHash( Y ) {
 			this.hash.remove( cid );
 			count = this.hash.getCount();
 			Assert.areEqual( 0, count, 'one removed gives correct count' );
-		}
+		},
+        
+        testInsertNumber: function() {
+			var cid = this.hash.insert( 2 );
+            var val = this.hash.get( cid );
+            
+            Assert.areEqual( 2, val, 'Can insert and get number' );
+        }
 
 	} );
 	

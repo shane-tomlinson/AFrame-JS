@@ -22,8 +22,6 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		}, this );
 		AFrame.remove( this, 'itemCIDs' );
 		
-		//this.hash.teardown();
-		
 		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
 	},
 	

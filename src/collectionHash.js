@@ -46,7 +46,7 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		var item = this.get( cid );
 		
 		if( item ) {
-			var data = this.getEventData( item );
+			var data = this.getEventData( item, { cid: cid } );
 			
 			/**
 			* Triggered before remove happens.
@@ -80,8 +80,7 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 			throw 'duplicate cid';
 		}
 		
-		item.cid = cid;
-		var data = this.getEventData( item );
+		var data = this.getEventData( item, { cid: cid } );
 		
 		/**
 		 * Triggered before insertion happens.
@@ -133,7 +132,6 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		data = data || {};
         
         data = jQuery.extend( data, {
-            cid: item.cid,
             collection: this,
             item: item
         } );
