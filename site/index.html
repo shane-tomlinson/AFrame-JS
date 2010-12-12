@@ -2,23 +2,31 @@
 <html>
 <head>
 	<meta charset=UTF-8>
-	<title>AFrameJS - Javascript Application Framework</title>
+	<title>AFrameJS - Javascript Application Library</title>
 
 	<!--[if lt IE 9]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
 	
 	
-	<link rel="stylesheet" type="text/css" href="stylesheets/cssreset.css">
-	<link rel="stylesheet" type="text/css" href="stylesheets/grid.css">
-	<link rel="stylesheet" type="text/css" href="stylesheets/aframejs.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/cssreset.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/grid.css">
+  <link rel="stylesheet" type="text/css" href="docs/css/jquery-ui-1.8.4.custom.css">
+  <link rel="stylesheet" type="text/css" href="docs/css/main.css">
+  <link rel="stylesheet" type="text/css" href="docs/css/navigation.css">
+  <link rel="stylesheet" type="text/css" href="docs/css/content.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/grid.css">
+  <link rel="stylesheet" type="text/css" href="stylesheets/aframejs.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono">
+
+    
 </head>
 
 <body>
 	<div class="container container_12">
 		<header class="clearfix">
 			<h1>AFrameJS</h1>
-			<h2>A Javascript <strong>Application</strong> Framework</h2>
+			<h2>A Javascript <strong>Application</strong> Library</h2>
 
 			<nav class="grid_12">
 				<ul>
@@ -36,47 +44,372 @@
 			<h2>Not Another DOM Manipulation Library!</h2>
 
 			<p>
-				AFrame is an <strong>application development framework</strong>, not another DOM manipulation library!  AFrame provides functionality
-				found in more traditional frameworks like .NET or the Java JDK- items like models, views, observables, plugins, schemas, data containers,
-				data collections, forms, and fields.  These items provide a way of developing event driven MVC applications where complexity is managed
-				through clean code, and where generic, reusable components enable more work to be done with less code.
+				AFrame is an <strong>application development library</strong>, not another DOM manipulation library!  AFrame is both an Object Oriented and Aspect Oriented library that is 
+                being built to fill the huge hole in Javascript libraries - one that allows traditional
+                <strong>applications</strong> to be built.  Most people using Javascript do not realize the language's full power, still thinking of Javascript as a toy language used only
+                to do DOM manipulation.  Since the language's flexibility for OOP or AOP is not widely understood, most of the code out there is written using 
+                procedural methodologies - methodologies that went out of fashion many years ago.  It is time for web-app development to mature and use ideas that other languages
+				have been using for years.  AFrame is being developed to address the need of having a true OOP/AOP framework to develop real applications with.  Backbone and Knockout-JS are two similar libraries that address this need, and now AFrame does too.
+
+            </p>
+		  
+			<p>
+				Currently AFrame depends on jQuery, this is used to work with displays.  I am hoping to remove this
+				dependency to keep things as flexible as possible.  All of the model related items work without jQuery.
 			</p>
 
 			<p>
-				AFrame is being developed out of the frustration of not having a proper application framework at my disposal when I first
-				started using Javascript to write web applications.  There are plenty of DOM manipulation libraries (jQuery, Prototype, Dojo, YUI),
-				but these do not provide the functionality necessary to write MVC applications.  There are some frameworks that provide hundreds of 
-				widgets (Dojo, YUI, Sencha Labs), but these are so heavyweight that they can be confusing and cumbersome. There are still others 
-				that completely shield you from writing Javascript (Cappachino) but what is the point, I want to write my Javascript in Javascript, not Objective-C.
-				All these frameworks have the added drawback of being hundreds of kilobytes.  The web is about Javascript, and developers have
-				for too long been building unmaintainable web sites using procedural methodologies that went out of style 15 years ago.
-			</p>
-			
-			<p>	There is a need for a light weight Object Oriented <strong>application</strong> framework which provides a clean way to write
-				full fledged applications in a traditional MVC style.  It is time for web-app development to mature and use ideas that other languages
-				have been using for years.  Backbone and Knockout-JS are two similar libraries that address this need, and now AFrame does too.
+                To use AFrame without compilation, you can grab the current version from <a href="https://github.com/stomlinson/AFrame-JS">GitHub</a> 
+                in dist/aframe-current.js or dist/aframe-current.min.js
 			</p>
 
-			<p>
-				AFrame right now depends on jQuery, this is used to work with displays.  I am hoping to remove this
-				dependency to keep things as flexible as possible.  All of the data related items work without jQuery.
-			</p>
-
-			<p>
-			To use AFrame without compilation, you can grab the current version from <a href="https://github.com/stomlinson/AFrame-JS">GitHub</a> in dist/aframe-current.js or dist/aframe-current.min.js
-			</p>
-
-			<p>
-				Unit tests use the <a href="http://developer.yahoo.com/yui/3/test/">YUI 3: Test</a> library.  These can be run by browsing to the tests directory and opening index.html
-			</p>
 		</section>
 		
+        
+        
+        <section class="grid_12">
+            <h2>Overview</h2>
+            
+            <p>
+                AFrame provides base level components necessary to start creating full <a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">Model-View-Controller</a>(MVC) style applications.
+            </p>
+            
+            <h3>Models</h3>
+            <p>
+                In AFrame terminology, a Model is made up of a <a href="docs/AFrame.DataContainer.html">DataContainer</a> and possibly a <a href="docs/AFrame.Schema.html">Schema.</a>  A <a href="docs/AFrame.DataContainer.html">DataContainer</a> 
+                is the object that holds data.  A <a href="docs/AFrame.Schema.html">Schema</a> acts as both a template and a filter when working with data objects.  
+            </p>
+            
+            <p>
+                Models are often times part of a larger collection, in Javascript they are often part of either hashes or arrays.  
+                This is why AFrame provides two data collections, <a href="docs/AFrame.CollectionHash.html">CollectionHash</a> and <a href="docs/AFrame.CollectionArray.html">CollectionArray</a>.
+            </p>
+            
+            <h3>Views</h3>
+            <p>
+                MVC Views are called a <a href="docs/AFrame.Display.html">Displays</a>.  There are several types of Displays, but the basic 
+                Display provides very basic DOM and DOM event functionality.  Currently the DOM manipulation functions rely on 
+                <a href="jquery.com">jQuery</a> but the hope is to remove this dependency.  A <a href="docs/AFrame.Field.html">Field</a> 
+                provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user, 
+                validate the data, clean up the data, and display helpful hints when there are problems.  A <a href="docs/AFrame.Form.html">Form</a> 
+                is a composite of <a href="docs/AFrame.Field.html">Fields</a>.  A <a href="docs/AFrame.DataForm.html">DataForm</a> takes 
+                this one step further and binds a form to a <a href="docs/AFrame.DataContainer.html">DataContainer</a> allowing 
+                changes in input to automatically update its corresponding model when all fields are valid.
+            </p>
+            
+            <p>
+                Just as models are parts of a larger collection, often times Displays need to be part of a larger <a href="docs/AFrame.List.html">List</a>.
+            </p>
+            
+            <h3>Controllers</h3>
+            <p>
+                There has to be some fun in programming.  You get to write whatever controllers you want.
+            </p>
+            
+            <h3>Did you say AOP?</h3>
+            <p>
+                Since AFrame tries to be <a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect Oriented</a> as much as 
+                <a href="http://en.wikipedia.org/wiki/Object_oriented_programming">Object Oriented</a>, it provides strong <a href="docs/AFrame.Observable.html">Observable</a>(events) 
+                and <a href="docs/AFrame.Plugin.html">Plugin</a> systems.  Observables make it easy to listen for specific events that happen on an object, anybody 
+                who has worked with DOM Events already has an intrinsic understanding of how Observables work.
+                Plugins are a way of extending the functionality of an object through composition instead of directly subclassing that object.  
+                This means a small piece of functionality can be written once and may be shared across several seemingly unrelated classes.  
+                It also means that configuring an object is incredibly flexible.  When writing an object, you no longer need to write one gigantic class
+                that does everything.  With plugins, you can write a small base class and put all the peripheral functionality into
+                plugins, when the time comes to create an object, only create an object with the bits of functionality that are needed.  
+                Developing this way makes testing and debugging much easier and faster.  It also means if a piece of functionality is no longer needed, 
+                you can bin just the bit you don't want and not mess with the rest.
+            </p>
+        </section>
+
+        <section class="grid_12 summary description">
+            <h2>The underlying principles of development in AFrame are:</h2>
+            <ul>
+                <li>Create the basic classes necessary to create an MVC application</li>
+                <li>A powerful event system makes life much simpler and more flexible than chains of callbacks</li>
+                <li>Favor composition over inheritance, use AOP to augment OOP whenever it makes sense</li>
+                <li>Forms are central to nearly all web applications</li>
+                <li>Collections of related data are essential</li>
+                <li>Use features/standards from HTML5 where possible</li>
+                <li>Be database agnostic - who knows what data persistence schemes are going to be used</li>
+                <li>Clean up references when objects are torn down so that memory leaks are minimized</li>
+                <li>Make AFrame as easy to add on to as possible</li>
+            </ul>
+        
+        </section>
+        
+        
+        
+        
+        <section class="grid_12">
+            <h2>Getting Started</h2>
+            <p>
+                First, get the <a href="https://github.com/stomlinson/AFrame-JS/tree/master/dist">code.</a>
+            </p>
+            
+            <p>
+                <h3>Constructing an object</h3>
+                Since AFrame tries to be somewhat AOP with its use of Plugins, and often times those Plugins depend on knowing 
+                when the plugged object is initialized, it is recommended to use <a href="docs/AFrame.html#method_construct">AFrame.construct</a> instead
+                of the 'new' operator to do object construction.  All <a href="docs/AFrame.AObject.html">AFrame.AObject</a> based classes do very little in
+                their constructors, and do their initialization in the 'init' function.  This allows us to create an object and all of its plugins, then
+                have the plugins take action whenever their plugged object is initialized.  
+            </p>
+            <p>
+                As a side note, all AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within 
+                the system.  CIDs can be assigned on object creation, if a CID is not given, one is assigned automatically.
+            </p>
+            <p>
+                <h4>Example of object creation</h4>
+<pre>
+<code>
+    var object = AFrame.construct( {
+        type: AFrame.SomeAObject,
+        config: {
+            configConfig1: val1,
+            configConfig2: val2
+        },
+        plugins: [
+           {
+                type: AFrame.SomePlugin,
+                config: {
+                    pluginConfig1: val1,
+                    pluginConfig2: val2
+                }
+           }
+    } );
+    
+    object.someOperation();
+</code>
+</pre>
+
+                What this does under the hood is create an instance of AFrame.SomeAObject and an instance of AFrame.SomePlugin.  AFrame.SomePlugin is bound to AFrame.SomeObject.  
+                AFrame.SomePlugin finally has its init function called.
+            </p>
+            
+            <p>
+                <h3>Using Observables within AFrame.AObjects</h3>
+                An <a href="docs/AFrame.Observable.html">Observable</a> is the way events are done.  Observables are very similar to DOM Events in that 
+                each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
+                called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
+                to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
+                objects that care about it.
+            </p>
+            <p>
+            <h4>Example of Binding to an AObject's Observable</h4>
+Example
+<pre>                
+<code>
+    // Assume anObject is an AFrame.AObject based object
+    // Every AFrame.AObject based object triggers an onInit 
+    // event when its init function is called.
+    
+    var onObjectInit = function() {
+        // called whenever anObject.init is called.
+    };
+    
+    anObject.bindEvent( 'onInit', onObjectInit );
+    anObject.init();    // calls onObjectInit function
+</code>
+</pre>
+            </p>
+            
+        </section>
+        
+        <section class="grid_12">
+            <h2>Model Related Classes</h2>
+            <p>
+                <h3>Using DataContainers</h3>
+                A <a href="docs/AFrame.DataContainer.html">DataContainer</a> is AFrame's basic unit of storage.  A DataContainer
+                allows many listeners to be notified when a field changes.  This is important in an MVC system where one
+                item of data could have several distinct Views.
+<pre>
+<code>
+    var dataObject = {
+        firstName: 'Shane',
+        lastName: 'Tomlinson'
+    };
+    
+    var dataContainer = AFrame.DataContainer( dataObject );
+    dataContainer.bindField( 'firstName', function( eventObject ) {
+        alert( 'new name: ' + eventObject.value );
+    } );
+    
+    dataContainer.set( 'firstName', 'Charlotte' );
+</code>
+</pre>
+            </p>
+            
+            <p>
+                <h3>Using Schemas to Define the Data's Structure</h3>
+                A <a href="docs/AFrame.Schema.html">Schema</a> acts as a template to define the structure of a piece of data.  
+                A Schema, combined with a DataContainer, provide a what is traditionally thought of as a Model.  Schemas are
+                useful for more than just modelling data, they can be used to clean up or transmogrify data either coming from 
+                or going to persistence.  Schemas can even be nested to create complex data structures.
+            </p>
+            
+            <p>
+                <h4>An Example Schema</h4>
+<pre>
+<code>
+    /**
+    * A simple schema for a note.
+    * the integer and text types are self explanatory, iso8601 means ISO8601
+    *    formatted date.  Dates using the iso8601 type format will be 
+    *    automatically converted to Javascript Date objects.
+    *
+    * def means "default value"
+    */
+    var noteSchemaConfig = {
+        id: { type: 'integer' },
+        title: { type: 'text', def: 'Note Title' },
+        contents: { type: 'text' },
+        date: { type: 'iso8601' },
+        edit_date: { type: 'iso8601' }
+    };
+
+    var noteSchema = AFrame.construct( {
+        type: AFrame.Schema,
+        config: {
+            schema: noteSchemaConfig
+        }
+    } );
+</code>
+</pre>
+            </p>
+            
+            <p>
+                <h3>Using DataContainers and Schemas Together = Model</3>
+                
+            </p>
+            
+            <p>
+                <h4>Example of Schema and DataContainer Together</h4>
+<pre>
+<code>
+    /** 
+    * Using the above noteSchema.
+    * 
+    * Taking some text-only data from persistence and converting it 
+    *   for use within the app
+    */
+    var noteData = noteSchema.getAppData( {
+        id: '1',
+        title: 'Get some milk',
+        contents: 'Go to the supermarket and grab some milk.',
+        date: '2010-12-10T18:09Z',
+        edit_date: '2010-12-10T18:23Z'
+        extra_field: 'this field does not get through'
+    } );
+    
+    /**
+    * Here: 
+    *    noteData.id is the integer 1
+    *    noteData.date is a Javascript Date
+    *    noteData.edit_date is a Javascript Date
+    *    extra_field does not exist
+    */
+    
+    var noteModel = AFrame.DataContainer( noteData );
+</code>
+</pre>
+            </p>
+            
+            <p>
+                <h3>Collections</h3>
+                AFrame provides two collections, <a href="docs/AFrame.CollectionHash.html">CollectionHash</a> and <a href="docs/AFrame.CollectionArray.html">CollectionArray</a>.
+                Both collections are very similar to their native Javascript counterparts, but by using accessor functions to insert or delete data, it is possible to
+                use <a href="docs/AFrame.Observable.html">Observables</a> to notify multiple views of changes to the collection.  Any sort of data can be stored 
+                in a collection, but all items inserted into the hash or array are given a CID.  If an object is inserted that has a CID field, the object's CID will be used.
+                By decoupling CIDs from an object's id field, it allows for instances of inserting objects that do not yet have ids - this is often the case when creating a
+                new object that needs saved to a backend database, where the database assigns the object's id field.
+            </p>
+            
+            <p>
+                <h4>Example of Using a CollectionHash</h4>
+<pre>
+<code>
+    // hash is set up as an AFrame.CollectionHash.  
+    // noteModel is the DataContainer from the above example.
+    var cid = hash.insert( noteModel );
+    
+    // some other operations
+    var note = hash.get( cid );
+    console.log( note.title );   // prints 'Get some milk'
+    
+    // some other operations
+    this.hash.remove( cid );
+</code>
+</pre>
+            </p>
+            
+        </section>
+        
+        <section class="grid_12">
+        
+            <h2>View/Display Related Classes</h2>
+            
+            <p>
+                <h3>A Basic Display</h3>
+                <a href="docs/AFrame.Display.html">Displays</a> are similar to Views, but unlike a traditional View, it is not limited to displaying data related
+                to a particular model.  A Display is any class that relates to putting "stuff" on the screen.  Currently, Displays depend on the 
+                <a href="www.jquery.com">jQuery</a> library, jQuery is used to do DOM manipulation.  All Displays must have a target specified, a target is
+                considered that Display's root node.
+            </p>
+            
+            <p>
+                <h4>Ultra Basic Display</h4>
+<pre>
+<code>
+    // buttonSelector is a selector used to specify the root node of the target.
+    var button = AFrame.construct( {
+        type: AFrame.Display
+        config: {
+            target: buttonSelector
+        }
+    } );
+    
+    button.bindClick( function( event ) {
+       // take care of the click
+    } );
+</code>
+</pre>
+            </p>
+            
+            <p>
+                <h3>Using Fields</h3>
+                TBW (To Be Written)
+            </p>
+            
+            <p>
+                <h3>Using Forms</h3>
+                TBW
+            </p>
+
+            <p>
+                <h3>Binding a Form to a DataContainer</h3>
+                TBW
+            </p>
+            
+            <p>
+                <h3>Displaying a List</h3>
+                TBW
+            </p>
+
+            <p>
+                <h3>Binding a List to a Collection</h3>
+                TBW
+            </p>
+        </section>
+
 		<section class="grid_12">
-			<h2>To download and build the libraries and docs</h2>
+			<h2>To build your own copy of AFrame and docs</h2>
 
 			<ol>
 				<li>Apache Ant is required.  <a href="http://ant.apache.org/">Go get it.</a>  Ant allows for concurrent development in both Unix/Linux and Windows flavored OSes.</li>
-				<li>Download the source from <a href="https://github.com/stomlinson/AFrame-JS/zipball/master">GitHub</a> or pull a copy using <a href="https://github.com/stomlinson/AFrame-JS">Git</a></li>
+                <li>Python must be installed for the YUI document generator.  Please see the <a href="http://developer.yahoo.com/yui/yuidoc/">YUI Doc</a> homepage for more details</li>
+                <li>A modified version of Carlo Zottmann's <a href="http://www.yuiblog.com/blog/2010/10/01/yuidoc-dana-theme/">Dana-Theme</a> is being used to generate the documents, this requires the <a href="http://www.freewisdom.org/projects/python-markdown/">Markdown</a>.</li>
+				<li>Download the AFrame source from <a href="https://github.com/stomlinson/AFrame-JS/zipball/master">GitHub</a> or pull a copy using <a href="https://github.com/stomlinson/AFrame-JS">Git</a></li>
 				<li>The sample per_user.properties.sample must be personalized and copied to per_user.properties</li>
 				<li>run "ant all" to do a full build.</li>
 			</ol>
@@ -95,7 +428,21 @@
 			</ol>
 			
 		</section>
+        
+        <section class="grid_12">
+            <h2>Other Info</h2>
+            
+			<p>
+				Unit tests use the <a href="http://developer.yahoo.com/yui/3/test/">YUI 3: Test</a> library.  These can be run by browsing 
+                to the tests directory and opening index.html
+			</p>
+        
+            <p>
+                I can be written at set117 at yahoo period com.
+            </p>
+        </section>
 
+        
 		<footer class="clearfix">
 			<p class="grid_5">
 				Copyright &copy; 2010 Shane Tomlinson. All rights reserved.

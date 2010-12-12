@@ -55,6 +55,12 @@ ul > li {
 	list-style: none;
 }
 
+code, code a[name] {
+  color: #007000;
+  font-family: "Droid Sans Mono";
+}
+
+
 
 nav > ul > li {
 	font-size: 0.8em;
@@ -132,3 +138,4 @@ td.description > .example > .btnClose {
 td.description > .example > pre {
     margin: 0 .5em .5em;
 }
+
