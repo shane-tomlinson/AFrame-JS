@@ -18,14 +18,9 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/grid.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/aframejs.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono">
+    <link rel="stylesheet" type="text/css" href="stylesheets/shCore.css"/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/shThemeDefault.css" />
 
-    <link href="stylesheets/shCore.css" rel="stylesheet" type="text/css" />
-    <link href="stylesheets/shThemeDefault.css" rel="stylesheet" type="text/css" />
-
-    <script type="text/javascript" src="scripts/XRegExp.js"></script>
-    <script type="text/javascript" src="scripts/shCore.js"></script>
-    <script type="text/javascript" src="scripts/shBrushJScript.js"></script>
-     
     
 </head>
 
@@ -168,7 +163,7 @@
             </p>
             <p>
                 <h4>Example of object creation</h4>
-<pre class="brush: js">
+<pre>
     var object = AFrame.construct( {
         type: AFrame.SomeAObject,
         config: {
@@ -202,7 +197,7 @@
             </p>
             <p>
             <h4>Example of Binding to an AObject's Observable</h4>
-<pre class="brush: js">
+<pre>
     /**
     * Assume anObject is an AFrame.AObject based object.
     * Every AFrame.AObject based object triggers an onInit 
@@ -230,7 +225,7 @@
             
             <p>
             <h4>Basic DataContainer Usage</h4>
-<pre class="brush: js">
+<pre>
     var dataObject = {
         firstName: 'Shane',
         lastName: 'Tomlinson'
@@ -255,7 +250,7 @@
             
             <p>
                 <h4>An Example Schema</h4>
-<pre class="brush: js">
+<pre>
     /**
     * A simple schema for a note.
     * the integer and text types are self explanatory, iso8601 means ISO8601
@@ -287,7 +282,7 @@
             
             <p>
                 <h4>Example of Schema and DataContainer Together</h4>
-<pre class="brush: js">
+<pre>
     /** 
     * Using the above noteSchema.
     * 
@@ -326,7 +321,7 @@
             
             <p>
                 <h4>Example of Using a CollectionHash</h4>
-<pre class="brush: js">
+<pre>
     /* hash is set up as an AFrame.CollectionHash.  
         noteModel is the DataContainer from the above example. */
     var cid = hash.insert( noteModel );
@@ -355,7 +350,12 @@
             
             <p>
                 <h4>Ultra Basic Display</h4>
-<pre class="brush: js">
+<pre>
+    &lt;button id="submitForm"&gt;Submit&lt;/button&gt;
+    
+    ---------
+    var buttonSelector = '#submitForm';
+    
     /* buttonSelector is a selector used to specify the root node of the target. */
     var button = AFrame.construct( {
         type: AFrame.Display
@@ -387,8 +387,11 @@
             
             <p>
                 <h4>Example of Field Usage</h4>
-<pre class="brush: js">
-    /* Assume there is an input of type number with the id 'numberInput' */
+<pre>
+    &lt;input type="number" id="numberInput" /&gt;
+    
+    ---------
+
     var field = AFrame.construct( {
         type: AFrame.Field,
         config: {
@@ -418,27 +421,116 @@
             <p>
                 <h3>Using Forms</h3>
                 A <a href="docs/AFrame.Form.html">Form</a> is a composite of <a href="docs/AFrame.Field.html">Fields.</a>  A generic form is
-                not bound to any data, it is only a collection of form fields.  A field constructor function must
+                not bound to any data, it is only a collection of form fields.  A field factory function must
                 be specified in the form configuration, this allows for complete control over the construction of Fields.
                 On form initialization, the Form's descendents will be searched for elements with the "data-field" 
-                attribute.  Each element found will be passed to the field constructor, the constructor must return a 
-                <a href="docs/AFrame.Field.html">Field</a> compatible object.
+                attribute.  Each element found will be passed to the field factory, the factory must return a 
+                <a href="docs/AFrame.Field.html">Field</a> compatible object.  A basic Form that is not bound to any particular
+                <a href="docs/AFrame.DataContainer.html">DataContainer</a> is useful primarily to do input validation where data
+                from the form is retreived and used through methods outside of the framework.  To bind a form to data, see
+                the next section, <a href="#bindFormDataContainer">Binding a Form to a DataContainer</a>.
             </p>
             
             <p>
                 <h4>Example of a Form</h4>
 <pre>
+    &lt;div id="nameForm"&gt;
+        &lt;input type="text" data-field="name" /&gt;
+    &lt;/div&gt;
+    
+    ---------
+    
+    /* Sets up the field constructor, right now there is only one type of field */
+    var fieldFactory = function( element ) {
+        return AFrame.construct( {
+            type: AFrame.Field,
+            config: {
+                target: element
+            }
+        } );
+    };
+    
+    /* Set up the form to look under #nameForm for elements with the "data-field" attribute.
+        This will find one field in the above HTML
+    */
+    var form = AFrame.construct( {
+        type: AFrame.Form,
+        config: {
+            target: $( '#nameForm' ),
+            formFieldFactory: fieldFactory
+        }
+    } );
+    
+    // do some stuff, user enters data.
+
+    /* Check the validity of the form */
+    var isValid = form.checkValidity();
+    
+    // do some other stuff.
+    
+    form.clear();
 </pre>                
             </p>
 
-            <p>
+            <p id="bindFormDataContainer">
                 <h3>Binding a Form to a DataContainer</h3>
-                TBW (To Be Written)
+                Basic forms are very useful in themselves, but frequently a form is bound to a particular set of data.  
+                By binding a <a href="docs/AFrame.DataForm.html">DataForm</a> to a <a href="docs/AFrame.DataContainer.html">DataContainer</a>, 
+                the DataContainer is used as both the source and the receiver of information.  Form fields will automatically have their values populated
+                with the values contained in the DataContainer.  The user is then free to update the form as they please, but data within the DataContainer 
+                is only updated when the DataForm's save function is called and the form successfully validates.  This ensures that the user cannot pollute the data
+                within the DataContainer with invalid entries.
+            </p>
+            <p>
+<pre>
+    &lt;div id="nameForm"&gt;
+        &lt;input type="text" data-field="name" /&gt;
+        &lt;input type="text" data-field="version" /&gt;
+    &lt;/div&gt;
+    
+    ---------
+    
+    /* Sets up the field constructor, right now there is only one type of field */
+    var fieldFactory = function( element ) {
+        return AFrame.construct( {
+            type: AFrame.Field,
+            config: {
+                target: element
+            }
+        } );
+    };
+    
+    var libraryDataContainer = AFrame.DataContainer( {
+        name: 'AFrame',
+        version: '0.0.20'
+    } );
+    
+    /* Set up the form to look under #nameForm for elements with the "data-field" attribute.
+        This will find two fields, each field will be tied to the appropriate field in the libraryDataContainer */
+    var form = AFrame.construct( {
+        type: AFrame.DataForm,
+        config: {
+            target: $( '#nameForm' ),
+            formFieldFactory: fieldFactory,
+            dataSource: libraryDataContainer
+        }
+    } );
+    
+    /* do some stuff, user updates the fields with the library name and version number.
+        Note, throughout this period the libraryDataContainer is never updated. */
+
+    /* Check the validity of the form, if we are valid, save the data back to the dataContainer */
+    var isValid = form.checkValidity();
+    if( isValid ) {
+        /* if the form is valid, the input is saved back to the libraryDataContainer */
+        form.save();
+    }
+</pre>
             </p>
             
             <p>
                 <h3>Displaying a List</h3>
-                TBW
+                TBW (To Be Written)
             </p>
 
             <p>
@@ -514,11 +606,16 @@
 
 	</script>
 
+    <script type="text/javascript" src="scripts/XRegExp.js"></script>
+    <script type="text/javascript" src="scripts/shCore.js"></script>
+    <script type="text/javascript" src="scripts/shBrushJScript.js"></script>
+     
+
     <script type="text/javascript">
          SyntaxHighlighter.defaults['toolbar'] = false;
          SyntaxHighlighter.defaults['gutter'] = false;
-         SyntaxHighlighter.all()
-    </script
+         SyntaxHighlighter.all( { brush: 'js' } );
+    </script>
     
 </body>
 </html>

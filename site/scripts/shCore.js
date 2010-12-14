@@ -279,10 +279,8 @@ var sh = {
 				params: merge(globalParams, parseParams(elements[i].className))
 			};
 
-			if (item.params['brush'] == null)
-				continue;
-				
-			result.push(item);
+			if (item.params['brush'] !== null)
+                result.push(item);
 		}
 		
 		return result;
@@ -1610,20 +1608,7 @@ sh.Highlighter.prototype = {
 		
 		html = 
 			'<div id="' + getHighlighterId(this.id) + '" class="' + classes.join(' ') + '">'
-				+ (this.getParam('toolbar') ? sh.toolbar.getHtml(this) : '')
-				+ '<table border="0" cellpadding="0" cellspacing="0">'
-					+ this.getTitleHtml(this.getParam('title'))
-					+ '<tbody>'
-						+ '<tr>'
-							+ (gutter ? '<td class="gutter">' + this.getLineNumbersHtml(code) + '</td>' : '')
-							+ '<td class="code">'
-								+ '<div class="container">'
-									+ html
-								+ '</div>'
-							+ '</td>'
-						+ '</tr>'
-					+ '</tbody>'
-				+ '</table>'
+               + html
 			+ '</div>'
 			;
 			
@@ -1646,13 +1631,6 @@ sh.Highlighter.prototype = {
 
 		// create main HTML
 		div.innerHTML = this.getHtml(code);
-		
-		// set up click handlers
-		if (this.getParam('toolbar'))
-			attachEvent(findElement(div, '.toolbar'), 'click', sh.toolbar.handler);
-		
-		if (this.getParam('quick-code'))
-			attachEvent(findElement(div, '.code'), 'dblclick', quickCodeHandler);
 		
 		return div;
 	},

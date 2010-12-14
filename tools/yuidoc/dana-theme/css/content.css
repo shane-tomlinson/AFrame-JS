@@ -10,7 +10,7 @@
   color: #fff;
 }
 
-#content pre, section pre {
+#content pre, section pre, section .syntaxhighlighter {
   border: 1px solid #eee;
   padding: 0.5em;
   background-color: #f8f8f8;
