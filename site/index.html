@@ -158,7 +158,7 @@
                 have the plugins take action whenever their plugged object is initialized.  
             </p>
             <p>
-                As a side note, all AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within 
+                All AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within 
                 the system.  CIDs can be assigned on object creation, if a CID is not given, one is assigned automatically.
             </p>
             <p>
@@ -530,12 +530,50 @@
             
             <p>
                 <h3>Displaying a List</h3>
-                TBW (To Be Written)
+                A <a href="docs/AFrame.List.html">List</a> is a way of displaying lists of data (circular definition).  A List shares
+                the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> since lists are inherently
+                ordered (even if they are ULs).  A list can be added to by calling <a href="docs/AFrame.List.html#method_insertRow">insertRow</a> with a
+                DOM element to use for the list item, or <a href="docs/AFrame.List.html#method_insert">insert</a> with a data object.  If insert is used,
+                createListElementCallback must be given in the configuration.  The callback will be passed an index and the data being inserted and must
+                return an element which can be inserted into the list.  The callback can create an element using a templating mechanism or by creating an
+                element itself.
+            </p>
+            
+            <p>
+                <h4>Example of Using a List</h4>
+<pre>
+    &lt;ul id="clientList"&gt;
+    &lt;/ul&gt;
+    
+    ---------
+
+    var factory = function( index, data ) {
+        var listItem = $( '&lt;li&gt;' + data.name + ', ' + data.employer + '&lt;/li&gt;' );
+        return listItem;
+    };
+    
+    var list = AFrame.construct( {
+        type: AFrame.List,
+        config: {
+            target: '#clientList',
+            createListElementCallback: factory
+        }
+    } );
+    
+    /* Creates a list item using the factory function at the end of the list */
+    list.insert( {
+        name: 'Shane Tomlinson',
+        employer: 'AFrame Foundary'
+    } );
+    
+    /* Inserts a pre-made list item at the head of the list */
+    list.insertRow( $( '&lt;li&gt;Joe Smith, the Coffee Shop&lt;/li&gt;' ), 0 );
+</pre>                
             </p>
 
             <p>
                 <h3>Binding a List to a Collection</h3>
-                TBW
+                TBW (To Be Written)
             </p>
         </section>
 
