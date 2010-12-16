@@ -122,10 +122,11 @@
 		<copy todir="${site}/tests" >
 			<fileset dir="tests" />
 		</copy>
-        
-        <!--exec executable="sass" dir="${site}/stylesheets" failonerror="true">
+
+        <exec executable="c:\Ruby187\bin\sass.bat" dir="${site}/stylesheets" failonerror="true"
+            resolveexecutable="true" >
             <arg line="aframejs.scss:aframejs.css"/>
-        </exec-->
+        </exec>
         
 		
 	</target>
