@@ -276,7 +276,7 @@
 </pre>            </p>
             
             <p>
-                <h3>Using DataContainers and Schemas Together = Model</3>
+                <h3>Using DataContainers and Schemas Together = Model</h3>
                 
             </p>
             
@@ -568,13 +568,100 @@
     
     /* Inserts a pre-made list item at the head of the list */
     list.insertRow( $( '&lt;li&gt;Joe Smith, the Coffee Shop&lt;/li&gt;' ), 0 );
+    ---------
+
+    &lt;ul id="clientList"&gt;
+        &lt;li&gt;Joe Smith, The Coffee Shop&lt;/li&gt;
+        &lt;li&gt;Shane Tomlinson, AFrame Foundary&lt;/li&gt;
+    &lt;/ul&gt;
 </pre>                
             </p>
 
             <p>
                 <h3>Binding a List to a Collection</h3>
-                TBW (To Be Written)
+                <a href="docs/AFrame.List.html">Lists</a> are useful by themselves but become much more powerful when paired with a Collection of some sort.  Instead
+                of adding and removing from the list directly, it is usually preferable in MVC systems to have Views react to changes in the Models.  If the List is
+                thought of as a view of a Collection model, any update to the Collection should be reflected in the List.  This means whenever
+                data is added, removed, or modified within the Collection, the List should automatically updated.  The 
+                <a href="docs/AFrame.ListPluginBindToCollection.html">ListPluginBindToCollection</a> is the first step in this.  <a href="docs/AFrame.ListPluginBindToCollection.html">ListPluginBindToCollection</a>
+                is a plugin on a list that is associated with a Collection.  Any time an item is added or removed from the Collection, the plugin automatically updates the list.
             </p>
+            
+            <p>
+                <h4>Using a ListPluginBindToCollection</h4>
+<pre>
+    &lt;ul id="clientList"&gt;
+    &lt;/ul&gt;
+    
+    ---------
+    /* A List with the same results as the previous example is the expected result */
+    
+    /* First we need to set up the collection */
+    var collection = AFrame.construct( {
+        type: AFrame.CollectionArray
+    } );
+    
+    
+    var factory = function( index, data ) {
+        var listItem = $( '&lt;li&gt;' + data.name + ', ' + data.employer + '&lt;/li&gt;' );
+        return listItem;
+    };
+
+    /* Sets up our list with the ListPluginBindToCollection.  Notice the ListPluginBindToCollection
+        has a collection config parameter.
+    */
+    var list = AFrame.construct( {
+        type: AFrame.List,
+        config: {
+            target: '#clientList',
+            createListElementCallback: factory
+        },
+        plugins: [
+            {
+                type: AFrame.ListPluginBindToCollection,
+                config: {
+                    collection: collection
+                }
+            }
+        ]
+    } );
+    
+    collection.insert( {
+        name: 'Shane Tomlinson',
+        employer: 'AFrame Foundary'    
+    } );
+    
+    collection.insert( {
+        name: 'Joe Smith',
+        employer: 'The Coffee Shop'    
+    }, 0 );
+    
+    /* The same list as in the example above is shown */
+    ---------
+
+    &lt;ul id="clientList"&gt;
+        &lt;li&gt;Joe Smith, The Coffee Shop&lt;/li&gt;
+        &lt;li&gt;Shane Tomlinson, AFrame Foundary&lt;/li&gt;
+    &lt;/ul&gt;
+
+    ----------
+    
+    collection.remove( 0 );
+    
+    /* Joe Smith has been removed */
+    
+    ---------
+
+    &lt;ul id="clientList"&gt;
+        &lt;li&gt;Shane Tomlinson, AFrame Foundary&lt;/li&gt;
+    &lt;/ul&gt;
+</pre>                
+            </p>
+            
+        <p>
+            <h3>Creating Forms in Lists Using ListPluginFormRow</h3>
+            TBW (To Be Written)
+        </p>
         </section>
 
 		<section class="grid_12">
@@ -617,14 +704,19 @@
             </p>
         </section>
 
-        
+        <p>
+            <a href='https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String' title='JS String toLocaleLowerCase'><img src='http://static.jsconf.us/promotejsv.gif' height='280' width='160' alt='JS String toLocaleLowerCase'/></a>
+        </p>
 		<footer class="clearfix">
+
 			<p class="grid_5">
 				Copyright &copy; 2010 Shane Tomlinson. All rights reserved.
 			</p>
-			<ul>
-				<li class="grid_3 push_4"><a href="http://www.shanetomlinson.com">http://www.shanetomlinson.com</a></li>
-			</ul>
+            
+			<p class="grid_7 push_4">
+				<a href="http://www.shanetomlinson.com">http://www.shanetomlinson.com</a>
+			</p>
+            
 		</footer>
 	</div>
 	
