@@ -1,0 +1,160 @@
+@import "cssreset";
+@import "grid";
+@import "jquery-ui-1.8.4.custom";
+@import "main";
+@import "navigation";
+@import "content";
+
+$header-color: #ff8200;
+$border-color: #eee;
+$content-shadow: 0 0 15px 5px rgba(0,0,0,.3);
+
+html {
+	font-family: arial;
+}
+
+body {
+	color: #333;
+	background-color: #C6B9AC;
+	font: 13px/1.5 Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif;
+}
+
+.container {
+	background: #fff;
+	margin-top: 50px;
+}
+
+.container.container_12 {
+	-moz-box-shadow: $content-shadow;
+	-webkit-box-shadow: $content-shadow;
+	box-shadow: $content-shadow;
+}
+
+.container_12 {
+	padding: 50px;
+}
+
+
+header {
+	padding-bottom: 10px;
+	text-align: center;
+    
+    h1 {
+        color: $header-color;
+        font-size: 2.2em;
+    }
+    
+    h2 {
+        color: $header-color;
+        margin-bottom: 1.1em;
+        font-size: 1.1em;
+        
+        strong {
+            font-style: italic;
+        }
+    }
+    
+    nav {
+        background: $border-color;
+        
+
+        ul {
+            li {
+                font-size: 0.8em;
+                line-height: 1.6em;
+                display: inline;
+                margin: 0 4px;
+            }
+        }
+    }
+}
+
+ul {
+	padding-left: 20px;
+    
+    li {
+        list-style: none;
+    }
+}
+
+
+code, code a[name] {
+  color: #007000;
+  font-family: "Droid Sans Mono";
+}
+
+
+
+
+footer {
+	clear: both;
+	padding-top: 1em;
+	border-top: 5pt solid $border-color;
+	font-size: 0.7em;
+    margin: 1em 0 0;
+}
+
+a {
+	color: #777;
+	text-decoration: none;
+    &:hover {
+        color: #444;
+        text-decoration: underline;
+    }
+}
+
+
+section {
+	clear: both;
+	margin: 10px;
+	padding: 0 10px;
+	font-size: .9em;
+    
+    h2 {
+        margin-bottom: 10px;
+        margin-left: -10px;
+        font-size: 1.2em;
+    }
+    
+    p {
+        margin: 10px 0;
+        line-height: 1.6em;
+    }
+}
+
+
+
+.summary.description > ul,
+.summary.description > ul > li {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+
+td.description {
+    position: relative;
+    
+    .btnSeeExample {
+        margin-bottom: 1em;
+        display: block;
+    }
+    
+    .example {
+        display: none;
+        position: absolute;
+        background: #fff;
+        border: 1px solid $border-color;
+        min-width: 500px;
+        
+        .btnClose {
+            margin-left: .5em;
+        }
+        
+        pre {
+            margin: 0 .5em .5em;
+        }
+    }
+}
+
+@import "shCore";
+@import "shThemeDefault";

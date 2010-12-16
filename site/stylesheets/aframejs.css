@@ -1,144 +1,1208 @@
-
-
-
-html {
-	font-family: arial;
-}
+/* 
+html5doctor.com Reset Stylesheet
+v1.6.1
+Last Updated: 2010-09-17
+Author: Richard Clark - http://richclarkdesign.com 
+Twitter: @rich_clark
+*/
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent; }
 
 body {
-	color: #333;
-	background-color: #C6B9AC;
-	font: 13px/1.5 Helvetica,Arial,'Liberation Sans',FreeSans,sans-serif;
-}
+  line-height: 1; }
 
-.container {
-	background: #fff;
-	margin-top: 50px;
-}
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block; }
 
-.container.container_12 {
-	-moz-box-shadow: 0 0 15px 5px rgba(0,0,0,.3);
-	-webkit-box-shadow: 0 0 15px 5px rgba(0,0,0,.3);
-	box-shadow: 0 0 15px 5px rgba(0,0,0,.3);
-}
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
 
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+
+a {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent; }
+
+/* change colours to suit your needs */
+ins {
+  background-color: #ff9;
+  color: #000;
+  text-decoration: none; }
+
+/* change colours to suit your needs */
+mark {
+  background-color: #ff9;
+  color: #000;
+  font-style: italic;
+  font-weight: bold; }
+
+del {
+  text-decoration: line-through; }
+
+abbr[title], dfn[title] {
+  border-bottom: 1px dotted;
+  cursor: help; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+/* change border colour to suit your needs */
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #cccccc;
+  margin: 1em 0;
+  padding: 0; }
+
+input, select {
+  vertical-align: middle; }
+
+/*
+ * Variable Grid System.
+ * Learn more ~ http://www.spry-soft.com/grids/
+ * Based on 960 Grid System - http://960.gs/
+ * 
+ * Licensed under GPL and MIT.
+ */
+/* Containers
+ - *---------------------------------------------------------------------------------------------------*/
 .container_12 {
-	padding: 50px;
-}
+  margin-left: auto;
+  margin-right: auto;
+  width: 840px; }
 
+/* Grid >> Global
+ - *---------------------------------------------------------------------------------------------------*/
+.grid_1,
+.grid_2,
+.grid_3,
+.grid_4,
+.grid_5,
+.grid_6,
+.grid_7,
+.grid_8,
+.grid_9,
+.grid_10,
+.grid_11,
+.grid_12 {
+  display: inline;
+  float: left;
+  position: relative;
+  margin-left: 10px;
+  margin-right: 10px; }
 
-header {
-	padding-bottom: 10px;
-	text-align: center;
-}
+/* Grid >> Children (Alpha ~ First, Omega ~ Last)
+ - *---------------------------------------------------------------------------------------------------*/
+.alpha {
+  margin-left: 0; }
 
-header > h1 {
-	color: #ff8200;
-	font-size: 2.2em;
-}
-header > h2 {
-	color: #ff8200;
-	margin-bottom: 1.1em;
-	font-size: 1.1em;
-}
+.omega {
+  margin-right: 0; }
 
-header > h2 > strong {
-	font-style: italic;
-}
+/* Grid >> 12 Columns
+ - *---------------------------------------------------------------------------------------------------*/
+.container_12 .grid_1 {
+  width: 50px; }
 
-header > nav {
-	background: #eee;
-}
+.container_12 .grid_2 {
+  width: 120px; }
 
-ol {
-	padding-left: 20px;
-}
+.container_12 .grid_3 {
+  width: 190px; }
 
-ul > li {
-	list-style: none;
-}
+.container_12 .grid_4 {
+  width: 260px; }
+
+.container_12 .grid_5 {
+  width: 330px; }
+
+.container_12 .grid_6 {
+  width: 400px; }
+
+.container_12 .grid_7 {
+  width: 470px; }
+
+.container_12 .grid_8 {
+  width: 540px; }
+
+.container_12 .grid_9 {
+  width: 610px; }
+
+.container_12 .grid_10 {
+  width: 680px; }
+
+.container_12 .grid_11 {
+  width: 750px; }
+
+.container_12 .grid_12 {
+  width: 820px; }
+
+/* Prefix Extra Space >> 12 Columns
+ - *---------------------------------------------------------------------------------------------------*/
+.container_12 .prefix_1 {
+  padding-left: 70px; }
+
+.container_12 .prefix_2 {
+  padding-left: 140px; }
+
+.container_12 .prefix_3 {
+  padding-left: 210px; }
+
+.container_12 .prefix_4 {
+  padding-left: 280px; }
+
+.container_12 .prefix_5 {
+  padding-left: 350px; }
+
+.container_12 .prefix_6 {
+  padding-left: 420px; }
+
+.container_12 .prefix_7 {
+  padding-left: 490px; }
+
+.container_12 .prefix_8 {
+  padding-left: 560px; }
+
+.container_12 .prefix_9 {
+  padding-left: 630px; }
+
+.container_12 .prefix_10 {
+  padding-left: 700px; }
+
+.container_12 .prefix_11 {
+  padding-left: 770px; }
+
+/* Suffix Extra Space >> 12 Columns
+ - *---------------------------------------------------------------------------------------------------*/
+.container_12 .suffix_1 {
+  padding-right: 70px; }
+
+.container_12 .suffix_2 {
+  padding-right: 140px; }
+
+.container_12 .suffix_3 {
+  padding-right: 210px; }
+
+.container_12 .suffix_4 {
+  padding-right: 280px; }
+
+.container_12 .suffix_5 {
+  padding-right: 350px; }
+
+.container_12 .suffix_6 {
+  padding-right: 420px; }
+
+.container_12 .suffix_7 {
+  padding-right: 490px; }
+
+.container_12 .suffix_8 {
+  padding-right: 560px; }
+
+.container_12 .suffix_9 {
+  padding-right: 630px; }
+
+.container_12 .suffix_10 {
+  padding-right: 700px; }
+
+.container_12 .suffix_11 {
+  padding-right: 770px; }
+
+/* Push Space >> 12 Columns
+ - *---------------------------------------------------------------------------------------------------*/
+.container_12 .push_1 {
+  left: 70px; }
+
+.container_12 .push_2 {
+  left: 140px; }
+
+.container_12 .push_3 {
+  left: 210px; }
+
+.container_12 .push_4 {
+  left: 280px; }
+
+.container_12 .push_5 {
+  left: 350px; }
+
+.container_12 .push_6 {
+  left: 420px; }
+
+.container_12 .push_7 {
+  left: 490px; }
+
+.container_12 .push_8 {
+  left: 560px; }
+
+.container_12 .push_9 {
+  left: 630px; }
+
+.container_12 .push_10 {
+  left: 700px; }
+
+.container_12 .push_11 {
+  left: 770px; }
+
+/* Pull Space >> 12 Columns
+ - *---------------------------------------------------------------------------------------------------*/
+.container_12 .pull_1 {
+  left: -70px; }
+
+.container_12 .pull_2 {
+  left: -140px; }
+
+.container_12 .pull_3 {
+  left: -210px; }
+
+.container_12 .pull_4 {
+  left: -280px; }
+
+.container_12 .pull_5 {
+  left: -350px; }
+
+.container_12 .pull_6 {
+  left: -420px; }
+
+.container_12 .pull_7 {
+  left: -490px; }
+
+.container_12 .pull_8 {
+  left: -560px; }
+
+.container_12 .pull_9 {
+  left: -630px; }
+
+.container_12 .pull_10 {
+  left: -700px; }
+
+.container_12 .pull_11 {
+  left: -770px; }
+
+/* Clear Floated Elements
+ - *---------------------------------------------------------------------------------------------------*/
+/* http://sonspring.com/journal/clearing-floats */
+.clear {
+  clear: both;
+  display: block;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+  height: 0; }
+
+/* http://perishablepress.com/press/2008/02/05/lessons-learned-concerning-the-clearfix-css-hack */
+.clearfix:after {
+  clear: both;
+  content: ' ';
+  display: block;
+  font-size: 0;
+  line-height: 0;
+  visibility: hidden;
+  width: 0;
+  height: 0; }
+
+.clearfix {
+  display: inline-block; }
+
+* html .clearfix {
+  * height: 1%; }
+
+.clearfix {
+  display: block; }
+
+/*
+ * jQuery UI CSS Framework @VERSION
+ *
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ */
+/* Layout helpers
+----------------------------------*/
+.ui-helper-hidden {
+  display: none; }
+
+.ui-helper-hidden-accessible {
+  position: absolute;
+  left: -99999999px; }
+
+.ui-helper-reset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  line-height: 1.3;
+  text-decoration: none;
+  font-size: 100%;
+  list-style: none; }
+
+.ui-helper-clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden; }
+
+.ui-helper-clearfix {
+  display: inline-block; }
+
+/* required comment for clearfix to work in Opera \*/
+* html .ui-helper-clearfix {
+  height: 1%; }
+
+.ui-helper-clearfix {
+  display: block; }
+
+/* end clearfix */
+.ui-helper-zfix {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+  opacity: 0;
+  filter: Alpha(Opacity=0); }
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-disabled {
+  cursor: default !important; }
+
+/* Icons
+----------------------------------*/
+/* states and images */
+.ui-icon {
+  display: block;
+  text-indent: -99999px;
+  overflow: hidden;
+  background-repeat: no-repeat; }
+
+/* Misc visuals
+----------------------------------*/
+/* Overlays */
+.ui-widget-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }
+
+/*
+ * jQuery UI CSS Framework @VERSION
+ *
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ *
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Trebuchet%20MS,%20Tahoma,%20Verdana,%20Arial,%20sans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=4px&bgColorHeader=f6a828&bgTextureHeader=12_gloss_wave.png&bgImgOpacityHeader=35&borderColorHeader=e78f08&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=eeeeee&bgTextureContent=03_highlight_soft.png&bgImgOpacityContent=100&borderColorContent=dddddd&fcContent=333333&iconColorContent=222222&bgColorDefault=f6f6f6&bgTextureDefault=02_glass.png&bgImgOpacityDefault=100&borderColorDefault=cccccc&fcDefault=1c94c4&iconColorDefault=ef8c08&bgColorHover=fdf5ce&bgTextureHover=02_glass.png&bgImgOpacityHover=100&borderColorHover=fbcb09&fcHover=c77405&iconColorHover=ef8c08&bgColorActive=ffffff&bgTextureActive=02_glass.png&bgImgOpacityActive=65&borderColorActive=fbd850&fcActive=eb8f00&iconColorActive=ef8c08&bgColorHighlight=ffe45c&bgTextureHighlight=03_highlight_soft.png&bgImgOpacityHighlight=75&borderColorHighlight=fed22f&fcHighlight=363636&iconColorHighlight=228ef1&bgColorError=b81900&bgTextureError=08_diagonals_thick.png&bgImgOpacityError=18&borderColorError=cd0a0a&fcError=ffffff&iconColorError=ffd27a&bgColorOverlay=666666&bgTextureOverlay=08_diagonals_thick.png&bgImgOpacityOverlay=20&opacityOverlay=50&bgColorShadow=000000&bgTextureShadow=01_flat.png&bgImgOpacityShadow=10&opacityShadow=20&thicknessShadow=5px&offsetTopShadow=-5px&offsetLeftShadow=-5px&cornerRadiusShadow=5px
+ */
+/* Component containers
+----------------------------------*/
+.ui-widget {
+  font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif;
+  font-size: 1.1em; }
+
+.ui-widget .ui-widget {
+  font-size: 1em; }
+
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+  font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif;
+  font-size: 1em; }
+
+.ui-widget-content {
+  border: 1px solid #dddddd;
+  background: #eeeeee;
+  color: #333333; }
+
+.ui-widget-content a {
+  color: #333333; }
+
+.ui-widget-header {
+  border: 1px solid #e78f08;
+  background: #f6a828;
+  color: #ffffff;
+  font-weight: bold; }
+
+.ui-widget-header a {
+  color: #ffffff; }
+
+/* Interaction states
+----------------------------------*/
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+  border: 1px solid #cccccc;
+  background: #f6f6f6;
+  font-weight: bold;
+  color: #1c94c4; }
+
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+  color: #1c94c4;
+  text-decoration: none; }
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+  border: 1px solid #fbcb09;
+  background: #fdf5ce;
+  font-weight: bold;
+  color: #c77405; }
+
+.ui-state-hover a, .ui-state-hover a:hover {
+  color: #c77405;
+  text-decoration: none; }
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+  border: 1px solid #fbd850;
+  background: #ffffff;
+  font-weight: bold;
+  color: #eb8f00; }
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+  color: #eb8f00;
+  text-decoration: none; }
+
+.ui-widget :active {
+  outline: none; }
+
+/* Interaction Cues
+----------------------------------*/
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+  border: 1px solid #fed22f;
+  background: #ffe45c;
+  color: #363636; }
+
+.ui-state-highlight a, .ui-widget-content .ui-state-highlight a, .ui-widget-header .ui-state-highlight a {
+  color: #363636; }
+
+.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+  border: 1px solid #cd0a0a;
+  background: #b81900;
+  color: #ffffff; }
+
+.ui-state-error a, .ui-widget-content .ui-state-error a, .ui-widget-header .ui-state-error a {
+  color: #ffffff; }
+
+.ui-state-error-text, .ui-widget-content .ui-state-error-text, .ui-widget-header .ui-state-error-text {
+  color: #ffffff; }
+
+.ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary {
+  font-weight: bold; }
+
+.ui-priority-secondary, .ui-widget-content .ui-priority-secondary, .ui-widget-header .ui-priority-secondary {
+  opacity: .7;
+  filter: Alpha(Opacity=70);
+  font-weight: normal; }
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+  opacity: .35;
+  filter: Alpha(Opacity=35);
+  background-image: none; }
+
+/* Overlays */
+.ui-widget-overlay {
+  background: #666666;
+  opacity: .50;
+  filter: Alpha(Opacity=50); }
+
+/*
+ * jQuery UI Autocomplete @VERSION
+ *
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Autocomplete#theming
+ */
+.ui-autocomplete {
+  position: absolute;
+  cursor: default;
+  font-size: 0.85em;
+  max-height: 19.5em;
+  max-width: 19.8em;
+  overflow-y: auto; }
+
+/* workarounds */
+* html .ui-autocomplete {
+  width: 1px; }
+
+/* without this, the menu expands to 100% in IE6 */
+/*
+ * jQuery UI Menu @VERSION
+ *
+ * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Menu#theming
+ */
+.ui-menu {
+  list-style: none;
+  padding: 2px;
+  margin: 0;
+  display: block;
+  float: left; }
+
+.ui-menu .ui-menu {
+  margin-top: -3px; }
+
+.ui-menu .ui-menu-item {
+  margin: 0;
+  padding: 0;
+  zoom: 1;
+  float: left;
+  clear: left;
+  width: 100%; }
+
+.ui-menu .ui-menu-item a {
+  text-decoration: none;
+  display: block;
+  padding: .2em .4em;
+  line-height: 1.5;
+  zoom: 1; }
+
+.ui-menu .ui-menu-item a.ui-state-hover,
+.ui-menu .ui-menu-item a.ui-state-active {
+  font-weight: normal;
+  margin: -1px; }
+
+* {
+  line-height: 130%; }
+
+body {
+  background-color: #eee; }
+
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset {
+  margin-bottom: 0.8em; }
+
+a {
+  text-decoration: none;
+  color: #55d; }
 
 code, code a[name] {
   color: #007000;
-  font-family: "Droid Sans Mono";
-}
+  font-family: "Droid Sans Mono"; }
 
+#container {
+  background-color: #fff; }
 
+#hd h1 {
+  font-size: 2.3em;
+  line-height: 100%;
+  margin: 0.5em 0 0.5em 0;
+  font-weight: normal;
+  color: #888; }
 
-nav > ul > li {
-	font-size: 0.8em;
-	line-height: 1.6em;
-	display: inline;
-	margin: 0 4px;
-}
+#hd h1 a {
+  color: #ff8200;
+  font-weight: bold; }
+
+#sub-hd > div {
+  background-color: #eee;
+  margin: 0 0 1.5em 0;
+  padding: 0.5em; }
+
+#navigation > div {
+  border: 1px solid #eee;
+  overflow: hidden;
+  margin-bottom: 4em; }
+
+#navigation h4 {
+  background-color: #888;
+  color: #fff;
+  font-size: 1.0em;
+  text-shadow: rgba(0, 0, 0, 0.5) 0 -1pt 0;
+  margin-bottom: 0.5em;
+  padding: 0.3em 0.3em 0.3em 1em; }
+
+#navigation ul {
+  list-style: none; }
+
+#navigation li {
+  margin-left: 1em; }
+
+#navigation li.selected {
+  background-color: #eef;
+  margin-left: 0;
+  padding-left: 1em; }
+
+#navigation li span.access-private {
+  color: #a22; }
+
+#navigation li span.access-protected {
+  color: #d88; }
+
+#navigation li span.deprecated {
+  background-color: #d53;
+  color: #fff;
+  padding: 0 0.4em; }
+
+#navigation li span.access-private,
+#navigation li span.access-protected,
+#navigation li span.deprecated {
+  font-size: 0.85em; }
+
+#show-toggles {
+  float: right;
+  font-size: 0.85em;
+  background-color: #f8f8f8;
+  color: #888;
+  padding: 0.5em; }
+
+#show-toggles fieldset {
+  margin: 0; }
+
+#search-form {
+  float: right;
+  margin-top: -0.25em; }
+
+#search-form label {
+  color: #666; }
+
+#search-form #search {
+  border: 1pt solid #ddd;
+  width: 20em; }
+
+#content h2 {
+  font-weight: normal; }
+
+#content h2 span.extends {
+  display: block; }
+
+#content h2 span.extends span.class {
+  color: #fff; }
+
+#content pre, section pre, section .syntaxhighlighter {
+  border: 1px solid #eee;
+  padding: 0.5em;
+  background-color: #f8f8f8;
+  overflow: auto; }
+
+#content div.deprecated {
+  background-color: #d53;
+  color: #fff;
+  padding: 0 1em;
+  margin-bottom: 0.4em;
+  display: inline-block; }
+
+#content div.section {
+  margin-top: 3em;
+  padding-top: 2em;
+  border-top: 8pt solid #fcfcfc; }
+
+#content div.section h3 {
+  background-color: #555;
+  color: #fff;
+  padding: 0.1em 0.5em;
+  text-shadow: rgba(0, 0, 0, 0.5) 0 -1pt 0; }
+
+#content div.section h4 {
+  color: #444;
+  margin-top: 1.25em; }
+
+#content div.section table th,
+#content div.section table td {
+  padding: 0.5em;
+  vertical-align: top;
+  text-align: left; }
+
+#content div.section table th {
+  background-color: #eeeeff;
+  border: 1px solid #ddd; }
+
+#content div.section table td {
+  border: 1px solid #eee; }
+
+#content div.section table td.description {
+  vertical-align: top;
+  padding-right: 2em; }
+
+#content div.section table td.description a.top {
+  margin-right: -1.5em;
+  float: right;
+  color: #ddd; }
+
+#content div.section table td.type code,
+#content div.section table td.returns code {
+  display: block; }
+
+#content div.section table td.type span,
+#content div.section table td.returns span {
+  font-size: 90%;
+  color: #777;
+  padding: 0 0.5em 0 0; }
+
+#content div.section table td.type span.access-private,
+#content div.section table td.returns span.access-private {
+  color: #a22; }
+
+#content div.section table td.type span.access-protected,
+#content div.section table td.returns span.access-protected {
+  color: #d88; }
+
+html {
+  font-family: arial; }
+
+body {
+  color: #333;
+  background-color: #C6B9AC;
+  font: 13px/1.5 Helvetica, Arial, "Liberation Sans", FreeSans, sans-serif; }
+
+.container {
+  background: #fff;
+  margin-top: 50px; }
+
+.container.container_12 {
+  -moz-box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3); }
+
+.container_12 {
+  padding: 50px; }
+
+header {
+  padding-bottom: 10px;
+  text-align: center; }
+  header h1 {
+    color: #ff8200;
+    font-size: 2.2em; }
+  header h2 {
+    color: #ff8200;
+    margin-bottom: 1.1em;
+    font-size: 1.1em; }
+    header h2 strong {
+      font-style: italic; }
+  header nav {
+    background: #eeeeee; }
+    header nav ul li {
+      font-size: 0.8em;
+      line-height: 1.6em;
+      display: inline;
+      margin: 0 4px; }
+
+ul {
+  padding-left: 20px; }
+  ul li {
+    list-style: none; }
+
+code, code a[name] {
+  color: #007000;
+  font-family: "Droid Sans Mono"; }
 
 footer {
-	clear: both;
-	padding-top: 1em;
-	border-top: 5pt solid #eee;
-	font-size: 0.7em;
-    margin: 1em 0 0;
-}
+  clear: both;
+  padding-top: 1em;
+  border-top: 5pt solid #eeeeee;
+  font-size: 0.7em;
+  margin: 1em 0 0; }
 
 a {
-	color: #777;
-	text-decoration: none;
-}
-
-a:hover {
-	color: #444;
-	text-decoration: underline;
-}
-
+  color: #777;
+  text-decoration: none; }
+  a:hover {
+    color: #444;
+    text-decoration: underline; }
 
 section {
-	clear: both;
-	margin: 10px;
-	padding: 0 10px;
-	font-size: .9em;
-}
-
-section > h2 {
-	margin-bottom: 10px;
-	margin-left: -10px;
-	font-size: 1.2em;
-}
-
-
-section > p {
-	margin: 10px 0;
-	line-height: 1.6em;
-}
+  clear: both;
+  margin: 10px;
+  padding: 0 10px;
+  font-size: .9em; }
+  section h2 {
+    margin-bottom: 10px;
+    margin-left: -10px;
+    font-size: 1.2em; }
+  section p {
+    margin: 10px 0;
+    line-height: 1.6em; }
 
 .summary.description > ul,
 .summary.description > ul > li {
-    list-style-type: disc;
-    margin-left: 20px;
-}
-
+  list-style-type: disc;
+  margin-left: 20px; }
 
 td.description {
-    position: relative;
-}
-
-td.description > .btnSeeExample {
+  position: relative; }
+  td.description .btnSeeExample {
     margin-bottom: 1em;
-    display: block;
-}
-
-td.description > .example {
+    display: block; }
+  td.description .example {
     display: none;
     position: absolute;
     background: #fff;
-    border: 1px solid #eee;
-    min-width: 500px;
-}
+    border: 1px solid #eeeeee;
+    min-width: 500px; }
+    td.description .example .btnClose {
+      margin-left: .5em; }
+    td.description .example pre {
+      margin: 0 .5em .5em; }
 
-td.description > .example > .btnClose {
-    margin-left: .5em;
-}
+/**
+ * SyntaxHighlighter
+ * http://alexgorbatchev.com/SyntaxHighlighter
+ *
+ * SyntaxHighlighter is donationware. If you are using it, please donate.
+ * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
+ *
+ * @version
+ * 3.0.83 (July 02 2010)
+ * 
+ * @copyright
+ * Copyright (C) 2004-2010 Alex Gorbatchev.
+ *
+ * @license
+ * Dual licensed under the MIT and GPL licenses.
+ */
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+  -moz-border-radius: 0 0 0 0 !important;
+  -webkit-border-radius: 0 0 0 0 !important;
+  background: none !important;
+  border: 0 !important;
+  bottom: auto !important;
+  float: none !important;
+  height: auto !important;
+  left: auto !important;
+  line-height: 1.1em !important;
+  margin: 0 !important;
+  outline: 0 !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  position: static !important;
+  right: auto !important;
+  text-align: left !important;
+  top: auto !important;
+  vertical-align: baseline !important;
+  width: auto !important;
+  box-sizing: content-box !important;
+  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 1em !important;
+  min-height: inherit !important;
+  min-height: auto !important; }
 
-td.description > .example > pre {
-    margin: 0 .5em .5em;
-}
+.syntaxhighlighter {
+  width: 100% !important;
+  margin: 1em 0 1em 0 !important;
+  position: relative !important;
+  /*overflow: auto !important;*/
+  font-size: 1em !important; }
 
+.syntaxhighlighter.source {
+  overflow: hidden !important; }
+
+.syntaxhighlighter .bold {
+  font-weight: bold !important; }
+
+.syntaxhighlighter .italic {
+  font-style: italic !important; }
+
+.syntaxhighlighter .line {
+  white-space: pre !important; }
+
+.syntaxhighlighter table {
+  width: 100% !important; }
+
+.syntaxhighlighter table caption {
+  text-align: left !important;
+  padding: .5em 0 0.5em 1em !important; }
+
+.syntaxhighlighter table td.code {
+  width: 100% !important; }
+
+.syntaxhighlighter table td.code .container {
+  position: relative !important; }
+
+.syntaxhighlighter table td.code .container textarea {
+  box-sizing: border-box !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  background: white !important;
+  padding-left: 1em !important;
+  overflow: hidden !important;
+  white-space: pre !important; }
+
+.syntaxhighlighter table td.gutter .line {
+  text-align: right !important;
+  padding: 0 0.5em 0 1em !important; }
+
+.syntaxhighlighter table td.code .line {
+  padding: 0 1em !important; }
+
+.syntaxhighlighter.nogutter td.code .container textarea, .syntaxhighlighter.nogutter td.code .line {
+  padding-left: 0em !important; }
+
+.syntaxhighlighter.show {
+  display: block !important; }
+
+.syntaxhighlighter.collapsed table {
+  display: none !important; }
+
+.syntaxhighlighter.collapsed .toolbar {
+  padding: 0.1em 0.8em 0em 0.8em !important;
+  font-size: 1em !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important; }
+
+.syntaxhighlighter.collapsed .toolbar span {
+  display: inline !important;
+  margin-right: 1em !important; }
+
+.syntaxhighlighter.collapsed .toolbar span a {
+  padding: 0 !important;
+  display: none !important; }
+
+.syntaxhighlighter.collapsed .toolbar span a.expandSource {
+  display: inline !important; }
+
+.syntaxhighlighter .toolbar {
+  position: absolute !important;
+  right: 1px !important;
+  top: 1px !important;
+  width: 11px !important;
+  height: 11px !important;
+  font-size: 10px !important;
+  z-index: 10 !important; }
+
+.syntaxhighlighter .toolbar span.title {
+  display: inline !important; }
+
+.syntaxhighlighter .toolbar a {
+  display: block !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  padding-top: 1px !important; }
+
+.syntaxhighlighter .toolbar a.expandSource {
+  display: none !important; }
+
+.syntaxhighlighter.ie {
+  font-size: .9em !important;
+  padding: 1px 0 1px 0 !important; }
+
+.syntaxhighlighter.ie .toolbar {
+  line-height: 8px !important; }
+
+.syntaxhighlighter.ie .toolbar a {
+  padding-top: 0px !important; }
+
+.syntaxhighlighter.printing .line.alt1 .content,
+.syntaxhighlighter.printing .line.alt2 .content,
+.syntaxhighlighter.printing .line.highlighted .number,
+.syntaxhighlighter.printing .line.highlighted.alt1 .content,
+.syntaxhighlighter.printing .line.highlighted.alt2 .content {
+  background: none !important; }
+
+.syntaxhighlighter.printing .line .number {
+  color: #bbbbbb !important; }
+
+.syntaxhighlighter.printing .line .content {
+  color: black !important; }
+
+.syntaxhighlighter.printing .toolbar {
+  display: none !important; }
+
+.syntaxhighlighter.printing a {
+  text-decoration: none !important; }
+
+.syntaxhighlighter.printing .plain, .syntaxhighlighter.printing .plain a {
+  color: black !important; }
+
+.syntaxhighlighter.printing .comments, .syntaxhighlighter.printing .comments a {
+  color: #008200 !important; }
+
+.syntaxhighlighter.printing .string, .syntaxhighlighter.printing .string a {
+  color: blue !important; }
+
+.syntaxhighlighter.printing .keyword {
+  color: #006699 !important;
+  font-weight: bold !important; }
+
+.syntaxhighlighter.printing .preprocessor {
+  color: gray !important; }
+
+.syntaxhighlighter.printing .variable {
+  color: #aa7700 !important; }
+
+.syntaxhighlighter.printing .value {
+  color: #009900 !important; }
+
+.syntaxhighlighter.printing .functions {
+  color: #ff1493 !important; }
+
+.syntaxhighlighter.printing .constants {
+  color: #0066cc !important; }
+
+.syntaxhighlighter.printing .script {
+  font-weight: bold !important; }
+
+.syntaxhighlighter.printing .color1, .syntaxhighlighter.printing .color1 a {
+  color: gray !important; }
+
+.syntaxhighlighter.printing .color2, .syntaxhighlighter.printing .color2 a {
+  color: #ff1493 !important; }
+
+.syntaxhighlighter.printing .color3, .syntaxhighlighter.printing .color3 a {
+  color: red !important; }
+
+.syntaxhighlighter.printing .break, .syntaxhighlighter.printing .break a {
+  color: black !important; }
+
+/**
+ * SyntaxHighlighter
+ * http://alexgorbatchev.com/SyntaxHighlighter
+ *
+ * SyntaxHighlighter is donationware. If you are using it, please donate.
+ * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
+ *
+ * @version
+ * 3.0.83 (July 02 2010)
+ * 
+ * @copyright
+ * Copyright (C) 2004-2010 Alex Gorbatchev.
+ *
+ * @license
+ * Dual licensed under the MIT and GPL licenses.
+ */
+.syntaxhighlighter {
+  /* background-color: white !important;*/ }
+
+.syntaxhighlighter .line.alt1 {
+  /*background-color: white !important;*/ }
+
+.syntaxhighlighter .line.alt2 {
+  /*background-color: white !important;*/ }
+
+.syntaxhighlighter .line.highlighted.alt1, .syntaxhighlighter .line.highlighted.alt2 {
+  background-color: #e0e0e0 !important; }
+
+.syntaxhighlighter .line.highlighted.number {
+  color: black !important; }
+
+.syntaxhighlighter table caption {
+  color: black !important; }
+
+.syntaxhighlighter .gutter {
+  color: #afafaf !important; }
+
+.syntaxhighlighter .gutter .line {
+  border-right: 3px solid #6ce26c !important; }
+
+.syntaxhighlighter .gutter .line.highlighted {
+  background-color: #6ce26c !important;
+  color: white !important; }
+
+.syntaxhighlighter.printing .line .content {
+  border: none !important; }
+
+.syntaxhighlighter.collapsed {
+  overflow: visible !important; }
+
+.syntaxhighlighter.collapsed .toolbar {
+  color: blue !important;
+  background: white !important;
+  border: 1px solid #6ce26c !important; }
+
+.syntaxhighlighter.collapsed .toolbar a {
+  color: blue !important; }
+
+.syntaxhighlighter.collapsed .toolbar a:hover {
+  color: red !important; }
+
+.syntaxhighlighter .toolbar {
+  color: white !important;
+  background: #6ce26c !important;
+  border: none !important; }
+
+.syntaxhighlighter .toolbar a {
+  color: white !important; }
+
+.syntaxhighlighter .toolbar a:hover {
+  color: black !important; }
+
+.syntaxhighlighter .plain, .syntaxhighlighter .plain a {
+  color: black !important; }
+
+.syntaxhighlighter .comments, .syntaxhighlighter .comments a {
+  color: #008200 !important; }
+
+.syntaxhighlighter .string, .syntaxhighlighter .string a {
+  color: blue !important; }
+
+.syntaxhighlighter .keyword {
+  color: #006699 !important; }
+
+.syntaxhighlighter .preprocessor {
+  color: gray !important; }
+
+.syntaxhighlighter .variable {
+  color: #aa7700 !important; }
+
+.syntaxhighlighter .value {
+  color: #009900 !important; }
+
+.syntaxhighlighter .functions {
+  color: #ff1493 !important; }
+
+.syntaxhighlighter .constants {
+  color: #0066cc !important; }
+
+.syntaxhighlighter .script {
+  font-weight: bold !important;
+  color: #006699 !important;
+  background-color: none !important; }
+
+.syntaxhighlighter .color1, .syntaxhighlighter .color1 a {
+  color: gray !important; }
+
+.syntaxhighlighter .color2, .syntaxhighlighter .color2 a {
+  color: #ff1493 !important; }
+
+.syntaxhighlighter .color3, .syntaxhighlighter .color3 a {
+  color: red !important; }
+
+.syntaxhighlighter .keyword {
+  font-weight: bold !important; }

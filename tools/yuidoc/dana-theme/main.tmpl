@@ -34,7 +34,7 @@ def print_params( params ):
   <meta name="viewport" content="width=device-width; initial-scale=1.0">
 
   <title>
-    API: $modulename
+    AFrameJS API: $modulename
     #if $classname#
       &rarr; $classname class
     #end if#
@@ -43,14 +43,6 @@ def print_params( params ):
     #end if#
   </title>
 
-  <!--link rel="stylesheet" type="text/css" href="css/960fluid.min.css"-->
-  <link rel="stylesheet" type="text/css" href="../stylesheets/cssreset.css">
-  <link rel="stylesheet" type="text/css" href="../stylesheets/grid.css">
-  <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.4.custom.css">
-  <link rel="stylesheet" type="text/css" href="css/main.css">
-  <link rel="stylesheet" type="text/css" href="css/navigation.css">
-  <link rel="stylesheet" type="text/css" href="css/content.css">
-  <link rel="stylesheet" type="text/css" href="../stylesheets/grid.css">
   <link rel="stylesheet" type="text/css" href="../stylesheets/aframejs.css">
   <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono">
   
@@ -65,14 +57,22 @@ def print_params( params ):
 
     <!-- HEADER -->
     <header>
-      <div id="hd" class="grid_6">
-        <h1>
-          <a href="$projecturl" title="$projectname">$projectname</a> v$version
-        </h1>
-      </div> <!--! end of #hd -->
+        <h1>AFrameJS v$version</h1>
+        <h2>A Javascript <strong>Application</strong> Library</h2>
+
+        <nav class="grid_12">
+            <ul>
+                <li><a href="../index.html">Main Page</a></li>
+                <li><a href="../tutorial.html">Tutorial</a></li>
+                <li><a href="index.html">API Documentation</a></li>
+                <li><a href="https://github.com/stomlinson/AFrame-JS/zipball/master">Download Zip File</a></li>
+                <li><a href="https://github.com/stomlinson/AFrame-JS">Source on GitHub</a></li>
+                <li><a href="../tests/index.html">Unit Tests</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <div id="filters" class="grid_6">
+    <!--div id="filters" class="grid_6">
       <form action="#" method="get" id="show-toggles">
         <fieldset>
           <legend>Display Filters</legend>
@@ -91,7 +91,7 @@ def print_params( params ):
         </fieldset>
       </form>
 
-    </div> <!--! end of #hd -->
+    </div--> <!--! end of #hd -->
 
 
     <!-- SUB-HEADER w/ BREADCRUMBS -->
@@ -103,7 +103,7 @@ def print_params( params ):
           <input type="text" id="search" title="Find documentation">
         </form>
 
-        <a href="./index.html" title="$projectname">$projectname</a>
+        <a href="./index.html" title="$projectname">$projectname API</a>
         #if $modulename
           &rarr; module <a href="./${cleansedmodulename}.html" title="$modulename">$modulename</a>
           #if $classname#
@@ -253,6 +253,9 @@ def print_params( params ):
           #end if
 
         </div>
+
+        <a href='https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String' title='JS String toLocaleLowerCase'><img src='http://static.jsconf.us/promotejsv.gif' height='280' width='160' alt='JS String toLocaleLowerCase'/></a>
+        
       </div>  <!-- end of #navigation -->
     </nav>
 
@@ -1080,11 +1083,10 @@ def print_params( params ):
 
     <div class="clear"></div>
 
-    
     <footer>
       <div id="footer" class="grid_12">
         <p>
-          Copyright &copy; $year $copyrighttag. All rights reserved.
+          Copyright &copy; $year $copyrighttag (set117 at yahoo period com). All rights reserved.
           &middot;
           Docs generated using <a href="http://developer.yahoo.com/yui/yuidoc/">YUIDoc</a> sporting the <a href="http://github.com/carlo/yuidoc-theme-dana">Dana theme</a>.
         </p>

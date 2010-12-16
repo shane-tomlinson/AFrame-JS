@@ -122,6 +122,11 @@
 		<copy todir="${site}/tests" >
 			<fileset dir="tests" />
 		</copy>
+        
+        <!--exec executable="sass" dir="${site}/stylesheets" failonerror="true">
+            <arg line="aframejs.scss:aframejs.css"/>
+        </exec-->
+        
 		
 	</target>
        
