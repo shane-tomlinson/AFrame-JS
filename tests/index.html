@@ -1,5 +1,8 @@
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/aframejs.css">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono">
+
 	<script type="text/javascript" src="http://yui.yahooapis.com/3.2.0/build/yui/yui-min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
 	
@@ -50,41 +53,59 @@
 	
 	<!-- this has to go last -->
 	<script type="text/javascript" src="test_harness_end.js"></script>
+
+    <title>AFrameJS Unit Tests</title>
 	
 </head>
 <body class="yui3-skin-sam">
-	<div>
-		<h1>AFrame Unit tests</h1>
-	</div>
+    <div class="container container_12">
+		<header class="clearfix">
+			<h1>AFrameJS</h1>
+			<h2>A Javascript <strong>Application</strong> Library</h2>
 
-	<div id="AFrame_Display">
-		<h3>AFrame.Display test</h2>
-		<div class="target">
-			Target
-			<a href="#" class="button">Button</a>
-		</div>
+			<nav class="grid_12">
+				<ul>
+					<li><a href="../index.html">Main Page</a></li>
+					<li><a href="../tutorial.html">Tutorial</a></li>
+					<li><a href="../docs/index.html">API Documentation</a></li>
+					<li><a href="https://github.com/stomlinson/AFrame-JS/zipball/master">Download Zip File</a></li>
+					<li><a href="https://github.com/stomlinson/AFrame-JS">Source on GitHub</a></li>
+					<li><a href="../tests/index.html">Unit Tests</a></li>
+				</ul>
+			</nav>
+			
+		</header>
 
-		<a href="#" id="externalButton">External Button</a>
-	</div>
+        <h2>AFrameJS Unit tests</h2>
 
-	<div id="AFrame_List">
-		<h3>AFrame.List test</h3>
+        <div id="AFrame_Display">
+            <h3>AFrame.Display test</h2>
+            <div class="target">
+                Target
+                <a href="#" class="button">Button</a>
+            </div>
 
-		<ul class="list">
-		</ul>
+            <a href="#" id="externalButton">External Button</a>
+        </div>
 
-	</div>
+        <div id="AFrame_List">
+            <h3>AFrame.List test</h3>
 
-	<div id="AFrame_Form">
-		<span id="textFormElement" data-field="name" type="text"></span>
-		<span id="textFormElement2" data-field="field2" type="text"></span>
-	</div>
+            <ul class="list">
+            </ul>
 
-	<input id="formElement" type="text" data-field="name"/>
-	
-	<input id="noValueFormElement" type="text" data-field="noValueField" placeholder="No Value Text" />
-	
-	<textarea id="textAreaField" data-field="name" required></textarea>
-	
+        </div>
+
+        <div id="AFrame_Form">
+            <span id="textFormElement" data-field="name" type="text"></span>
+            <span id="textFormElement2" data-field="field2" type="text"></span>
+        </div>
+
+        <input id="formElement" type="text" data-field="name"/>
+        
+        <input id="noValueFormElement" type="text" data-field="noValueField" placeholder="No Value Text" />
+        
+        <textarea id="textAreaField" data-field="name" required></textarea>
+    </div>
 </body>
 </html>

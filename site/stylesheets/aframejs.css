@@ -730,7 +730,7 @@ input, select {
   vertical-align: top;
   padding-right: 2em; }
 
-#content div.section table td.description a.top {
+#content div.section table td.description a.top, h3 a.top, h4 a.top {
   margin-right: -1.5em;
   float: right;
   color: #ddd; }
