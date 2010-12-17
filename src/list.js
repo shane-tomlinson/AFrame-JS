@@ -7,7 +7,7 @@
  */
 /**
  * A function to call to create a list element.  function will be called with two parameters, an index and the data.
- * @config createListElementCallback
+ * @config createListElementFactory
  * @type {function}
  */
 AFrame.List = function() {
@@ -15,7 +15,7 @@ AFrame.List = function() {
 };
 AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
-		this.createListElementCallback = config.createListElementCallback;
+		this.createListElementFactory = config.createListElementFactory;
 		
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
@@ -29,7 +29,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
-	 * Insert a data item into the list, the list item is created using the createListElementCallback.
+	 * Insert a data item into the list, the list item is created using the createListElementFactory.
 	 * @method insert
 	 * @param {object} data - data to use for list item
 	 * @param {number} index (optional) - index to insert at
@@ -41,7 +41,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	insert: function( data, index ) {
 		index = this.getActualInsertIndex( index );
 
-		var rowElement = this.createListElementCallback( data, index );
+		var rowElement = this.createListElementFactory( data, index );
 		index = this.insertElement( rowElement, index );
 		
 		/**

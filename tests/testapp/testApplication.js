@@ -45,7 +45,7 @@ $( function() {
 		type: AFrame.List,
 		config: {
 			target: $( '.userList' ),
-			createListElementCallback: function( index, data ) {
+			createListElementFactory: function( index, data ) {
 				return $( '<li>' + data.id + ' - ' + data.name + '</li>' );
 			}
 		},
