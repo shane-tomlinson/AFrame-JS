@@ -145,6 +145,7 @@ td.description {
         background: #fff;
         border: 1px solid $border-color;
         min-width: 500px;
+        z-index: 1;
         
         .btnClose {
             margin-left: .5em;

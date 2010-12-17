@@ -48,4 +48,18 @@ $( function() {
         
         anchor.bind( 'click', showExample );
     } );
+    
+    /**
+    * Remove the code parent and put it directly into the pre so that we can
+    *   do code highlighting
+    */
+    $( 'pre > code' ).each( function( index, element ) {
+        element = $( element );
+        var parent = element.parent();
+        parent.html( element.html() );
+    } );
+    
+    SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.defaults['gutter'] = false;
+    SyntaxHighlighter.all( { brush: 'js' } );     
 } );

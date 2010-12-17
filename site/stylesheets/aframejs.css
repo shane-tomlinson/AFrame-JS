@@ -595,23 +595,6 @@ input, select {
   font-weight: normal;
   margin: -1px; }
 
-* {
-  line-height: 130%; }
-
-body {
-  background-color: #eee; }
-
-p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset {
-  margin-bottom: 0.8em; }
-
-a {
-  text-decoration: none;
-  color: #55d; }
-
-code, code a[name] {
-  color: #007000;
-  font-family: "Droid Sans Mono"; }
-
 #container {
   background-color: #fff; }
 
@@ -621,10 +604,9 @@ code, code a[name] {
   margin: 0.5em 0 0.5em 0;
   font-weight: normal;
   color: #888; }
-
-#hd h1 a {
-  color: #ff8200;
-  font-weight: bold; }
+  #hd h1 a {
+    color: #ff8200;
+    font-weight: bold; }
 
 #sub-hd > div {
   background-color: #eee;
@@ -694,18 +676,20 @@ code, code a[name] {
 
 #content h2 {
   font-weight: normal; }
+  #content h2 span.extends {
+    display: block; }
+    #content h2 span.extends span.class {
+      color: #fff; }
 
-#content h2 span.extends {
-  display: block; }
-
-#content h2 span.extends span.class {
-  color: #fff; }
-
-#content pre, section pre, section .syntaxhighlighter {
+#content pre, section pre, .syntaxhighlighter {
   border: 1px solid #eee;
   padding: 0.5em;
   background-color: #f8f8f8;
   overflow: auto; }
+
+.example .syntaxhighlighter {
+  margin: 10px !important;
+  width: auto !important; }
 
 #content div.deprecated {
   background-color: #d53;
@@ -860,7 +844,8 @@ td.description {
     position: absolute;
     background: #fff;
     border: 1px solid #eeeeee;
-    min-width: 500px; }
+    min-width: 500px;
+    z-index: 1; }
     td.description .example .btnClose {
       margin-left: .5em; }
     td.description .example pre {

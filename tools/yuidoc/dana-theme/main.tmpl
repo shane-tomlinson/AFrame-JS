@@ -52,12 +52,12 @@ def print_params( params ):
 
 </head>
 
-<body>
+<body id="top">
   <div id="container" class="container_12 container">
 
     <!-- HEADER -->
     <header>
-        <h1>AFrameJS v$version</h1>
+        <h1>AFrameJS</h1>
         <h2>A Javascript <strong>Application</strong> Library</h2>
 
         <nav class="grid_12">
@@ -103,7 +103,7 @@ def print_params( params ):
           <input type="text" id="search" title="Find documentation">
         </form>
 
-        <a href="./index.html" title="$projectname">$projectname API</a>
+        <a href="./index.html" title="$projectname">$projectname API v$version</a>
         #if $modulename
           &rarr; module <a href="./${cleansedmodulename}.html" title="$modulename">$modulename</a>
           #if $classname#
@@ -1104,6 +1104,9 @@ def print_params( params ):
   <script src="js/jquery.cookie.min.js" type="text/javascript"></script>
   <script src="js/main.js" type="text/javascript"></script>
   <script src="../scripts/apidocs.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../scripts/XRegExp.js"></script>
+    <script type="text/javascript" src="../scripts/shCore.js"></script>
+    <script type="text/javascript" src="../scripts/shBrushJScript.js"></script>
 
 	<script type="text/javascript">
 

@@ -1,20 +1,26 @@
 #content h2 {
   font-weight: normal;
+
+    span.extends {
+      display: block;
+      
+      span.class {
+          color: #fff;
+      }      
+    }
+  
 }
 
-#content h2 span.extends {
-  display: block;
-}
-
-#content h2 span.extends span.class {
-  color: #fff;
-}
-
-#content pre, section pre, section .syntaxhighlighter {
+#content pre, section pre, .syntaxhighlighter {
   border: 1px solid #eee;
   padding: 0.5em;
   background-color: #f8f8f8;
   overflow: auto;
+}
+
+.example .syntaxhighlighter {
+    margin: 10px !important;
+    width: auto !important;
 }
 
 #content div.deprecated {

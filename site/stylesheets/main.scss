@@ -1,26 +1,3 @@
-* {
-  line-height: 130%;
-}
-
-body {
-  background-color: #eee;
-}
-
-p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset {
-  margin-bottom: 0.8em;
-}
-
-
-a {
-  text-decoration: none;
-  color: #55d;
-}
-
-code, code a[name] {
-  color: #007000;
-  font-family: "Droid Sans Mono";
-}
-
 
 #container {
   background-color: #fff;
@@ -33,14 +10,13 @@ code, code a[name] {
   margin: 0.5em 0 0.5em 0;
   font-weight: normal;
   color: #888;
-}
-
-#hd h1 a {
-  color: #ff8200;
-  font-weight: bold;
-}
-
   
+  a {
+      color: #ff8200;
+      font-weight: bold;
+  }
+}
+
 #sub-hd > div {
   background-color: #eee;
   margin: 0 0 1.5em 0;
