@@ -1,6 +1,36 @@
 /**
-* A hash object that triggers events whenever inserting, removing, etc.  Note, all
-*	events triggered natively by this will have one parameter, data.
+* A hash collection.  Items stored in the hash can be accessed/removed by a key.  The item's key
+* is first searched for on the item's cid field, if the item has no cid field, a cid will be assigned
+* to it.  The CID used is returned from the insert function.
+*
+* CollectionHash is different from a [CollectionArray](AFrame.CollectionArray.html) which is accessed
+* by index.
+*
+*    Create the hash
+*    var collection = AFrame.construct( {
+*       type: AFrame.CollectionHash
+*    } );
+*
+*    // First item is inserted with a cid
+*    var cid = collection.insert( { cid: 'cid1',
+*                             name: 'AFrame Foundary',
+*                             city: 'London',
+*                             country: 'United Kingdom'
+*                           } );
+*    // cid variable will be 'cid1'
+*
+*    var googleCID = collection.insert( { name: 'Google',
+*                                   city: 'Santa Clara',
+*                                   country: 'United States'
+*                                 } );
+*    // googleCID will be assigned by the system
+*
+*    // Getting an item from the hash.
+*    var item = collection.get( 'cid1' );
+*    // item will be the AFrame Foundary item
+*
+*    var googleItem = collection.remove( googleCID );
+*    // googleItem will be the google item that was inserted
 *
 * @class AFrame.CollectionHash
 * @extends AFrame.AObject
@@ -27,7 +57,12 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	},
 	
 	/**
-	* Get an item from the hash
+	* Get an item from the hash.
+    *
+    *    // using data from example at top of page
+    *    var item = hash.get( 'cid1' );
+    *    // item will be the AFrame Foundary item
+    *
 	* @method get
 	* @param {id} cid - cid of item to get
 	* @return {variant} item if it exists, undefined otw.
@@ -38,6 +73,11 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Remove an item from the store.
+    *
+    *    // using data from example at top of page
+    *    var googleItem = hash.remove( googleCID );
+    *    // googleItem will be the google item that was inserted
+    *
 	* @method remove
 	* @param {id} cid - cid of item to remove
 	* @return {variant} item if it exists, undefined otw.
@@ -51,7 +91,9 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 			/**
 			* Triggered before remove happens.
 			* @event onBeforeRemove
-			* @param {object} data - data has two fields, item and meta.
+			* @param {object} data - data field passed.
+			* @param {Collection} data.collection - collection causing event.
+			* @param {variant} data.item - item removed
 			*/
 			this.triggerEvent( 'onBeforeRemove', data );
 			AFrame.remove( this.hash, cid );
@@ -59,6 +101,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 			* Triggered after remove happens.
 			* @event onRemove
 			* @param {object} data - data has two fields, item and meta.
+			* @param {Collection} data.collection - collection causing event.
+			* @param {variant} data.item - item removed
 			*/
 			this.triggerEvent( 'onRemove', data );
 		}
@@ -68,7 +112,23 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
-	* it is then assigned.
+	* it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
+    * exception to be thrown.
+    *
+    *    // First item is inserted with a cid
+    *    var cid = hash.insert( { cid: 'cid1',
+    *                             name: 'AFrame Foundary',
+    *                             city: 'London',
+    *                             country: 'United Kingdom'
+    *                           } );
+    *    // cid variable will be 'cid1'
+    *
+    *    var googleCID = hash.insert( { name: 'Google',
+    *                                   city: 'Santa Clara',
+    *                                   country: 'United States'
+    *                                 } );
+    *    // googleCID will be assigned by the system
+    *
 	* @method insert
 	* @param {variant} item - item to insert
 	* @return {id} cid of the item.
@@ -86,6 +146,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		 * Triggered before insertion happens.
 		 * @event onBeforeInsert
 		 * @param {object} data - data has two fields.
+         * @param {Collection} data.collection - collection causing event.
+         * @param {variant} data.item - item inserted
 		 */
 		this.triggerEvent( 'onBeforeInsert', data );
 		this.hash[ cid ] = item;
@@ -94,6 +156,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		 * Triggered after insertion happens.
 		 * @event onInsert
 		 * @param {object} data - data has two fields, item and meta.
+         * @param {Collection} data.collection - collection causing event.
+         * @param {variant} data.item - item inserted
 		 */
 		this.triggerEvent( 'onInsert', data );
 		
@@ -102,6 +166,10 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Clear the hash
+    *
+    *    // remove all items from the hash.
+    *    hash.clear();
+    *
 	* @method clear
 	*/
 	clear: function() {
@@ -112,6 +180,10 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Get the current count of items
+    *
+    *    // using hash from top of the page
+    *    var count = hash.getCount();
+    *
 	* @method getCount
 	* @return {number} current count
 	*/

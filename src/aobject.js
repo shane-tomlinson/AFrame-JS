@@ -2,19 +2,19 @@
  * The base object of nearly everything.  It is recommended to create all new classes as a subclass
  * of AObject since it provides general functionality such as event binding and teardown housekeeping.
  * All AObjects in the system have a cid, a cid is a unique identifier within the application.  
- * If an AObject creates and is responsible for maintaining AObjects, addChild should be called for
- *	the created children.  When this object is torn down, the child object added via addChild will 
- *	have its teardown function called as well.  This can ensure that all memory is freed and that
- *	no references are kept when the object's lifespan has ended.
+ * If an AObject creates and is responsible for maintaining other AObjects, [addChild](#method_addChild) 
+ * should be called with the created children.  When this object is torn down, the child object added via addChild will 
+ * have its teardown function called as well.  This can ensure that all memory is freed and that
+ * no references are kept when the object's lifespan has ended.
  *
  * Events
  *=========
  *
  * All AFrame.AObject based classes have a built in event mechanism.  Events are dynamically created, there is
- *  no need to explicitly create an Observable for each event, all that is needed is to call either
+ *  no need to explicitly create an event, all that is needed is to call either
  *  triggerEvent or bindEvent.
  *
- * Example Usage:
+ * Event Example Usage:
  *
  *    // Assume anObject is an AFrame.AObject based object.
  *    // Every AFrame.AObject based object triggers an onInit event 
@@ -63,9 +63,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	},
 	
 	/**
-	 * Return the configuration object
+	 * Return the configuration object given in init.
      *
-     *     var config = obj.getConfig();
+     *     var config = this.getConfig();
      *
 	 * @method getConfig
 	 * @return {object} the configuration object
@@ -85,7 +85,7 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Tear the object down, free any references
      *
-     *    obj.teardown();
+     *    this.teardown();
      *
 	 * @method teardown
 	 */
@@ -113,7 +113,7 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Get the CID of the object
      *
-     *     var cid = obj.getCID();
+     *     var cid = this.getCID();
      *
 	 * @method getCID
 	 * @returns {cid}
@@ -125,7 +125,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Add a child.  All children are torn down on this object's teardown
      *
-     *     obj.addChild( childToBeTornDown );
+     *     // childToBeTornDown is an AObject based item created by this AObject.
+     *     // childToBeTornDown needs torn down whenever this object is torn down.
+     *     this.addChild( childToBeTornDown );
      *
 	 * @method addChild
 	 * @param {AFrame.AObject} child - child object
@@ -137,7 +139,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Remove a child.
      *
-     *    obj.removeChild( childToRemove.getCID() );
+     *    // childToRemove is a child that this object has already 
+     *    // created and no longer needs.
+     *    this.removeChild( childToRemove.getCID() );
      *
 	 * @method removeChild
 	 * @param {cid} cid - cid of item to remove

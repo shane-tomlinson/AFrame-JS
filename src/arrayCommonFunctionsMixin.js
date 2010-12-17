@@ -6,6 +6,10 @@
 AFrame.ArrayCommonFuncsMixin = {
 	/**
 	* Get the current count of items.  Should be overridden.
+    *
+    *    // list is an AFrame.List
+    *    var count = list.getCount();
+    *
 	* @method getCount
 	* @return {number} current count
 	* @throw 'operation not supported' if not overridden properly.
@@ -38,11 +42,11 @@ AFrame.ArrayCommonFuncsMixin = {
 
 	/**
 	 * @private
-	 * Given an tentative index, get the index the item would be removed from
-	 * @method getActualRemoveIndex
+	 * Given an tentative index, get the item's real index.
+	 * @method getActualIndex
 	 * @param {number} index - index to check for
 	 */
-	getActualRemoveIndex: function( index ) {
+	getActualIndex: function( index ) {
 		var len = this.getCount();
 
 		if( index < 0 ) {

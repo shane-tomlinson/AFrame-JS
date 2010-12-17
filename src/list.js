@@ -102,7 +102,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * @param {number} index - index of item to remove
 	 */
 	remove: function( index ) {
-		var removeIndex = this.getActualRemoveIndex( index );
+		var removeIndex = this.getActualIndex( index );
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
 		
 		/**

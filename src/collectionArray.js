@@ -1,6 +1,54 @@
 /**
-* An array collection.  The item's index will be added to all meta information in all events.  Items
-* are inserted by index, but can be retreived either by index or by id.
+* An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via 
+* either a key or an index.  When accessed via a key, the item's CID will be used.  If an item has a cid field when
+* inserted, this cid will be used, otherwise a cid will be assigned.
+* 
+* This raises the same events as AFrame.CollectionHash, but every event will have one additional parameter, index.
+*
+*    Create the array
+*    var collection = AFrame.construct( {
+*       type: AFrame.CollectionArray
+*    } );
+*
+*    // First item is inserted with a cid, inserted at the end of the array.
+*    var aframeCID = collection.insert( { cid: 'cid1',
+*                             name: 'AFrame Foundary',
+*                             city: 'London',
+*                             country: 'United Kingdom'
+*                           } );
+*    // aframeCID variable will be 'cid1'
+*
+*    // inserts google at the head of the list.
+*    var googleCID = collection.insert( { name: 'Google',
+*                                   city: 'Santa Clara',
+*                                   country: 'United States'
+*                                 }, 0 );
+*    // googleCID will be assigned by the system
+*
+*    // microsoft inserted at the end of the list.
+*    var microsoftCID = collection.insert( { name: 'Microsoft',
+*                                   city: 'Redmond',
+*                                   country: 'United States'
+*                                 }, -1 );
+*    // microsoftCID will be assigned by the system
+*
+*    // Getting an item via index.  This will return google item.
+*    var item = collection.get( 0 );
+*    // item will be the google item
+*
+*    // Getting an item via negative index.  This will return microsoft item.
+*    var item = collection.get( -1 );
+*    // item will be the microsoft item
+*
+*    // Getting an item via CID.  This will return the aframe item.
+*    item = collection.get( aframeCID );
+*
+*    var googleItem = collection.remove( googleCID );
+*    // googleItem will be the google item that was inserted
+*
+*    var aframeItem = collection.remove( 0 );
+*    // aframeItem will be the aframe item since the google item was first but is now removed
+*
 * @class AFrame.CollectionArray
 * @extends AFrame.CollectionHash
 * @uses AFrame.ArrayCommonFuncsMixin
@@ -27,6 +75,28 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Insert an item into the array.  
+    *
+    *    // First item is inserted with a cid, inserted at the end of the array.
+    *    var aframeCID = collection.insert( { cid: 'cid1',
+    *                             name: 'AFrame Foundary',
+    *                             city: 'London',
+    *                             country: 'United Kingdom'
+    *                           } );
+    *    // aframeCID variable will be 'cid1'
+    *
+    *    // inserts google at the head of the list.
+    *    var googleCID = collection.insert( { name: 'Google',
+    *                                   city: 'Santa Clara',
+    *                                   country: 'United States'
+    *                                 }, 0 );
+    *    // googleCID will be assigned by the system
+    *
+    *    // microsoft inserted at the end of the list.
+    *    var microsoftCID = collection.insert( { name: 'Microsoft',
+    *                                   city: 'Redmond',
+    *                                   country: 'United States'
+    *                                 }, -1 );
+    *    // microsoftCID will be assigned by the system
 	* @method insert
 	* @param {variant} item to insert
 	* @param {integer} index (optional) - index to insert into.  If
@@ -45,6 +115,18 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Get an item from the array.
+    *
+    *    // Getting an item via index.  This will return google item.
+    *    var item = collection.get( 0 );
+    *    // item will be the google item
+    *
+    *    // Getting an item via negative index.  This will return microsoft item.
+    *    var item = collection.get( -1 );
+    *    // item will be the microsoft item
+    *
+    *    // Getting an item via CID.  This will return the aframe item.
+    *    item = collection.get( aframeCID );
+    *
 	* @method get
 	* @param {number || id} index - index or cid of item to get
 	* @return {variant} item if it exists, undefined otw.
@@ -60,6 +142,13 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/** 
 	* Remove an item from the array
+    *
+    *    var googleItem = collection.remove( googleCID );
+    *    // googleItem will be the google item that was inserted
+    *
+    *    var aframeItem = collection.remove( 0 );
+    *    // aframeItem will be the aframe item since the google item was first but is now removed
+    *
 	* @method remove
 	* @param {number || id} index of item to remove.
 	*/
@@ -70,7 +159,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 			index = this.getIndex( index );
 		}
 		else {
-			index = this.getActualRemoveIndex( index );
+			index = this.getActualIndex( index );
 			cid = this.getCID( index );
 		}
 
@@ -87,6 +176,10 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Clear the array
+    *
+    *    // Clears the collection.
+    *    collection.clear();
+    *
 	* @method clear
 	*/
 	clear: function() {
@@ -97,6 +190,10 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Get the current count of items
+    *
+    *    // Get the number of items in the collection.
+    *    var count = collection.clear();
+    *
 	* @method getCount
 	* @return {number} current count
 	*/
@@ -106,6 +203,10 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Get an array representation of the CollectionArray
+    *
+    *    // Returns the array representation of the collection.
+    *    var itemsArray = collection.getArray();
+    *
 	* @method getArray
 	* @return {array} array representation of CollectionArray
 	*/
@@ -141,6 +242,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		var cid = index;
 		
 		if( 'number' == typeof( index ) ) {
+            index = this.getActualIndex( index );
 			cid = this.itemCIDs[ index ];
 		}
 		

@@ -102,7 +102,10 @@ testsToRun.push( function testCollectionArray( Y ) {
 		},
 
 		testInsertWithNegativeIndex: function() {
+			var cid = this.array.insert( this.item, -1 );
+			var item = this.array.get( -1 );
 			
+            Assert.areEqual( this.item, item, 'can insert and retreive using -1' );
 		},
 		
 		testClear: function() {
