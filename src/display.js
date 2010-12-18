@@ -2,6 +2,35 @@
  * A base class for a display.  Provides base target and DOM functionality.  A Display is completely
  *  generic, but can be used as the View in the Model-View-Controller paradigm.  See [Field](AFrame.Field.html) for
  *  Views that are tied to specific pieces of data.
+ *
+ *    <button id="submitForm">Submit</button>
+ *    
+ *    ---------
+ * 
+ *    var buttonSelector = '#submitForm';
+ *   
+ *    // buttonSelector is a selector used to specify the root node of 
+ *    //    the target.
+ *    var button = AFrame.construct( {
+ *       type: AFrame.Display
+ *       config: {
+ *           target: buttonSelector
+ *       }
+ *    } );
+ *   
+ *    // When binding to a DOM event, must define the target, which 
+ *    //    can be any jQuery element or selector. If a selector is given, 
+ *    //    the target is looked for as a descendant of the display's 
+ *    //    target.
+ *    button.bindClick( $( buttonSelector ), function( event ) {
+ *      // take care of the click, the event's default action is 
+ *      //     already prevented.
+ *    } );
+ *   
+ *    // Any DOM event can be bound to.
+ *    button.bindDOMEvent( $( buttonSelector ), 'mouseenter', function( event ) {
+ *       // Do a button highlight or some other such thing.
+ *    } );
  * 
  * @class AFrame.Display
  * @extends AFrame.AObject
