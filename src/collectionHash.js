@@ -113,7 +113,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	/**
 	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
 	* it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
-    * exception to be thrown.
+    * exception to be thrown.  If the item being inserted is an Object and does not already have a cid, the
+    * item's cid will be placed on the object under the cid field.
     *
     *    // First item is inserted with a cid
     *    var cid = hash.insert( { cid: 'cid1',
@@ -139,6 +140,11 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		if( 'undefined' != typeof( this.get( cid ) ) ) {
 			throw 'duplicate cid';
 		}
+        
+        // store the CID on the item.
+        if( item instanceof Object ) {
+            item.cid = cid;
+        }
 		
 		var data = this.getEventData( item, { cid: cid } );
 		

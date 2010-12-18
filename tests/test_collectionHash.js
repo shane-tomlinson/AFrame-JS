@@ -103,7 +103,8 @@ testsToRun.push( function testCollectionHash( Y ) {
 			
 			Assert.isObject( beforeInsertData, 'beforeInsertData correctly set from onBeforeInsert' );
 			Assert.isObject( insertData, 'insertData correctly set from onInsert' );
-			
+			Assert.isNotUndefined( item.cid, 'cid was put on the item' );
+            
 			//Assert.areSame( cid, insertData.cid, 'ids are the same' );
 		},
 
