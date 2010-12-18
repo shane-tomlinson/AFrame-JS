@@ -2,6 +2,43 @@
  * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
  * the following functions, clear, save, reset, validate.  A generic Form is not 
  * bound to any data, it is only a collection of form fields.
+ *
+ *    <div id="nameForm">
+ *       <input type="text" data-field="name" />
+ *    </div>
+ *   
+ *    ---------
+ *   
+ *    // Sets up the field constructor, right now there is only one type of field
+ *    var fieldFactory = function( element ) {
+ *       return AFrame.construct( {
+ *           type: AFrame.Field,
+ *           config: {
+ *               target: element
+ *           }
+ *       } );
+ *    };
+ *   
+ *    // Set up the form to look under #nameForm for elements with the "data-field" 
+ *    //   attribute.  This will find one field in the above HTML
+ *    //
+ *    var form = AFrame.construct( {
+ *       type: AFrame.Form,
+ *       config: {
+ *           target: $( '#nameForm' ),
+ *           formFieldFactory: fieldFactory
+ *       }
+ *    } );
+ *   
+ *    // do some stuff, user enters data.
+ *
+ *    // Check the validity of the form
+ *    var isValid = form.checkValidity();
+ *   
+ *    // do some other stuff.
+ *   
+ *    form.clear();
+ *
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
@@ -45,6 +82,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	
 	/**
 	 * bind a form element to the form
+     *
+     *    // Bind a field in the given element.
+     *    var field = form.bindFormElement( $( '#button' ) );
+     *
 	 * @method bindFormElement
 	 * @param {selector || element} formElement the form element to bind to.
 	 * @returns {AFrame.Field}
@@ -60,7 +101,11 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	},
 	
 	/**
-	 * Get the form elements
+	 * Get the form field elements
+     *
+     *    // Get the form field elements
+     *    var fields = form.getFormElements();
+     *
 	 * @method getFormElements
 	 * @return {array} the form elements
 	 */
@@ -70,6 +115,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Get the form fields
+     *
+     *    // Get the form fields
+     *    var fields = form.getFormFields();
+     *
 	 * @method getFormFields
 	 * @return {array} the form fields
 	 */
@@ -79,6 +128,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Validate the form.
+     *
+     *    // Check the validity of the form
+     *    var isValid = form.checkValidity();
+     *
 	 * @method checkValidity
 	 * @return {boolean} true if form is valid, false otw.
 	 */
@@ -94,6 +147,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Clear the form, does not affect data
+     *
+     *    // Clear the form, does not affect data.
+     *    form.clear();
+     *
 	 * @method clear
 	 */
 	clear: function() {
@@ -102,6 +159,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Reset the form to its original state
+     *
+     *    // Resets the form to its original state.
+     *    form.reset();
+     *
 	 * @method reset
 	 */
 	reset: function() {
@@ -110,6 +171,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Have all fields save their data if the form is valid
+     *
+     *    // Have all fields save their data if the form is valid
+     *    var saved = form.save();
+     *
 	 * @method save
 	 * @return {boolean} true if the form was valid and saved, false otw.
 	 */
