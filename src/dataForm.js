@@ -3,6 +3,47 @@
 *	is used as the data source for all form Fields.  When a Field in the form is created, it
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
+*    
+*    // Sets up the field constructor, right now there is only one type of field
+*    var fieldFactory = function( element ) {
+*        return AFrame.construct( {
+*            type: AFrame.Field,
+*            config: {
+*                target: element
+*            }
+*        } );
+*    };
+*    
+*    var libraryDataContainer = AFrame.DataContainer( {
+*        name: 'AFrame',
+*        version: '0.0.20'
+*    } );
+*    
+*    // Set up the form to look under #nameForm for elements with the "data-field" 
+*    //    attribute.  This will find two fields, each field will be tied to the 
+*    //    appropriate field in the libraryDataContainer
+*    var form = AFrame.construct( {
+*        type: AFrame.DataForm,
+*        config: {
+*            target: $( '#nameForm' ),
+*            formFieldFactory: fieldFactory,
+*            dataSource: libraryDataContainer
+*        }
+*    } );
+*    
+*    // do some stuff, user updates the fields with the library name and version 
+*    //    number. Note, throughout this period the libraryDataContainer is never 
+*    //    updated.
+*
+*    // Check the validity of the form, if we are valid, save the data back to 
+*    //    the dataContainer
+*    var isValid = form.checkValidity();
+*    if( isValid ) {
+*        // if the form is valid, the input is saved back to 
+*        //    the libraryDataContainer
+*        form.save();
+*    }
+*
 * @class AFrame.DataForm
 * @extends AFrame.Form
 * @constructor
