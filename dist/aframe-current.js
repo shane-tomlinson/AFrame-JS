@@ -1098,7 +1098,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	/**
 	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
 	* it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
-    * exception to be thrown.
+    * exception to be thrown.  If the item being inserted is an Object and does not already have a cid, the
+    * item's cid will be placed on the object under the cid field.
     *
     *    // First item is inserted with a cid
     *    var cid = hash.insert( { cid: 'cid1',
@@ -1124,6 +1125,11 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		if( 'undefined' != typeof( this.get( cid ) ) ) {
 			throw 'duplicate cid';
 		}
+        
+        // store the CID on the item.
+        if( item instanceof Object ) {
+            item.cid = cid;
+        }
 		
 		var data = this.getEventData( item, { cid: cid } );
 		
@@ -1463,6 +1469,35 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
  * A base class for a display.  Provides base target and DOM functionality.  A Display is completely
  *  generic, but can be used as the View in the Model-View-Controller paradigm.  See [Field](AFrame.Field.html) for
  *  Views that are tied to specific pieces of data.
+ *
+ *    <button id="submitForm">Submit</button>
+ *    
+ *    ---------
+ * 
+ *    var buttonSelector = '#submitForm';
+ *   
+ *    // buttonSelector is a selector used to specify the root node of 
+ *    //    the target.
+ *    var button = AFrame.construct( {
+ *       type: AFrame.Display
+ *       config: {
+ *           target: buttonSelector
+ *       }
+ *    } );
+ *   
+ *    // When binding to a DOM event, must define the target, which 
+ *    //    can be any jQuery element or selector. If a selector is given, 
+ *    //    the target is looked for as a descendant of the display's 
+ *    //    target.
+ *    button.bindClick( $( buttonSelector ), function( event ) {
+ *      // take care of the click, the event's default action is 
+ *      //     already prevented.
+ *    } );
+ *   
+ *    // Any DOM event can be bound to.
+ *    button.bindDOMEvent( $( buttonSelector ), 'mouseenter', function( event ) {
+ *       // Do a button highlight or some other such thing.
+ *    } );
  * 
  * @class AFrame.Display
  * @extends AFrame.AObject
@@ -1798,8 +1833,98 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 		return index;
 	}
 } );/**
- * A plugin to a collection to give the collection db ops.  Provides
- * load, add, save, del on the collection.
+ * A plugin to a collection to give the collection db ops.  This is part of what is usually called an Adapter
+ *  when referring to collections with a hookup to a database.  The CollectionPluginPersistence is not the actual 
+ *  Adapter but binds a collection to an Adapter.  The CollectionPluginPersistence adds load, add, save, del 
+ *  functions to the collection, all four functions are assumed to operate asynchronously.  
+ *  When configuring the plugin, 4 parameters can be specified, each are optional.
+ *  The four paramters are addCallback, saveCallback, loadCallback, and deleteCallback.  When the callbacks are called, they
+ *  will be called with three parameters, data, options.  data is the data currently being operated on. options is
+ *  options data that will contain at least two fields, collection and onComplete. onComplte should be called by the 
+ *  adapter when the adapter function
+ *  has completed.
+ *
+ *     // set up the adapter
+ *     var dbAdapter = {
+ *         load: function( options ) {
+ *              // functionality here to do the load
+ *              
+ *              if( options.onComplete ) {
+ *                  options.onComplete();
+ *              }
+ *         },
+ *         add: function( data, options ) {
+ *              // functionality here to do the add
+ *              
+ *              if( options.onComplete ) {
+ *                  options.onComplete();
+ *              }
+ *         },
+ *         del: function( data, options ) {
+ *              // functionality here to do the delete
+ *              
+ *              if( options.onComplete ) {
+ *                  options.onComplete();
+ *              }
+ *         },
+ *         save: function( data, options ) {   
+ *              // functionality here to do the save
+ *              
+ *              if( options.onComplete ) {
+ *                  options.onComplete();
+ *              }
+ *         }
+ *     };
+ *
+ *     var collection = AFrame.construct( {
+ *          type: AFrame.CollectionArray,
+ *          plugins: [ {
+ *              type: AFrame.CollectionPluginPersistence,
+ *              config: {
+ *                  // specify each of the four adapter functions
+ *                  loadCallback: dbAdapter.load,
+ *                  addCallback: dbAdapter.load,
+ *                  deleteCallback: dbAdapter.del,
+ *                  saveCallback: dbAdapter.save
+ *              }
+ *          } ]
+ *     } );
+ *     
+ *     // Loads the initial data
+ *     collection.load( {
+ *          onComplete: function() {
+ *              alert( 'Collection is loaded' );
+ *          }
+ *     } );
+ *      
+ *     // Adds an item to the collection.  Note, a cid is not given back
+ *     // because this operation is asynchronous and a cid will not be
+ *     // assigned until the persistence operation completes.  A CID
+ *     // will be placed on the items data.
+ *     collection.add( {
+ *          name: 'AFrame',
+ *          company: 'AFrame Foundary'
+ *     }, {
+ *          onComplete: function( data, options ) {
+ *              // cid is available here in either options.cid or data.cid
+ *              alert( 'add complete, cid: ' + options.cid );
+ *          }
+ *     } );
+ *
+ *     // delete an item with cid 'cid'.
+ *     collection.del( 'cid', {
+ *          onComplete: function() {
+ *              alert( 'delete complete' );
+ *          }
+ *     } );
+ *
+ *     // save an item with cid 'cid'.
+ *     collection.save( 'cid', {
+ *          onComplete: function() {
+ *              alert( 'save complete' );
+ *          }
+ *     } );
+ *
  * @class AFrame.CollectionPluginPersistence
  * @extends AFrame.Plugin
  * @constructor
@@ -1810,38 +1935,39 @@ AFrame.CollectionPluginPersistence = function() {
 AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	init: function( config ) {
 		/**
-		 * function to call to do add.  Will be called with three parameters, data, meta, and callback.
+		 * function to call to do add.  Will be called with three parameters, data, options, and callback.
 		 * @config addCallback
-		 * @type function
+		 * @type function (optional)
 		 */
 		this.addCallback = config.addCallback || this.noPersistenceOp;
 		
 		/**
-		 * function to call to do save.  Will be called with three parameters, data, meta, and callback.
+		 * function to call to do save.  Will be called with three parameters, data, options, and callback.
 		 * @config saveCallback
-		 * @type function
+		 * @type function (optional)
 		 */
 		this.saveCallback = config.saveCallback || this.noPersistenceOp;
 		
 		/**
-		 * function to call to do load.  Will be called with two parameters, meta, and callback.
+		 * function to call to do load.  Will be called with two parameters, options, and callback.
 		 * @config loadCallback
-		 * @type function
+		 * @type function (optional)
 		 */
 		this.loadCallback = config.loadCallback || this.noPersistenceOp;
 		
 		/**
-		 * function to call to do delete.  Will be called with three parameters, data, meta, and callback.
+		 * function to call to do delete.  Will be called with three parameters, data, options, and callback.
 		 * @config deleteCallback
-		 * @type function
+		 * @type function (optional)
 		 */
 		this.deleteCallback = config.deleteCallback || this.noPersistenceOp;
 		
 		AFrame.CollectionPluginPersistence.superclass.init.apply( this, arguments );
 	},
 
-	noPersistenceOp: function( data, meta, callback ) {
-		callback( data, meta );
+	noPersistenceOp: function( data, options ) {
+        var callback = options.onComplete;
+		callback && callback( data, options );
 	},
 
 	setPlugged: function( plugged ) {
@@ -1854,90 +1980,192 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	},
 
 	/**
-	 * Add an item to the collection.
+	 * Add an item to the collection.  The item will be inserted into the collection once the addCallback
+     *  is complete.  Because of this, no cid is returned from the add function, but one will be placed into
+     *  the options data passed to the onComplete callback.
+     *      
+     *     // Adds an item to the collection.  Note, a cid is not given back
+     *     // because this operation is asynchronous and a cid will not be
+     *     // assigned until the persistence operation completes.  A CID
+     *     // will be placed on the items data.
+     *     collection.add( {
+     *          name: 'AFrame',
+     *          company: 'AFrame Foundary'
+     *     }, {
+     *          onComplete: function( data, options ) {
+     *              // cid is available here in either options.cid or data.cid
+     *              alert( 'add complete, cid: ' + options.cid );
+     *          }
+     *     } );
+     *     
 	 * @method add
 	 * @param {object} data - data to add
-	 * @param {object} meta - meta information.  If callback is supplied in the
-	 * 	meta information, the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the data, and meta information.
+	 * @param {object} options - options information.  
+     * @param {function} options.onComplete (optional) - callback to call when complete
+	 *	Will be called with two parameters, the data, and options information.
+     * @param {function} options.insertAt (optional) - data to be passed as second argument to the collection's 
+     *  insert function.  Useful when using CollectionArrays to specify the index
 	 */
-	add: function( data, meta ) {
-		meta = this.getMeta( meta );
-		this.addCallback( data, meta, function() {
-			this.getPlugged().insert( data, meta );
-			meta.callback && meta.callback( data, meta );
-		}.bind( this ) );
+	add: function( data, options ) {
+		options = this.getOptions( options );
+        var callback = options.onComplete;
+        
+        options.onComplete = function() {
+            var cid = this.getPlugged().insert( data, options.insertAt );
+            options.cid = cid;
+            options.onComplete = callback;
+			callback && callback( data, options );
+		}.bind( this );
+        
+		this.addCallback( data, options );
 	},
 
 	/**
 	 * load the collection
+     *
+     *     // Loads the initial data
+     *     collection.load( {
+     *          onComplete: function() {
+     *              alert( 'Collection is loaded' );
+     *          }
+     *     } );
+     *      
 	 * @method load
-	 * @param {object} meta - meta information.  If callback is supplied in the
-	 * 	meta information, the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the items, and meta information.
+	 * @param {object} options - options information.  
+     * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the items, and options information.
 	 */
-	load: function( meta ) {
-		meta = this.getMeta( meta );
-		this.loadCallback( meta, function( items ) {
+	load: function( options ) {
+		options = this.getOptions( options );
+        var callback = options.onComplete;
+        
+        options.onComplete = function( items ) {
 			if( items ) {
 				var plugged = this.getPlugged();
 				items.forEach( function( item, index ) {
 					plugged.insert( item );
 				} );
 			}
-			meta.callback && meta.callback( items, meta );
-		}.bind( this ) );
+            options.onComplete = callback;
+			callback && callback( items, options );
+		}.bind( this );
+        
+		this.loadCallback( options );
 	},
 
 	/**
 	 * delete an item in the collection
-	 * @method delete
-	 * @param {id} itemID - id of item to remove
-	 * @param {object} meta - meta information.  If callback is supplied in the
-	 * 	meta information, the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the data, and meta information.
+     *
+     *     // delete an item with cid 'cid'.
+     *     collection.del( 'cid', {
+     *          onComplete: function() {
+     *              alert( 'delete complete' );
+     *          }
+     *     } );
+     *
+     * @method del
+	 * @param {id || index} itemID - id or index of item to remove
+	 * @param {object} options - options information.
+     * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the data, and options information.
 	 */
-	del: function( itemID , meta ) {
-		var data = this.getPlugged().get( itemID );
+	del: function( itemID, options ) {
+        var plugged = this.getPlugged();
+		var data = plugged.get( itemID );
 		
 		if( data ) {
-			meta = this.getMeta( meta );
-			this.deleteCallback( data, meta, function() {
-				this.getPlugged().remove( itemID, meta );
-				meta.callback && meta.callback( data, meta );
-			}.bind( this ) );
+			options = this.getOptions( options );
+            var callback = options.onComplete;
+            
+            options.onComplete = function() {
+				plugged.remove( itemID, options );
+                options.onComplete = callback;
+				callback && callback( data, options );
+			}.bind( this );
+            
+			this.deleteCallback( data, options );
 		}
 	},
 
 	/**
 	 * save an item in the collection
+     *
+     *     // save an item with cid 'cid'.
+     *     collection.save( 'cid', {
+     *          onComplete: function() {
+     *              alert( 'save complete' );
+     *          }
+     *     } );
+     *
 	 * @method save
-	 * @param {id} itemID - id of item to save
-	 * @param {object} meta - meta information.  If callback is supplied in the
-	 * 	meta information, the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the data, and meta information.
+	 * @param {id || index} itemID - id or index of item to save
+	 * @param {object} options - options information.
+     * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
+	 *	Callback will be called with two parameters, the data, and options information.
 	 */
-	save: function( itemID, meta ) {
+	save: function( itemID, options ) {
 		var data = this.getPlugged().get( itemID );
 
 		if( data ) {
-			meta = this.getMeta( meta );
-			this.saveCallback( data, meta, function() {
-				meta.callback && meta.callback( data, meta );
-			}.bind( this ) );
+			options = this.getOptions( options );
+            var callback = options.onComplete;
+            
+            options.onComplete = function() {
+                options.onComplete = callback;
+				callback && callback( data, options );
+			}.bind( this );
+            
+			this.saveCallback( data, options );
 		}
 	},
 
-	getMeta: function( meta ) {
-		meta = meta || {};
-		meta.collection = this.getPlugged();
-		return meta;
+	getOptions: function( options ) {
+		options = options || {};
+		options.collection = this.getPlugged();
+		return options;
 	}
 } );
 /**
  * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
  * the following functions, clear, save, reset, validate.  A generic Form is not 
  * bound to any data, it is only a collection of form fields.
+ *
+ *    <div id="nameForm">
+ *       <input type="text" data-field="name" />
+ *    </div>
+ *   
+ *    ---------
+ *   
+ *    // Sets up the field constructor, right now there is only one type of field
+ *    var fieldFactory = function( element ) {
+ *       return AFrame.construct( {
+ *           type: AFrame.Field,
+ *           config: {
+ *               target: element
+ *           }
+ *       } );
+ *    };
+ *   
+ *    // Set up the form to look under #nameForm for elements with the "data-field" 
+ *    //   attribute.  This will find one field in the above HTML
+ *    //
+ *    var form = AFrame.construct( {
+ *       type: AFrame.Form,
+ *       config: {
+ *           target: $( '#nameForm' ),
+ *           formFieldFactory: fieldFactory
+ *       }
+ *    } );
+ *   
+ *    // do some stuff, user enters data.
+ *
+ *    // Check the validity of the form
+ *    var isValid = form.checkValidity();
+ *   
+ *    // do some other stuff.
+ *   
+ *    form.clear();
+ *
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
@@ -1981,6 +2209,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	
 	/**
 	 * bind a form element to the form
+     *
+     *    // Bind a field in the given element.
+     *    var field = form.bindFormElement( $( '#button' ) );
+     *
 	 * @method bindFormElement
 	 * @param {selector || element} formElement the form element to bind to.
 	 * @returns {AFrame.Field}
@@ -1996,7 +2228,11 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 	},
 	
 	/**
-	 * Get the form elements
+	 * Get the form field elements
+     *
+     *    // Get the form field elements
+     *    var fields = form.getFormElements();
+     *
 	 * @method getFormElements
 	 * @return {array} the form elements
 	 */
@@ -2006,6 +2242,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Get the form fields
+     *
+     *    // Get the form fields
+     *    var fields = form.getFormFields();
+     *
 	 * @method getFormFields
 	 * @return {array} the form fields
 	 */
@@ -2015,6 +2255,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Validate the form.
+     *
+     *    // Check the validity of the form
+     *    var isValid = form.checkValidity();
+     *
 	 * @method checkValidity
 	 * @return {boolean} true if form is valid, false otw.
 	 */
@@ -2030,6 +2274,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Clear the form, does not affect data
+     *
+     *    // Clear the form, does not affect data.
+     *    form.clear();
+     *
 	 * @method clear
 	 */
 	clear: function() {
@@ -2038,6 +2286,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Reset the form to its original state
+     *
+     *    // Resets the form to its original state.
+     *    form.reset();
+     *
 	 * @method reset
 	 */
 	reset: function() {
@@ -2046,6 +2298,10 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 	/**
 	 * Have all fields save their data if the form is valid
+     *
+     *    // Have all fields save their data if the form is valid
+     *    var saved = form.save();
+     *
 	 * @method save
 	 * @return {boolean} true if the form was valid and saved, false otw.
 	 */
@@ -2070,6 +2326,34 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
  * AFrame.Field.cancelInvalid = false and the default action will be prevented and no browser error.
  * Field validation does not occur in real time, for validation to occur, the checkValidity
  * function must be called.
+ *
+ *    <input type="number" id="numberInput" />
+ *   
+ *    ---------
+ *
+ *    var field = AFrame.construct( {
+ *       type: AFrame.Field,
+ *       config: {
+ *           target: $( '#numberInput' )
+ *       }
+ *    } );
+ *   
+ *    // Set the value of the field, it is now displaying 3.1415
+ *    field.set(3.1415);
+ *   
+ *    // Check the validity of the field
+ *    var isValid = field.checkValidity();
+ *   
+ *    // The field is cleared, displays nothing
+ *    field.clear();
+ *   
+ *    field.set('invalid set');
+ *   
+ *    // This will return false
+ *    isValid = field.checkValidity();
+ *   
+ *    // Get the validity state, as per the HTML5 spec
+ *    var validityState = field.getValidityState();
  *
  * @class AFrame.Field
  * @extends AFrame.Display
@@ -2798,6 +3082,47 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 *	is used as the data source for all form Fields.  When a Field in the form is created, it
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
+*    
+*    // Sets up the field constructor, right now there is only one type of field
+*    var fieldFactory = function( element ) {
+*        return AFrame.construct( {
+*            type: AFrame.Field,
+*            config: {
+*                target: element
+*            }
+*        } );
+*    };
+*    
+*    var libraryDataContainer = AFrame.DataContainer( {
+*        name: 'AFrame',
+*        version: '0.0.20'
+*    } );
+*    
+*    // Set up the form to look under #nameForm for elements with the "data-field" 
+*    //    attribute.  This will find two fields, each field will be tied to the 
+*    //    appropriate field in the libraryDataContainer
+*    var form = AFrame.construct( {
+*        type: AFrame.DataForm,
+*        config: {
+*            target: $( '#nameForm' ),
+*            formFieldFactory: fieldFactory,
+*            dataSource: libraryDataContainer
+*        }
+*    } );
+*    
+*    // do some stuff, user updates the fields with the library name and version 
+*    //    number. Note, throughout this period the libraryDataContainer is never 
+*    //    updated.
+*
+*    // Check the validity of the form, if we are valid, save the data back to 
+*    //    the dataContainer
+*    var isValid = form.checkValidity();
+*    if( isValid ) {
+*        // if the form is valid, the input is saved back to 
+*        //    the libraryDataContainer
+*        form.save();
+*    }
+*
 * @class AFrame.DataForm
 * @extends AFrame.Form
 * @constructor
