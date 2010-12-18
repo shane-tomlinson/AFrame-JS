@@ -531,19 +531,19 @@ AFrame.ObservablesMixin = {
  * The base object of nearly everything.  It is recommended to create all new classes as a subclass
  * of AObject since it provides general functionality such as event binding and teardown housekeeping.
  * All AObjects in the system have a cid, a cid is a unique identifier within the application.  
- * If an AObject creates and is responsible for maintaining AObjects, addChild should be called for
- *	the created children.  When this object is torn down, the child object added via addChild will 
- *	have its teardown function called as well.  This can ensure that all memory is freed and that
- *	no references are kept when the object's lifespan has ended.
+ * If an AObject creates and is responsible for maintaining other AObjects, [addChild](#method_addChild) 
+ * should be called with the created children.  When this object is torn down, the child object added via addChild will 
+ * have its teardown function called as well.  This can ensure that all memory is freed and that
+ * no references are kept when the object's lifespan has ended.
  *
  * Events
  *=========
  *
  * All AFrame.AObject based classes have a built in event mechanism.  Events are dynamically created, there is
- *  no need to explicitly create an Observable for each event, all that is needed is to call either
+ *  no need to explicitly create an event, all that is needed is to call either
  *  triggerEvent or bindEvent.
  *
- * Example Usage:
+ * Event Example Usage:
  *
  *    // Assume anObject is an AFrame.AObject based object.
  *    // Every AFrame.AObject based object triggers an onInit event 
@@ -592,9 +592,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	},
 	
 	/**
-	 * Return the configuration object
+	 * Return the configuration object given in init.
      *
-     *     var config = obj.getConfig();
+     *     var config = this.getConfig();
      *
 	 * @method getConfig
 	 * @return {object} the configuration object
@@ -614,7 +614,7 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Tear the object down, free any references
      *
-     *    obj.teardown();
+     *    this.teardown();
      *
 	 * @method teardown
 	 */
@@ -642,7 +642,7 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Get the CID of the object
      *
-     *     var cid = obj.getCID();
+     *     var cid = this.getCID();
      *
 	 * @method getCID
 	 * @returns {cid}
@@ -654,7 +654,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Add a child.  All children are torn down on this object's teardown
      *
-     *     obj.addChild( childToBeTornDown );
+     *     // childToBeTornDown is an AObject based item created by this AObject.
+     *     // childToBeTornDown needs torn down whenever this object is torn down.
+     *     this.addChild( childToBeTornDown );
      *
 	 * @method addChild
 	 * @param {AFrame.AObject} child - child object
@@ -666,7 +668,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	/**
 	 * Remove a child.
      *
-     *    obj.removeChild( childToRemove.getCID() );
+     *    // childToRemove is a child that this object has already 
+     *    // created and no longer needs.
+     *    this.removeChild( childToRemove.getCID() );
      *
 	 * @method removeChild
 	 * @param {cid} cid - cid of item to remove
@@ -927,6 +931,10 @@ AFrame.extend( AFrame.Plugin, AFrame.AObject, {
 AFrame.ArrayCommonFuncsMixin = {
 	/**
 	* Get the current count of items.  Should be overridden.
+    *
+    *    // list is an AFrame.List
+    *    var count = list.getCount();
+    *
 	* @method getCount
 	* @return {number} current count
 	* @throw 'operation not supported' if not overridden properly.
@@ -959,11 +967,11 @@ AFrame.ArrayCommonFuncsMixin = {
 
 	/**
 	 * @private
-	 * Given an tentative index, get the index the item would be removed from
-	 * @method getActualRemoveIndex
+	 * Given an tentative index, get the item's real index.
+	 * @method getActualIndex
 	 * @param {number} index - index to check for
 	 */
-	getActualRemoveIndex: function( index ) {
+	getActualIndex: function( index ) {
 		var len = this.getCount();
 
 		if( index < 0 ) {
@@ -976,8 +984,38 @@ AFrame.ArrayCommonFuncsMixin = {
 		return index;
 	}
 };/**
-* A hash object that triggers events whenever inserting, removing, etc.  Note, all
-*	events triggered natively by this will have one parameter, data.
+* A hash collection.  Items stored in the hash can be accessed/removed by a key.  The item's key
+* is first searched for on the item's cid field, if the item has no cid field, a cid will be assigned
+* to it.  The CID used is returned from the insert function.
+*
+* CollectionHash is different from a [CollectionArray](AFrame.CollectionArray.html) which is accessed
+* by index.
+*
+*    Create the hash
+*    var collection = AFrame.construct( {
+*       type: AFrame.CollectionHash
+*    } );
+*
+*    // First item is inserted with a cid
+*    var cid = collection.insert( { cid: 'cid1',
+*                             name: 'AFrame Foundary',
+*                             city: 'London',
+*                             country: 'United Kingdom'
+*                           } );
+*    // cid variable will be 'cid1'
+*
+*    var googleCID = collection.insert( { name: 'Google',
+*                                   city: 'Santa Clara',
+*                                   country: 'United States'
+*                                 } );
+*    // googleCID will be assigned by the system
+*
+*    // Getting an item from the hash.
+*    var item = collection.get( 'cid1' );
+*    // item will be the AFrame Foundary item
+*
+*    var googleItem = collection.remove( googleCID );
+*    // googleItem will be the google item that was inserted
 *
 * @class AFrame.CollectionHash
 * @extends AFrame.AObject
@@ -1004,7 +1042,12 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	},
 	
 	/**
-	* Get an item from the hash
+	* Get an item from the hash.
+    *
+    *    // using data from example at top of page
+    *    var item = hash.get( 'cid1' );
+    *    // item will be the AFrame Foundary item
+    *
 	* @method get
 	* @param {id} cid - cid of item to get
 	* @return {variant} item if it exists, undefined otw.
@@ -1015,6 +1058,11 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Remove an item from the store.
+    *
+    *    // using data from example at top of page
+    *    var googleItem = hash.remove( googleCID );
+    *    // googleItem will be the google item that was inserted
+    *
 	* @method remove
 	* @param {id} cid - cid of item to remove
 	* @return {variant} item if it exists, undefined otw.
@@ -1028,7 +1076,9 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 			/**
 			* Triggered before remove happens.
 			* @event onBeforeRemove
-			* @param {object} data - data has two fields, item and meta.
+			* @param {object} data - data field passed.
+			* @param {Collection} data.collection - collection causing event.
+			* @param {variant} data.item - item removed
 			*/
 			this.triggerEvent( 'onBeforeRemove', data );
 			AFrame.remove( this.hash, cid );
@@ -1036,6 +1086,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 			* Triggered after remove happens.
 			* @event onRemove
 			* @param {object} data - data has two fields, item and meta.
+			* @param {Collection} data.collection - collection causing event.
+			* @param {variant} data.item - item removed
 			*/
 			this.triggerEvent( 'onRemove', data );
 		}
@@ -1045,7 +1097,23 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
-	* it is then assigned.
+	* it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
+    * exception to be thrown.
+    *
+    *    // First item is inserted with a cid
+    *    var cid = hash.insert( { cid: 'cid1',
+    *                             name: 'AFrame Foundary',
+    *                             city: 'London',
+    *                             country: 'United Kingdom'
+    *                           } );
+    *    // cid variable will be 'cid1'
+    *
+    *    var googleCID = hash.insert( { name: 'Google',
+    *                                   city: 'Santa Clara',
+    *                                   country: 'United States'
+    *                                 } );
+    *    // googleCID will be assigned by the system
+    *
 	* @method insert
 	* @param {variant} item - item to insert
 	* @return {id} cid of the item.
@@ -1063,6 +1131,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		 * Triggered before insertion happens.
 		 * @event onBeforeInsert
 		 * @param {object} data - data has two fields.
+         * @param {Collection} data.collection - collection causing event.
+         * @param {variant} data.item - item inserted
 		 */
 		this.triggerEvent( 'onBeforeInsert', data );
 		this.hash[ cid ] = item;
@@ -1071,6 +1141,8 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		 * Triggered after insertion happens.
 		 * @event onInsert
 		 * @param {object} data - data has two fields, item and meta.
+         * @param {Collection} data.collection - collection causing event.
+         * @param {variant} data.item - item inserted
 		 */
 		this.triggerEvent( 'onInsert', data );
 		
@@ -1079,6 +1151,10 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Clear the hash
+    *
+    *    // remove all items from the hash.
+    *    hash.clear();
+    *
 	* @method clear
 	*/
 	clear: function() {
@@ -1089,6 +1165,10 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	
 	/**
 	* Get the current count of items
+    *
+    *    // using hash from top of the page
+    *    var count = hash.getCount();
+    *
 	* @method getCount
 	* @return {number} current count
 	*/
@@ -1116,8 +1196,56 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		return data;
 	}
 } );/**
-* An array collection.  The item's index will be added to all meta information in all events.  Items
-* are inserted by index, but can be retreived either by index or by id.
+* An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via 
+* either a key or an index.  When accessed via a key, the item's CID will be used.  If an item has a cid field when
+* inserted, this cid will be used, otherwise a cid will be assigned.
+* 
+* This raises the same events as AFrame.CollectionHash, but every event will have one additional parameter, index.
+*
+*    Create the array
+*    var collection = AFrame.construct( {
+*       type: AFrame.CollectionArray
+*    } );
+*
+*    // First item is inserted with a cid, inserted at the end of the array.
+*    var aframeCID = collection.insert( { cid: 'cid1',
+*                             name: 'AFrame Foundary',
+*                             city: 'London',
+*                             country: 'United Kingdom'
+*                           } );
+*    // aframeCID variable will be 'cid1'
+*
+*    // inserts google at the head of the list.
+*    var googleCID = collection.insert( { name: 'Google',
+*                                   city: 'Santa Clara',
+*                                   country: 'United States'
+*                                 }, 0 );
+*    // googleCID will be assigned by the system
+*
+*    // microsoft inserted at the end of the list.
+*    var microsoftCID = collection.insert( { name: 'Microsoft',
+*                                   city: 'Redmond',
+*                                   country: 'United States'
+*                                 }, -1 );
+*    // microsoftCID will be assigned by the system
+*
+*    // Getting an item via index.  This will return google item.
+*    var item = collection.get( 0 );
+*    // item will be the google item
+*
+*    // Getting an item via negative index.  This will return microsoft item.
+*    var item = collection.get( -1 );
+*    // item will be the microsoft item
+*
+*    // Getting an item via CID.  This will return the aframe item.
+*    item = collection.get( aframeCID );
+*
+*    var googleItem = collection.remove( googleCID );
+*    // googleItem will be the google item that was inserted
+*
+*    var aframeItem = collection.remove( 0 );
+*    // aframeItem will be the aframe item since the google item was first but is now removed
+*
 * @class AFrame.CollectionArray
 * @extends AFrame.CollectionHash
 * @uses AFrame.ArrayCommonFuncsMixin
@@ -1144,6 +1272,28 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Insert an item into the array.  
+    *
+    *    // First item is inserted with a cid, inserted at the end of the array.
+    *    var aframeCID = collection.insert( { cid: 'cid1',
+    *                             name: 'AFrame Foundary',
+    *                             city: 'London',
+    *                             country: 'United Kingdom'
+    *                           } );
+    *    // aframeCID variable will be 'cid1'
+    *
+    *    // inserts google at the head of the list.
+    *    var googleCID = collection.insert( { name: 'Google',
+    *                                   city: 'Santa Clara',
+    *                                   country: 'United States'
+    *                                 }, 0 );
+    *    // googleCID will be assigned by the system
+    *
+    *    // microsoft inserted at the end of the list.
+    *    var microsoftCID = collection.insert( { name: 'Microsoft',
+    *                                   city: 'Redmond',
+    *                                   country: 'United States'
+    *                                 }, -1 );
+    *    // microsoftCID will be assigned by the system
 	* @method insert
 	* @param {variant} item to insert
 	* @param {integer} index (optional) - index to insert into.  If
@@ -1162,6 +1312,18 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Get an item from the array.
+    *
+    *    // Getting an item via index.  This will return google item.
+    *    var item = collection.get( 0 );
+    *    // item will be the google item
+    *
+    *    // Getting an item via negative index.  This will return microsoft item.
+    *    var item = collection.get( -1 );
+    *    // item will be the microsoft item
+    *
+    *    // Getting an item via CID.  This will return the aframe item.
+    *    item = collection.get( aframeCID );
+    *
 	* @method get
 	* @param {number || id} index - index or cid of item to get
 	* @return {variant} item if it exists, undefined otw.
@@ -1177,6 +1339,13 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/** 
 	* Remove an item from the array
+    *
+    *    var googleItem = collection.remove( googleCID );
+    *    // googleItem will be the google item that was inserted
+    *
+    *    var aframeItem = collection.remove( 0 );
+    *    // aframeItem will be the aframe item since the google item was first but is now removed
+    *
 	* @method remove
 	* @param {number || id} index of item to remove.
 	*/
@@ -1187,7 +1356,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 			index = this.getIndex( index );
 		}
 		else {
-			index = this.getActualRemoveIndex( index );
+			index = this.getActualIndex( index );
 			cid = this.getCID( index );
 		}
 
@@ -1204,6 +1373,10 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Clear the array
+    *
+    *    // Clears the collection.
+    *    collection.clear();
+    *
 	* @method clear
 	*/
 	clear: function() {
@@ -1214,6 +1387,10 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Get the current count of items
+    *
+    *    // Get the number of items in the collection.
+    *    var count = collection.clear();
+    *
 	* @method getCount
 	* @return {number} current count
 	*/
@@ -1223,6 +1400,10 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	
 	/**
 	* Get an array representation of the CollectionArray
+    *
+    *    // Returns the array representation of the collection.
+    *    var itemsArray = collection.getArray();
+    *
 	* @method getArray
 	* @return {array} array representation of CollectionArray
 	*/
@@ -1258,6 +1439,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		var cid = index;
 		
 		if( 'number' == typeof( index ) ) {
+            index = this.getActualIndex( index );
 			cid = this.itemCIDs[ index ];
 		}
 		
@@ -1435,7 +1617,7 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
  */
 /**
  * A function to call to create a list element.  function will be called with two parameters, an index and the data.
- * @config createListElementCallback
+ * @config createListElementFactory
  * @type {function}
  */
 AFrame.List = function() {
@@ -1443,7 +1625,7 @@ AFrame.List = function() {
 };
 AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
-		this.createListElementCallback = config.createListElementCallback;
+		this.createListElementFactory = config.createListElementFactory;
 		
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
@@ -1457,7 +1639,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
-	 * Insert a data item into the list, the list item is created using the createListElementCallback.
+	 * Insert a data item into the list, the list item is created using the createListElementFactory.
 	 * @method insert
 	 * @param {object} data - data to use for list item
 	 * @param {number} index (optional) - index to insert at
@@ -1469,7 +1651,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	insert: function( data, index ) {
 		index = this.getActualInsertIndex( index );
 
-		var rowElement = this.createListElementCallback( data, index );
+		var rowElement = this.createListElementFactory( data, index );
 		index = this.insertElement( rowElement, index );
 		
 		/**
@@ -1530,7 +1712,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	 * @param {number} index - index of item to remove
 	 */
 	remove: function( index ) {
-		var removeIndex = this.getActualRemoveIndex( index );
+		var removeIndex = this.getActualIndex( index );
 		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
 		
 		/**
