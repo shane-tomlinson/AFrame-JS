@@ -6,6 +6,34 @@
  * Field validation does not occur in real time, for validation to occur, the checkValidity
  * function must be called.
  *
+ *    <input type="number" id="numberInput" />
+ *   
+ *    ---------
+ *
+ *    var field = AFrame.construct( {
+ *       type: AFrame.Field,
+ *       config: {
+ *           target: $( '#numberInput' )
+ *       }
+ *    } );
+ *   
+ *    // Set the value of the field, it is now displaying 3.1415
+ *    field.set(3.1415);
+ *   
+ *    // Check the validity of the field
+ *    var isValid = field.checkValidity();
+ *   
+ *    // The field is cleared, displays nothing
+ *    field.clear();
+ *   
+ *    field.set('invalid set');
+ *   
+ *    // This will return false
+ *    isValid = field.checkValidity();
+ *   
+ *    // Get the validity state, as per the HTML5 spec
+ *    var validityState = field.getValidityState();
+ *
  * @class AFrame.Field
  * @extends AFrame.Display
  * @constructor
