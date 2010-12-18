@@ -19,15 +19,18 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 			this.mixin = AFrame.construct( {
 				type: AFrame.CollectionPluginPersistence,
 				config: {
-					deleteCallback: function( data, meta, callback ) {
+					deleteCallback: function( data, options ) {
+                        var callback = options.onComplete;
 						this.delCallbackCalled = true;
 						callback();
 					}.bind( this ),
-					saveCallback: function( data, meta, callback ) {
+					saveCallback: function( data, options ) {
+                        var callback = options.onComplete;
 						this.saveCallbackCalled = true;
 						callback();
 					}.bind( this ),
-					loadCallback: function( meta, callback ) {
+					loadCallback: function( options ) {
+                        var callback = options.onComplete;
 						this.loadCallbackCalled = true;
 						callback( [ { item: 'item' } ] );
 					}.bind( this )
@@ -52,19 +55,36 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 		},
 
 		testAdd: function() {
-			Y.Mock.expect( this.mockCollection, {
-				method: 'insert',
-				args: [ Y.Mock.Value.Object, Y.Mock.Value.Object ]
-			} );
+			this.mockCollection.insert = function() {
+                return 'cid';
+			};
 			
 			var callbackCalled = false;
+            var cid;
 			this.mockCollection.add( {}, {
-				callback: function() {
+				onComplete: function( data, options ) {
+                    cid = options.cid;
 					callbackCalled = true;
 				}
 			} );
 
 			Assert.isTrue( callbackCalled, 'callback called' );
+			Assert.isString( cid, 'cid assigned' );
+			Y.Mock.verify( this.mockCollection );
+
+            callbackCalled = false;
+            
+			Y.Mock.expect( this.mockCollection, {
+				method: 'insert',
+				args: [ Y.Mock.Value.Object, Y.Mock.Value.Number ]
+			} );
+			this.mockCollection.add( {}, {
+				onComplete: function() {
+					callbackCalled = true;
+				},
+                insertAt: 1
+			} );
+			Assert.isTrue( callbackCalled, 'callback called for insert with index' );
 			Y.Mock.verify( this.mockCollection );
 		},
 
@@ -89,7 +109,7 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 			getData = "someData";
 			var callbackCalled = false;
 			this.mockCollection.del( 'rowID', {
-				callback: function() {
+				onComplete: function() {
 					callbackCalled = true;
 				}
 			} );
@@ -101,11 +121,11 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 		testLoad: function() {
 			var callbackCalled = false;
 			var insertCalled = true;
-			this.mockCollection.insert = function( data, meta ) {
+			this.mockCollection.insert = function( data, options ) {
 				insertCalled = true;
 			};
 			this.mockCollection.load( {
-				callback: function() {
+				onComplete: function() {
 					callbackCalled = true;
 				}
 			} );
@@ -128,7 +148,7 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 			
 			var callbackCalled = false;
 			this.mockCollection.save( 'rowID', {
-				callback: function() {
+				onComplete: function() {
 					callbackCalled = true;
 				}
 			} );
