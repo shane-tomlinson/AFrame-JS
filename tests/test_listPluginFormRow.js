@@ -12,7 +12,7 @@ testsToRun.push( function test( Y ) {
 				type: AFrame.List,
 				config: {
 					target: '.list',
-					createListElementFactory: function( data, index ) {
+					listElementFactory: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
 						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + 

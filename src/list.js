@@ -4,7 +4,7 @@
  *  since lists are inherently ordered (even if they are ULs).  There are two methods
  *  for inserting an item into the list, either passing an already created
  *  element to [insertElement](#method_insertElement) or by passing data to [insert](#method_insert). 
- *  If using insert, a factory function (createListElementFactory) must be specified in the configuration.
+ *  If using insert, a factory function (listElementFactory) must be specified in the configuration.
  *  The factory function can either create an element directly or use some sort of prototyping system
  *  to create the element.  The factory function must return the element to be inserted.
  *
@@ -24,7 +24,7 @@
  *       type: AFrame.List,
  *       config: {
  *           target: '#clientList',
- *           createListElementFactory: factory
+ *           listElementFactory: factory
  *       }
  *    } );
  *   
@@ -51,7 +51,7 @@
  */
 /**
  * A function to call to create a list element.  function will be called with two parameters, an index and the data.
- * @config createListElementFactory
+ * @config listElementFactory
  * @type {function}
  */
 AFrame.List = function() {
@@ -59,7 +59,7 @@ AFrame.List = function() {
 };
 AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
-		this.createListElementFactory = config.createListElementFactory;
+		this.listElementFactory = config.listElementFactory;
 		
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
@@ -74,7 +74,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	
 	/**
 	 * Insert a data item into the list, the list item is created 
-     *  using the createListElementFactory.
+     *  using the listElementFactory.
      *
      *   
      *    // Creates a list item using the factory function, 
@@ -114,7 +114,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	insert: function( data, index ) {
 		index = this.getActualInsertIndex( index );
 
-		var rowElement = this.createListElementFactory( data, index );
+		var rowElement = this.listElementFactory( data, index );
 		index = this.insertElement( rowElement, index );
 		
 		/**

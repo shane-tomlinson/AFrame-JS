@@ -29,7 +29,7 @@
  *       type: AFrame.List,
  *       config: {
  *           target: '#clientList',
- *           createListElementFactory: factory
+ *           listElementFactory: factory
  *       },
  *       plugins: [
  *           {
