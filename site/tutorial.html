@@ -473,7 +473,7 @@
                 the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> since lists are inherently
                 ordered (even if they are ULs).  A list can be added to by calling <a href="docs/AFrame.List.html#method_insertRow">insertRow</a> with a
                 DOM element to use for the list item, or <a href="docs/AFrame.List.html#method_insert">insert</a> with a data object.  If insert is used,
-                createListElementCallback must be given in the configuration.  The callback will be passed an index and the data being inserted and must
+                createListElementFactory must be given in the configuration.  The callback will be passed an index and the data being inserted and must
                 return an element which can be inserted into the list.  The callback can create an element using a templating mechanism or by creating an
                 element itself.
             </p>
@@ -495,7 +495,7 @@
         type: AFrame.List,
         config: {
             target: '#clientList',
-            createListElementCallback: factory
+            createListElementFactory: factory
         }
     } );
     
@@ -554,7 +554,7 @@
         type: AFrame.List,
         config: {
             target: '#clientList',
-            createListElementCallback: factory
+            createListElementFactory: factory
         },
         plugins: [
             {
@@ -660,7 +660,7 @@
         type: AFrame.List,
         config: {
             target: '#clientList',
-            createListElementCallback: rowElementFactory
+            createListElementFactory: rowElementFactory
         },
         plugins: [
             {

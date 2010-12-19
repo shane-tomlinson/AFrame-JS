@@ -1,5 +1,49 @@
 /**
- * A generic HTML list class
+ * A generic HTML list class.  A list is any list of data.  A List shares
+ *  the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> 
+ *  since lists are inherently ordered (even if they are ULs).  There are two methods
+ *  for inserting an item into the list, either passing an already created
+ *  element to [insertElement](#method_insertElement) or by passing data to [insert](#method_insert). 
+ *  If using insert, a factory function (createListElementFactory) must be specified in the configuration.
+ *  The factory function can either create an element directly or use some sort of prototyping system
+ *  to create the element.  The factory function must return the element to be inserted.
+ *
+ * 
+ *    <ul id="clientList">
+ *    </ul>
+ *   
+ *    ---------
+ *    // Set up a factory to create list elements.  This can create the elements 
+ *    // directly or use sort of templating system.
+ *    var factory = function( index, data ) {
+ *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+ *       return listItem;
+ *    };
+ *   
+ *    var list = AFrame.construct( {
+ *       type: AFrame.List,
+ *       config: {
+ *           target: '#clientList',
+ *           createListElementFactory: factory
+ *       }
+ *    } );
+ *   
+ *    // Creates a list item using the factory function, item is inserted
+*     // at the end of the list
+ *    list.insert( {
+ *       name: 'Shane Tomlinson',
+ *       employer: 'AFrame Foundary'
+ *    } );
+ *   
+ *    // Inserts a pre-made list item at the head of the list
+ *    list.insertRow( $( '<li>Joe Smith, the Coffee Shop</li>' ), 0 );
+ *    ---------
+ *
+ *    <ul id="clientList">
+ *       <li>Joe Smith, The Coffee Shop</li>
+ *       <li>Shane Tomlinson, AFrame Foundary</li>
+ *    </ul>
+ *
  * @class AFrame.List
  * @extends AFrame.Display
  * @uses AFrame.ArrayCommonFuncsMixin
@@ -29,7 +73,36 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	},
 	
 	/**
-	 * Insert a data item into the list, the list item is created using the createListElementFactory.
+	 * Insert a data item into the list, the list item is created 
+     *  using the createListElementFactory.
+     *
+     *   
+     *    // Creates a list item using the factory function, 
+     *    // item is inserted at the end of the list.
+     *    list.insert( {
+     *       name: 'Shane Tomlinson',
+     *       employer: 'AFrame Foundary'
+     *    } );
+     *   
+     *   
+     *    // Item is inserted at index 0, the first item in the list.
+     *    list.insert( {
+     *       name: 'Shane Tomlinson',
+     *       employer: 'AFrame Foundary'
+     *    }, 0 );
+     *   
+     *    // Item is inserted at the end of the list
+     *    list.insert( {
+     *       name: 'Shane Tomlinson',
+     *       employer: 'AFrame Foundary'
+     *    }, -1 );
+     *   
+     *    // Item is inserted two from the end
+     *    list.insert( {
+     *       name: 'Shane Tomlinson',
+     *       employer: 'AFrame Foundary'
+     *    }, -2 );
+     *   
 	 * @method insert
 	 * @param {object} data - data to use for list item
 	 * @param {number} index (optional) - index to insert at
@@ -48,8 +121,10 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		* Triggered whenever a row is inserted into the list
 		* @event onInsert
 		* @param {element} rowElement - the row's list element
-		* @param {object} data - row's data
-		* @param {object} meta - meta data
+		* @param {object} options - information about the insert
+		* @param {element} options.rowElement - row's element
+		* @param {object} options.data - data that was inserted
+		* @param {object} options.index - index where row was inserted
 		*/
 		this.triggerEvent( 'onInsert', {
 			rowElement: rowElement, 
@@ -62,7 +137,11 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 
 	/**
 	 * Insert an element into the list.
-	 * @method insertRow
+     *   
+     *    // Item is inserted at index 0, the first item in the list.
+     *    list.insertElement( $( '<li>Shane Tomlinson, AFrame Foundary</li>' ), 0 );
+     *   
+	 * @method insertElement
 	 * @param {element} rowElement - element to insert
 	 * @param {number} index (optional) - index where to insert element.
 	 * If index > current highest index, inserts at end.
@@ -85,8 +164,9 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		/**
 		* Triggered whenever an element is inserted into the list
 		* @event onInsertElement
-		* @param {element} rowElement - the row's list element
-		* @param {number} index - index where to insert element
+		* @param {object} options - information about the insert
+		* @param {element} options.rowElement - row's element
+		* @param {object} options.index - index where row was inserted
 		*/
 		this.triggerEvent( 'onInsertElement', {
 			rowElement: rowElement,
@@ -98,6 +178,10 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 
 	/**
 	 * Remove an item from the list
+     *   
+     *    // Remove first item in the list.
+     *    list.remove( 0 );
+     *   
 	 * @method remove
 	 * @param {number} index - index of item to remove
 	 */
@@ -108,8 +192,9 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 		/**
 		* Triggered whenever an element is removed from the list
 		* @event onRemoveElement
-		* @param {element} rowElement - the row's list element
-		* @param {object} meta - meta data
+		* @param {object} options - information about the insert
+		* @param {element} options.rowElement - row's element
+		* @param {object} options.index - index where row was inserted
 		*/
 		this.triggerEvent( 'onRemoveElement', {
 			rowElement: rowElement,
@@ -119,6 +204,10 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	
 	/**
 	* Get the number of items
+    *   
+    *    // Get the number of items
+    *    var count = list.getCount();
+    *   
 	* @method getCount
 	* @return {number} number of items
 	*/
