@@ -1,7 +1,77 @@
 /**
- * A plugin that binds a list to a collection.  Listens for onInsert and onRemove
- * events, when this happens, the list is automatically updated.  Adds getIndex
- * to the plugged list.
+ * A plugin that binds a list to a collection.  When the collection is updated, the list
+ *  is automatically updated to reflect the change.  List updates occure when 
+ *  the collection trigger the onInsert or onRemove events.
+ * This plugin adds <a href="#method_getIndex">getIndex</a> to the plugged list.
+ *
+ *
+ *    <ul id="clientList">
+ *    </ul>
+ *   
+ *    ---------
+ *    // A List with the same results as the previous example is 
+ *    //    the expected result
+ *   
+ *    // First we need to set up the collection
+ *    var collection = AFrame.construct( {
+ *       type: AFrame.CollectionArray
+ *    } );
+ *   
+ *   
+ *    var factory = function( index, data ) {
+ *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+ *       return listItem;
+ *    };
+ *
+ *    // Sets up our list with the ListPluginBindToCollection.  Notice the 
+ *    //    ListPluginBindToCollection has a collection config parameter.
+ *    var list = AFrame.construct( {
+ *       type: AFrame.List,
+ *       config: {
+ *           target: '#clientList',
+ *           createListElementFactory: factory
+ *       },
+ *       plugins: [
+ *           {
+ *               type: AFrame.ListPluginBindToCollection,
+ *               config: {
+ *                   collection: collection
+ *               }
+ *           }
+ *       ]
+ *    } );
+ *   
+ *    collection.insert( {
+ *       name: 'Shane Tomlinson',
+ *       employer: 'AFrame Foundary'    
+ *    } );
+ *   
+ *    collection.insert( {
+ *       name: 'Joe Smith',
+ *       employer: 'The Coffee Shop'    
+ *    }, 0 );
+ *   
+ *    // The same list as in the example above is shown
+ *    ---------
+ *
+ *    <ul id="clientList">
+ *       <li>Joe Smith, The Coffee Shop</li>
+ *       <li>Shane Tomlinson, AFrame Foundary</li>
+ *    </ul>
+ *
+ *    ----------
+ *   
+ *    collection.remove( 0 );
+ *   
+ *    // Joe Smith has been removed
+ *   
+ *    ---------
+ *
+ *    <ul id="clientList">
+ *       <li>Shane Tomlinson, AFrame Foundary</li>
+ *    </ul>
+ * 
+ *
  * @class AFrame.ListPluginBindToCollection
  * @extends AFrame.Plugin
  * @constructor
