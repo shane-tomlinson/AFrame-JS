@@ -7,3 +7,5 @@ peruser.root=/home/set117/development/aframe
 #The location of the jdk bin directory
 peruser.antcontrib.location=/usr/share/java/ant-contrib.jar
 
+#the location of the sass command, only needed if doing a build site
+peruser.sass.location=/var/lib/gems/1.8/gems/haml-3.0.25/bin/sass
