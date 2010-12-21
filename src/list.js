@@ -50,16 +50,21 @@
  * @constructor
  */
 /**
- * A function to call to create a list element.  function will be called with two parameters, an index and the data.
+ * A function to call to create a list element.  function will be called with two parameters, an data and index.  
+ *  If not specified, then the internal factory that returns an empty LI element will be used.  See 
+ *  [listElementFactory](#method_listElementFactory).
  * @config listElementFactory
- * @type {function}
+ * @type {function} (optional)
+ * @default this.listElementFactory
  */
 AFrame.List = function() {
 	AFrame.List.superclass.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
-		this.listElementFactory = config.listElementFactory;
+        if( config.listElementFactory ) {
+            this.listElementFactory = config.listElementFactory;
+        }
 		
 		AFrame.List.superclass.init.apply( this, arguments );
 	},
@@ -71,6 +76,24 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	clear: function() {
 		this.getTarget().html( '' );
 	},
+    
+    /**
+    * The factory used to create list elements.
+    *
+    *    // overriden listElementFactory
+    *    listElementFactory: function( index, data ) {
+    *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+    *       return listItem;
+    *    }
+    *
+    * @method listElementFactory
+    * @param {object} data - data used on insert
+    * @param {number} index - index where item should be inserted
+    * @return {Element} element to insert
+    */
+    listElementFactory: function() {
+        return $( '<li />' );
+    },
 	
 	/**
 	 * Insert a data item into the list, the list item is created 

@@ -140,7 +140,23 @@ testsToRun.push( function testList( Y ) {
 			this.list.clear();
 			
 			Assert.areEqual( '', $( '.list' ).html(), 'list has been cleared' );
-		}
+		},
+        
+        testInternalListElementFactory: function() {
+            $( '.list' ).empty();
+            
+			var list = AFrame.construct( {
+				type: AFrame.List,
+				config: {
+					target: '.list'
+				}
+			} );
+            
+            list.insert( {} );
+            list.insert( {} );
+        
+            Assert.areEqual( 2, $( '.list li' ).length, 'insert happens with default factory' );
+        }
 	} );
 
 	TestRunner.add( test );
