@@ -107,7 +107,29 @@ testsToRun.push( function testDisplay( Y ) {
 			
 			Assert.isObject( domElement, 'got an object' );
 			Assert.isTrue( 'nodeType' in domElement, 'it has a nodeType, good enough' );
-		}
+		},
+        
+        testRender: function() {
+			var display = new AFrame.Display();
+            
+            var renderEvent = false;
+            display.bindEvent( 'onRender', function( display ) {
+                renderEvent = true;
+            } );
+            
+            // create a new display but override its render function.
+            display.render = function() {
+                this.getTarget().html( 'rendered inside of target' );
+                AFrame.Display.prototype.render.call( this );
+            };
+            
+            display.init( {
+                target: '.target'
+            } );
+            
+            Assert.areEqual( 'rendered inside of target', $( '.target' ).html(), 'target was rendered' );
+            Assert.isTrue( renderEvent, 'onRender was called' );
+        }
 
 	} );
 

@@ -587,8 +587,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    /**
 	     * Triggered when the object is initialized
 	     * @event onInit
+         * @param {AFrame.AObject} aobject - the aobject being initialized.
 	     */
-	     this.triggerEvent( 'onInit' );
+	     this.triggerEvent( 'onInit', this );
 	},
 	
 	/**
@@ -622,8 +623,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    /**
 	     * triggered whenever tte object is torn down
 	     * @event onTeardown
+         * @param {AFrame.AObject} aobject - the aobject being torn down.
 	     */
-	    this.triggerEvent( 'onTeardown' );
+	    this.triggerEvent( 'onTeardown', this );
 
 	    this.unbindAll();
 	    this.unbindToAll();
@@ -1498,6 +1500,28 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
  *    button.bindDOMEvent( $( buttonSelector ), 'mouseenter', function( event ) {
  *       // Do a button highlight or some other such thing.
  *    } );
+ *
+ *
+ *
+ *## Using render to draw a display ##
+ *
+ * By default, the AFrame assumes that a display's DOM is already drawn.  If a display needs rendered,
+ * this can be done so using the render method.  The below example is of a subclass
+ * overriding the render method.  When using render, be sure to use the superclass's render method.
+ *
+ *     ...
+ * 
+ *     // Example of render which directly inserts HTML
+ *     render: function() {
+ *         this.getTarget().html( '<div>This is rendered inside of ' +
+ *              'the Dislay\'s target</div>' );
+ *     },
+ *
+ *     // Example of using jTemplate to render a template
+ *     render: function() {
+ *         this.getTarget().setTemplate( $( '#template' ).html() ).processTemplate( {} );
+ *     },
+ * 
  * 
  * @class AFrame.Display
  * @extends AFrame.AObject
@@ -1520,6 +1544,8 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 			throw 'invalid target';
 		}
 
+        this.render();
+        
 		this.domEvents = {};
 		
 		AFrame.Display.superclass.init.apply( this, arguments );
@@ -1531,6 +1557,39 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 		}
 	},
 	
+    
+    /**
+    * Render the HTML element, by default, only triggers the onRender observable.  Should be overridden in 
+    *   subclasses to do any templating, setting up the DOM, etc.  Subclasses do not need to do anything
+    *   if the full DOM for this display has already been created.  AFrame does not care what templating system
+    *   that is used, so any way of setting the target's HTML is fine.
+    *
+    *
+    *     ...
+    * 
+    *     // Example of render which directly inserts HTML
+    *     render: function() {
+    *         this.getTarget().html( '<div>This is rendered inside of ' +
+    *              'the Dislay\'s target</div>' );
+    *     },
+    *
+    *     // Example of using jTemplate to render a template
+    *     render: function() {
+    *         this.getTarget().setTemplate( $( '#template' ).html() ).processTemplate( {} );
+    *     },
+    * 
+    *
+    * @method render
+    */
+    render: function() {
+        /**
+        * Triggered whenever the displayed is rendered.
+        * @event onRender
+        * @param {AFrame.Display} display - the display being rendered.
+        */
+        this.triggerEvent( 'onRender', this );
+    },
+    
 	/**
 	 * Get the display's target.
      *
