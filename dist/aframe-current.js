@@ -2369,7 +2369,10 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 /**
  * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
  * the following functions, clear, save, reset, validate.  A generic Form is not 
- * bound to any data, it is only a collection of form fields.
+ * bound to any data, it is only a collection of form fields.  Note, by default,
+ * the form creates an AFrame.Field for each field found.  If specialized field
+ * creation is needed, fieldFactory can be overridden through either subclassing
+ * or passing in a fieldFactory function to configuration.
  *
  *    <div id="nameForm">
  *       <input type="text" data-field="name" />
@@ -2377,10 +2380,31 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
  *   
  *    ---------
  *   
+ *    // Set up the form to look under #nameForm for elements with the "data-field" 
+ *    //   attribute.  This will find one field in the above HTML
+ *    //
+ *    var form = AFrame.construct( {
+ *       type: AFrame.Form,
+ *       config: {
+ *           target: $( '#nameForm' )
+ *       }
+ *    } );
+ *   
+ *    // do some stuff, user enters data.
+ *
+ *    // Check the validity of the form
+ *    var isValid = form.checkValidity();
+ *   
+ *    // do some other stuff.
+ *   
+ *    form.clear();
+ *
+ *##Using a Specialized fieldFactory##
+ *   
  *    // Sets up the field constructor, right now there is only one type of field
  *    var fieldFactory = function( element ) {
  *       return AFrame.construct( {
- *           type: AFrame.Field,
+ *           type: AFrame.SpecializedField,
  *           config: {
  *               target: element
  *           }
@@ -2397,31 +2421,34 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
  *           formFieldFactory: fieldFactory
  *       }
  *    } );
- *   
- *    // do some stuff, user enters data.
- *
- *    // Check the validity of the form
- *    var isValid = form.checkValidity();
- *   
- *    // do some other stuff.
- *   
- *    form.clear();
- *
+ *    
  * @class AFrame.Form
  * @extends AFrame.Display
  * @constructor
  */
 /**
- * The factory to use to create form fields
+ * The factory to use to create form fields.
+ *
+ *     // example field factory in a Form's config.
+ *     formFieldFactory: function( element ) {
+ *       return AFrame.construct( {
+ *           type: AFrame.SpecializedField,
+ *           config: {
+ *               target: element
+ *           }
+ *       } );
+ *     };
+ *
  * @config formFieldFactory
  * @type {function}
+ * @default this.formFieldFactory;
  */
 AFrame.Form = function() {
 	AFrame.Form.superclass.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.Form, AFrame.Display, {
 	init: function( config ) {
-		this.formFieldFactory = config.formFieldFactory;
+		this.formFieldFactory = config.formFieldFactory || this.formFieldFactory;
 		this.formElements = [];
 		this.formFields = [];
 		
@@ -2429,6 +2456,32 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 
 		this.bindFormElements();
 	},
+
+    /**
+    * The factory used to create fields.
+    *
+    *     // example of overloaded formFieldFactory
+    *     formFieldFactory: function( element ) {
+    *       return AFrame.construct( {
+    *           type: AFrame.SpecializedField,
+    *           config: {
+    *               target: element
+    *           }
+    *       } );
+    *     };
+    *
+    * @method formFieldFactory
+    * @param {Element} element - element where to create field
+    * @return {AFrame.Field} field for element.
+    */
+    formFieldFactory: function( element ) {
+       return AFrame.construct( {
+            type: AFrame.Field,
+            config: {
+                target: element
+            }
+        } );
+    },
 
 	bindFormElements: function() {
 		var formElements = $( '[data-field]', this.getTarget() );
@@ -3598,16 +3651,6 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
 *    
-*    // Sets up the field constructor, right now there is only one type of field
-*    var fieldFactory = function( element ) {
-*        return AFrame.construct( {
-*            type: AFrame.Field,
-*            config: {
-*                target: element
-*            }
-*        } );
-*    };
-*    
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
 *        version: '0.0.20'
@@ -3620,7 +3663,6 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 *        type: AFrame.DataForm,
 *        config: {
 *            target: $( '#nameForm' ),
-*            formFieldFactory: fieldFactory,
 *            dataSource: libraryDataContainer
 *        }
 *    } );

@@ -133,7 +133,19 @@ testsToRun.push( function testForm( Y ) {
 		testBindFormElement: function() {
 			var field = this.form.bindFormElement( $( '#formElement' ) );
 			Assert.isNotUndefined( field, 'field was created' );
-		}
+		},
+        
+        testDefaultFieldFactory: function() {
+			var form = AFrame.construct( {
+				type: AFrame.Form,
+				config: {
+					target: '#AFrame_Form'
+				}
+			} );
+			var field = form.bindFormElement( $( '#formElement' ) );
+            
+            Assert.isTrue( field instanceof AFrame.Field, 'default field factory creates a field' );
+        }
 	} );
 
 	

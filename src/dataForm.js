@@ -4,16 +4,6 @@
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
 *    
-*    // Sets up the field constructor, right now there is only one type of field
-*    var fieldFactory = function( element ) {
-*        return AFrame.construct( {
-*            type: AFrame.Field,
-*            config: {
-*                target: element
-*            }
-*        } );
-*    };
-*    
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
 *        version: '0.0.20'
@@ -26,7 +16,6 @@
 *        type: AFrame.DataForm,
 *        config: {
 *            target: $( '#nameForm' ),
-*            formFieldFactory: fieldFactory,
 *            dataSource: libraryDataContainer
 *        }
 *    } );
