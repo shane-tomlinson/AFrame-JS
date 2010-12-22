@@ -129,7 +129,29 @@ testsToRun.push( function test( Y ) {
 			this.list.clear();
 			
 			Assert.isTrue( this.clearCalled, 'Field\'s clear has been called' );			
-		}
+		},
+        
+        testDefaultFormFactory: function() {
+            var list = AFrame.construct( {
+                type: AFrame.List,
+                config: {
+                    target: '.list'
+                },
+                plugins: [
+                    {
+                        type: AFrame.ListPluginFormRow,
+                    }
+                ]
+            } );
+            
+            // Just make sure we don't blow our tops.
+            list.insert( {
+                name: 'AFrame'
+            } );
+            
+            var form = list.getForm( 0 );
+            Assert.isTrue( form instanceof AFrame.Form, 'default form returned, is of type form'  );
+        }
 		
 		
 		

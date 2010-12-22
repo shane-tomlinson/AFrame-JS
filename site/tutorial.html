@@ -367,7 +367,7 @@
             </p>
             
             <p>
-                <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form</h4>
+                <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form Using the Default fieldFactory</h4>
 <pre>
     &lt;div id="nameForm"&gt;
         &lt;input type="text" data-field="name" /&gt;
@@ -375,27 +375,17 @@
     
     ---------
     
-    /* Sets up the field constructor, right now there is only one type of field */
-    var fieldFactory = function( element ) {
-        return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
-    };
-    
-    /* Set up the form to look under #nameForm for elements with the "data-field" 
-        attribute.  This will find one field in the above HTML
+    /* Set up the form with the default field factory, form will look in #nameForm
+    * for elements with the "data-field" attribute.  This will find one field 
+    * in the above HTML.
     */
     var form = AFrame.construct( {
         type: AFrame.Form,
         config: {
-            target: $( '#nameForm' ),
-            formFieldFactory: fieldFactory
+            target: $( '#nameForm' )
         }
     } );
-    
+
     // do some stuff, user enters data.
 
     /* Check the validity of the form */
@@ -405,6 +395,26 @@
     
     form.clear();
 </pre>                
+
+                <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form Using a Specialized fieldFactory</h4>
+<pre>
+    /* Sets up a form with a specialty field factory */
+    var formWithSpecialtyField = AFrame.construct( {
+        type: AFrame.Form,
+        config: {
+            target: $( '#nameForm' ),
+            formFieldFactory: function( element ) {
+                return AFrame.construct( {
+                    type: AFrame.SpecializedField,
+                    config: {
+                        target: element
+                    }
+                } );
+            }
+        }
+    } );
+    
+</pre>
             </p>
 
             <p id="bindFormDataContainer">
@@ -425,16 +435,10 @@
     
     ---------
     
-    /* Sets up the field constructor, right now there is only one type of field */
-    var fieldFactory = function( element ) {
-        return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
-    };
-    
+    /* Note that we do not use new when getting a DataContainer for an object.
+    * This is so that if an object already has a DataContainer associated with it,
+    * the original DataContainer will be returned.
+    */
     var libraryDataContainer = AFrame.DataContainer( {
         name: 'AFrame',
         version: '0.0.20'
@@ -447,7 +451,6 @@
         type: AFrame.DataForm,
         config: {
             target: $( '#nameForm' ),
-            formFieldFactory: fieldFactory,
             dataSource: libraryDataContainer
         }
     } );
@@ -473,7 +476,7 @@
                 the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> since lists are inherently
                 ordered (even if they are ULs).  A list can be added to by calling <a href="docs/AFrame.List.html#method_insertRow">insertRow</a> with a
                 DOM element to use for the list item, or <a href="docs/AFrame.List.html#method_insert">insert</a> with a data object.  If insert is used,
-                createListElementFactory must be given in the configuration.  The callback will be passed an index and the data being inserted and must
+                listElementFactory must be given in the configuration.  The callback will be passed an index and the data being inserted and must
                 return an element which can be inserted into the list.  The callback can create an element using a templating mechanism or by creating an
                 element itself.
             </p>
@@ -495,7 +498,7 @@
         type: AFrame.List,
         config: {
             target: '#clientList',
-            createListElementFactory: factory
+            listElementFactory: factory
         }
     } );
     
@@ -554,7 +557,7 @@
         type: AFrame.List,
         config: {
             target: '#clientList',
-            createListElementFactory: factory
+            listElementFactory: factory
         },
         plugins: [
             {
@@ -616,38 +619,14 @@
     
     ---------
     
-    /* We need a series of factories, one for the row elements, one for the 
-        fields to be created in the forms, and one for the forms */
+    /* the row element factory, can easily use a templating 
+    *   mechanism instead of direct creation */
     var rowElementFactory = function( index, data ) {
         var listItem = $( '&lt;li&gt;&lt;input type="text" data-field="name" /&gt;,' +
             '&lt;input type="text" data-field="employer" /&gt;&lt;/li&gt;' );
         return listItem;
     };
     
-    var fieldFactory = function( element ) {
-        return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
-    };
-
-    /* The formFactory creates DataForms, which are forms that tie the value 
-        of the Fields to a DataContainer */
-    var formFactory = function( rowElement, data ) {
-        var form = AFrame.construct( {
-            type: AFrame.DataForm,
-            config: {
-                target: rowElement,
-                formFieldFactory: fieldFactory,
-                dataSource: data
-            }
-        } );
-        
-        return form;
-    };
-
     /* Set up a collection to add data to */
     var collection = AFrame.construct( {
         type: AFrame.CollectionArray
@@ -660,7 +639,7 @@
         type: AFrame.List,
         config: {
             target: '#clientList',
-            createListElementFactory: rowElementFactory
+            listElementFactory: rowElementFactory
         },
         plugins: [
             {
@@ -671,10 +650,7 @@
             },
             
             {
-                type: AFrame.ListPluginFormRow,
-                config: {
-                    formFactory: formFactory
-                }
+                type: AFrame.ListPluginFormRow
             }
         ]
     } );
@@ -690,7 +666,7 @@
     /* At this point, the list contains one row with two form elements 
         that can be edited */
     &lt;ul id="clientList"&gt;
-        &lt;li&gt;Shane Tomlinson, AFrame Foundary&lt;/li&gt;
+            &lt;li&gt;&lt;input type="text" data-field="name" value="Shane Tomlinson" /&gt;,&lt;input type="text" data-field="employer" value="AFrame Foundary" /&gt;&lt;/li&gt;
     &lt;/ul&gt;
     
     --------------
