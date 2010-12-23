@@ -33,7 +33,7 @@ testsToRun.push( function testAObject( Y ) {
 				fixer: { type: 'fixer' },
 				persistence: { type: 'persistencer' },
 				isodatetime: { type: 'iso8601' },
-				noSaveField: { type: 'string', save: false, def: 'this field will not be saved in getFormData' }
+				noSaveField: { type: 'string', save: false, def: 'this field will not be saved in serializeItems' }
 			};
 			
 			this.schema = AFrame.construct( {
@@ -103,7 +103,7 @@ testsToRun.push( function testAObject( Y ) {
 		},
 
 		testGetFormData: function() {
-			var persistence = this.schema.getFormData( {
+			var persistence = this.schema.serializeItems( {
 				stringField: 'stringField value',
 				stringFieldFixup: 'stringFieldFixup value',
 				extraField: 'extra field',
@@ -116,7 +116,7 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.isUndefined( persistence.noSaveField, 'noSaveField not added with the save: false' );
 
 			this.useCleanedValue = true;
-			var persistence = this.schema.getFormData( {
+			var persistence = this.schema.serializeItems( {
 				stringField: 'stringField value',
 				stringFieldFixup: 'stringFieldFixup value'
 			} );
@@ -183,7 +183,7 @@ testsToRun.push( function testAObject( Y ) {
 		
 		testAppDataCleaner: function() {
 			var fixerValue;
-			AFrame.Schema.addAppDataCleaner( 'fixer', function( data ) {
+			AFrame.Schema.addDeserializer( 'fixer', function( data ) {
 				fixerValue = data;
 				return 'fixed';
 			} );
@@ -197,12 +197,12 @@ testsToRun.push( function testAObject( Y ) {
 		
 		testFormDataCleaner: function() {
 			var persistencerValue;
-			AFrame.Schema.addFormDataCleaner( 'persistencer', function( data ) {
+			AFrame.Schema.addSerializer( 'persistencer', function( data ) {
 				persistencerValue = data;
 				return 'persistence';
 			} );
 			
-			var persistence = this.schema.getFormData( { 
+			var persistence = this.schema.serializeItems( { 
 				persistence: 'initial' 
 			} );
 			Assert.areEqual( 'persistence', persistence.persistence, 'new value used' );
@@ -217,7 +217,7 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
 			
 			var now = new Date();
-			var persistence = this.schema.getFormData( { 
+			var persistence = this.schema.serializeItems( { 
 				isodatetime: now 
 			} );
 			
@@ -244,7 +244,7 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.isObject( data.schemaField, 'schemaField created' );
 			Assert.areEqual( 'inner value', data.schemaField.innerField, 'schemaField.innerField has correct value' );
 			
-			var persist = schema.getFormData( {
+			var persist = schema.serializeItems( {
 				schemaField: {
 					innerField: 'inner there',
 					extraField: 'extra field'
@@ -254,13 +254,13 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.areEqual( 'inner there', persist.schemaField.innerField, 'schemaField.innerField is there' );
 			Assert.isUndefined( persist.schemaField.extraField, 'schemaField.extraField is not there' );
 			
-			persist = schema.getFormData( {
+			persist = schema.serializeItems( {
 				schemaField: {}
 			} );
 			
 			Assert.isObject( persist.schemaField, 'schemaField made it' );
 			
-			persist = schema.getFormData( {} );
+			persist = schema.serializeItems( {} );
 			
 			Assert.isUndefined( persist.schemaField, 'schemaField not there' );
 		},
@@ -294,11 +294,11 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.isTrue( isNaN( data.arrayField[ 2 ] ), 'item could not be converted to integer' );
 			
 			
-			data = schema.getFormData( {
+			data = schema.serializeItems( {
 			} );
 			
 			Assert.isUndefined( data.arrayField, 'arrayField wasn\'t in the data' );
-			data = schema.getFormData( {
+			data = schema.serializeItems( {
 				dateArrayField: [
 					new Date(), new Date()
 				]

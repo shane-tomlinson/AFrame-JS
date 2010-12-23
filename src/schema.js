@@ -3,18 +3,17 @@
  * persistence, if the data is run through the getAppData function, it will make an object with only the fields
  * defined in the schema, and any missing fields will get default values.  If a fixup function is defined
  * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
- * running data through the getFormData will create an object with only the fields specified in the schema.  If
- * a row has save: false defined, the row will not be added to the form data object. If a row has a cleanup 
+ * running data through the serializeItems will create an object with only the fields specified in the schema.  If
+ * a row has 'save: false' defined, the row will not be added to the form data object. If a row has a cleanup 
  * function defined, the corresponding data value will be run through the cleanup function.
- * Generic fixup and persistence functions can be set for a type using the AFrame.Schema.addAppDataCleaner and 
- * AFrame.Schema.addFormDataCleaner.  Every item that has a given type and has a value will have the
- * fixer or persistencer function called, this is useful for doing conversions where the data persistence
+ * Generic serialization functions can be set for a type using the AFrame.Schema.addDeserializer and 
+ * AFrame.Schema.addSerializer.  These are useful for doing conversions where the data persistence
  * layer saves data in a different format than the internal application representation.  A useful
  * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
  * and 'iso8601'.
  * If a row in the schema config has the has_many field, the field is made into an array and the fixup/cleanup functions
  *	are called on each item in the array.  The default default item for these fields is an empty array.  If
- *	there is no data for the field in getFormData, the field is left out of the output.
+ *	there is no data for the field in serializeItems, the field is left out of the output.
  * @class AFrame.Schema
  * @constructor
  */
@@ -110,8 +109,8 @@ AFrame.Schema.prototype = {
 			value = schema.getAppData( value );
 		}
 		else if( AFrame.defined( value ) ) {
-			// call the generic type fixup/conversion function
-			var convert = AFrame.Schema.appDataCleaners[ schemaRow.type ];
+			// call the generic type deserializer function
+			var convert = AFrame.Schema.deserializers[ schemaRow.type ];
 			if( AFrame.func( convert ) ) {
 				value = convert( value );
 			}
@@ -133,26 +132,26 @@ AFrame.Schema.prototype = {
 	/**
 	 * Get an object suitable to send to persistence.  This is based roughly on converting
 	 *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
-	 *	All items in the schema that do not have save parameter set to false and have values defined in dataToClean 
+	 *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
 	 *	will have values returned.
-	 * @method getFormData
-	 * @param {object} dataToClean - data to clean up
+	 * @method serializeItems
+	 * @param {object} dataToSerialize - data to clean up
 	 * @return {object} cleanedData
 	 */
-	getFormData: function( dataToClean ) {
+	serializeItems: function( dataToSerialize ) {
 		var cleanedData = {};
 		
 		this.forEach( function( schemaRow, key ) {
 			if( schemaRow.save !== false ) {
-				var value = dataToClean[ key ];
+				var value = dataToSerialize[ key ];
 
 				if( schemaRow.has_many ) {
 					value && value.forEach && value.forEach( function( current, index ) {
-						value[ index ] = this.getFormDataValue( current, schemaRow, dataToClean, cleanedData );
+						value[ index ] = this.getSerializedValue( current, schemaRow, dataToSerialize, cleanedData );
 					}, this );
 				}
 				else {
-					value = this.getFormDataValue( value, schemaRow, dataToClean, cleanedData );
+					value = this.getSerializedValue( value, schemaRow, dataToSerialize, cleanedData );
 				}
 				
 				cleanedData[ key ] = value;
@@ -162,13 +161,13 @@ AFrame.Schema.prototype = {
 		return cleanedData;
 	},
 	
-	getFormDataValue: function( value, schemaRow, dataToClean, cleanedData ) {
+	getSerializedValue: function( value, schemaRow, dataToSerialize, cleanedData ) {
 		// apply the cleanup function if defined.
 		var cleanup = schemaRow.cleanup;
 		if( AFrame.defined( cleanup ) ) {
 			value = cleanup( {
 				value: value,
-				data: dataToClean,
+				data: dataToSerialize,
 				cleaned: cleanedData
 			} );
 		}
@@ -181,10 +180,10 @@ AFrame.Schema.prototype = {
 			*  a saveCleaner, run the value through the save cleaner.
 			*/
 			if( schema ) {
-				value = schema.getFormData( value );
+				value = schema.serializeItems( value );
 			}
 			else {
-				var convert = AFrame.Schema.formDataCleaners[ schemaRow.type ];
+				var convert = AFrame.Schema.serializers[ schemaRow.type ];
 				if( AFrame.func( convert ) ) {
 					value = convert( value );
 				}
@@ -210,31 +209,32 @@ AFrame.Schema.prototype = {
 	}
 };
 AFrame.mixin( AFrame.Schema, {
-	appDataCleaners: {},
-	formDataCleaners: {},
+	deserializers: {},
+	serializers: {},
 	schemaConfigs: {},
 	schemaCache: {},
 	
 	/**
-	 * Add a universal function that fixes data in getAppDataObject. This is used to convert
+	 * Add a universal function that fixes data in [getAppData](#method_getAppData). This is used to convert
 	 * data from a version the backend sends to one that is used internally.
-	 * @method AFrame.Schema.addAppDataCleaner
+	 * @method AFrame.Schema.addDeserializer
 	 * @param {string} type - type of field.
 	 * @param {function} callback - to call
 	 */
-	addAppDataCleaner: function( type, callback ) {
-		AFrame.Schema.appDataCleaners[ type ] = callback;
+	addDeserializer: function( type, callback ) {
+		AFrame.Schema.deserializers[ type ] = callback;
 	},
+    
 	/**
 	 * Add a universal function that gets data ready to save to persistence.  This is used
 	 * to convert data from an internal representation of a piece of data to a 
 	 * representation the backend is expecting.
-	 * @method AFrame.Schema.addFormDataCleaner
+	 * @method AFrame.Schema.addSerializer
 	 * @param {string} type - type of field.
 	 * @param {function} callback - to call
 	 */
-	addFormDataCleaner: function( type, callback ) {
-		AFrame.Schema.formDataCleaners[ type ] = callback;
+	addSerializer: function( type, callback ) {
+		AFrame.Schema.serializers[ type ] = callback;
 	},
 	
 	/**
@@ -267,15 +267,15 @@ AFrame.mixin( AFrame.Schema, {
 	}
 } );
 
-AFrame.Schema.addAppDataCleaner( 'number', function( value ) {
+AFrame.Schema.addDeserializer( 'number', function( value ) {
 	return parseFloat( value );
 } );
 
-AFrame.Schema.addAppDataCleaner( 'integer', function( value ) {
+AFrame.Schema.addDeserializer( 'integer', function( value ) {
 	return parseInt( value, 10 );
 } );
 
-AFrame.Schema.addAppDataCleaner( 'iso8601', function( str ) {
+AFrame.Schema.addDeserializer( 'iso8601', function( str ) {
 	// we assume str is a UTC date ending in 'Z'
 	try{
 		var parts = str.split('T'),
@@ -302,7 +302,7 @@ AFrame.Schema.addAppDataCleaner( 'iso8601', function( str ) {
 	catch(e) {}
 } );
 
-AFrame.Schema.addFormDataCleaner( 'iso8601', function( date ) {
+AFrame.Schema.addSerializer( 'iso8601', function( date ) {
 	return date.toISOString();
 } );
 
