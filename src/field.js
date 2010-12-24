@@ -227,13 +227,13 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	*	by getValidityState, a custom error will have the customError field set to this 
 	*	message
     *
-    *   nameField.setCustomError( 'Names must start with a letter' );
+    *   nameField.setCustomValidity( 'Names must start with a letter' );
     *
-	* @method setCustomError
+	* @method setCustomValidity
 	* @param {string} customError - the error message to display
 	*/
-	setCustomError: function( customError ) {
-		this.validityState.setCustomError( customError );
+	setCustomValidity: function( customError ) {
+		this.validityState.setCustomValidity( customError );
 	},
 	
 	/**

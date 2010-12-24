@@ -1,5 +1,6 @@
 /**
-* An object that keeps track of a field's validity, mirrors the [HTML5](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api) spec.
+* An object that keeps track of a field's validity, mirrors the 
+* [HTML5](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api) spec.
 * 
 * @class AFrame.FieldValidityState
 * @constructor
@@ -92,10 +93,10 @@ AFrame.FieldValidityState.prototype = {
 	
 	/**
 	* Set the custom error message
-	* @method setCustomError
+	* @method setCustomValidity
 	* @param {string} customError - the error message
 	*/
-	setCustomError: function( customError ) {
+	setCustomValidity: function( customError ) {
 		if( customError ) {
 			this.valid = false;
 			this.customError = true;

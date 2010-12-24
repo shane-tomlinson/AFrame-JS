@@ -247,10 +247,10 @@ testsToRun.push( function testField( Y ) {
 			Assert.isUndefined( validityState.randomError, 'after reset, randomError is undefined' );
 		},
 		
-		testSetCustomError: function() {
+		testsetCustomValidity: function() {
 			this.field.checkValidity();
 			
-			this.field.setCustomError( 'This is a random error message' );
+			this.field.setCustomValidity( 'This is a random error message' );
 			
 			var validityState = this.field.getValidityState();
 			Assert.isFalse( validityState.valid, 'no longer valid' );
