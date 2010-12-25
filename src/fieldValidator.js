@@ -1,7 +1,7 @@
 
 /**
-* Takes care of validation for a (Field)[AFrame.Field.html], using an HTML5 based 
-* (FieldValidityState)[AFrame.FieldValidityState.html].
+* Takes care of validation for a [Field](AFrame.Field.html), using an HTML5 based 
+* [FieldValidityState](AFrame.FieldValidityState.html).
 *
 * @class AFrame.FieldValidator
 * @extends AFrame.AObject
