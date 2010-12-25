@@ -243,11 +243,16 @@ testsToRun.push( function testField( Y ) {
 			
 			this.field.checkValidity();
 			validityState = this.field.getValidityState();
-			Assert.isTrue( validityState.valid, 'valid after reset' );
-			Assert.isUndefined( validityState.randomError, 'after reset, randomError is undefined' );
+			Assert.isFalse( validityState.valid, 'still invalid, no matter how many times we do checkValidity or getValidityState' );
+			Assert.isTrue( validityState.randomError, 'randomError is still set' );
+            
+            this.field.set( 'blue' );
+			validityState = this.field.getValidityState();
+			Assert.isTrue( validityState.valid, 'valid reset after set' );
+			Assert.isUndefined( validityState.randomError, 'randomError reset after set' );
 		},
 		
-		testsetCustomValidity: function() {
+		testSetCustomValidity: function() {
 			this.field.checkValidity();
 			
 			this.field.setCustomValidity( 'This is a random error message' );
@@ -257,11 +262,13 @@ testsToRun.push( function testField( Y ) {
 			Assert.isTrue( validityState.customError, 'customError is set' );
 			Assert.areEqual( 'This is a random error message', validityState.validationMessage, 'validationMessage got set' );
 			
-			this.field.checkValidity();
+            
+            this.field.set( 'blue' );
+
 			validityState = this.field.getValidityState();
-			Assert.isTrue( validityState.valid, 'valid after reset' );
-			Assert.isFalse( validityState.customError, 'customError is reset' );
-			Assert.areEqual( '', validityState.validationMessage, 'after reset, validationMessage is reset' );
+			Assert.isTrue( validityState.valid, 'valid after set' );
+			Assert.isFalse( validityState.customError, 'customError is set' );
+			Assert.areEqual( '', validityState.validationMessage, 'after set, validationMessage is reset' );
 		},
 		
 		testInvalidCancellable: function() {

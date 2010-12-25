@@ -48,7 +48,24 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 		this.resetVal = this.getDisplayed();
 		this.display( this.getPlaceholder() );
+        
+        this.fieldValidator = config.fieldValidator || this.createValidator();
+        
+        if( config.fieldValidator ) {
+            this.fieldValidator.setField( this );
+        }
 	},
+    
+    createValidator: function() {
+        var fieldValidator = AFrame.construct( {
+            type: AFrame.FieldValidator,
+            config: {
+                field: this
+            }
+        } );
+        
+        return fieldValidator;
+    },
 
 	bindEvents: function() {
 		var target = this.getTarget();
@@ -160,15 +177,12 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	checkValidity: function() {
-		this.validityState = AFrame.FieldValidator.getValidityState( this );
-
         this.triggerEvent( 'onBeforeValidate', this );
         
 		var valid = this.validate();		
 
         this.triggerEvent( 'onValidate', this );
 
-		this.validityStateIsCurrent = true;
 		return valid;
 	},
 	
@@ -182,7 +196,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* @return {boolean} true if field is valid, false otw.
 	*/
 	validate: function() {
-		var valid = AFrame.FieldValidator.validate( this );
+		var valid = this.fieldValidator.validate();
 		return valid;
 	},
 	
@@ -196,11 +210,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* @return {AFrame.FieldValidityState}
 	*/
 	getValidityState: function() {
-		if( !this.validityStateIsCurrent ) {
-			this.checkValidity();
-		}
-		
-		return this.validityState;
+		return this.fieldValidator.getValidityState();
 	},
 	
 	/**
@@ -212,7 +222,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* @param {string} errorType
 	*/
 	setError: function( errorType ) {
-		this.validityState.setError( errorType );
+		this.fieldValidator.setError( errorType );
 	},
 	
 	/**
@@ -226,7 +236,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* @param {string} customError - the error message to display
 	*/
 	setCustomValidity: function( customError ) {
-		this.validityState.setCustomValidity( customError );
+		this.fieldValidator.setCustomValidity( customError );
 	},
 	
 	/**
@@ -275,15 +285,13 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
         this.triggerEvent( 'onSave', this );
 	},
 	
-	onFieldChange: function( event ) {
+	onFieldChange: function() {
 		/**
 		* triggered whenever the field value changes
 		* @event onChange
 		* @param {string} fieldVal - the current field value.
 		*/
 		this.triggerEvent( 'onChange', this, this.get() );
-		
-		this.validityStateIsCurrent = false;
 	},
 	
 	onFieldFocus: function() {
