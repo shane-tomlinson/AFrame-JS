@@ -292,7 +292,28 @@ testsToRun.push( function testField( Y ) {
 			
 			Assert.isFalse( defaultPrevented, 'with AFrame.Field.cancelInvalid = false, invalid occurs normally' );
 
-		}
+		},
+        
+        testSetCausesInvalid: function() {
+			target = $( 'textarea[data-field=name]' );
+			
+			var field = AFrame.construct( {
+				type: AFrame.Field,
+				config: {
+					target: target
+				}
+			} );
+            
+            field.set( 'value' );
+            var validityState = field.getValidityState();
+            
+            Assert.isFalse( validityState.valueMissing, 'Field was required, has value, value is not missing' );
+            
+            // since a value is required, this should cause a validity state error.
+            field.set( '' );
+            var validityState = field.getValidityState();
+            Assert.isTrue( validityState.valueMissing, 'Field was required, does not have a value, getValidityState correctly gets this' );
+        }
 	} );
 
 	TestRunner.add( test );

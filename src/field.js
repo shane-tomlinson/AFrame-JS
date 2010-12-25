@@ -48,8 +48,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 
 		this.resetVal = this.getDisplayed();
 		this.display( this.getPlaceholder() );
-		
-		this.html5Validate = !!this.getTarget()[ 0 ].checkValidity;
 	},
 
 	bindEvents: function() {
@@ -89,6 +87,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		
 		val = val || this.getPlaceholder();
 		this.display( val );
+        
+        this.onFieldChange();
 	},
 	
 	/**
@@ -148,9 +148,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	},
 
 	/**
-	 * Validate the field.  A field will validate if 1) Its form element does not have the required attribute, or 2) the field has a length.
-	 *	sub classes can override this to perform more specific validation schemes.  The HTML5 spec specifies
-     *  checkValidity as the method to use to check the validity of a form field.
+	 * Validate the field.  A field will validate if 1) Its form element does not have the required 
+     * attribute, or 2) the field has a length.  Sub classes can override this to perform more 
+     * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use 
+     * to check the validity of a form field.  Calling this will reset any validation errors 
+     * previously set and start with a new state.
      *
      *    var isValid = nameField.checkValidity();
      *
@@ -158,17 +160,21 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	checkValidity: function() {
-		this.validityState = AFrame.FieldValidityState.getInstance( this.getTarget()[ 0 ].validity );
+		this.validityState = AFrame.FieldValidator.getValidityState( this );
 
+        this.triggerEvent( 'onBeforeValidate', this );
+        
 		var valid = this.validate();		
+
+        this.triggerEvent( 'onValidate', this );
+
 		this.validityStateIsCurrent = true;
 		return valid;
 	},
 	
 	/**
-	* Do the actual validation on the field.  Should be overridden to do validations.  Calling this will
-	*	reset any validation errors previously set and start with a new state.  This should not be called
-    *   directly, instead [checkValidity](#method_checkValidity) should be
+	* This should not be called directly, instead [checkValidity](#method_checkValidity) should be.
+    * Do the actual validation on the field.  Should be overridden to do validations.
     *
     *   var isValid = nameField.validate();
     *
@@ -176,20 +182,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	* @return {boolean} true if field is valid, false otw.
 	*/
 	validate: function() {
-		var valid = true;
-		
-		if( this.html5Validate ) {
-			// browser supports native validity
-			valid = this.getTarget()[ 0 ].checkValidity();
-		} else {
-			var isRequired = this.getTarget().hasAttr( 'required' );
-			valid = ( !isRequired || !!this.get().length );
-			
-			if( !valid ) {
-				this.setError( 'valueMissing' );
-			}
-		}
-		
+		var valid = AFrame.FieldValidator.validate( this );
 		return valid;
 	},
 	
@@ -269,11 +262,17 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method save
 	 */
 	save: function() {
+        this.triggerEvent( 'onBeforeSave', this );
+        
 		var displayed = this.getDisplayed();
-		if( displayed == this.getPlaceholder() ) {
+		
+        if( displayed == this.getPlaceholder() ) {
 			displayed = '';			
 		}
+        
 		this.resetVal = displayed;
+        
+        this.triggerEvent( 'onSave', this );
 	},
 	
 	onFieldChange: function( event ) {
@@ -282,7 +281,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		* @event onChange
 		* @param {string} fieldVal - the current field value.
 		*/
-		this.triggerEvent( 'onChange', this.get() );
+		this.triggerEvent( 'onChange', this, this.get() );
 		
 		this.validityStateIsCurrent = false;
 	},
@@ -309,7 +308,3 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		return target.is( 'input' ) || target.is( 'textarea' );
 	}
 } );
-
-$.fn.hasAttr = function(name) {  
-   return typeof( this.attr(name) ) != 'undefined';
-};
