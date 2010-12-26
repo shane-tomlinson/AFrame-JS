@@ -47,7 +47,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		AFrame.Field.superclass.init.apply( this, arguments );
 
 		this.resetVal = this.getDisplayed();
-		this.display( this.getPlaceholder() );
         
         this.fieldValidator = config.fieldValidator || this.createValidator();
         
@@ -70,27 +69,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	bindEvents: function() {
 		var target = this.getTarget();
 		this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
-		this.bindDOMEvent( target, 'focus', this.onFieldFocus, this );
-		this.bindDOMEvent( target, 'blur', this.onFieldBlur, this );
 		this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
 		
 		AFrame.Field.superclass.bindEvents.apply( this, arguments );
 	},
 
-	/**
-	 * Get the placeholder text to display in the field.  If not overridden, looks
-	 * on the element for the value of the placeholder attribute. 
-     *
-     *    var placeholder = field.getPlaceholder();
-     *
-	 * @method getPlaceholder
-	 * @return {string}
-	 */
-	getPlaceholder: function() {
-		var target = this.getTarget();
-		return target.attr( 'placeholder' ) || ''; 
-	},
-	
 	/**
 	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
      * 
@@ -101,10 +84,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 */
 	set: function( val ) {
 		this.resetVal = val;
-		
-		val = val || this.getPlaceholder();
-		this.display( val );
-        
+        this.display( val );
         this.onFieldChange();
 	},
 	
@@ -120,9 +100,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	display: function( val ) {
 		var target = this.getTarget();
 
-		var func = val == this.getPlaceholder() ? 'addClass' : 'removeClass';
-		target[ func ]( 'empty' );
-		
 		if( this.isValBased( target ) ) {
 			target.val( val );
 		}
@@ -177,11 +154,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	checkValidity: function() {
-        this.triggerEvent( 'onBeforeValidate', this );
-        
-		var valid = this.validate();		
-
-        this.triggerEvent( 'onValidate', this );
+		var valid = this.validate();
 
 		return valid;
 	},
@@ -272,17 +245,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method save
 	 */
 	save: function() {
-        this.triggerEvent( 'onBeforeSave', this );
-        
 		var displayed = this.getDisplayed();
 		
-        if( displayed == this.getPlaceholder() ) {
-			displayed = '';			
-		}
-        
 		this.resetVal = displayed;
-        
-        this.triggerEvent( 'onSave', this );
 	},
 	
 	onFieldChange: function() {
@@ -293,19 +258,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		*/
 		this.triggerEvent( 'onChange', this, this.get() );
 	},
-	
-	onFieldFocus: function() {
-		if( this.getDisplayed() == this.getPlaceholder() ) {
-			this.display( '' );
-		}
-	},
-	
-	onFieldBlur: function() {
-		if( '' === this.getDisplayed() ) {
-			this.display( this.getPlaceholder() );
-		}
-	},
-	
+
 	onFieldInvalid: function( event ) {
 		if( AFrame.Field.cancelInvalid ) {
 			event.preventDefault();

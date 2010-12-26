@@ -71,10 +71,9 @@ AFrame.extend( AFrame.FieldValidator, AFrame.AObject, {
         var valid = true;
         var target = field.getTarget();
         
-        var validator = target[ 0 ].checkValidity;
-		if( validator ) {
+		if( target[ 0 ].checkValidity ) {
 			// browser supports native validation
-			valid = validator();
+			valid = target[ 0 ].checkValidity();
 		} else {
 			var isRequired = target.hasAttr( 'required' );
 			valid = ( !isRequired || !!field.get().length );

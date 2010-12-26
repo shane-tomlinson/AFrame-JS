@@ -2662,7 +2662,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		AFrame.Field.superclass.init.apply( this, arguments );
 
 		this.resetVal = this.getDisplayed();
-		this.display( this.getPlaceholder() );
         
         this.fieldValidator = config.fieldValidator || this.createValidator();
         
@@ -2685,27 +2684,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	bindEvents: function() {
 		var target = this.getTarget();
 		this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
-		this.bindDOMEvent( target, 'focus', this.onFieldFocus, this );
-		this.bindDOMEvent( target, 'blur', this.onFieldBlur, this );
 		this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
 		
 		AFrame.Field.superclass.bindEvents.apply( this, arguments );
 	},
 
-	/**
-	 * Get the placeholder text to display in the field.  If not overridden, looks
-	 * on the element for the value of the placeholder attribute. 
-     *
-     *    var placeholder = field.getPlaceholder();
-     *
-	 * @method getPlaceholder
-	 * @return {string}
-	 */
-	getPlaceholder: function() {
-		var target = this.getTarget();
-		return target.attr( 'placeholder' ) || ''; 
-	},
-	
 	/**
 	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
      * 
@@ -2716,10 +2699,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 */
 	set: function( val ) {
 		this.resetVal = val;
-		
-		val = val || this.getPlaceholder();
-		this.display( val );
-        
+        this.display( val );
         this.onFieldChange();
 	},
 	
@@ -2735,9 +2715,6 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	display: function( val ) {
 		var target = this.getTarget();
 
-		var func = val == this.getPlaceholder() ? 'addClass' : 'removeClass';
-		target[ func ]( 'empty' );
-		
 		if( this.isValBased( target ) ) {
 			target.val( val );
 		}
@@ -2792,11 +2769,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @return {boolean} true if field is valid, false otw.
 	 */
 	checkValidity: function() {
-        this.triggerEvent( 'onBeforeValidate', this );
-        
-		var valid = this.validate();		
-
-        this.triggerEvent( 'onValidate', this );
+		var valid = this.validate();
 
 		return valid;
 	},
@@ -2887,17 +2860,9 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 	 * @method save
 	 */
 	save: function() {
-        this.triggerEvent( 'onBeforeSave', this );
-        
 		var displayed = this.getDisplayed();
 		
-        if( displayed == this.getPlaceholder() ) {
-			displayed = '';			
-		}
-        
 		this.resetVal = displayed;
-        
-        this.triggerEvent( 'onSave', this );
 	},
 	
 	onFieldChange: function() {
@@ -2908,19 +2873,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		*/
 		this.triggerEvent( 'onChange', this, this.get() );
 	},
-	
-	onFieldFocus: function() {
-		if( this.getDisplayed() == this.getPlaceholder() ) {
-			this.display( '' );
-		}
-	},
-	
-	onFieldBlur: function() {
-		if( '' === this.getDisplayed() ) {
-			this.display( this.getPlaceholder() );
-		}
-	},
-	
+
 	onFieldInvalid: function( event ) {
 		if( AFrame.Field.cancelInvalid ) {
 			event.preventDefault();
@@ -2933,8 +2886,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 } );
 
 /**
-* Takes care of validation for a (Field)[AFrame.Field.html], using an HTML5 based 
-* (FieldValidityState)[AFrame.FieldValidityState.html].
+* Takes care of validation for a [Field](AFrame.Field.html), using an HTML5 based 
+* [FieldValidityState](AFrame.FieldValidityState.html).
 *
 * @class AFrame.FieldValidator
 * @extends AFrame.AObject
@@ -3004,10 +2957,9 @@ AFrame.extend( AFrame.FieldValidator, AFrame.AObject, {
         var valid = true;
         var target = field.getTarget();
         
-        var validator = target[ 0 ].checkValidity;
-		if( validator ) {
+		if( target[ 0 ].checkValidity ) {
 			// browser supports native validation
-			valid = validator();
+			valid = target[ 0 ].checkValidity();
 		} else {
 			var isRequired = target.hasAttr( 'required' );
 			valid = ( !isRequired || !!field.get().length );
@@ -3176,6 +3128,123 @@ AFrame.FieldValidityState.prototype = {
 		}
 	}
 };/**
+* A decorator on a [Field](AFrame.Field.html) that takes care of displaying placeholder text if the browser does not 
+*   natively support this feature.  This class never needs called directly and will be automatically
+*   attached to the [Field](AFrame.Field.html) if the behavior is needed.  For browsers that do
+*   not support placeholder text natively, the decorator will come into play to add it.  The idea
+*   of placeholder text is if the field has no value displayed, but the element has text in its 
+*   placeholder attribute, the text will be displayed until either a value is entered or the user
+*   places the mouse into the input.  If the user still has not entered text whenever the element
+*   loses focus, the placeholder text is again displayed.  Any element that has its placeholder text
+*   shown will have the "empty" class attached.  Note, in CSS, this is different to the :empty class
+*   which the browser can natively add.
+*
+*#Example of Using Placeholder Text#
+*
+*     <input type="text" data-field name="username" placeholder="Log in name" />
+*
+* @class AFrame.FieldPlaceholderDecorator
+* @static
+*/
+AFrame.FieldPlaceholderDecorator = {
+    init: function() {
+        var decorated = AFrame.Field.prototype;
+
+        this.decorators = {};
+        
+        // All functions are called as if they were on the Field.  We are overriding init, bindEvents,
+        // set, display, and save.  These functions pertain to our handling of the placeholder text.
+        this.decorate( 'init', this.decoratorInit );
+        this.decorate( 'bindEvents', this.decoratorBindEvents );
+        this.decorate( 'set', this.decoratorSet );
+        this.decorate( 'save', this.decoratorSave );
+        this.decorate( 'display', this.decoratorDisplay );
+    },
+    
+    decorate: function( name, decorator ) {
+        var decorated = AFrame.Field.prototype;
+        
+        this[ '_' + name ] = decorated[ name ];
+        decorated[ name ] = decorator;
+    },
+
+    decoratorInit: function( config ) {
+        AFrame.FieldPlaceholderDecorator._init.call( this, config );
+        
+        // display the placeholder text until the value is set.
+        this.display( AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) );
+    },
+    
+    decoratorBindEvents: function() {
+        var target = this.getTarget();
+        
+        // we care about the focus and blur evnts.
+        this.bindDOMEvent( target, 'focus', AFrame.FieldPlaceholderDecorator.onFieldFocus, this );
+        this.bindDOMEvent( target, 'blur', AFrame.FieldPlaceholderDecorator.onFieldBlur, this );
+
+        AFrame.FieldPlaceholderDecorator._bindEvents.call( this );
+    },
+    
+    decoratorSet: function( val ) {
+        val = val || AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this );
+        AFrame.FieldPlaceholderDecorator._set.call( this, val );
+    },
+
+    decoratorDisplay: function( val ) {
+        var target = this.getTarget();
+        var func = val == AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) ? 'addClass' : 'removeClass';
+        target[ func ]( 'empty' );
+
+        AFrame.FieldPlaceholderDecorator._display.call( this, val );
+    },
+    
+    decoratorSave: function() {
+        var placeholder = AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this );
+        
+        var placeHolderDisplayed = this.getDisplayed() == placeholder;
+        
+        if( placeHolderDisplayed ) {
+            this.display( '' );
+        }
+        
+        AFrame.FieldPlaceholderDecorator._save.call( this );
+
+        if( placeHolderDisplayed ) {
+            this.display( placeholder );
+        }
+    },
+    
+    onFieldFocus: function() {
+        if( this.getDisplayed() == AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) ) {
+            this.display( '' );
+        }
+    },
+    
+    onFieldBlur: function() {
+        if( '' === this.getDisplayed() ) {
+            this.display( AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) );
+        }
+    },
+    
+    getPlaceholder: function() {
+        var target = this.getTarget();
+        return target.attr( 'placeholder' ) || '';
+    }
+
+    
+};
+
+
+(function() {
+    // we only want to initialize the FieldPlaceholderDecorator if the browser does not support HTML5
+    var inp = document.createElement( 'input' );
+    if( !( 'placeholder' in inp ) ) {
+        AFrame.FieldPlaceholderDecorator.init();
+    }
+    
+})();
+
+/**
  * A basic data schema, useful for loading/saving data to a persistence store.  When loading data from
  * persistence, if the data is run through the getAppData function, it will make an object with only the fields
  * defined in the schema, and any missing fields will get default values.  If a fixup function is defined

@@ -16,6 +16,7 @@ form.js,\
 field.js,\
 fieldValidator.js,\
 fieldValidityState.js,\
+fieldPlaceholderDecorator.js,\
 schema.js,\
 listPluginFormRow.js,\
 dataForm.js
