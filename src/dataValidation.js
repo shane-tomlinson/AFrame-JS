@@ -4,6 +4,15 @@
 * @static
 */
 AFrame.DataValidation = {
+    /**
+    * validate the data using the given validators
+    * @method validate
+    * @param {variant} data - data to validate
+    * @param {object} validators - validators to use
+    * @param {AFrame.FieldValidityState} fieldValidityState (optional) - 
+    *  field validity state to use, one is created if not given
+    * @return {AFrame.FieldValidityState} [FieldValidityState](AFrame.FieldValidityState.html) for the data.
+    */
     validate: function( data, validators, fieldValidityState ) {
         fieldValidityState = fieldValidityState || AFrame.FieldValidityState.getInstance();
         
@@ -36,6 +45,8 @@ AFrame.DataValidation = {
                     if( defined && !regexp.test( data ) ) {
                         fieldValidityState.setError( 'patternMismatch' );
                     }
+                    break;
+                default:
                     break;
             }
         }

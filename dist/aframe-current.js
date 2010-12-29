@@ -2961,12 +2961,12 @@ AFrame.extend( AFrame.FieldValidator, AFrame.AObject, {
 			// browser supports native validation
 			valid = target[ 0 ].checkValidity();
 		} else {
-			var isRequired = target.hasAttr( 'required' );
-			valid = ( !isRequired || !!field.get().length );
-			
-			if( !valid ) {
-				this.setError( 'valueMissing' );
-			}
+            var validators = this.getValidators();
+            var val = field.get();
+            val = val.length ? val : undefined;
+            
+            AFrame.DataValidation.validate( val, validators, this.validityState );
+            valid = this.validityState.valid;
 		}    
         
         return valid;
@@ -3016,6 +3016,23 @@ AFrame.extend( AFrame.FieldValidator, AFrame.AObject, {
 	*/
     setCustomValidity: function( customValidity ) {
         return this.validityState.setCustomValidity( customValidity );
+    },
+    
+    /**
+    * Get the field's validators
+    * @method getValidators
+    * @return {object} validators for the field
+    * @private
+    */
+    getValidators: function() {
+        var target = this.field.getTarget();
+        var validators = {};
+        
+        if( target.hasAttr( 'required' ) ) {
+            validators.required = true;
+        }
+        
+        return validators;
     }
 } );
 
@@ -3452,7 +3469,50 @@ AFrame.Schema.prototype = {
 			var schemaRow = this.schema[ key ];
 			callback.call( context, schemaRow, key );
 		}
-	}
+	},
+    
+    /**
+    * Validate a set of data against the schema
+    *
+    *    var validity = schema.validate( data );
+    *    // validity is true if all data is valid
+    *    // validity is an an object with each field in data, 
+    *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    *
+    * @method validate
+    * @param {object} data - data to validate
+    * @return {variant} true if all fields are valid, an object with
+    *   each field in data, for each field there is  an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    */
+    validate: function( data ) {
+        var statii = {};
+        var areErrors = false;
+        
+        this.forEach( function( row, key ) {
+            var rowValidators = row.validate;
+            if( rowValidators ) {
+                var validityState = this.validateData( data[ key ], rowValidators );
+                // if the row is valid, then just give the row a true status
+                if( validityState.valid ) {
+                    statii[ key ] = true;
+                }
+                else {
+                    // the row is invalid, so save its validityState.
+                    statii[ key ] = validityState;
+                    areErrors = true;
+                }
+            }
+            else {
+                statii[ key ] = true;
+            }
+        }, this );
+        
+        return areErrors ? statii : true;
+    },
+    
+    validateData: function( validators, data ) {
+        return AFrame.DataValidation.validate( validators, data );
+    }
 };
 AFrame.mixin( AFrame.Schema, {
 	deserializers: {},
@@ -3940,4 +4000,50 @@ AFrame.extend( AFrame.DataForm, AFrame.Form, {
 		
 		return valid;
 	}
-} );
+} );/**
+* Performs data validation, follows the HTML5 spec.
+* @class AFrame.DataValidation
+* @static
+*/
+AFrame.DataValidation = {
+    validate: function( data, validators, fieldValidityState ) {
+        fieldValidityState = fieldValidityState || AFrame.FieldValidityState.getInstance();
+        
+        var defined = AFrame.defined( data );
+        
+        for( var key in validators ) {
+            switch( key ) {
+                case 'required':
+                    if( !defined ) {
+                        fieldValidityState.setError( 'valueMissing' );
+                    }
+                    break;
+                case 'min':
+                    if( defined && ( data < validators[ key ] ) ) {
+                        fieldValidityState.setError( 'rangeUnderflow' );
+                    }
+                    break;
+                case 'max':
+                    if( defined && ( data > validators[ key ] ) ) {
+                        fieldValidityState.setError( 'rangeOverflow' );
+                    }
+                    break;
+                case 'maxlength':
+                    if( defined && data.length && data.length > validators[ key ] ) {
+                        fieldValidityState.setError( 'tooLong' );
+                    }
+                    break;
+                case 'pattern':
+                    var regexp = new RegExp( validators[ key ] );
+                    if( defined && !regexp.test( data ) ) {
+                        fieldValidityState.setError( 'patternMismatch' );
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        return fieldValidityState;
+    }
+};
