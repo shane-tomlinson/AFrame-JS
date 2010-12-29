@@ -206,7 +206,50 @@ AFrame.Schema.prototype = {
 			var schemaRow = this.schema[ key ];
 			callback.call( context, schemaRow, key );
 		}
-	}
+	},
+    
+    /**
+    * Validate a set of data against the schema
+    *
+    *    var validity = schema.validate( data );
+    *    // validity is true if all data is valid
+    *    // validity is an an object with each field in data, 
+    *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    *
+    * @method validate
+    * @param {object} data - data to validate
+    * @return {variant} true if all fields are valid, an object with
+    *   each field in data, for each field there is  an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    */
+    validate: function( data ) {
+        var statii = {};
+        var areErrors = false;
+        
+        this.forEach( function( row, key ) {
+            var rowValidators = row.validate;
+            if( rowValidators ) {
+                var validityState = this.validateData( data[ key ], rowValidators );
+                // if the row is valid, then just give the row a true status
+                if( validityState.valid ) {
+                    statii[ key ] = true;
+                }
+                else {
+                    // the row is invalid, so save its validityState.
+                    statii[ key ] = validityState;
+                    areErrors = true;
+                }
+            }
+            else {
+                statii[ key ] = true;
+            }
+        }, this );
+        
+        return areErrors ? statii : true;
+    },
+    
+    validateData: function( validators, data ) {
+        return AFrame.DataValidation.validate( validators, data );
+    }
 };
 AFrame.mixin( AFrame.Schema, {
 	deserializers: {},

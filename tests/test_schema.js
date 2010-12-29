@@ -308,7 +308,39 @@ testsToRun.push( function testAObject( Y ) {
 			Assert.isString( data.dateArrayField[ 0 ], 'date item converted to string' );
 			Assert.isString( data.dateArrayField[ 1 ], 'date item converted to string' );
 			
-		}
+		},
+        
+        testValidate: function() {
+            var schemaConfig = {
+                intField: { type: 'integer', validate: {
+                    min: 0,
+                    max: 10,
+                    required: true,
+                    minlength: 1,
+                    maxlength: 100
+                } }
+            };
+			var schema = AFrame.construct( {
+				type: AFrame.Schema,
+				config: {
+					schema: schemaConfig
+				}
+			} );
+			
+            var validityState = schema.validate( {
+                intField: 1
+            } );
+            Assert.isTrue( validityState, 'object is valid' );
+            
+            validityState = schema.validate( {} );
+            
+            Assert.isObject( validityState, 'validation of empty required field' );
+            Assert.isFalse( validityState.intField.valid, 'invalid item' );
+            Assert.isTrue( validityState.intField.valueMissing, 'value is missing' );
+
+            
+            
+        }
 		
 		
 	} );

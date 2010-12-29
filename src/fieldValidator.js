@@ -75,12 +75,12 @@ AFrame.extend( AFrame.FieldValidator, AFrame.AObject, {
 			// browser supports native validation
 			valid = target[ 0 ].checkValidity();
 		} else {
-			var isRequired = target.hasAttr( 'required' );
-			valid = ( !isRequired || !!field.get().length );
-			
-			if( !valid ) {
-				this.setError( 'valueMissing' );
-			}
+            var validators = this.getValidators();
+            var val = field.get();
+            val = val.length ? val : undefined;
+            
+            AFrame.DataValidation.validate( val, validators, this.validityState );
+            valid = this.validityState.valid;
 		}    
         
         return valid;
@@ -130,6 +130,23 @@ AFrame.extend( AFrame.FieldValidator, AFrame.AObject, {
 	*/
     setCustomValidity: function( customValidity ) {
         return this.validityState.setCustomValidity( customValidity );
+    },
+    
+    /**
+    * Get the field's validators
+    * @method getValidators
+    * @return {object} validators for the field
+    * @private
+    */
+    getValidators: function() {
+        var target = this.field.getTarget();
+        var validators = {};
+        
+        if( target.hasAttr( 'required' ) ) {
+            validators.required = true;
+        }
+        
+        return validators;
     }
 } );
 
