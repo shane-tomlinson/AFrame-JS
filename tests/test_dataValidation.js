@@ -32,7 +32,7 @@ testsToRun.push( function testAObject( Y ) {
                 min: 10
             };
 
-            fieldValidityState = AFrame.DataValidation.validate( 
+            var fieldValidityState = AFrame.DataValidation.validate( 
                 1, validators );
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
@@ -56,7 +56,7 @@ testsToRun.push( function testAObject( Y ) {
                 max: 10
             };
 
-            fieldValidityState = AFrame.DataValidation.validate( 
+            var fieldValidityState = AFrame.DataValidation.validate( 
                 100, validators );
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
@@ -80,7 +80,7 @@ testsToRun.push( function testAObject( Y ) {
                 maxlength: 10
             };
 
-            fieldValidityState = AFrame.DataValidation.validate( 
+            var fieldValidityState = AFrame.DataValidation.validate( 
                 '', validators );
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
@@ -104,7 +104,7 @@ testsToRun.push( function testAObject( Y ) {
                 pattern: '[0-9][A-Z]{3}'
             };
 
-            fieldValidityState = AFrame.DataValidation.validate( 
+            var fieldValidityState = AFrame.DataValidation.validate( 
                 '', validators );
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
@@ -115,8 +115,90 @@ testsToRun.push( function testAObject( Y ) {
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.patternMismatch, 'pattern matches' );
+        },
+        
+        testStep: function() {
+            var validators = {
+                step: 2
+            };
+            
+            // step, no min, should use 0 as the min.
+            var fieldValidityState = AFrame.DataValidation.validate( 
+                .33, validators );
+            
+            Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
+            Assert.isTrue( fieldValidityState.stepMismatch, '.33 is an invalid step' );
 
+            // step, no min, should use 0 as the min.
+            fieldValidityState = AFrame.DataValidation.validate( 
+                2, validators );
+            
+            Assert.isTrue( fieldValidityState.valid, 'field is valid' );
+            Assert.isFalse( fieldValidityState.stepMismatch, '2 is a valid step' );
+            
+            // Add a non-standard min to see if it works.
+            validators.min = 3;
 
+            fieldValidityState = AFrame.DataValidation.validate( 
+                3, validators );
+            
+            Assert.isTrue( fieldValidityState.valid, '3 is valid' );
+            Assert.isFalse( fieldValidityState.stepMismatch, '3 is a valid step when .33 is min' );
+
+            // step, with min
+            fieldValidityState = AFrame.DataValidation.validate( 
+                5, validators );
+
+            Assert.isTrue( fieldValidityState.valid, '5 is valid' );
+            Assert.isFalse( fieldValidityState.stepMismatch, '5 is a valid step when .33 is min' );
+
+            // step, with min
+            fieldValidityState = AFrame.DataValidation.validate( 
+                4, validators );
+
+            Assert.isFalse( fieldValidityState.valid, '4 is an invalid step' );
+            Assert.isTrue( fieldValidityState.stepMismatch, '4 is an invalid step when 3 is min' );
+        },
+        
+        testType: function() {
+            var validators = {
+                type: 'text'
+            };
+
+            var fieldValidityState = AFrame.DataValidation.validate( 
+                1, validators );
+            
+            Assert.isFalse( fieldValidityState.valid, 'text field is invalid' );
+            Assert.isTrue( fieldValidityState.typeMismatch, '1 is not text' );
+
+            
+            var fieldValidityState = AFrame.DataValidation.validate( 
+                'asdf', validators );
+            
+            Assert.isTrue( fieldValidityState.valid, 'text field is valid' );
+            Assert.isFalse( fieldValidityState.typeMismatch, 'asdf is text' );
+
+            var validators = {
+                type: 'number'
+            };
+
+            var fieldValidityState = AFrame.DataValidation.validate( 
+                1, validators );
+            
+            Assert.isTrue( fieldValidityState.valid, 'number field is valid' );
+            Assert.isFalse( fieldValidityState.typeMismatch, '1 is a number' );
+
+            var fieldValidityState = AFrame.DataValidation.validate( 
+                'asdf', validators );
+            
+            Assert.isFalse( fieldValidityState.valid, 'number field is invalid' );
+            Assert.isTrue( fieldValidityState.typeMismatch, 'asdf is not a number' );
+
+            var fieldValidityState = AFrame.DataValidation.validate( 
+                '1', validators );
+            
+            Assert.isFalse( fieldValidityState.valid, 'number field is invalid' );
+            Assert.isTrue( fieldValidityState.typeMismatch, "'1' is not a number" );
         }
 	
 	} );
