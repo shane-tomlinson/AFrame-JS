@@ -218,10 +218,11 @@ AFrame.Schema.prototype = {
     *
     * @method validate
     * @param {object} data - data to validate
+    * @param {boolean} ignoreMissing (optional) - if set to true, missing fields are not validated.  Defaults to false.
     * @return {variant} true if all fields are valid, an object with
     *   each field in data, for each field there is  an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
     */
-    validate: function( data ) {
+    validate: function( data, ignoreMissing ) {
         var statii = {};
         var areErrors = false;
         
@@ -229,15 +230,19 @@ AFrame.Schema.prototype = {
             var rowCriteria = row.validate;
             if( rowCriteria ) {
                 var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
-                var validityState = this.validateData( data[ key ], criteriaCopy );
-                // if the row is valid, then just give the row a true status
-                if( validityState.valid ) {
-                    statii[ key ] = true;
-                }
-                else {
-                    // the row is invalid, so save its validityState.
-                    statii[ key ] = validityState;
-                    areErrors = true;
+                var field = data[ key ];
+                
+                if( !ignoreMissing || AFrame.defined( field ) ) {
+                    var validityState = this.validateData( data[ key ], criteriaCopy );
+                    // if the row is valid, then just give the row a true status
+                    if( validityState.valid ) {
+                        statii[ key ] = true;
+                    }
+                    else {
+                        // the row is invalid, so save its validityState.
+                        statii[ key ] = validityState;
+                        areErrors = true;
+                    }
                 }
             }
             else {

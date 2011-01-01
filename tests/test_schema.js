@@ -310,7 +310,7 @@ testsToRun.push( function testAObject( Y ) {
 			
 		},
         
-        testValidate: function() {
+        testValidateSingleField: function() {
             var schemaConfig = {
                 intField: { type: 'integer', validate: {
                     min: 0,
@@ -345,6 +345,83 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isObject( validityState.intField, 'invalid item' );
             Assert.isFalse( validityState.intField.valid, 'invalid item' );
             Assert.isTrue( validityState.intField.rangeUnderflow, 'value is under min' );
+            
+        },
+		
+        testValidateMultipleFieldsOneDefined: function() {
+            var schemaConfig = {
+                intField: { type: 'integer', validate: {
+                    min: 0,
+                    max: 10,
+                    required: true
+                } },
+                
+                stringField: { type: 'text', validate: {
+                    minlength: 1,
+                    maxlength: 100,
+                    required: true
+                } }
+            };
+			var schema = AFrame.construct( {
+				type: AFrame.Schema,
+				config: {
+					schema: schemaConfig
+				}
+			} );
+			
+            var validityState = schema.validate( {
+                intField: 1
+            }, true );
+            Assert.isTrue( validityState, 'object is valid, we are ignoring missing fields' );
+            
+            var validityState = schema.validate( {
+                intField: 1
+            }, false );
+            
+            Assert.isObject( validityState.stringField, 'stringField is missing' );
+            Assert.isFalse( validityState.stringField.valid, 'stringField is missing, valid is false' );
+            Assert.isTrue( validityState.stringField.valueMissing, 'valueMissing set' );
+        },
+		
+        testValidateMultipleFieldsMultipleDefined: function() {
+            var schemaConfig = {
+                intField: { type: 'integer', validate: {
+                    min: 0,
+                    max: 10,
+                    required: true
+                } },
+                
+                stringField: { type: 'text', validate: {
+                    minlength: 1,
+                    maxlength: 10,
+                    required: true
+                } }
+            };
+			var schema = AFrame.construct( {
+				type: AFrame.Schema,
+				config: {
+					schema: schemaConfig
+				}
+			} );
+			
+            var validityState = schema.validate( {
+                intField: 1,
+                stringField: '0123456789'
+            }, true );
+            Assert.isTrue( validityState, 'object is valid, we are ignoring missing fields' );
+            
+            var validityState = schema.validate( {
+                intField: -1,
+                stringField: '01234567890'
+            }, false );
+            
+            Assert.isObject( validityState.intField, 'intField is is too low' );
+            Assert.isFalse( validityState.intField.valid, 'intField invalid, valid set to false' );
+            Assert.isTrue( validityState.intField.rangeUnderflow, 'rangeUnderflow on intField set' );
+            
+            Assert.isObject( validityState.stringField, 'stringField is too long' );
+            Assert.isFalse( validityState.stringField.valid, 'stringField is too long, valid set to false' );
+            Assert.isTrue( validityState.stringField.tooLong, 'tooLong set' );
             
         }
 		
