@@ -272,6 +272,21 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isFalse( fieldValidityState.valid, 'randomValidationError caused invalid field' );
             Assert.isTrue( fieldValidityState.customError, 'randomValidationError caused customError' );
             Assert.areEqual( 'randomValidationError', fieldValidityState.validationMessage, 'randomValidationError set for validationMessage' );
+        },
+        
+        testTypeNonExistent: function() {
+            var criteria = {
+                type: 'nonexistenttype'
+            };
+
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria
+            } ); 
+                
+            Assert.isTrue( fieldValidityState.valid, 'unknown type does not raise a fieldValidityState.typeMismatch' );
+            Assert.isFalse( fieldValidityState.typeMismatch, 'unknown type does not raise a fieldValidityState.typeMismatch' );
+            
         }
 	
 	} );

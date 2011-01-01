@@ -49,6 +49,10 @@
 AFrame.DataValidation = (function() {
     var defined = AFrame.defined;
     var validationFuncs = {};
+    var jsTypes = {
+        text: 'string',
+        number: 'number'
+    };
     
     var Validation = {
         
@@ -143,15 +147,10 @@ AFrame.DataValidation = (function() {
     } );
         
     Validation.setValidator( 'all', 'type', function( dataToValidate, fieldValidityState, type ) {
-        if( defined( dataToValidate ) ) {
-            var jsTypes = {
-                text: 'string',
-                number: 'number'
-            };
-            
+        if( defined( dataToValidate ) ) {            
             var jsType = jsTypes[ type ];
             
-            if( jsType != typeof( dataToValidate ) ) {
+            if( jsType && jsType != typeof( dataToValidate ) ) {
                 fieldValidityState.setError( 'typeMismatch' );
             }
         }
