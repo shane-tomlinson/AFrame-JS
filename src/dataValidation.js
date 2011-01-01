@@ -1,5 +1,40 @@
 /**
 * Performs dataToValidate validation, attempts to follow the [HTML5 spec](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api).
+*
+*    var criteria = {
+*        min: 10
+*    };
+*
+*    var fieldValidityState = AFrame.DataValidation.validate( 
+*        1, criteria );
+*    // fieldValidityState.valid is false
+*    // fieldValidityState.rangeUnderflow is true
+*
+*    fieldValidityState = AFrame.DataValidation.validate( 
+*        10, criteria );
+*    // fieldValidityState.valid is true
+*    // fieldValidityState.rangeUnderflow is false
+*
+*
+*    // Add a custom validator
+*
+*    AFrame.DataValidation.addValidator( 'randomtype', function( dataToValidate, 
+*           fieldValidityState, thisCriteria, allCriteria ) {
+*       // Do validation here.  If there is a problem, set the error on fieldValidityState
+*       var valid = // code to do validation
+*       if( !valid ) {
+*           fieldValidationState.setCustomValidity( 'invalidRandomType' );
+*       }
+*    } );
+*
+*    var criteria = {
+*         randomtype: 'criteria'
+*    };
+*            
+*    var fieldValidityState = AFrame.DataValidation.validate( 
+*          1, criteria );
+*                
+*
 * @class AFrame.DataValidation
 * @static
 */
@@ -67,25 +102,25 @@ AFrame.DataValidation = (function() {
     var Validation = {
         
         /**
-        * validate the dataToValidate using the given validators.
+        * validate the dataToValidate using the given criteria.
         *
-        *    var validators = {
+        *    var criteria = {
         *        min: 10
         *    };
         *
         *    var fieldValidityState = AFrame.DataValidation.validate( 
-        *        1, validators );
+        *        1, criteria );
         *    // fieldValidityState.valid is false
         *    // fieldValidityState.rangeUnderflow is true
         *
         *    fieldValidityState = AFrame.DataValidation.validate( 
-        *        10, validators );
+        *        10, criteria );
         *    // fieldValidityState.valid is true
         *    // fieldValidityState.rangeUnderflow is false
         *
         * @method validate
         * @param {variant} dataToValidate - dataToValidate to validate
-        * @param {object} validators - validators to use
+        * @param {object} criteria - the criteria to validate against
         * @param {FieldValidityState} fieldValidityState (optional) - 
         *  field validity state to use, one is created if not given
         * @return {FieldValidityState} [FieldValidityState](AFrame.FieldValidityState.html) for the dataToValidate.
@@ -106,7 +141,8 @@ AFrame.DataValidation = (function() {
         /**
         * Set a validator to be used for a certain type
         *
-        *    AFrame.DataValidation.addValidator( 'randomtype', function( dataToValidate, fieldValidityState, criteria, otherValidators ) {
+        *    AFrame.DataValidation.addValidator( 'randomtype', function( dataToValidate, 
+        *           fieldValidityState, thisCriteria, allCriteria ) {
         *       // Do validation here.  If there is a problem, set the error on fieldValidityState
         *       var valid = // code to do validation
         *       if( !valid ) {
@@ -114,6 +150,13 @@ AFrame.DataValidation = (function() {
         *       }
         *    } );
         *
+        *    var criteria = {
+        *         randomtype: 'criteria'
+        *    };
+        *            
+        *    var fieldValidityState = AFrame.DataValidation.validate( 
+        *          1, criteria );
+        *                  
         * @method setValidator
         * @param {string} type - type to set validator for
         * @param {function} validator - the validator to use
