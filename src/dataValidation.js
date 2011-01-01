@@ -155,7 +155,7 @@ AFrame.DataValidation = (function() {
         /**
         * Set a validator to be used for a certain type
         *
-        *    AFrame.DataValidation.addValidator( 'randomtype', function( dataToValidate, 
+        *    AFrame.DataValidation.setValidator( 'randomtype', function( dataToValidate, 
         *           fieldValidityState, thisCriteria, allCriteria ) {
         *       // Do validation here.  If there is a problem, set the error on fieldValidityState
         *       var valid = // code to do validation
@@ -168,8 +168,10 @@ AFrame.DataValidation = (function() {
         *         randomtype: 'criteria'
         *    };
         *            
-        *    var fieldValidityState = AFrame.DataValidation.validate( 
-        *          1, criteria );
+        *    var fieldValidityState = AFrame.DataValidation.validate( {
+        *        data: 1,
+        *        criteria: criteria
+        *    } );
         *                  
         * @method setValidator
         * @param {string} type - type to set validator for
