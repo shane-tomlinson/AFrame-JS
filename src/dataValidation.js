@@ -96,7 +96,7 @@ AFrame.DataValidation = (function() {
         },
         
         validateDataForTypeCriteria: function( dataToValidate, type, currCriteriaName, fieldValidityState, allCriteria ) {
-            var validators = validationFuncs[ type ] || {}
+            var validators = validationFuncs[ type ] || {};
             var validator = validators[ currCriteriaName ];
             if( validator ) {
                 validator( dataToValidate, fieldValidityState, allCriteria[ currCriteriaName ], allCriteria );
