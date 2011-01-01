@@ -250,7 +250,7 @@ testsToRun.push( function testField( Y ) {
 			} );
 			
 			// We cancel the browser handle the invalid event, no browser will show the error message
-			AFrame.Field.cancelInvalid = true;
+            // default is the to cancel the event.
 			target.trigger( 'invalid' );
 			
 			Assert.isTrue( defaultPrevented, 'with AFrame.Field.cancelInvalid = true, invalid\'s default is prevented' );
@@ -260,6 +260,7 @@ testsToRun.push( function testField( Y ) {
 			target.trigger( 'invalid' );
 			
 			Assert.isFalse( defaultPrevented, 'with AFrame.Field.cancelInvalid = false, invalid occurs normally' );
+            AFrame.Field.cancelInvalid = true;
 
 		},
         

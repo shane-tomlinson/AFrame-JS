@@ -14,7 +14,7 @@ listPluginBindToCollection.js,\
 collectionPluginPersistence.js,\
 form.js,\
 field.js,\
-fieldValidator.js,\
+fieldPluginValidation.js,\
 fieldValidityState.js,\
 fieldPlaceholderDecorator.js,\
 schema.js,\
