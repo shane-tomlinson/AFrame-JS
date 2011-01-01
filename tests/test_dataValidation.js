@@ -21,18 +21,19 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isTrue( fieldValidityState.valueMissing, 'field is invalid' );
             
             fieldValidityState = AFrame.DataValidation.validate( {
-                data: 1,
+                data: 'a',
                 criteria: criteria 
             } );
 
-            Assert.isTrue( fieldValidityState.valid, 'field is invalid' );
-            Assert.isFalse( fieldValidityState.valueMissing, 'field is invalid' );
+            Assert.isTrue( fieldValidityState.valid, 'field is valid' );
+            Assert.isFalse( fieldValidityState.valueMissing, 'field is valid' );
             
         },
         
         testMin: function() {
             var criteria = {
-                min: 10
+                min: 10,
+                type: 'number'
             };
 
             var fieldValidityState = AFrame.DataValidation.validate( {
@@ -62,7 +63,8 @@ testsToRun.push( function testAObject( Y ) {
         
         testMax: function() {
             var criteria = {
-                max: 10
+                max: 10,
+                type: 'number'
             };
 
             var fieldValidityState = AFrame.DataValidation.validate( {
@@ -92,7 +94,8 @@ testsToRun.push( function testAObject( Y ) {
         
         testMaxLength: function() {
             var criteria = {
-                maxlength: 10
+                maxlength: 10,
+                type: 'text'
             };
 
             var fieldValidityState = AFrame.DataValidation.validate( {
@@ -122,7 +125,8 @@ testsToRun.push( function testAObject( Y ) {
         
         testPattern: function() {
             var criteria = {
-                pattern: '[0-9][A-Z]{3}'
+                pattern: '[0-9][A-Z]{3}',
+                type: 'text'
             };
 
             var fieldValidityState = AFrame.DataValidation.validate( {
@@ -144,7 +148,8 @@ testsToRun.push( function testAObject( Y ) {
         
         testStep: function() {
             var criteria = {
-                step: 2
+                step: 2,
+                type: 'number'
             };
             
             // step, no min, should use 0 as the min.
@@ -251,10 +256,11 @@ testsToRun.push( function testAObject( Y ) {
                 fieldValidityState.setCustomValidity( 'randomValidationError' );
             };
             
-            AFrame.DataValidation.setValidator( 'randomtype', validator );
+            AFrame.DataValidation.setValidator( 'randomtype', 'min', validator );
             
             var criteria = {
-                randomtype: 'criteria'
+                min: 1234,
+                type: 'randomtype'
             };
             
             var fieldValidityState = AFrame.DataValidation.validate( {

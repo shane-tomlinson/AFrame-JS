@@ -217,7 +217,14 @@ AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
     */
     getCriteria: function() {
         var target = this.getPlugged().getTarget();
-        var criteria = {};
+        var type = target.attr( 'type' );
+        if( !type || type == 'textarea' ) {
+            type = 'text';
+        }
+        
+        var criteria = {
+            type: type
+        };
         
         if( target.hasAttr( 'required' ) ) {
             criteria.required = true;
