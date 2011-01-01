@@ -228,7 +228,8 @@ AFrame.Schema.prototype = {
         this.forEach( function( row, key ) {
             var rowCriteria = row.validate;
             if( rowCriteria ) {
-                var validityState = this.validateData( data[ key ], rowCriteria );
+                var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
+                var validityState = this.validateData( data[ key ], criteriaCopy );
                 // if the row is valid, then just give the row a true status
                 if( validityState.valid ) {
                     statii[ key ] = true;

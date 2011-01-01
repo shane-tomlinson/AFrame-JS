@@ -157,19 +157,24 @@ AFrame.DataValidation = (function() {
     
     } );
     
-    Validation.setValidator( 'number', 'min', function( dataToValidate, fieldValidityState, min ) {
+    var numberMinValidation = function( dataToValidate, fieldValidityState, min ) {
         if( defined( dataToValidate ) && ( dataToValidate < min ) ) {
             fieldValidityState.setError( 'rangeUnderflow' );
         }
-    } );
-        
-    Validation.setValidator( 'number', 'max', function( dataToValidate, fieldValidityState, max ) {
+    };
+    
+    Validation.setValidator( 'number', 'min', numberMinValidation );
+    Validation.setValidator( 'integer', 'min', numberMinValidation );
+
+    var numberMaxValidation = function( dataToValidate, fieldValidityState, max ) {
         if( defined( dataToValidate ) && ( dataToValidate > max ) ) {
             fieldValidityState.setError( 'rangeOverflow' );
         }
-    } );
+    };    
+    Validation.setValidator( 'number', 'max', numberMaxValidation );
+    Validation.setValidator( 'integer', 'max', numberMaxValidation );
         
-    Validation.setValidator( 'number', 'step', function( dataToValidate, fieldValidityState, step, allCriteria ) {
+    var numberStepValidation = function( dataToValidate, fieldValidityState, step, allCriteria ) {
         if( defined( dataToValidate ) ) {
             var min = allCriteria.min || 0;
             var valid = 0 === ( ( dataToValidate - min ) % step );
@@ -177,7 +182,10 @@ AFrame.DataValidation = (function() {
                 fieldValidityState.setError( 'stepMismatch' );
             }
         }
-    } );
+    };
+    
+    Validation.setValidator( 'number', 'step', numberStepValidation );
+    Validation.setValidator( 'integer', 'step', numberStepValidation );
         
     Validation.setValidator( 'text', 'maxlength', function( dataToValidate, fieldValidityState, maxLength ) {
         if( defined( dataToValidate ) && dataToValidate.length && dataToValidate.length > maxLength ) {

@@ -338,7 +338,13 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isFalse( validityState.intField.valid, 'invalid item' );
             Assert.isTrue( validityState.intField.valueMissing, 'value is missing' );
 
+            var validityState = schema.validate( {
+                intField: -1
+            } );
             
+            Assert.isObject( validityState.intField, 'invalid item' );
+            Assert.isFalse( validityState.intField.valid, 'invalid item' );
+            Assert.isTrue( validityState.intField.rangeUnderflow, 'value is under min' );
             
         }
 		
