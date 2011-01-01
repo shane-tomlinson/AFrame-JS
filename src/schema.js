@@ -226,9 +226,9 @@ AFrame.Schema.prototype = {
         var areErrors = false;
         
         this.forEach( function( row, key ) {
-            var rowValidators = row.validate;
-            if( rowValidators ) {
-                var validityState = this.validateData( data[ key ], rowValidators );
+            var rowCriteria = row.validate;
+            if( rowCriteria ) {
+                var validityState = this.validateData( data[ key ], rowCriteria );
                 // if the row is valid, then just give the row a true status
                 if( validityState.valid ) {
                     statii[ key ] = true;
@@ -247,8 +247,11 @@ AFrame.Schema.prototype = {
         return areErrors ? statii : true;
     },
     
-    validateData: function( validators, data ) {
-        return AFrame.DataValidation.validate( validators, data );
+    validateData: function( data, criteria ) {
+        return AFrame.DataValidation.validate( {
+            data: data,
+            criteria: criteria 
+        } );
     }
 };
 AFrame.mixin( AFrame.Schema, {

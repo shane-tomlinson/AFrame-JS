@@ -152,7 +152,11 @@ AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
             var val = field.get();
             val = val.length ? val : undefined;
             
-            AFrame.DataValidation.validate( val, criteria, this.validityState );
+            AFrame.DataValidation.validate( {
+                data: val,
+                criteria: criteria,
+                fieldValidityState: this.validityState
+            } );
             valid = this.validityState.valid;
 		}    
         

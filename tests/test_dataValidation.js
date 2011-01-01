@@ -13,15 +13,18 @@ testsToRun.push( function testAObject( Y ) {
                 required: true
             };
             
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                undefined, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                criteria: criteria
+            } );
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
             Assert.isTrue( fieldValidityState.valueMissing, 'field is invalid' );
             
-            fieldValidityState = AFrame.DataValidation.validate( 
-                criteria, 1 );
-            
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria 
+            } );
+
             Assert.isTrue( fieldValidityState.valid, 'field is invalid' );
             Assert.isFalse( fieldValidityState.valueMissing, 'field is invalid' );
             
@@ -32,20 +35,26 @@ testsToRun.push( function testAObject( Y ) {
                 min: 10
             };
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                1, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria
+            } );
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
             Assert.isTrue( fieldValidityState.rangeUnderflow, 'value is too low' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                10, criteria );
+            fieldValidityState = AFrame.DataValidation.validate(  {
+                data: 10,
+                criteria: criteria
+            } );
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.rangeUnderflow, 'value is good' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                100, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 100,
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.rangeUnderflow, 'value is good' );
@@ -56,20 +65,26 @@ testsToRun.push( function testAObject( Y ) {
                 max: 10
             };
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                100, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 100,
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
             Assert.isTrue( fieldValidityState.rangeOverflow, 'value is too high' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                10, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 10,
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.rangeOverflow, 'value is good' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                1, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.rangeOverflow, 'value is good' );
@@ -80,20 +95,26 @@ testsToRun.push( function testAObject( Y ) {
                 maxlength: 10
             };
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                '', criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: '',
+                criteria: criteria
+            } );
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.tooLong, 'value is ok length' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                '1234567890', criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: '1234567890',
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.tooLong, 'value is ok length' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                '12345678901', criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: '12345678901',
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
             Assert.isTrue( fieldValidityState.tooLong, 'value is too long' );
@@ -104,14 +125,18 @@ testsToRun.push( function testAObject( Y ) {
                 pattern: '[0-9][A-Z]{3}'
             };
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                '', criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: '',
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
             Assert.isTrue( fieldValidityState.patternMismatch, 'pattern does not match' );
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                '0ABC', criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: '0ABC',
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.patternMismatch, 'pattern matches' );
@@ -123,15 +148,19 @@ testsToRun.push( function testAObject( Y ) {
             };
             
             // step, no min, should use 0 as the min.
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                .33, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: .33,
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
             Assert.isTrue( fieldValidityState.stepMismatch, '.33 is an invalid step' );
 
             // step, no min, should use 0 as the min.
-            fieldValidityState = AFrame.DataValidation.validate( 
-                2, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 2,
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'field is valid' );
             Assert.isFalse( fieldValidityState.stepMismatch, '2 is a valid step' );
@@ -139,22 +168,28 @@ testsToRun.push( function testAObject( Y ) {
             // Add a non-standard min to see if it works.
             criteria.min = 3;
 
-            fieldValidityState = AFrame.DataValidation.validate( 
-                3, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 3,
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, '3 is valid' );
             Assert.isFalse( fieldValidityState.stepMismatch, '3 is a valid step when .33 is min' );
 
             // step, with min
-            fieldValidityState = AFrame.DataValidation.validate( 
-                5, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 5,
+                criteria: criteria
+            } ); 
 
             Assert.isTrue( fieldValidityState.valid, '5 is valid' );
             Assert.isFalse( fieldValidityState.stepMismatch, '5 is a valid step when .33 is min' );
 
             // step, with min
-            fieldValidityState = AFrame.DataValidation.validate( 
-                4, criteria );
+            fieldValidityState = AFrame.DataValidation.validate( {
+                data: 4,
+                criteria: criteria
+            } ); 
 
             Assert.isFalse( fieldValidityState.valid, '4 is an invalid step' );
             Assert.isTrue( fieldValidityState.stepMismatch, '4 is an invalid step when 3 is min' );
@@ -165,15 +200,19 @@ testsToRun.push( function testAObject( Y ) {
                 type: 'text'
             };
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                1, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'text field is invalid' );
             Assert.isTrue( fieldValidityState.typeMismatch, '1 is not text' );
 
             
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                'asdf', criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 'asdf',
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'text field is valid' );
             Assert.isFalse( fieldValidityState.typeMismatch, 'asdf is text' );
@@ -182,20 +221,26 @@ testsToRun.push( function testAObject( Y ) {
                 type: 'number'
             };
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                1, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria
+            } ); 
             
             Assert.isTrue( fieldValidityState.valid, 'number field is valid' );
             Assert.isFalse( fieldValidityState.typeMismatch, '1 is a number' );
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                'asdf', criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 'asdf',
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'number field is invalid' );
             Assert.isTrue( fieldValidityState.typeMismatch, 'asdf is not a number' );
 
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                '1', criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: '1',
+                criteria: criteria
+            } ); 
             
             Assert.isFalse( fieldValidityState.valid, 'number field is invalid' );
             Assert.isTrue( fieldValidityState.typeMismatch, "'1' is not a number" );
@@ -212,8 +257,10 @@ testsToRun.push( function testAObject( Y ) {
                 randomtype: 'criteria'
             };
             
-            var fieldValidityState = AFrame.DataValidation.validate( 
-                1, criteria );
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                data: 1,
+                criteria: criteria
+            } ); 
                 
             
             Assert.isFalse( fieldValidityState.valid, 'randomValidationError caused invalid field' );

@@ -5,13 +5,17 @@
 *        min: 10
 *    };
 *
-*    var fieldValidityState = AFrame.DataValidation.validate( 
-*        1, criteria );
+*    var fieldValidityState = AFrame.DataValidation.validate( {
+*        data: 1,
+*        criteria: criteria
+*    } );  
 *    // fieldValidityState.valid is false
 *    // fieldValidityState.rangeUnderflow is true
 *
-*    fieldValidityState = AFrame.DataValidation.validate( 
-*        10, criteria );
+*    fieldValidityState = AFrame.DataValidation.validate( {
+*        data: 10,
+*        criteria: criteria
+*    } );  
 *    // fieldValidityState.valid is true
 *    // fieldValidityState.rangeUnderflow is false
 *
@@ -31,8 +35,10 @@
 *         randomtype: 'criteria'
 *    };
 *            
-*    var fieldValidityState = AFrame.DataValidation.validate( 
-*          1, criteria );
+*    var fieldValidityState = AFrame.DataValidation.validate( {
+*        data: 1,
+*        criteria: criteria
+*    } );  
 *                
 *
 * @class AFrame.DataValidation
@@ -108,24 +114,32 @@ AFrame.DataValidation = (function() {
         *        min: 10
         *    };
         *
-        *    var fieldValidityState = AFrame.DataValidation.validate( 
-        *        1, criteria );
+        *    var fieldValidityState = AFrame.DataValidation.validate( {
+        *        data: 1,
+        *        criteria: criteria
+        *    } );
         *    // fieldValidityState.valid is false
         *    // fieldValidityState.rangeUnderflow is true
         *
-        *    fieldValidityState = AFrame.DataValidation.validate( 
-        *        10, criteria );
+        *    fieldValidityState = AFrame.DataValidation.validate( {
+        *        data: 10,
+        *        criteria: criteria
+        *    } ); 
         *    // fieldValidityState.valid is true
         *    // fieldValidityState.rangeUnderflow is false
         *
         * @method validate
-        * @param {variant} dataToValidate - dataToValidate to validate
-        * @param {object} criteria - the criteria to validate against
-        * @param {FieldValidityState} fieldValidityState (optional) - 
+        * @param {variant} options.data - dataToValidate to validate
+        * @param {object} options.criteria - the criteria to validate against
+        * @param {FieldValidityState} options.fieldValidityState (optional) - 
         *  field validity state to use, one is created if not given
         * @return {FieldValidityState} [FieldValidityState](AFrame.FieldValidityState.html) for the dataToValidate.
         */
-        validate: function( dataToValidate, criteria, fieldValidityState ) {
+        validate: function( options ) {
+            var dataToValidate = options.data;
+            var criteria = options.criteria;
+            var fieldValidityState = options.fieldValidityState;
+            
             fieldValidityState = fieldValidityState || AFrame.FieldValidityState.getInstance();
             
             for( var key in criteria ) {
