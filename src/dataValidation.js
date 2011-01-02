@@ -51,7 +51,8 @@ AFrame.DataValidation = (function() {
     var validationFuncs = {};
     var jsTypes = {
         text: 'string',
-        number: 'number'
+        number: 'number',
+        integer: 'number'
     };
     
     var Validation = {

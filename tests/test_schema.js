@@ -432,22 +432,13 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isFalse( validityState.stringField.valid, 'stringField is too long, valid set to false' );
             Assert.isTrue( validityState.stringField.tooLong, 'tooLong set' );
             
-        }/*,
+        },
         
-        testValidateOneRow: function() {
+        testValidateNoExplicitValidators: function() {
             var schemaConfig = {
-                intField: { type: 'integer', validate: {
-                    min: 0,
-                    max: 10,
-                    required: true
-                } },
-                
-                stringField: { type: 'text', validate: {
-                    minlength: 1,
-                    maxlength: 10,
-                    required: true
-                } }
+                intField: { type: 'integer' }
             };
+            
 			var schema = AFrame.construct( {
 				type: AFrame.Schema,
 				config: {
@@ -456,11 +447,13 @@ testsToRun.push( function testAObject( Y ) {
 			} );
 			
             var validityState = schema.validate( {
-                intField: 1
-            },  );
+                intField: 'a'
+            } );
+
+            Assert.isFalse( validityState.intField.valid, 'trying to set an integer to a string' );
+            Assert.isTrue( validityState.intField.typeMismatch, 'trying to set an integer to a string' );
         }
 		
-		*/
 	} );
 
 	TestRunner.add( testAObject );
