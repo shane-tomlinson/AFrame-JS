@@ -232,7 +232,9 @@ AFrame.Schema.prototype = {
                 var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
                 var field = data[ key ];
                 
-                if( !ignoreMissing || AFrame.defined( field ) ) {
+                // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,
+                //  even if ignoreMissing is set to true, we validate against it.
+                if( !ignoreMissing || data.hasOwnProperty( key ) ) {
                     var validityState = this.validateData( data[ key ], criteriaCopy );
                     // if the row is valid, then just give the row a true status
                     if( validityState.valid ) {

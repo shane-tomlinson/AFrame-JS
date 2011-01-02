@@ -374,6 +374,15 @@ testsToRun.push( function testAObject( Y ) {
             }, true );
             Assert.isTrue( validityState, 'object is valid, we are ignoring missing fields' );
             
+            // We still have a missing value, intField is undefined.
+            var validityState = schema.validate( {
+                intField: undefined
+            }, true );
+
+            Assert.isObject( validityState.intField, 'intField has undefined value' );
+            Assert.isFalse( validityState.intField.valid, 'intField is missing, valid is false' );
+            Assert.isTrue( validityState.intField.valueMissing, 'valueMissing set' );
+            
             var validityState = schema.validate( {
                 intField: 1
             }, false );
@@ -423,9 +432,35 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isFalse( validityState.stringField.valid, 'stringField is too long, valid set to false' );
             Assert.isTrue( validityState.stringField.tooLong, 'tooLong set' );
             
+        }/*,
+        
+        testValidateOneRow: function() {
+            var schemaConfig = {
+                intField: { type: 'integer', validate: {
+                    min: 0,
+                    max: 10,
+                    required: true
+                } },
+                
+                stringField: { type: 'text', validate: {
+                    minlength: 1,
+                    maxlength: 10,
+                    required: true
+                } }
+            };
+			var schema = AFrame.construct( {
+				type: AFrame.Schema,
+				config: {
+					schema: schemaConfig
+				}
+			} );
+			
+            var validityState = schema.validate( {
+                intField: 1
+            },  );
         }
 		
-		
+		*/
 	} );
 
 	TestRunner.add( testAObject );
