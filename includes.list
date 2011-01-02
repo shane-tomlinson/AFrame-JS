@@ -20,5 +20,6 @@ fieldPlaceholderDecorator.js,\
 schema.js,\
 listPluginFormRow.js,\
 dataForm.js,\
-dataValidation.js
+dataValidation.js,\
+model.js
 

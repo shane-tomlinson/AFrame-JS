@@ -58,6 +58,21 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isUndefined( this.model.get( 'numberField' ), 'numberField still undefined' );
             Assert.isTrue( fieldValidityState instanceof AFrame.FieldValidityState, 'numberField still undefined' );
             Assert.isFalse( fieldValidityState.valid, 'setting a number field to a string is invalid' );
+        },
+        
+        testCheckValidity: function() {
+            var fieldValidityState = this.model.checkValidity( 'numberField', 'error causing string' );
+
+            Assert.isUndefined( this.model.get( 'numberField' ), 'numberField still undefined, set does not happen' );
+            
+            Assert.isTrue( fieldValidityState instanceof AFrame.FieldValidityState, 'field was invalid, so we have a fieldValidityState' );
+            Assert.isFalse( fieldValidityState.valid, 'setting a number field to a string is invalid' );
+            
+            fieldValidityState = this.model.checkValidity( 1, 'error causing string' );
+
+            Assert.isUndefined( this.model.get( 'numberField' ), 'numberField still undefined, set does not happen' );
+            Assert.areEqual( 'boolean', typeof( fieldValidityState ), 'valid field, boolean returned' );
+            
         }
 		
 	} );

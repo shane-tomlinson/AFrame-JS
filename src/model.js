@@ -25,7 +25,7 @@ AFrame.Model = ( function() {
 	    * will be returned.
         *
         *    var retval = model.set( 'name', 'Shane Tomlinson' );
-        *    if( retval instanceof AFrame.FieldValidityState ) {
+        *    if( retval !== true ) {
         *        // something went wrong
         *    }
         *
@@ -36,19 +36,41 @@ AFrame.Model = ( function() {
 	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
 	    */
         set: function( fieldName, fieldValue ) {
-            var data = {};
-            data[ fieldName ] = fieldValue;
-
-            var fieldValidity = this.schema.validate( data, true );
-            var retval;
+            var fieldValidity = this.checkValidity( fieldName, fieldValue );
+            
             if( true === fieldValidity ) {
-                retval = Model.superclass.set.call( this, fieldName, fieldValue );
-            }
-            else {
-                retval = fieldValidity[ fieldName ];
+                fieldValidity = Model.superclass.set.call( this, fieldName, fieldValue );
             }
             
-            return retval;
+            return fieldValidity;
+        },
+        
+        /**
+        * Check the validity of the potential value of a field
+        *
+        *
+        *    var retval = model.checkValidity( 'name', 'Shane Tomlinson' );
+        *    if( retval !== true ) {
+        *        // something went wrong, value would be invalid.
+        *    }
+        *
+        * @method checkValidity
+	    * @param {string} fieldName name of field
+	    * @param {variant} fieldValue potential value of field
+	    * @return {variant} true if field would be valid, a 
+	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
+        */
+        checkValidity: function( fieldName, fieldValue ) {
+            var data = {};
+            data[ fieldName ] = fieldValue;
+            
+            var fieldValidity = this.schema.validate( data, true );
+            
+            if( fieldValidity !== true ) {
+                fieldValidity = fieldValidity[ fieldName ];
+            }
+            
+            return fieldValidity;
         }
     } );
     
