@@ -95,14 +95,22 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
-		* @param {object} fieldNotificationObject - an event object. @see getFieldNotificationObject
+		* @param {object} fieldNotificationObject - an event object. @see [getFieldNotificationObject](#method_getFieldNotificationObject)
+	    * @param {string} fieldNotificationObject.fieldName - name of field affected.
+	    * @param {variant} fieldNotificationObject.value - the current value of the field.
+	    * @param {variant} fieldNotificationObject.oldValue - the previous value of the field (only applicable if data has changed).
+		* @param {object} fieldNotificationObject.container - the DataContainer
 		*/
 		this.triggerEvent( 'onSet', fieldNotificationObject );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
 		* @event onSet-fieldName
-		* @param {object} fieldNotificationObject - an event object.  @see getFieldNotificationObject
+		* @param {object} fieldNotificationObject - an event object.  @see [getFieldNotificationObject](#method_getFieldNotificationObject)
+	    * @param {string} fieldNotificationObject.fieldName - name of field affected.
+	    * @param {variant} fieldNotificationObject.value - the current value of the field.
+	    * @param {variant} fieldNotificationObject.oldValue - the previous value of the field (only applicable if data has changed).
+		* @param {object} fieldNotificationObject.container - the DataContainer
 		*/
 		this.triggerEvent( 'onSet-' + fieldName, fieldNotificationObject );
 		
