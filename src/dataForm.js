@@ -37,6 +37,7 @@
 * @extends AFrame.Form
 * @constructor
 */
+
 AFrame.DataForm = function() {
 	AFrame.DataForm.superclass.constructor.apply( this, arguments );
 };
@@ -66,6 +67,24 @@ AFrame.extend( AFrame.DataForm, AFrame.Form, {
 		}.bind( formField ), this );
 		
 		return formField;
+	},
+	
+	checkValidity: function() {
+		var valid = AFrame.DataForm.superclass.checkValidity.call( this );
+		if( valid && this.dataContainer.checkValidity ) {
+			// only validate vs the dataContainer if the dataContainer has validation.
+			var formFields = this.getFormFields();
+			formFields.forEach( function( formField, index ) {
+				var fieldName = formField.getTarget().attr( 'data-field');
+				var validityState = this.dataContainer.checkValidity( fieldName, formField.get() );
+				
+				if( validityState !== true ) {
+					valid = false;
+				}
+			}, this );			
+		}
+		
+		return valid;
 	},
 	
 	save: function() {
