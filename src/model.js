@@ -1,7 +1,7 @@
 /**
 * A Model is a DataContainer that is associated with a Schema.
 * @class AFrame.Model
-* @extends AFrame.AObject
+* @extends AFrame.DataContainer
 * @constructor
 */
 AFrame.Model = ( function() {
@@ -9,28 +9,12 @@ AFrame.Model = ( function() {
     function Model() {
         Model.superclass.constructor.call( this );
     }
-    AFrame.extend( Model, AFrame.AObject, {
+    AFrame.extend( Model, AFrame.DataContainer, {
         init: function( config ) {
             this.schema = config.schema;
-            var initialData = this.getInitialData( config );
-            this.dataContainer = AFrame.DataContainer( initialData );
-
-            this.delegateFunc( 'get' );
+            config.data = getInitialData( this.schema, config.data );
             
             Model.superclass.init.call( this, config );
-        },
-
-        getInitialData: function( config ) {
-            var initialData = config.data;
-            if( !initialData ) {
-                initialData = this.schema.getDefaults();
-            }
-            return initialData;
-        },
-
-        delegateFunc: function( funcName ) {
-            var dataContainer = this.dataContainer;
-            this[ funcName ] = dataContainer[ funcName ].bind( dataContainer );
         },
         
 	    /**
@@ -51,7 +35,7 @@ AFrame.Model = ( function() {
             var fieldValidity = this.schema.validate( data, true );
             var retval;
             if( true === fieldValidity ) {
-                retval = this.dataContainer.set( fieldName, fieldValue );
+                retval = Model.superclass.set.call( this, fieldName, fieldValue );
             }
             else {
                 retval = fieldValidity[ fieldName ];
@@ -62,4 +46,13 @@ AFrame.Model = ( function() {
     } );
     
     return Model;
+    
+    function getInitialData( schema, initialData ) {
+        if( !initialData ) {
+            initialData = schema.getDefaults();
+        }
+        return initialData;
+    }
+
+    
 } )();

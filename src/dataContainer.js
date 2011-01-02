@@ -67,10 +67,10 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		*/
 		this.data = config.data || {};
 		
-		/*if( this.data.__dataContainer ) {
+		if( this.data.__dataContainer ) {
 			throw Error( 'Cannot create a second AFrame.DataContainer for an object' );
 		}
-		*/
+		
 		this.data.__dataContainer = this;
 		this.fieldBindings = {};
 		

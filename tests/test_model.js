@@ -45,6 +45,11 @@ testsToRun.push( function testAObject( Y ) {
 
             Assert.isUndefined( retval, 'numberField previously had no value' );
             Assert.areEqual( 1, this.model.get( 'numberField' ), 'numberField set and gotten correctly' );
+
+            retval = this.model.set( 'numberField', 2 );
+            Assert.areEqual( 1, retval, 'previous value returned correctly' );
+            Assert.areEqual( 2, this.model.get( 'numberField' ), 'numberField set and gotten correctly' );
+            
         },
 
         testSetInvalidType: function() {
