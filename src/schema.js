@@ -211,16 +211,19 @@ AFrame.Schema.prototype = {
     /**
     * Validate a set of data against the schema
     *
-    *    var validity = schema.validate( data );
+    *    // validate, but ignore fields defined in the schema that are missing from data.
+    *    var validity = schema.validate( data, true );
     *    // validity is true if all data is valid
     *    // validity is an an object with each field in data, 
     *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
     *
     * @method validate
     * @param {object} data - data to validate
-    * @param {boolean} ignoreMissing (optional) - if set to true, missing fields are not validated.  Defaults to false.
-    * @return {variant} true if all fields are valid, an object with
-    *   each field in data, for each field there is  an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    * @param {boolean} ignoreMissing (optional) - if set to true, fields missing from data are not validated.  Defaults to false.
+    *   Note, even if set to true, and a field in data has an undefined value, the field will be validated against the
+    *   the undefined value.
+    * @return {variant} true if all fields are valid, an object with each field in data, for each field there 
+    *   is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
     */
     validate: function( data, ignoreMissing ) {
         var statii = {};
