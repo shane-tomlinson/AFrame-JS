@@ -72,20 +72,27 @@ AFrame.DataForm = ( function() {
 	    checkValidity: function() {
 		    var valid = DataForm.superclass.checkValidity.call( this );
 		    if( valid && this.dataContainer.checkValidity ) {
-			    // only validate vs the dataContainer if the dataContainer has validation.
-			    var formFields = this.getFormFields();
-			    formFields.forEach( function( formField, index ) {
-				    var fieldName = fieldGetName( formField );
-				    var validityState = this.dataContainer.checkValidity( fieldName, formField.get() );
-				
-				    if( validityState !== true ) {
-					    valid = false;
-					    fieldUpdateValidityState( formField, validityState );
-				    }
-			    }, this );			
+    		    // only validate vs the dataContainer if the dataContainer has validation.
+		        valid = this.validateFormFieldsWithModels();
 		    }
 		
 		    return valid;
+	    },
+
+	    validateFormFieldsWithModels: function() {
+		    var valid = true;
+		    var formFields = this.getFormFields();
+		    formFields.forEach( function( formField, index ) {
+			    var fieldName = fieldGetName( formField );
+			    var validityState = this.dataContainer.checkValidity( fieldName, formField.get() );
+			
+			    if( validityState !== true ) {
+				    valid = false;
+				    fieldUpdateValidityState( formField, validityState );
+			    }
+		    }, this );
+		    	
+		    return valid;	
 	    },
 	
 	    save: function() {
