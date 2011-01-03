@@ -234,7 +234,7 @@ testsToRun.push( function testField( Y ) {
 		},
 		
 		testInvalidCancellable: function() {
-			target = $( 'textarea[data-field=name]' );
+			var target = $( 'textarea[data-field=name]' );
 			
 			var fieldValueRequired = AFrame.construct( {
 				type: AFrame.Field,
@@ -265,7 +265,7 @@ testsToRun.push( function testField( Y ) {
 		},
         
         testSetCausesInvalid: function() {
-			target = $( 'textarea[data-field=name]' );
+			var target = $( 'textarea[data-field=name]' );
 			
 			var field = AFrame.construct( {
 				type: AFrame.Field,

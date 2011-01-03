@@ -69,7 +69,56 @@ testsToRun.push( function testField( Y ) {
             field.validate();
             
             Assert.isTrue( ourValidatorCalled, 'plugin validator correctly overrides inline validator' );
-        }
+        },
+        
+        testInvalidEvent: function() {
+			var target = $( 'textarea[data-field=name]' );
+			target.val( '' );
+            
+			var field = AFrame.construct( {
+				type: AFrame.Field,
+				config: {
+					target: target
+				}
+			} );
+            
+            var invalidTriggered = false;
+            target.bind( 'invalid', function( event ) {
+                invalidTriggered = true;
+            } );
+            
+            field.setError( 'fakeError' );
+            Assert.isTrue( invalidTriggered, 'setError causes invalid event' );
+                        
+            invalidTriggered = false;
+            field.setCustomValidity( 'custom validity' );
+            Assert.isTrue( invalidTriggered, 'setCustomValidity causes invalid event' );
+        },
+        
+        testManualErrorShowsStandardErrors: function() {
+			var target = $( 'textarea[data-field=name]' );
+			target.val( '' );
+            
+			var field = AFrame.construct( {
+				type: AFrame.Field,
+				config: {
+					target: target
+				}
+			} );
+            
+            field.setError( 'fakeError' );
+            
+            var validityState = field.getValidityState();
+            Assert.isTrue( validityState.valueMissing, 'setError sets the valueMissing field as well.' );
+            
+            // this resets the errors.
+            field.set( '' );
+            
+            field.setCustomValidity( 'custom validity' );
+
+            var validityState = field.getValidityState();
+            Assert.isTrue( validityState.valueMissing, 'setCustomValidity sets the valueMissing field as well.' );
+        }  
     } );
 	TestRunner.add( test );
 } );

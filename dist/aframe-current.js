@@ -2948,7 +2948,7 @@ AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
 	* @return {boolean} true if field is valid, false otw.
 	*/
     validate: function() {
-        this.updateValidityState( false );
+        this.updateValidityState();
         
         var field = this.getPlugged();
         var valid = true;
@@ -2980,10 +2980,8 @@ AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
     * @param {boolean} validate - whether to perform actual validation or not
     */
     updateValidityState: function( validate ) {
-        var field = this.getPlugged();
-        
         if( this.calculateValidity ) {
-            this.validityState = AFrame.FieldValidityState.getInstance( field.getTarget()[ 0 ].validity );
+            this.validityState = AFrame.FieldValidityState.getInstance( this.getPlugged().getTarget()[ 0 ].validity );
 
             if( validate ) {
                 this.validate();
@@ -3002,6 +3000,9 @@ AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
 	* @param {string} errorType
 	*/
     setError: function( error ) {
+        this.updateValidityState( true );
+        this.getPlugged().getTarget().trigger( 'invalid' );
+        
         return this.validityState.setError( error );
     },
     
@@ -3016,6 +3017,9 @@ AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
 	* @param {string} customError - the error message to display
 	*/
     setCustomValidity: function( customValidity ) {
+        this.updateValidityState( true );
+        this.getPlugged().getTarget().trigger( 'invalid' );
+
         return this.validityState.setCustomValidity( customValidity );
     },
     
