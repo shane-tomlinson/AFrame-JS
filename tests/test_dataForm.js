@@ -116,7 +116,7 @@ testsToRun.push( function testForm( Y ) {
 			this.form = null;
 		},
 		
-		testSave: function() {
+		testCheckValidity: function() {
 			this.field.set( 1 );
 
 			Assert.areEqual( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
@@ -124,7 +124,16 @@ testsToRun.push( function testForm( Y ) {
 			var valid = this.form.checkValidity();
 			
 			Assert.isFalse( valid, 'trying to set text field to an integer, dies.' );
-		//	Assert.areEqual( 'Charlotte', this.dataSource.get( 'field2' ), 'dataSource updated after save' );
+
+		    var validityState = this.field.getValidityState();
+		    Assert.isFalse( validityState.valid, 'setting text field to integer is invalid' );
+		    Assert.isTrue( validityState.typeMismatch, 'setting text field to integer causes typeMismatch to be set' );
+
+		    this.field.set( 'Charlotte is the best wife in the world' );
+			var valid = this.form.checkValidity();
+			
+			Assert.isTrue( valid, 'set text field to text, all valid.' );
+		    
 		}
 		
 		
