@@ -751,10 +751,10 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		*/
 		this.data = config.data || {};
 		
-		/*if( this.data.__dataContainer ) {
+		if( this.data.__dataContainer ) {
 			throw Error( 'Cannot create a second AFrame.DataContainer for an object' );
 		}
-		*/
+		
 		this.data.__dataContainer = this;
 		this.fieldBindings = {};
 		
@@ -779,14 +779,22 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
-		* @param {object} fieldNotificationObject - an event object. @see getFieldNotificationObject
+		* @param {object} fieldNotificationObject - an event object. @see [getFieldNotificationObject](#method_getFieldNotificationObject)
+	    * @param {string} fieldNotificationObject.fieldName - name of field affected.
+	    * @param {variant} fieldNotificationObject.value - the current value of the field.
+	    * @param {variant} fieldNotificationObject.oldValue - the previous value of the field (only applicable if data has changed).
+		* @param {object} fieldNotificationObject.container - the DataContainer
 		*/
 		this.triggerEvent( 'onSet', fieldNotificationObject );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
 		* @event onSet-fieldName
-		* @param {object} fieldNotificationObject - an event object.  @see getFieldNotificationObject
+		* @param {object} fieldNotificationObject - an event object.  @see [getFieldNotificationObject](#method_getFieldNotificationObject)
+	    * @param {string} fieldNotificationObject.fieldName - name of field affected.
+	    * @param {variant} fieldNotificationObject.value - the current value of the field.
+	    * @param {variant} fieldNotificationObject.oldValue - the previous value of the field (only applicable if data has changed).
+		* @param {object} fieldNotificationObject.container - the DataContainer
 		*/
 		this.triggerEvent( 'onSet-' + fieldName, fieldNotificationObject );
 		
@@ -3474,42 +3482,42 @@ AFrame.Schema.prototype = {
     /**
     * Validate a set of data against the schema
     *
-    *    var validity = schema.validate( data );
+    *    // validate, but ignore fields defined in the schema that are missing from data.
+    *    var validity = schema.validate( data, true );
     *    // validity is true if all data is valid
     *    // validity is an an object with each field in data, 
     *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
     *
     * @method validate
     * @param {object} data - data to validate
-    * @param {boolean} ignoreMissing (optional) - if set to true, missing fields are not validated.  Defaults to false.
-    * @return {variant} true if all fields are valid, an object with
-    *   each field in data, for each field there is  an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+    * @param {boolean} ignoreMissing (optional) - if set to true, fields missing from data are not validated.  Defaults to false.
+    *   Note, even if set to true, and a field in data has an undefined value, the field will be validated against the
+    *   the undefined value.
+    * @return {variant} true if all fields are valid, an object with each field in data, for each field there 
+    *   is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
     */
     validate: function( data, ignoreMissing ) {
         var statii = {};
         var areErrors = false;
         
         this.forEach( function( row, key ) {
-            var rowCriteria = row.validate;
-            if( rowCriteria ) {
-                var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
-                var field = data[ key ];
-                
-                if( !ignoreMissing || AFrame.defined( field ) ) {
-                    var validityState = this.validateData( data[ key ], criteriaCopy );
-                    // if the row is valid, then just give the row a true status
-                    if( validityState.valid ) {
-                        statii[ key ] = true;
-                    }
-                    else {
-                        // the row is invalid, so save its validityState.
-                        statii[ key ] = validityState;
-                        areErrors = true;
-                    }
+            var rowCriteria = row.validate || {};
+            var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
+            var field = data[ key ];
+            
+            // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,
+            //  even if ignoreMissing is set to true, we validate against it.
+            if( !ignoreMissing || data.hasOwnProperty( key ) ) {
+                var validityState = this.validateData( data[ key ], criteriaCopy );
+                // if the row is valid, then just give the row a true status
+                if( validityState.valid ) {
+                    statii[ key ] = true;
                 }
-            }
-            else {
-                statii[ key ] = true;
+                else {
+                    // the row is invalid, so save its validityState.
+                    statii[ key ] = validityState;
+                    areErrors = true;
+                }
             }
         }, this );
         
@@ -3941,7 +3949,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
 *    var form = AFrame.construct( {
-*        type: AFrame.DataForm,
+*        type: DataForm,
 *        config: {
 *            target: $( '#nameForm' ),
 *            dataSource: libraryDataContainer
@@ -3965,51 +3973,106 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 * @extends AFrame.Form
 * @constructor
 */
-AFrame.DataForm = function() {
-	AFrame.DataForm.superclass.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.DataForm, AFrame.Form, {
-	init: function( config ) {
-		/**
-		 * The source of data
-		 * @config dataSource
-		 * @type {AFrame.DataContainer || Object}
-		 */
-		this.dataContainer = AFrame.DataContainer( config.dataSource );
+
+AFrame.DataForm = ( function() {
+    var DataForm = function() {
+	    DataForm.superclass.constructor.apply( this, arguments );
+    };
+    
+    AFrame.extend( DataForm, AFrame.Form, {
+	    init: function( config ) {
+		    /**
+		     * The source of data
+		     * @config dataSource
+		     * @type {AFrame.DataContainer || Object}
+		     */
+		    this.dataContainer = AFrame.DataContainer( config.dataSource );
 		
-		AFrame.DataForm.superclass.init.apply( this, arguments );
-	},
+		    DataForm.superclass.init.apply( this, arguments );
+	    },
 	
-	teardown: function() {
-		this.dataContainer = null;
-		AFrame.DataForm.superclass.teardown.apply( this, arguments );
-	},
+	    teardown: function() {
+		    this.dataContainer = null;
+		    DataForm.superclass.teardown.apply( this, arguments );
+	    },
 	
-	bindFormElement: function( formElement ) {
-		var formField = AFrame.DataForm.superclass.bindFormElement.apply( this, arguments );
-		var fieldName = $( formElement ).attr( 'data-field' );
+	    bindFormElement: function( formElement ) {
+		    var formField = DataForm.superclass.bindFormElement.apply( this, arguments );
+		    var fieldName = fieldGetName( formField );
 		
-		this.dataContainer.bindField( fieldName, function( data ) { 
-			this.set( data.value );
-		}.bind( formField ), this );
+		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );
 		
-		return formField;
-	},
+		    return formField;
+	    },
+
+	    checkValidity: function() {
+		    var valid = DataForm.superclass.checkValidity.call( this );
+		    if( valid && this.dataContainer.checkValidity ) {
+    		    // only validate vs the dataContainer if the dataContainer has validation.
+		        valid = this.validateFormFieldsWithModels();
+		    }
+		
+		    return valid;
+	    },
+
+	    validateFormFieldsWithModels: function() {
+		    var valid = true;
+		    var formFields = this.getFormFields();
+		    formFields.forEach( function( formField, index ) {
+			    var fieldName = fieldGetName( formField );
+			    var validityState = this.dataContainer.checkValidity( fieldName, formField.get() );
+			
+			    if( validityState !== true ) {
+				    valid = false;
+				    fieldUpdateValidityState( formField, validityState );
+			    }
+		    }, this );
+		    	
+		    return valid;	
+	    },
 	
-	save: function() {
-		var valid = AFrame.DataForm.superclass.save.apply( this, arguments );
+	    save: function() {
+		    var valid = DataForm.superclass.save.apply( this, arguments );
 		
-		if( valid ) {
-			var formFields = this.getFormFields();
-			formFields.forEach( function( formField, index ) {
-				var fieldName = formField.getTarget().attr( 'data-field');
-				this.dataContainer.set( fieldName, formField.get() );
-			}, this );
-		}
+		    if( valid ) {
+			    var formFields = this.getFormFields();
+			    formFields.forEach( function( formField, index ) {
+				    var fieldName = fieldGetName( formField );
+				    this.dataContainer.set( fieldName, formField.get() );
+			    }, this );
+		    }
 		
-		return valid;
-	}
-} );/**
+		    return valid;
+	    }
+    } );
+
+    // Some helper functions that should probably be on the Field itself.
+    function fieldUpdateValidityState( formField, validityState ) {
+        for( var key in validityState ) {
+            if( validityState.hasOwnProperty( key ) ) {
+                var val = validityState[ key ];
+                if( val === true ) {
+                    formField.setError( key );
+                }
+                else if( 'string' == typeof( val ) ) {
+                    formField.setCustomValidity( val );
+                }            
+            }
+        }
+    }
+
+    function fieldGetName( formField ) {
+        return formField.getTarget().attr( 'data-field' );
+    }
+
+    function fieldSetValue( data ) {
+        this.set( data.value );
+    }
+
+
+    return DataForm;
+} )();
+/**
 * Performs dataToValidate validation, attempts to follow the [HTML5 spec](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api).
 *
 *    var criteria = {
@@ -4062,7 +4125,8 @@ AFrame.DataValidation = (function() {
     var validationFuncs = {};
     var jsTypes = {
         text: 'string',
-        number: 'number'
+        number: 'number',
+        integer: 'number'
     };
     
     var Validation = {
@@ -4215,3 +4279,90 @@ AFrame.DataValidation = (function() {
     return Validation;
 
 })();
+/**
+* A Model is a DataContainer that is associated with a Schema.  If no initial data is given, 
+*   default values will be retreived from the schema.  When doing a set, only data that validates
+*   will be set.  If data to set is invalid, set will return a [FieldValidityState](AFrame.FieldValidityState.html).
+* @class AFrame.Model
+* @extends AFrame.DataContainer
+* @constructor
+*/
+AFrame.Model = ( function() {
+    
+    function Model() {
+        Model.superclass.constructor.call( this );
+    }
+    AFrame.extend( Model, AFrame.DataContainer, {
+        init: function( config ) {
+            this.schema = config.schema;
+            config.data = getInitialData( this.schema, config.data );
+            
+            Model.superclass.init.call( this, config );
+        },
+        
+	    /**
+	    * Set an item of data.  Model will only be updated if data validates.  If data validates, the previous
+	    * value will be returned.  If data does not validate, a [FieldValidityState](AFrame.FieldValidityState.html)
+	    * will be returned.
+        *
+        *    var retval = model.set( 'name', 'Shane Tomlinson' );
+        *    if( retval !== true ) {
+        *        // something went wrong
+        *    }
+        *
+	    * @method set
+	    * @param {string} fieldName name of field
+	    * @param {variant} fieldValue value of field
+	    * @return {variant} previous value of field if correctly set, a 
+	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
+	    */
+        set: function( fieldName, fieldValue ) {
+            var fieldValidity = this.checkValidity( fieldName, fieldValue );
+            
+            if( true === fieldValidity ) {
+                fieldValidity = Model.superclass.set.call( this, fieldName, fieldValue );
+            }
+            
+            return fieldValidity;
+        },
+        
+        /**
+        * Check the validity of the potential value of a field
+        *
+        *
+        *    var retval = model.checkValidity( 'name', 'Shane Tomlinson' );
+        *    if( retval !== true ) {
+        *        // something went wrong, value would be invalid.
+        *    }
+        *
+        * @method checkValidity
+	    * @param {string} fieldName name of field
+	    * @param {variant} fieldValue potential value of field
+	    * @return {variant} true if field would be valid, a 
+	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
+        */
+        checkValidity: function( fieldName, fieldValue ) {
+            var data = {};
+            data[ fieldName ] = fieldValue;
+            
+            var fieldValidity = this.schema.validate( data, true );
+            
+            if( fieldValidity !== true ) {
+                fieldValidity = fieldValidity[ fieldName ];
+            }
+            
+            return fieldValidity;
+        }
+    } );
+    
+    return Model;
+    
+    function getInitialData( schema, initialData ) {
+        if( !initialData ) {
+            initialData = schema.getDefaults();
+        }
+        return initialData;
+    }
+
+    
+} )();
