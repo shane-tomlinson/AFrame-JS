@@ -86,6 +86,8 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 		for( var key in this.domEvents ) {
 			this.unbindDOMEvent( key );
 		}
+
+		this.target = null;
 	},
 	
     
@@ -142,7 +144,7 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	* @return {HTMLElement} - the DOM Element
 	*/
 	getDOMElement: function() {
-		return this.getTarget()[ 0 ];
+		return this.target[ 0 ];
 	},
 
 	/**
