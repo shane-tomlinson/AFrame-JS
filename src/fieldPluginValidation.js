@@ -77,166 +77,194 @@
 * @extends AFrame.Plugin
 * @constructor
 */
-AFrame.FieldPluginValidation = function() {
-    AFrame.FieldPluginValidation.superclass.constructor.call( this );
-};
-AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
-    setPlugged: function( plugged ) {
-        this.calculateValidity = true;
-        
-        plugged.bindEvent( 'onChange', this.onChange, this );
-        
-        plugged.getValidityState = this.getValidityState.bind( this );
-        plugged.validate = this.validate.bind( this );
-        plugged.setError = this.setError.bind( this );
-        plugged.setCustomValidity = this.setCustomValidity.bind( this );
-        plugged.checkValidity = this.checkValidity.bind( this );
-        
-        AFrame.FieldPluginValidation.superclass.setPlugged.call( this, plugged );
-    },
-    
-    onChange: function() {
-        this.calculateValidity = true;
-    },
-    
-    /**
-    * Get the current validity state for a field.
-    *
-    *     var validityState = field.getValidityState( field );
-    *
-    * @method getValidityState
-    * @return {AFrame.FieldValidityState} - the current validity state of the field.
-    */
-    getValidityState: function() {
-        this.updateValidityState( true );
-        return this.validityState;
-    },
-    
-	/**
-	 * Validate the field.  A field will validate if 1) Its form element does not have the required 
-     * attribute, or 2) the field has a length.  Sub classes can override this to perform more 
-     * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use 
-     * to check the validity of a form field.  Calling this will reset any validation errors 
-     * previously set and start with a new state.
-     *
-     *    var isValid = field.checkValidity();
-     *
-	 * @method checkValidity
-	 * @return {boolean} true if field is valid, false otw.
-	 */
-    checkValidity: function() {
-        return this.validate();
-    },
-    
-	/**
-	* This should not be called directly, instead [checkValidity](#method_checkValidity) should be.
-    * Do the actual validation on the field.  Should be overridden to do validations.
-    *
-    *    var isValid = field.validate();
-    *
-	* @method validate
-	* @return {boolean} true if field is valid, false otw.
-	*/
-    validate: function() {
-        this.updateValidityState();
-        
-        var field = this.getPlugged();
-        var valid = true;
-        var target = field.getTarget();
-        
-		if( target[ 0 ].checkValidity ) {
-			// browser supports native validation
-			valid = target[ 0 ].checkValidity();
-		} else {
-            var criteria = this.getCriteria();
-            var val = field.get();
-            val = val.length ? val : undefined;
+AFrame.FieldPluginValidation = (function() {
+    var FieldPluginValidation = function() {
+        FieldPluginValidation.superclass.constructor.call( this );
+    };
+    AFrame.extend( FieldPluginValidation, AFrame.Plugin, {
+        setPlugged: function( plugged ) {
+            this.calculateValidity = true;
             
-            AFrame.DataValidation.validate( {
-                data: val,
-                criteria: criteria,
-                fieldValidityState: this.validityState
-            } );
-            valid = this.validityState.valid;
-		}    
+            plugged.bindEvent( 'onChange', this.onChange, this );
+            
+            plugged.getValidityState = this.getValidityState.bind( this );
+            plugged.validate = this.validate.bind( this );
+            plugged.setError = this.setError.bind( this );
+            plugged.setCustomValidity = this.setCustomValidity.bind( this );
+            plugged.checkValidity = this.checkValidity.bind( this );
+            
+            FieldPluginValidation.superclass.setPlugged.call( this, plugged );
+        },
         
-        return valid;
-    },
-    
-    /**
-    * Update the field's validity state.
-    * @private
-    * @method updateValidityState
-    * @param {boolean} validate - whether to perform actual validation or not
-    */
-    updateValidityState: function( validate ) {
-        if( this.calculateValidity ) {
-            this.validityState = AFrame.FieldValidityState.getInstance( this.getPlugged().getTarget()[ 0 ].validity );
+        onChange: function() {
+            this.calculateValidity = true;
+        },
+        
+        /**
+        * Get the current validity state for a field.
+        *
+        *     var validityState = field.getValidityState( field );
+        *
+        * @method getValidityState
+        * @return {AFrame.FieldValidityState} - the current validity state of the field.
+        */
+        getValidityState: function() {
+            this.updateValidityState( true );
+            return this.validityState;
+        },
+        
+	    /**
+	     * Validate the field.  A field will validate if 1) Its form element does not have the required 
+         * attribute, or 2) the field has a length.  Sub classes can override this to perform more 
+         * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use 
+         * to check the validity of a form field.  Calling this will reset any validation errors 
+         * previously set and start with a new state.
+         *
+         *    var isValid = field.checkValidity();
+         *
+	     * @method checkValidity
+	     * @return {boolean} true if field is valid, false otw.
+	     */
+        checkValidity: function() {
+            return this.validate();
+        },
+        
+	    /**
+	    * This should not be called directly, instead [checkValidity](#method_checkValidity) should be.
+        * Do the actual validation on the field.  Should be overridden to do validations.
+        *
+        *    var isValid = field.validate();
+        *
+	    * @method validate
+	    * @return {boolean} true if field is valid, false otw.
+	    */
+        validate: function() {
+            this.updateValidityState();
+            
+            var field = this.getPlugged();
+            var valid = true;
+            var target = field.getTarget();
+            
+		    if( target[ 0 ].checkValidity ) {
+			    // browser supports native validation
+			    valid = target[ 0 ].checkValidity();
+		    } else {
+                var criteria = this.getCriteria();
+                var val = field.get();
+                val = val.length ? val : undefined;
+                
+                AFrame.DataValidation.validate( {
+                    data: val,
+                    criteria: criteria,
+                    fieldValidityState: this.validityState
+                } );
+                valid = this.validityState.valid;
+		    }    
+            
+            return valid;
+        },
+        
+        /**
+        * Update the field's validity state.
+        * @private
+        * @method updateValidityState
+        * @param {boolean} validate - whether to perform actual validation or not
+        */
+        updateValidityState: function( validate ) {
+            if( this.calculateValidity ) {
+                this.validityState = AFrame.FieldValidityState.getInstance( this.getPlugged().getTarget()[ 0 ].validity );
 
-            if( validate ) {
-                this.validate();
+                if( validate ) {
+                    this.validate();
+                }
+                
+                this.calculateValidity = false;
+            }
+        },
+        
+	    /**
+	    * Set an error.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+        *
+        *    field.setError( 'valueMissing' );
+        *
+	    * @method setError
+	    * @param {string} errorType
+	    */
+        setError: function( error ) {
+            this.updateValidityState( true );
+            this.getPlugged().getTarget().trigger( 'invalid' );
+            
+            return this.validityState.setError( error );
+        },
+        
+	    /**
+	    * Set a custom error.  In the AFrame.FieldValidityState object returned
+	    *	by getValidityState, a custom error will have the customError field set to this 
+	    *	message
+        *
+        *    field.setCustomValidity( 'Names must start with a letter' );
+        *
+	    * @method setCustomValidity
+	    * @param {string} customError - the error message to display
+	    */
+        setCustomValidity: function( customValidity ) {
+            this.updateValidityState( true );
+            this.getPlugged().getTarget().trigger( 'invalid' );
+
+            return this.validityState.setCustomValidity( customValidity );
+        },
+        
+        /**
+        * Get the field's validation criteria
+        * @method getCriteria
+        * @return {object} criteria for the field
+        * @private
+        */
+        getCriteria: function() {
+            var target = this.getPlugged().getTarget();
+            var type = target.attr( 'type' );
+            if( !type || type == 'textarea' ) {
+                type = 'text';
             }
             
-            this.calculateValidity = false;
-        }
-    },
-    
-	/**
-	* Set an error.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
-    *
-    *    field.setError( 'valueMissing' );
-    *
-	* @method setError
-	* @param {string} errorType
-	*/
-    setError: function( error ) {
-        this.updateValidityState( true );
-        this.getPlugged().getTarget().trigger( 'invalid' );
-        
-        return this.validityState.setError( error );
-    },
-    
-	/**
-	* Set a custom error.  In the AFrame.FieldValidityState object returned
-	*	by getValidityState, a custom error will have the customError field set to this 
-	*	message
-    *
-    *    field.setCustomValidity( 'Names must start with a letter' );
-    *
-	* @method setCustomValidity
-	* @param {string} customError - the error message to display
-	*/
-    setCustomValidity: function( customValidity ) {
-        this.updateValidityState( true );
-        this.getPlugged().getTarget().trigger( 'invalid' );
+            var criteria = {
+                type: type
+            };
+            
+            if( target.hasAttr( 'required' ) ) {
+                criteria.required = true;
+            }
 
-        return this.validityState.setCustomValidity( customValidity );
-    },
-    
-    /**
-    * Get the field's validation criteria
-    * @method getCriteria
-    * @return {object} criteria for the field
-    * @private
-    */
-    getCriteria: function() {
-        var target = this.getPlugged().getTarget();
-        var type = target.attr( 'type' );
-        if( !type || type == 'textarea' ) {
-            type = 'text';
+            if( target.hasAttr( 'min' ) ) {
+                criteria.min = parseFloat( target.attr( 'min' ) );
+            }
+
+            if( target.hasAttr( 'max' ) ) {
+                criteria.max = parseFloat( target.attr( 'max' ) );
+            }
+            
+            if( target.hasAttr( 'step' ) ) {
+                criteria.step = parseFloat( target.attr( 'step' ) );
+            }
+
+            if( target.hasAttr( 'maxlength' ) ) {
+                var maxlength = parseInt( target.attr( 'maxlength' ), 10 );
+                // firefox sets this to -1 if there is no maxlength attribute
+                if( maxlength > -1 ) {
+                    criteria.maxlength = maxlength;
+                }
+            }
+
+            if( target.hasAttr( 'pattern' ) ) {
+                criteria.pattern = target.attr( 'pattern' );
+            }
+
+            return criteria;
         }
-        
-        var criteria = {
-            type: type
-        };
-        
-        if( target.hasAttr( 'required' ) ) {
-            criteria.required = true;
-        }
-        
-        return criteria;
-    }
-} );
+    } );
+
+    return FieldPluginValidation;
+} )();
 
 $.fn.hasAttr = function(name) {  
    return typeof( this.attr(name) ) != 'undefined';

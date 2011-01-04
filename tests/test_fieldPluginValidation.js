@@ -118,7 +118,60 @@ testsToRun.push( function testField( Y ) {
 
             var validityState = field.getValidityState();
             Assert.isTrue( validityState.valueMissing, 'setCustomValidity sets the valueMissing field as well.' );
-        }  
+        },
+
+        testGetCriteria: function() {
+            var target = $( '<input id="createdField" />' ).appendTo( $( 'body' ) );
+            var field = AFrame.construct( {
+                type: AFrame.Field,
+                config: {
+                    target: target
+                }
+            } );
+
+            var validation = AFrame.construct( {
+                type: AFrame.FieldPluginValidation
+            } );
+            validation.setPlugged( field );
+            
+            var criteria = validation.getCriteria();
+            Assert.areEqual( 'text', criteria.type, 'input with no type sets type to text' );
+
+            Assert.isUndefined( criteria.min, 'min not set' );
+			target.attr( 'min', 10 );
+            criteria = validation.getCriteria();
+            Assert.areEqual( 10, criteria.min, 'min set on criteria' );
+
+			
+            Assert.isUndefined( criteria.max, 'max not set' );
+			target.attr( 'max', 100 );
+            criteria = validation.getCriteria();
+            Assert.areEqual( 100, criteria.max, 'max set on criteria' );
+
+			
+            Assert.isUndefined( criteria.required, 'required not set' );
+			target.attr( 'required', '' );
+            criteria = validation.getCriteria();
+            Assert.isTrue( criteria.required, 'required set on criteria' );
+			
+
+            Assert.isUndefined( criteria.step, 'step not set' );
+			target.attr( 'step', .25 );
+            criteria = validation.getCriteria();
+            Assert.areEqual( .25, criteria.step, 'step set on criteria' );
+
+
+            Assert.isUndefined( criteria.maxlength, 'maxlength not set' );
+			target.attr( 'maxlength', '15' );
+            criteria = validation.getCriteria();
+            Assert.areEqual( 15, criteria.maxlength, 'maxlength set on criteria' );
+
+            Assert.isUndefined( criteria.pattern, 'pattern not set' );
+			target.attr( 'pattern', 'abc' );
+            criteria = validation.getCriteria();
+            Assert.areEqual( 'abc', criteria.pattern, 'pattern set on criteria' );
+            
+        }
     } );
 	TestRunner.add( test );
 } );
