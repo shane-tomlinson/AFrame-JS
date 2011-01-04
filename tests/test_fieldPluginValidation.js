@@ -121,13 +121,13 @@ testsToRun.push( function testField( Y ) {
         },
 
         testGetCriteria: function() {
-            var target = $( '<input id="createdField" />' ).appendTo( $( 'body' ) );
-            var field = AFrame.construct( {
-                type: AFrame.Field,
-                config: {
-                    target: target
-                }
-            } );
+            var target = $( 'input#validationField' );
+            var field = {
+                getTarget: function() {
+                    return target;
+                },
+                bindEvent: function() {}
+            };
 
             var validation = AFrame.construct( {
                 type: AFrame.FieldPluginValidation
@@ -150,7 +150,7 @@ testsToRun.push( function testField( Y ) {
 
 			
             Assert.isUndefined( criteria.required, 'required not set' );
-			target.attr( 'required', '' );
+			target.attr( 'required', 'required' );
             criteria = validation.getCriteria();
             Assert.isTrue( criteria.required, 'required set on criteria' );
 			

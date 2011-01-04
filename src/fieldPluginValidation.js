@@ -230,7 +230,7 @@ AFrame.FieldPluginValidation = (function() {
             var criteria = {
                 type: type
             };
-            
+
             if( target.hasAttr( 'required' ) ) {
                 criteria.required = true;
             }
@@ -249,8 +249,10 @@ AFrame.FieldPluginValidation = (function() {
 
             if( target.hasAttr( 'maxlength' ) ) {
                 var maxlength = parseInt( target.attr( 'maxlength' ), 10 );
-                // firefox sets this to -1 if there is no maxlength attribute
-                if( maxlength > -1 ) {
+                // firefox sets this to -1 by default
+                // webkit sets this to 524288 by default
+                // ie sets this to 2147483647 by default
+                if( maxlength !== -1 && maxlength !== 524288 && maxlength != 2147483647 ) {
                     criteria.maxlength = maxlength;
                 }
             }
@@ -266,6 +268,7 @@ AFrame.FieldPluginValidation = (function() {
     return FieldPluginValidation;
 } )();
 
-$.fn.hasAttr = function(name) {  
-   return typeof( this.attr(name) ) != 'undefined';
+$.fn.hasAttr = function(name) {
+    var val = this[0].getAttribute( name );
+    return val !== null;
 };
