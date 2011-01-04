@@ -48,7 +48,7 @@ AFrame.DataContainer = function( data ) {
 		}
 		return dataContainer;
 	}
-	AFrame.DataContainer.superclass.constructor.apply( this, arguments );
+	AFrame.DataContainer.sc.constructor.apply( this, arguments );
 
 };
 
@@ -74,7 +74,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		this.data.__dataContainer = this;
 		this.fieldBindings = {};
 		
-		AFrame.DataContainer.superclass.init.apply( this, arguments );
+		AFrame.DataContainer.sc.init.apply( this, arguments );
 	},
 	
 	/**

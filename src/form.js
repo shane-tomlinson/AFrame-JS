@@ -76,7 +76,7 @@
  * @default this.formFieldFactory;
  */
 AFrame.Form = function() {
-	AFrame.Form.superclass.constructor.apply( this, arguments );
+	AFrame.Form.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.Form, AFrame.Display, {
 	init: function( config ) {
@@ -84,7 +84,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 		this.formElements = [];
 		this.formFields = [];
 		
-		AFrame.Form.superclass.init.apply( this, arguments );
+		AFrame.Form.sc.init.apply( this, arguments );
 
 		this.bindFormElements();
 	},
@@ -130,7 +130,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 		}, this );
 		this.formFields = null;
 		this.formElements = null;
-		AFrame.Form.superclass.teardown.apply( this, arguments );
+		AFrame.Form.sc.teardown.apply( this, arguments );
 	},
 	
 	/**

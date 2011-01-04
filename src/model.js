@@ -9,14 +9,14 @@
 AFrame.Model = ( function() {
     
     function Model() {
-        Model.superclass.constructor.call( this );
+        Model.sc.constructor.call( this );
     }
     AFrame.extend( Model, AFrame.DataContainer, {
         init: function( config ) {
             this.schema = config.schema;
             config.data = getInitialData( this.schema, config.data );
             
-            Model.superclass.init.call( this, config );
+            Model.sc.init.call( this, config );
         },
         
 	    /**
@@ -39,7 +39,7 @@ AFrame.Model = ( function() {
             var fieldValidity = this.checkValidity( fieldName, fieldValue );
             
             if( true === fieldValidity ) {
-                fieldValidity = Model.superclass.set.call( this, fieldName, fieldValue );
+                fieldValidity = Model.sc.set.call( this, fieldName, fieldValue );
             }
             
             return fieldValidity;

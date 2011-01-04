@@ -37,14 +37,14 @@
 * @constructor
 */
 AFrame.CollectionHash = function() {
-	AFrame.CollectionHash.superclass.constructor.apply( this, arguments );
+	AFrame.CollectionHash.sc.constructor.apply( this, arguments );
 };
 AFrame.CollectionHash.currID = 0;
 AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	init: function( config ) {
 		this.hash = {};
 		
-		AFrame.CollectionHash.superclass.init.apply( this, arguments );
+		AFrame.CollectionHash.sc.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -53,7 +53,7 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		}
 		AFrame.remove( this, 'hash' );
 		
-		AFrame.CollectionHash.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionHash.sc.teardown.apply( this, arguments );
 	},
 	
 	/**

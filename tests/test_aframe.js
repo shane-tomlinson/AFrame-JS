@@ -19,7 +19,7 @@ AFrame.extend( SubClass, SuperClass, {
     },
     
     sharedFunc: function() {
-	return SubClass.superclass.sharedFunc.call( this );
+	return SubClass.sc.sharedFunc.call( this );
     },
     
     init: function() {
@@ -60,8 +60,8 @@ testsToRun.push( function testAFrame( Y ) {
 		testExtendSuperclass: function () {
 		    Assert.isFunction( this.subInstance.hasFunc, 'superExtendedFunc exists' );
 		    Assert.isTrue( this.subInstance.hasFunc(), 'subclass function returns true' );
-		    Assert.isObject( SubClass.superclass, 'superclass exists' );
-		    Assert.areEqual( SubClass.superclass.hasFunc, SuperClass.prototype.hasFunc, 'superclass points to super\'s function' );
+		    Assert.isObject( SubClass.sc, 'sc exists' );
+		    Assert.areEqual( SubClass.sc.hasFunc, SuperClass.prototype.hasFunc, 'sc points to super\'s function' );
 			
 			Assert.isFunction( this.subInstance.funcsFromSecondMixin, 'extend works with more than one mixin' );
 		},

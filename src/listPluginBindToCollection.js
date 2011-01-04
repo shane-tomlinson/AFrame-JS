@@ -77,7 +77,7 @@
  * @constructor
  */
 AFrame.ListPluginBindToCollection = function() {
-	AFrame.ListPluginBindToCollection.superclass.constructor.apply( this, arguments );
+	AFrame.ListPluginBindToCollection.sc.constructor.apply( this, arguments );
 };
 
 AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
@@ -93,13 +93,13 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 
 		this.cids = [];
 		
-		AFrame.ListPluginBindToCollection.superclass.init.apply( this, arguments );
+		AFrame.ListPluginBindToCollection.sc.init.apply( this, arguments );
 	},
 	
 	setPlugged: function( plugged ) {
 		plugged.getIndex = this.getIndex.bind( this );
 		
-		AFrame.ListPluginBindToCollection.superclass.setPlugged.apply( this, arguments );
+		AFrame.ListPluginBindToCollection.sc.setPlugged.apply( this, arguments );
 	},
 	
 	onInsert: function( data ) {

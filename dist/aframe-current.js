@@ -115,7 +115,7 @@ var AFrame = {
 	* Used to extend a class with another class and optional functions.
     *
     *    AFrame.NewClass = function() {
-    *        AFrame.NewClass.superclass.constructor.apply( this, arguments );
+    *        AFrame.NewClass.sc.constructor.apply( this, arguments );
     *    }
     *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
     *        someFunc: function() { 
@@ -125,15 +125,15 @@ var AFrame = {
     *
 	* @method extend
 	* @param {function} derived - class to extend
-	* @param {function} superclass - class to extend with.
+	* @param {function} sc - class to extend with.
 	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
 	*/
-	extend: function( derived, superclass ) {
+	extend: function( derived, sc ) {
 		var F = function() {};
-		F.prototype = superclass.prototype;
+		F.prototype = sc.prototype;
 		derived.prototype = new F();
 		derived.prototype.constuctor = derived;
-		derived.superclass = superclass.prototype;
+		derived.sc = sc.prototype;
 
 		var mixins = Array.prototype.slice.call( arguments, 2 );
 		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
@@ -732,7 +732,7 @@ AFrame.DataContainer = function( data ) {
 		}
 		return dataContainer;
 	}
-	AFrame.DataContainer.superclass.constructor.apply( this, arguments );
+	AFrame.DataContainer.sc.constructor.apply( this, arguments );
 
 };
 
@@ -758,7 +758,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		this.data.__dataContainer = this;
 		this.fieldBindings = {};
 		
-		AFrame.DataContainer.superclass.init.apply( this, arguments );
+		AFrame.DataContainer.sc.init.apply( this, arguments );
 	},
 	
 	/**
@@ -903,7 +903,7 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 * @constructor
 */
 AFrame.Plugin = function() {
-	AFrame.Plugin.superclass.constructor.apply( this, arguments );
+	AFrame.Plugin.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.Plugin, AFrame.AObject, {
 	/**
@@ -931,7 +931,7 @@ AFrame.extend( AFrame.Plugin, AFrame.AObject, {
 	
 	teardown: function() {
 		AFrame.remove( this, 'plugged' );
-		AFrame.Plugin.superclass.teardown.apply( this, arguments );
+		AFrame.Plugin.sc.teardown.apply( this, arguments );
 	}
 } );/**
 * Common functions to all arrays
@@ -1032,14 +1032,14 @@ AFrame.ArrayCommonFuncsMixin = {
 * @constructor
 */
 AFrame.CollectionHash = function() {
-	AFrame.CollectionHash.superclass.constructor.apply( this, arguments );
+	AFrame.CollectionHash.sc.constructor.apply( this, arguments );
 };
 AFrame.CollectionHash.currID = 0;
 AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 	init: function( config ) {
 		this.hash = {};
 		
-		AFrame.CollectionHash.superclass.init.apply( this, arguments );
+		AFrame.CollectionHash.sc.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -1048,7 +1048,7 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 		}
 		AFrame.remove( this, 'hash' );
 		
-		AFrame.CollectionHash.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionHash.sc.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -1268,13 +1268,13 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 * @constructor
 */
 AFrame.CollectionArray = function() {
-	AFrame.CollectionArray.superclass.constructor.apply( this, arguments );
+	AFrame.CollectionArray.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
 
-		AFrame.CollectionArray.superclass.init.apply( this, arguments );
+		AFrame.CollectionArray.sc.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -1283,7 +1283,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		}, this );
 		AFrame.remove( this, 'itemCIDs' );
 		
-		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionArray.sc.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -1320,7 +1320,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		index = 'number' == typeof( index ) ? index : -1;
 		this.currentIndex = this.getActualInsertIndex( index );
         
-		var cid = AFrame.CollectionArray.superclass.insert.call( this, item );
+		var cid = AFrame.CollectionArray.sc.insert.call( this, item );
 		this.itemCIDs.splice( this.currentIndex, 0, cid );
 		
 		return cid;
@@ -1348,7 +1348,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		var cid = this.getCID( index );
 		var retval;
 		if( cid ) {
-			retval = AFrame.CollectionArray.superclass.get.call( this, cid );
+			retval = AFrame.CollectionArray.sc.get.call( this, cid );
 		}
 		return retval;
 	},
@@ -1381,7 +1381,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		if( index > -1 ) {
 			this.itemCIDs.splice( index, 1 );
             this.currentIndex = index;
-			retval = AFrame.CollectionArray.superclass.remove.call( this, cid );
+			retval = AFrame.CollectionArray.sc.remove.call( this, cid );
 		}
 		
 		return retval;
@@ -1396,7 +1396,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	* @method clear
 	*/
 	clear: function() {
-        AFrame.CollectionArray.superclass.clear.call( this );
+        AFrame.CollectionArray.sc.clear.call( this );
 		
 		this.itemCIDs = [];
 	},
@@ -1442,7 +1442,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
             index: this.currentIndex
         } );
 
-		return AFrame.CollectionArray.superclass.getEventData.call( this, item, data );
+		return AFrame.CollectionArray.sc.getEventData.call( this, item, data );
 	},
 	
 	/**
@@ -1515,7 +1515,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
  *
  * By default, the AFrame assumes that a display's DOM is already drawn.  If a display needs rendered,
  * this can be done so using the render method.  The below example is of a subclass
- * overriding the render method.  When using render, be sure to use the superclass's render method.
+ * overriding the render method.  When using render, be sure to use the sc's render method.
  *
  *     ...
  * 
@@ -1536,7 +1536,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
  * @constructor
  */
 AFrame.Display = function() {
-	AFrame.Display.superclass.constructor.apply( this, arguments );
+	AFrame.Display.sc.constructor.apply( this, arguments );
 };
 AFrame.Display.currDOMEventID = 0;
 AFrame.extend( AFrame.Display, AFrame.AObject, {
@@ -1556,13 +1556,15 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
         
 		this.domEvents = {};
 		
-		AFrame.Display.superclass.init.apply( this, arguments );
+		AFrame.Display.sc.init.apply( this, arguments );
 	},
 
 	teardown: function() {
 		for( var key in this.domEvents ) {
 			this.unbindDOMEvent( key );
 		}
+
+		this.target = null;
 	},
 	
     
@@ -1619,7 +1621,7 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 	* @return {HTMLElement} - the DOM Element
 	*/
 	getDOMElement: function() {
-		return this.getTarget()[ 0 ];
+		return this.target[ 0 ];
 	},
 
 	/**
@@ -1710,7 +1712,8 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
 		
 		return eventTarget;
 	}
-} );/**
+} );
+/**
  * A generic HTML list class.  A list is any list of data.  A List shares
  *  the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> 
  *  since lists are inherently ordered (even if they are ULs).  There are two methods
@@ -1770,7 +1773,7 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
  * @default this.listElementFactory
  */
 AFrame.List = function() {
-	AFrame.List.superclass.constructor.apply( this, arguments );
+	AFrame.List.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
@@ -1778,7 +1781,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
             this.listElementFactory = config.listElementFactory;
         }
 		
-		AFrame.List.superclass.init.apply( this, arguments );
+		AFrame.List.sc.init.apply( this, arguments );
 	},
 
 	/**
@@ -2028,7 +2031,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
  * @constructor
  */
 AFrame.ListPluginBindToCollection = function() {
-	AFrame.ListPluginBindToCollection.superclass.constructor.apply( this, arguments );
+	AFrame.ListPluginBindToCollection.sc.constructor.apply( this, arguments );
 };
 
 AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
@@ -2044,13 +2047,13 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 
 		this.cids = [];
 		
-		AFrame.ListPluginBindToCollection.superclass.init.apply( this, arguments );
+		AFrame.ListPluginBindToCollection.sc.init.apply( this, arguments );
 	},
 	
 	setPlugged: function( plugged ) {
 		plugged.getIndex = this.getIndex.bind( this );
 		
-		AFrame.ListPluginBindToCollection.superclass.setPlugged.apply( this, arguments );
+		AFrame.ListPluginBindToCollection.sc.setPlugged.apply( this, arguments );
 	},
 	
 	onInsert: function( data ) {
@@ -2179,7 +2182,7 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  * @constructor
  */
 AFrame.CollectionPluginPersistence = function() {
-	AFrame.CollectionPluginPersistence.superclass.constructor.apply( this, arguments );
+	AFrame.CollectionPluginPersistence.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	init: function( config ) {
@@ -2211,7 +2214,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 		 */
 		this.deleteCallback = config.deleteCallback || this.noPersistenceOp;
 		
-		AFrame.CollectionPluginPersistence.superclass.init.apply( this, arguments );
+		AFrame.CollectionPluginPersistence.sc.init.apply( this, arguments );
 	},
 
 	noPersistenceOp: function( data, options ) {
@@ -2225,7 +2228,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 		plugged.del = this.del.bind( this );
 		plugged.save = this.save.bind( this );
 		
-		AFrame.CollectionPluginPersistence.superclass.setPlugged.apply( this, arguments );
+		AFrame.CollectionPluginPersistence.sc.setPlugged.apply( this, arguments );
 	},
 
 	/**
@@ -2452,7 +2455,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
  * @default this.formFieldFactory;
  */
 AFrame.Form = function() {
-	AFrame.Form.superclass.constructor.apply( this, arguments );
+	AFrame.Form.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.Form, AFrame.Display, {
 	init: function( config ) {
@@ -2460,7 +2463,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 		this.formElements = [];
 		this.formFields = [];
 		
-		AFrame.Form.superclass.init.apply( this, arguments );
+		AFrame.Form.sc.init.apply( this, arguments );
 
 		this.bindFormElements();
 	},
@@ -2506,7 +2509,7 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
 		}, this );
 		this.formFields = null;
 		this.formElements = null;
-		AFrame.Form.superclass.teardown.apply( this, arguments );
+		AFrame.Form.sc.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -2655,14 +2658,14 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
  * @constructor
  */
 AFrame.Field = function() {
-	AFrame.Field.superclass.constructor.apply( this, arguments );
+	AFrame.Field.sc.constructor.apply( this, arguments );
 };
 AFrame.Field.cancelInvalid = true;
 AFrame.extend( AFrame.Field, AFrame.Display, {
 	init: function( config ) {
         this.createValidator();
 
-		AFrame.Field.superclass.init.apply( this, arguments );
+		AFrame.Field.sc.init.apply( this, arguments );
 
 		this.resetVal = this.getDisplayed();
 	},
@@ -2681,7 +2684,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
 		this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
 		
-		AFrame.Field.superclass.bindEvents.apply( this, arguments );
+		AFrame.Field.sc.bindEvents.apply( this, arguments );
 	},
 
 	/**
@@ -2858,11 +2861,11 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 *##Example of using a custom validator##
 *
 *    function ValidatorPlugin() {
-*        ValidatorPlugin.superclass.constructor.call( this );
+*        ValidatorPlugin.sc.constructor.call( this );
 *    }
 *    AFrame.extend( ValidatorPlugin, AFrame.FieldPluginValidation, {
 *        validate: function() {
-*            var valid = ValidatorPlugin.superclass.validate.call( this );
+*            var valid = ValidatorPlugin.sc.validate.call( this );
 *            if( valid ) {
 *                 // do custom validation setting valid variable
 *            }
@@ -2887,166 +2890,194 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 * @extends AFrame.Plugin
 * @constructor
 */
-AFrame.FieldPluginValidation = function() {
-    AFrame.FieldPluginValidation.superclass.constructor.call( this );
-};
-AFrame.extend( AFrame.FieldPluginValidation, AFrame.Plugin, {
-    setPlugged: function( plugged ) {
-        this.calculateValidity = true;
-        
-        plugged.bindEvent( 'onChange', this.onChange, this );
-        
-        plugged.getValidityState = this.getValidityState.bind( this );
-        plugged.validate = this.validate.bind( this );
-        plugged.setError = this.setError.bind( this );
-        plugged.setCustomValidity = this.setCustomValidity.bind( this );
-        plugged.checkValidity = this.checkValidity.bind( this );
-        
-        AFrame.FieldPluginValidation.superclass.setPlugged.call( this, plugged );
-    },
-    
-    onChange: function() {
-        this.calculateValidity = true;
-    },
-    
-    /**
-    * Get the current validity state for a field.
-    *
-    *     var validityState = field.getValidityState( field );
-    *
-    * @method getValidityState
-    * @return {AFrame.FieldValidityState} - the current validity state of the field.
-    */
-    getValidityState: function() {
-        this.updateValidityState( true );
-        return this.validityState;
-    },
-    
-	/**
-	 * Validate the field.  A field will validate if 1) Its form element does not have the required 
-     * attribute, or 2) the field has a length.  Sub classes can override this to perform more 
-     * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use 
-     * to check the validity of a form field.  Calling this will reset any validation errors 
-     * previously set and start with a new state.
-     *
-     *    var isValid = field.checkValidity();
-     *
-	 * @method checkValidity
-	 * @return {boolean} true if field is valid, false otw.
-	 */
-    checkValidity: function() {
-        return this.validate();
-    },
-    
-	/**
-	* This should not be called directly, instead [checkValidity](#method_checkValidity) should be.
-    * Do the actual validation on the field.  Should be overridden to do validations.
-    *
-    *    var isValid = field.validate();
-    *
-	* @method validate
-	* @return {boolean} true if field is valid, false otw.
-	*/
-    validate: function() {
-        this.updateValidityState();
-        
-        var field = this.getPlugged();
-        var valid = true;
-        var target = field.getTarget();
-        
-		if( target[ 0 ].checkValidity ) {
-			// browser supports native validation
-			valid = target[ 0 ].checkValidity();
-		} else {
-            var criteria = this.getCriteria();
-            var val = field.get();
-            val = val.length ? val : undefined;
+AFrame.FieldPluginValidation = (function() {
+    var FieldPluginValidation = function() {
+        FieldPluginValidation.sc.constructor.call( this );
+    };
+    AFrame.extend( FieldPluginValidation, AFrame.Plugin, {
+        setPlugged: function( plugged ) {
+            this.calculateValidity = true;
             
-            AFrame.DataValidation.validate( {
-                data: val,
-                criteria: criteria,
-                fieldValidityState: this.validityState
-            } );
-            valid = this.validityState.valid;
-		}    
+            plugged.bindEvent( 'onChange', this.onChange, this );
+            
+            plugged.getValidityState = this.getValidityState.bind( this );
+            plugged.validate = this.validate.bind( this );
+            plugged.setError = this.setError.bind( this );
+            plugged.setCustomValidity = this.setCustomValidity.bind( this );
+            plugged.checkValidity = this.checkValidity.bind( this );
+            
+            FieldPluginValidation.sc.setPlugged.call( this, plugged );
+        },
         
-        return valid;
-    },
-    
-    /**
-    * Update the field's validity state.
-    * @private
-    * @method updateValidityState
-    * @param {boolean} validate - whether to perform actual validation or not
-    */
-    updateValidityState: function( validate ) {
-        if( this.calculateValidity ) {
-            this.validityState = AFrame.FieldValidityState.getInstance( this.getPlugged().getTarget()[ 0 ].validity );
+        onChange: function() {
+            this.calculateValidity = true;
+        },
+        
+        /**
+        * Get the current validity state for a field.
+        *
+        *     var validityState = field.getValidityState( field );
+        *
+        * @method getValidityState
+        * @return {AFrame.FieldValidityState} - the current validity state of the field.
+        */
+        getValidityState: function() {
+            this.updateValidityState( true );
+            return this.validityState;
+        },
+        
+	    /**
+	     * Validate the field.  A field will validate if 1) Its form element does not have the required 
+         * attribute, or 2) the field has a length.  Sub classes can override this to perform more 
+         * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use 
+         * to check the validity of a form field.  Calling this will reset any validation errors 
+         * previously set and start with a new state.
+         *
+         *    var isValid = field.checkValidity();
+         *
+	     * @method checkValidity
+	     * @return {boolean} true if field is valid, false otw.
+	     */
+        checkValidity: function() {
+            return this.validate();
+        },
+        
+	    /**
+	    * This should not be called directly, instead [checkValidity](#method_checkValidity) should be.
+        * Do the actual validation on the field.  Should be overridden to do validations.
+        *
+        *    var isValid = field.validate();
+        *
+	    * @method validate
+	    * @return {boolean} true if field is valid, false otw.
+	    */
+        validate: function() {
+            this.updateValidityState();
+            
+            var field = this.getPlugged();
+            var valid = true;
+            var target = field.getTarget();
+            
+		    if( target[ 0 ].checkValidity ) {
+			    // browser supports native validation
+			    valid = target[ 0 ].checkValidity();
+		    } else {
+                var criteria = this.getCriteria();
+                var val = field.get();
+                val = val.length ? val : undefined;
+                
+                AFrame.DataValidation.validate( {
+                    data: val,
+                    criteria: criteria,
+                    fieldValidityState: this.validityState
+                } );
+                valid = this.validityState.valid;
+		    }    
+            
+            return valid;
+        },
+        
+        /**
+        * Update the field's validity state.
+        * @private
+        * @method updateValidityState
+        * @param {boolean} validate - whether to perform actual validation or not
+        */
+        updateValidityState: function( validate ) {
+            if( this.calculateValidity ) {
+                this.validityState = AFrame.FieldValidityState.getInstance( this.getPlugged().getTarget()[ 0 ].validity );
 
-            if( validate ) {
-                this.validate();
+                if( validate ) {
+                    this.validate();
+                }
+                
+                this.calculateValidity = false;
+            }
+        },
+        
+	    /**
+	    * Set an error.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+        *
+        *    field.setError( 'valueMissing' );
+        *
+	    * @method setError
+	    * @param {string} errorType
+	    */
+        setError: function( error ) {
+            this.updateValidityState( true );
+            this.getPlugged().getTarget().trigger( 'invalid' );
+            
+            return this.validityState.setError( error );
+        },
+        
+	    /**
+	    * Set a custom error.  In the AFrame.FieldValidityState object returned
+	    *	by getValidityState, a custom error will have the customError field set to this 
+	    *	message
+        *
+        *    field.setCustomValidity( 'Names must start with a letter' );
+        *
+	    * @method setCustomValidity
+	    * @param {string} customError - the error message to display
+	    */
+        setCustomValidity: function( customValidity ) {
+            this.updateValidityState( true );
+            this.getPlugged().getTarget().trigger( 'invalid' );
+
+            return this.validityState.setCustomValidity( customValidity );
+        },
+        
+        /**
+        * Get the field's validation criteria
+        * @method getCriteria
+        * @return {object} criteria for the field
+        * @private
+        */
+        getCriteria: function() {
+            var target = this.getPlugged().getTarget();
+            var type = target.attr( 'type' );
+            if( !type || type == 'textarea' ) {
+                type = 'text';
             }
             
-            this.calculateValidity = false;
-        }
-    },
-    
-	/**
-	* Set an error.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
-    *
-    *    field.setError( 'valueMissing' );
-    *
-	* @method setError
-	* @param {string} errorType
-	*/
-    setError: function( error ) {
-        this.updateValidityState( true );
-        this.getPlugged().getTarget().trigger( 'invalid' );
-        
-        return this.validityState.setError( error );
-    },
-    
-	/**
-	* Set a custom error.  In the AFrame.FieldValidityState object returned
-	*	by getValidityState, a custom error will have the customError field set to this 
-	*	message
-    *
-    *    field.setCustomValidity( 'Names must start with a letter' );
-    *
-	* @method setCustomValidity
-	* @param {string} customError - the error message to display
-	*/
-    setCustomValidity: function( customValidity ) {
-        this.updateValidityState( true );
-        this.getPlugged().getTarget().trigger( 'invalid' );
+            var criteria = {
+                type: type
+            };
+            
+            if( target.hasAttr( 'required' ) ) {
+                criteria.required = true;
+            }
 
-        return this.validityState.setCustomValidity( customValidity );
-    },
-    
-    /**
-    * Get the field's validation criteria
-    * @method getCriteria
-    * @return {object} criteria for the field
-    * @private
-    */
-    getCriteria: function() {
-        var target = this.getPlugged().getTarget();
-        var type = target.attr( 'type' );
-        if( !type || type == 'textarea' ) {
-            type = 'text';
+            if( target.hasAttr( 'min' ) ) {
+                criteria.min = parseFloat( target.attr( 'min' ) );
+            }
+
+            if( target.hasAttr( 'max' ) ) {
+                criteria.max = parseFloat( target.attr( 'max' ) );
+            }
+            
+            if( target.hasAttr( 'step' ) ) {
+                criteria.step = parseFloat( target.attr( 'step' ) );
+            }
+
+            if( target.hasAttr( 'maxlength' ) ) {
+                var maxlength = parseInt( target.attr( 'maxlength' ), 10 );
+                // firefox sets this to -1 if there is no maxlength attribute
+                if( maxlength > -1 ) {
+                    criteria.maxlength = maxlength;
+                }
+            }
+
+            if( target.hasAttr( 'pattern' ) ) {
+                criteria.pattern = target.attr( 'pattern' );
+            }
+
+            return criteria;
         }
-        
-        var criteria = {
-            type: type
-        };
-        
-        if( target.hasAttr( 'required' ) ) {
-            criteria.required = true;
-        }
-        
-        return criteria;
-    }
-} );
+    } );
+
+    return FieldPluginValidation;
+} )();
 
 $.fn.hasAttr = function(name) {  
    return typeof( this.attr(name) ) != 'undefined';
@@ -3714,7 +3745,7 @@ AFrame.Schema.addSerializer( 'iso8601', function( date ) {
  * @constructor 
  */
 AFrame.ListPluginFormRow = function() {
-	AFrame.ListPluginFormRow.superclass.constructor.apply( this, arguments );
+	AFrame.ListPluginFormRow.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 	init: function( config ) {
@@ -3745,7 +3776,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		
 		this.forms = [];
 		
-		AFrame.ListPluginFormRow.superclass.init.apply( this, arguments );
+		AFrame.ListPluginFormRow.sc.init.apply( this, arguments );
 	},
     
 	setPlugged: function( plugged ) {
@@ -3758,7 +3789,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		plugged.clear = this.clear.bind( this );
 		plugged.getForm = this.getForm.bind( this );
 		
-		AFrame.ListPluginFormRow.superclass.setPlugged.apply( this, arguments );		
+		AFrame.ListPluginFormRow.sc.setPlugged.apply( this, arguments );		
 	},
 	
 	teardown: function() {
@@ -3767,7 +3798,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 			this.forms[ index ] = null;
 		}, this );
 		
-		AFrame.ListPluginFormRow.superclass.teardown.apply( this, arguments );		
+		AFrame.ListPluginFormRow.sc.teardown.apply( this, arguments );		
 	},
 	
     /**
@@ -3980,7 +4011,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 
 AFrame.DataForm = ( function() {
     var DataForm = function() {
-	    DataForm.superclass.constructor.apply( this, arguments );
+	    DataForm.sc.constructor.apply( this, arguments );
     };
     
     AFrame.extend( DataForm, AFrame.Form, {
@@ -3992,16 +4023,16 @@ AFrame.DataForm = ( function() {
 		     */
 		    this.dataContainer = AFrame.DataContainer( config.dataSource );
 		
-		    DataForm.superclass.init.apply( this, arguments );
+		    DataForm.sc.init.apply( this, arguments );
 	    },
 	
 	    teardown: function() {
 		    this.dataContainer = null;
-		    DataForm.superclass.teardown.apply( this, arguments );
+		    DataForm.sc.teardown.apply( this, arguments );
 	    },
 	
 	    bindFormElement: function( formElement ) {
-		    var formField = DataForm.superclass.bindFormElement.apply( this, arguments );
+		    var formField = DataForm.sc.bindFormElement.apply( this, arguments );
 		    var fieldName = fieldGetName( formField );
 		
 		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );
@@ -4010,7 +4041,7 @@ AFrame.DataForm = ( function() {
 	    },
 
 	    checkValidity: function() {
-		    var valid = DataForm.superclass.checkValidity.call( this );
+		    var valid = DataForm.sc.checkValidity.call( this );
 		    if( valid && this.dataContainer.checkValidity ) {
     		    // only validate vs the dataContainer if the dataContainer has validation.
 		        valid = this.validateFormFieldsWithModels();
@@ -4036,7 +4067,7 @@ AFrame.DataForm = ( function() {
 	    },
 	
 	    save: function() {
-		    var valid = DataForm.superclass.save.apply( this, arguments );
+		    var valid = DataForm.sc.save.apply( this, arguments );
 		
 		    if( valid ) {
 			    var formFields = this.getFormFields();
@@ -4294,14 +4325,14 @@ AFrame.DataValidation = (function() {
 AFrame.Model = ( function() {
     
     function Model() {
-        Model.superclass.constructor.call( this );
+        Model.sc.constructor.call( this );
     }
     AFrame.extend( Model, AFrame.DataContainer, {
         init: function( config ) {
             this.schema = config.schema;
             config.data = getInitialData( this.schema, config.data );
             
-            Model.superclass.init.call( this, config );
+            Model.sc.init.call( this, config );
         },
         
 	    /**
@@ -4324,7 +4355,7 @@ AFrame.Model = ( function() {
             var fieldValidity = this.checkValidity( fieldName, fieldValue );
             
             if( true === fieldValidity ) {
-                fieldValidity = Model.superclass.set.call( this, fieldName, fieldValue );
+                fieldValidity = Model.sc.set.call( this, fieldName, fieldValue );
             }
             
             return fieldValidity;

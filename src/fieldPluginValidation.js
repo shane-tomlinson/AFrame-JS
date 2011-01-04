@@ -48,11 +48,11 @@
 *##Example of using a custom validator##
 *
 *    function ValidatorPlugin() {
-*        ValidatorPlugin.superclass.constructor.call( this );
+*        ValidatorPlugin.sc.constructor.call( this );
 *    }
 *    AFrame.extend( ValidatorPlugin, AFrame.FieldPluginValidation, {
 *        validate: function() {
-*            var valid = ValidatorPlugin.superclass.validate.call( this );
+*            var valid = ValidatorPlugin.sc.validate.call( this );
 *            if( valid ) {
 *                 // do custom validation setting valid variable
 *            }
@@ -79,7 +79,7 @@
 */
 AFrame.FieldPluginValidation = (function() {
     var FieldPluginValidation = function() {
-        FieldPluginValidation.superclass.constructor.call( this );
+        FieldPluginValidation.sc.constructor.call( this );
     };
     AFrame.extend( FieldPluginValidation, AFrame.Plugin, {
         setPlugged: function( plugged ) {
@@ -93,7 +93,7 @@ AFrame.FieldPluginValidation = (function() {
             plugged.setCustomValidity = this.setCustomValidity.bind( this );
             plugged.checkValidity = this.checkValidity.bind( this );
             
-            FieldPluginValidation.superclass.setPlugged.call( this, plugged );
+            FieldPluginValidation.sc.setPlugged.call( this, plugged );
         },
         
         onChange: function() {

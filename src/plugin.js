@@ -9,7 +9,7 @@
 * @constructor
 */
 AFrame.Plugin = function() {
-	AFrame.Plugin.superclass.constructor.apply( this, arguments );
+	AFrame.Plugin.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.Plugin, AFrame.AObject, {
 	/**
@@ -37,6 +37,6 @@ AFrame.extend( AFrame.Plugin, AFrame.AObject, {
 	
 	teardown: function() {
 		AFrame.remove( this, 'plugged' );
-		AFrame.Plugin.superclass.teardown.apply( this, arguments );
+		AFrame.Plugin.sc.teardown.apply( this, arguments );
 	}
 } );

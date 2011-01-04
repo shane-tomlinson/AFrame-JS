@@ -48,7 +48,7 @@ testsToRun.push( function testField( Y ) {
             var ourValidatorCalled = false;
             
             function ValidatorPlugin() {
-                ValidatorPlugin.superclass.constructor.call( this );
+                ValidatorPlugin.sc.constructor.call( this );
             }
             AFrame.extend( ValidatorPlugin, AFrame.FieldPluginValidation, {
                 validate: function() {

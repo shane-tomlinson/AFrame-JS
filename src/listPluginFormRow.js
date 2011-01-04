@@ -79,7 +79,7 @@
  * @constructor 
  */
 AFrame.ListPluginFormRow = function() {
-	AFrame.ListPluginFormRow.superclass.constructor.apply( this, arguments );
+	AFrame.ListPluginFormRow.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 	init: function( config ) {
@@ -110,7 +110,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		
 		this.forms = [];
 		
-		AFrame.ListPluginFormRow.superclass.init.apply( this, arguments );
+		AFrame.ListPluginFormRow.sc.init.apply( this, arguments );
 	},
     
 	setPlugged: function( plugged ) {
@@ -123,7 +123,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 		plugged.clear = this.clear.bind( this );
 		plugged.getForm = this.getForm.bind( this );
 		
-		AFrame.ListPluginFormRow.superclass.setPlugged.apply( this, arguments );		
+		AFrame.ListPluginFormRow.sc.setPlugged.apply( this, arguments );		
 	},
 	
 	teardown: function() {
@@ -132,7 +132,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 			this.forms[ index ] = null;
 		}, this );
 		
-		AFrame.ListPluginFormRow.superclass.teardown.apply( this, arguments );		
+		AFrame.ListPluginFormRow.sc.teardown.apply( this, arguments );		
 	},
 	
     /**

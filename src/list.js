@@ -58,7 +58,7 @@
  * @default this.listElementFactory
  */
 AFrame.List = function() {
-	AFrame.List.superclass.constructor.apply( this, arguments );
+	AFrame.List.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
 	init: function( config ) {
@@ -66,7 +66,7 @@ AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
             this.listElementFactory = config.listElementFactory;
         }
 		
-		AFrame.List.superclass.init.apply( this, arguments );
+		AFrame.List.sc.init.apply( this, arguments );
 	},
 
 	/**

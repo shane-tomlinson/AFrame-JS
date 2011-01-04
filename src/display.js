@@ -38,7 +38,7 @@
  *
  * By default, the AFrame assumes that a display's DOM is already drawn.  If a display needs rendered,
  * this can be done so using the render method.  The below example is of a subclass
- * overriding the render method.  When using render, be sure to use the superclass's render method.
+ * overriding the render method.  When using render, be sure to use the sc's render method.
  *
  *     ...
  * 
@@ -59,7 +59,7 @@
  * @constructor
  */
 AFrame.Display = function() {
-	AFrame.Display.superclass.constructor.apply( this, arguments );
+	AFrame.Display.sc.constructor.apply( this, arguments );
 };
 AFrame.Display.currDOMEventID = 0;
 AFrame.extend( AFrame.Display, AFrame.AObject, {
@@ -79,7 +79,7 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
         
 		this.domEvents = {};
 		
-		AFrame.Display.superclass.init.apply( this, arguments );
+		AFrame.Display.sc.init.apply( this, arguments );
 	},
 
 	teardown: function() {

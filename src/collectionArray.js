@@ -55,13 +55,13 @@
 * @constructor
 */
 AFrame.CollectionArray = function() {
-	AFrame.CollectionArray.superclass.constructor.apply( this, arguments );
+	AFrame.CollectionArray.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
 	init: function() {
 		this.itemCIDs = [];
 
-		AFrame.CollectionArray.superclass.init.apply( this, arguments );
+		AFrame.CollectionArray.sc.init.apply( this, arguments );
 	},
 	
 	teardown: function() {
@@ -70,7 +70,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		}, this );
 		AFrame.remove( this, 'itemCIDs' );
 		
-		AFrame.CollectionArray.superclass.teardown.apply( this, arguments );
+		AFrame.CollectionArray.sc.teardown.apply( this, arguments );
 	},
 	
 	/**
@@ -107,7 +107,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		index = 'number' == typeof( index ) ? index : -1;
 		this.currentIndex = this.getActualInsertIndex( index );
         
-		var cid = AFrame.CollectionArray.superclass.insert.call( this, item );
+		var cid = AFrame.CollectionArray.sc.insert.call( this, item );
 		this.itemCIDs.splice( this.currentIndex, 0, cid );
 		
 		return cid;
@@ -135,7 +135,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		var cid = this.getCID( index );
 		var retval;
 		if( cid ) {
-			retval = AFrame.CollectionArray.superclass.get.call( this, cid );
+			retval = AFrame.CollectionArray.sc.get.call( this, cid );
 		}
 		return retval;
 	},
@@ -168,7 +168,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 		if( index > -1 ) {
 			this.itemCIDs.splice( index, 1 );
             this.currentIndex = index;
-			retval = AFrame.CollectionArray.superclass.remove.call( this, cid );
+			retval = AFrame.CollectionArray.sc.remove.call( this, cid );
 		}
 		
 		return retval;
@@ -183,7 +183,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
 	* @method clear
 	*/
 	clear: function() {
-        AFrame.CollectionArray.superclass.clear.call( this );
+        AFrame.CollectionArray.sc.clear.call( this );
 		
 		this.itemCIDs = [];
 	},
@@ -229,7 +229,7 @@ AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommon
             index: this.currentIndex
         } );
 
-		return AFrame.CollectionArray.superclass.getEventData.call( this, item, data );
+		return AFrame.CollectionArray.sc.getEventData.call( this, item, data );
 	},
 	
 	/**

@@ -40,7 +40,7 @@
 
 AFrame.DataForm = ( function() {
     var DataForm = function() {
-	    DataForm.superclass.constructor.apply( this, arguments );
+	    DataForm.sc.constructor.apply( this, arguments );
     };
     
     AFrame.extend( DataForm, AFrame.Form, {
@@ -52,16 +52,16 @@ AFrame.DataForm = ( function() {
 		     */
 		    this.dataContainer = AFrame.DataContainer( config.dataSource );
 		
-		    DataForm.superclass.init.apply( this, arguments );
+		    DataForm.sc.init.apply( this, arguments );
 	    },
 	
 	    teardown: function() {
 		    this.dataContainer = null;
-		    DataForm.superclass.teardown.apply( this, arguments );
+		    DataForm.sc.teardown.apply( this, arguments );
 	    },
 	
 	    bindFormElement: function( formElement ) {
-		    var formField = DataForm.superclass.bindFormElement.apply( this, arguments );
+		    var formField = DataForm.sc.bindFormElement.apply( this, arguments );
 		    var fieldName = fieldGetName( formField );
 		
 		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );
@@ -70,7 +70,7 @@ AFrame.DataForm = ( function() {
 	    },
 
 	    checkValidity: function() {
-		    var valid = DataForm.superclass.checkValidity.call( this );
+		    var valid = DataForm.sc.checkValidity.call( this );
 		    if( valid && this.dataContainer.checkValidity ) {
     		    // only validate vs the dataContainer if the dataContainer has validation.
 		        valid = this.validateFormFieldsWithModels();
@@ -96,7 +96,7 @@ AFrame.DataForm = ( function() {
 	    },
 	
 	    save: function() {
-		    var valid = DataForm.superclass.save.apply( this, arguments );
+		    var valid = DataForm.sc.save.apply( this, arguments );
 		
 		    if( valid ) {
 			    var formFields = this.getFormFields();

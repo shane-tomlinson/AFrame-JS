@@ -96,7 +96,7 @@
  * @constructor
  */
 AFrame.CollectionPluginPersistence = function() {
-	AFrame.CollectionPluginPersistence.superclass.constructor.apply( this, arguments );
+	AFrame.CollectionPluginPersistence.sc.constructor.apply( this, arguments );
 };
 AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	init: function( config ) {
@@ -128,7 +128,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 		 */
 		this.deleteCallback = config.deleteCallback || this.noPersistenceOp;
 		
-		AFrame.CollectionPluginPersistence.superclass.init.apply( this, arguments );
+		AFrame.CollectionPluginPersistence.sc.init.apply( this, arguments );
 	},
 
 	noPersistenceOp: function( data, options ) {
@@ -142,7 +142,7 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 		plugged.del = this.del.bind( this );
 		plugged.save = this.save.bind( this );
 		
-		AFrame.CollectionPluginPersistence.superclass.setPlugged.apply( this, arguments );
+		AFrame.CollectionPluginPersistence.sc.setPlugged.apply( this, arguments );
 	},
 
 	/**

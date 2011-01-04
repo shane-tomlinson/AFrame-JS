@@ -32,14 +32,14 @@
  * @constructor
  */
 AFrame.Field = function() {
-	AFrame.Field.superclass.constructor.apply( this, arguments );
+	AFrame.Field.sc.constructor.apply( this, arguments );
 };
 AFrame.Field.cancelInvalid = true;
 AFrame.extend( AFrame.Field, AFrame.Display, {
 	init: function( config ) {
         this.createValidator();
 
-		AFrame.Field.superclass.init.apply( this, arguments );
+		AFrame.Field.sc.init.apply( this, arguments );
 
 		this.resetVal = this.getDisplayed();
 	},
@@ -58,7 +58,7 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 		this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
 		this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
 		
-		AFrame.Field.superclass.bindEvents.apply( this, arguments );
+		AFrame.Field.sc.bindEvents.apply( this, arguments );
 	},
 
 	/**

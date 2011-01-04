@@ -11,7 +11,7 @@ var AFrame = {
 	* Used to extend a class with another class and optional functions.
     *
     *    AFrame.NewClass = function() {
-    *        AFrame.NewClass.superclass.constructor.apply( this, arguments );
+    *        AFrame.NewClass.sc.constructor.apply( this, arguments );
     *    }
     *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
     *        someFunc: function() { 
@@ -21,15 +21,16 @@ var AFrame = {
     *
 	* @method extend
 	* @param {function} derived - class to extend
-	* @param {function} superclass - class to extend with.
+	* @param {function} sc - class to extend with.
 	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
 	*/
-	extend: function( derived, superclass ) {
+	extend: function( derived, sc ) {
 		var F = function() {};
-		F.prototype = superclass.prototype;
+		F.prototype = sc.prototype;
 		derived.prototype = new F();
 		derived.prototype.constuctor = derived;
-		derived.superclass = superclass.prototype;
+		derived.superclass = sc.prototype;  // superclass and sc are aliases
+		derived.sc = sc.prototype;
 
 		var mixins = Array.prototype.slice.call( arguments, 2 );
 		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
