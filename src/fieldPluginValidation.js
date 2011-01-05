@@ -248,13 +248,7 @@ AFrame.FieldPluginValidation = (function() {
             }
 
             if( target.hasAttr( 'maxlength' ) ) {
-                var maxlength = parseInt( target.attr( 'maxlength' ), 10 );
-                // firefox sets this to -1 by default
-                // webkit sets this to 524288 by default
-                // ie sets this to 2147483647 by default
-                if( maxlength !== -1 && maxlength !== 524288 && maxlength != 2147483647 ) {
-                    criteria.maxlength = maxlength;
-                }
+                criteria.maxlength = parseInt( target.attr( 'maxlength' ), 10 );
             }
 
             if( target.hasAttr( 'pattern' ) ) {
