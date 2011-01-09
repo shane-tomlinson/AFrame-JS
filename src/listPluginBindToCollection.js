@@ -102,14 +102,14 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 		AFrame.ListPluginBindToCollection.sc.setPlugged.apply( this, arguments );
 	},
 	
-	onInsert: function( data ) {
-		var index = this.getPlugged().insert( data.item, data.index || -1 );
+	onInsert: function( event ) {
+		var index = this.getPlugged().insert( event.item, event.index || -1 );
 
-		this.cids.splice( index, 0, data.cid );
+		this.cids.splice( index, 0, event.cid );
 	},
 	
-	onRemove: function( data ) {
-		var index = this.cids.indexOf( data.cid );
+	onRemove: function( event ) {
+		var index = this.cids.indexOf( event.cid );
 		
 		this.getPlugged().remove( index );
 		

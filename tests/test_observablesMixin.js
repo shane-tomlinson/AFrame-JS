@@ -23,7 +23,7 @@ testsToRun.push( function testObservablesMixin( Y ) {
 				callbackCalled = true;
 			};
 			
-			var callbackWithContext = function() {
+			var callbackWithContext = function( event, extra1, extra2 ) {
 				this.callbackCalled = true;
 				this.args = Array.prototype.slice.call( arguments, 0 );
 			};
@@ -37,7 +37,9 @@ testsToRun.push( function testObservablesMixin( Y ) {
 			Assert.isTrue( this.callbackCalled, 'callback bound & called with context' );
 			
 			Assert.isArray( this.args, 'arguments passed correctly with trigger' );
-			Assert.areEqual( 1, this.args[ 0 ], 'arguments passed correctly with trigger' );
+			Assert.areEqual( 'onCallback', this.args[ 0 ].type, 'event with type is first item passed' );
+			Assert.areEqual( 1, this.args[ 1 ], 'arguments passed correctly with trigger' );
+			Assert.areEqual( 2, this.args[ 2 ], 'arguments passed correctly with trigger' );
 			
 		},
 		
@@ -74,13 +76,17 @@ testsToRun.push( function testObservablesMixin( Y ) {
 			
 			this.proxy.proxyEvents( this.eventSource, [ 'proxiedEvent' ] );
 			
-			var proxiedEventData;
-			this.proxy.bindEvent( 'proxiedEvent', function( data ) {
+			var proxiedEvent, proxiedEventData;
+			this.proxy.bindEvent( 'proxiedEvent', function( event, data ) {
+                proxiedEvent = event;
 				proxiedEventData = data;
 			} );
 			
 			this.eventSource.triggerEvent( 'proxiedEvent', { proxiedField: 123 } );
 			
+			Assert.areEqual( 'proxiedEvent', proxiedEvent.type, 'proxied event type set correctly' );
+			Assert.areEqual( this.proxy, proxiedEvent.target, 'target of proxied event set to proxy' );
+			Assert.areEqual( this.eventSource, proxiedEvent.originalTarget, 'originalTarget of proxied event set to original target' );
 			Assert.areEqual( 123, proxiedEventData.proxiedField, 'proxied event occured, correct data passed' );
 		},
 

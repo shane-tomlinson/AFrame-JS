@@ -57,184 +57,201 @@
  * @type {function} (optional)
  * @default this.listElementFactory
  */
-AFrame.List = function() {
-	AFrame.List.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
-	init: function( config ) {
-        if( config.listElementFactory ) {
-            this.listElementFactory = config.listElementFactory;
+AFrame.List = (function() { 
+    var List = function() {
+        List.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
+        init: function( config ) {
+            if( config.listElementFactory ) {
+                this.listElementFactory = config.listElementFactory;
+            }
+            
+            List.sc.init.apply( this, arguments );
+        },
+
+        /**
+         * Clear the list
+         * @method clear
+         */
+        clear: function() {
+            this.getTarget().html( '' );
+        },
+        
+        /**
+        * The factory used to create list elements.
+        *
+        *    // overriden listElementFactory
+        *    listElementFactory: function( index, data ) {
+        *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+        *       return listItem;
+        *    }
+        *
+        * @method listElementFactory
+        * @param {object} data - data used on insert
+        * @param {number} index - index where item should be inserted
+        * @return {Element} element to insert
+        */
+        listElementFactory: function() {
+            return $( '<li />' );
+        },
+        
+        /**
+         * Insert a data item into the list, the list item is created 
+         *  using the listElementFactory.
+         *
+         *   
+         *    // Creates a list item using the factory function, 
+         *    // item is inserted at the end of the list.
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    } );
+         *   
+         *   
+         *    // Item is inserted at index 0, the first item in the list.
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    }, 0 );
+         *   
+         *    // Item is inserted at the end of the list
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    }, -1 );
+         *   
+         *    // Item is inserted two from the end
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    }, -2 );
+         *   
+         * @method insert
+         * @param {object} data - data to use for list item
+         * @param {number} index (optional) - index to insert at
+         * If index > current highest index, inserts at end.
+         * 	If index is negative, item is inserted from end.
+         * 	-1 is at the end.  If not given, inserts at end.
+         * @return {number} index the item is inserted at.
+         */
+        insert: function( data, index ) {
+            index = this.getActualInsertIndex( index );
+
+            var rowElement = this.listElementFactory( data, index );
+            index = this.insertElement( rowElement, index );
+            
+            /**
+            * Triggered whenever a row is inserted into the list
+            * @event onInsert
+            * @param {element} rowElement - the row's list element
+            * @param {object} options - information about the insert
+            * @param {element} options.rowElement - row's element
+            * @param {object} options.data - data that was inserted
+            * @param {object} options.index - index where row was inserted
+            */
+            this.rowElement = rowElement;
+            this.data = data;
+            this.index = index;
+            this.triggerEvent( 'onInsert' );
+
+            return index;
+        },
+
+        /**
+         * Insert an element into the list.
+         *   
+         *    // Item is inserted at index 0, the first item in the list.
+         *    list.insertElement( $( '<li>Shane Tomlinson, AFrame Foundary</li>' ), 0 );
+         *   
+         * @method insertElement
+         * @param {element} rowElement - element to insert
+         * @param {number} index (optional) - index where to insert element.
+         * If index > current highest index, inserts at end.
+         * 	If index is negative, item is inserted from end.  -1 is at the end.
+         * @return {number} index - the index the item is inserted at.
+         */
+        insertElement: function( rowElement, index ) {
+            var target = this.getTarget();
+            var children = target.children();
+            
+            index = this.getActualInsertIndex( index );
+            if( index === children.length ) {
+                target.append( rowElement );
+            }
+            else {
+                var insertBefore = children.eq( index );
+                rowElement.insertBefore( insertBefore );
+            }
+
+            /**
+            * Triggered whenever an element is inserted into the list
+            * @event onInsertElement
+            * @param {object} options - information about the insert
+            * @param {element} options.rowElement - row's element
+            * @param {object} options.index - index where row was inserted
+            */
+            
+            this.rowElement = rowElement;
+            this.data = undefined;
+            this.index = index;
+            
+            this.triggerEvent( 'onInsertElement' );
+            
+            return index;
+        },
+
+        getEventObject: function() {
+            var event = List.sc.getEventObject.call( this );
+            
+            event.rowElement = this.rowElement;
+            event.index = this.index;
+            event.data = this.data;
+            
+            return event;
+        },
+        
+        /**
+         * Remove an item from the list
+         *   
+         *    // Remove first item in the list.
+         *    list.remove( 0 );
+         *   
+         * @method remove
+         * @param {number} index - index of item to remove
+         */
+        remove: function( index ) {
+            var removeIndex = this.getActualIndex( index );
+            var rowElement = this.getTarget().children().eq( removeIndex ).remove();
+            
+            /**
+            * Triggered whenever an element is removed from the list
+            * @event onRemoveElement
+            * @param {object} options - information about the insert
+            * @param {element} options.rowElement - row's element
+            * @param {object} options.index - index where row was inserted
+            */
+
+            this.rowElement = rowElement;
+            this.data = undefined;
+            this.index = index;
+            
+            this.triggerEvent( 'onRemoveElement' );
+        },
+        
+        /**
+        * Get the number of items
+        *   
+        *    // Get the number of items
+        *    var count = list.getCount();
+        *   
+        * @method getCount
+        * @return {number} number of items
+        */
+        getCount: function() {
+            return this.getTarget().children().length;
         }
-		
-		AFrame.List.sc.init.apply( this, arguments );
-	},
-
-	/**
-	 * Clear the list
-	 * @method clear
-	 */
-	clear: function() {
-		this.getTarget().html( '' );
-	},
+    } );
     
-    /**
-    * The factory used to create list elements.
-    *
-    *    // overriden listElementFactory
-    *    listElementFactory: function( index, data ) {
-    *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
-    *       return listItem;
-    *    }
-    *
-    * @method listElementFactory
-    * @param {object} data - data used on insert
-    * @param {number} index - index where item should be inserted
-    * @return {Element} element to insert
-    */
-    listElementFactory: function() {
-        return $( '<li />' );
-    },
-	
-	/**
-	 * Insert a data item into the list, the list item is created 
-     *  using the listElementFactory.
-     *
-     *   
-     *    // Creates a list item using the factory function, 
-     *    // item is inserted at the end of the list.
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    } );
-     *   
-     *   
-     *    // Item is inserted at index 0, the first item in the list.
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    }, 0 );
-     *   
-     *    // Item is inserted at the end of the list
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    }, -1 );
-     *   
-     *    // Item is inserted two from the end
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    }, -2 );
-     *   
-	 * @method insert
-	 * @param {object} data - data to use for list item
-	 * @param {number} index (optional) - index to insert at
-	 * If index > current highest index, inserts at end.
-	 * 	If index is negative, item is inserted from end.
-	 * 	-1 is at the end.  If not given, inserts at end.
-	 * @return {number} index the item is inserted at.
-	 */
-	insert: function( data, index ) {
-		index = this.getActualInsertIndex( index );
-
-		var rowElement = this.listElementFactory( data, index );
-		index = this.insertElement( rowElement, index );
-		
-		/**
-		* Triggered whenever a row is inserted into the list
-		* @event onInsert
-		* @param {element} rowElement - the row's list element
-		* @param {object} options - information about the insert
-		* @param {element} options.rowElement - row's element
-		* @param {object} options.data - data that was inserted
-		* @param {object} options.index - index where row was inserted
-		*/
-		this.triggerEvent( 'onInsert', {
-			rowElement: rowElement, 
-			data: data,
-			index: index
-		} );
-
-		return index;
-	},
-
-	/**
-	 * Insert an element into the list.
-     *   
-     *    // Item is inserted at index 0, the first item in the list.
-     *    list.insertElement( $( '<li>Shane Tomlinson, AFrame Foundary</li>' ), 0 );
-     *   
-	 * @method insertElement
-	 * @param {element} rowElement - element to insert
-	 * @param {number} index (optional) - index where to insert element.
-	 * If index > current highest index, inserts at end.
-	 * 	If index is negative, item is inserted from end.  -1 is at the end.
-	 * @return {number} index - the index the item is inserted at.
-	 */
-	insertElement: function( rowElement, index ) {
-		var target = this.getTarget();
-		var children = target.children();
-		
-		index = this.getActualInsertIndex( index );
-		if( index === children.length ) {
-			target.append( rowElement );
-		}
-		else {
-			var insertBefore = children.eq( index );
-			rowElement.insertBefore( insertBefore );
-		}
-
-		/**
-		* Triggered whenever an element is inserted into the list
-		* @event onInsertElement
-		* @param {object} options - information about the insert
-		* @param {element} options.rowElement - row's element
-		* @param {object} options.index - index where row was inserted
-		*/
-		this.triggerEvent( 'onInsertElement', {
-			rowElement: rowElement,
-			index: index
-		} );
-		
-		return index;
-	},
-
-	/**
-	 * Remove an item from the list
-     *   
-     *    // Remove first item in the list.
-     *    list.remove( 0 );
-     *   
-	 * @method remove
-	 * @param {number} index - index of item to remove
-	 */
-	remove: function( index ) {
-		var removeIndex = this.getActualIndex( index );
-		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
-		
-		/**
-		* Triggered whenever an element is removed from the list
-		* @event onRemoveElement
-		* @param {object} options - information about the insert
-		* @param {element} options.rowElement - row's element
-		* @param {object} options.index - index where row was inserted
-		*/
-		this.triggerEvent( 'onRemoveElement', {
-			rowElement: rowElement,
-			index: index
-		} );
-	},
-	
-	/**
-	* Get the number of items
-    *   
-    *    // Get the number of items
-    *    var count = list.getCount();
-    *   
-	* @method getCount
-	* @return {number} number of items
-	*/
-	getCount: function() {
-		return this.getTarget().children().length;
-	}
-} );
+    return List;
+} )();

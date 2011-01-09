@@ -87,7 +87,8 @@ AFrame.CollectionHash = ( function() {
             var item = this.get( cid );
             
             if( item ) {
-                var data = this.getEventData( item, { cid: cid } );
+                this.cid = cid;
+                this.item = item;
                 
                 /**
                 * Triggered before remove happens.
@@ -96,7 +97,7 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.triggerEvent( 'onBeforeRemove', data );
+                this.triggerEvent( 'onBeforeRemove' );
                 AFrame.remove( this.hash, cid );
                 /**
                 * Triggered after remove happens.
@@ -105,7 +106,7 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.triggerEvent( 'onRemove', data );
+                this.triggerEvent( 'onRemove' );
             }
             
             return item;
@@ -147,7 +148,9 @@ AFrame.CollectionHash = ( function() {
                 item.cid = cid;
             }
             
-            var data = this.getEventData( item, { cid: cid } );
+            
+            this.cid = cid;
+            this.item = item;
             
             /**
              * Triggered before insertion happens.
@@ -156,7 +159,7 @@ AFrame.CollectionHash = ( function() {
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.triggerEvent( 'onBeforeInsert', data );
+            this.triggerEvent( 'onBeforeInsert' );
             this.hash[ cid ] = item;
             
             /**
@@ -166,7 +169,7 @@ AFrame.CollectionHash = ( function() {
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.triggerEvent( 'onInsert', data );
+            this.triggerEvent( 'onInsert' );
             
             return cid;
         },
@@ -207,15 +210,13 @@ AFrame.CollectionHash = ( function() {
         /**
         * @private
         */
-        getEventData: function( item, data ) {
-            data = data || {};
+        getEventObject: function() {
+            var event = CollectionHash.sc.getEventObject.call( this );
+            event.collection = this;
+            event.item = this.item;
+            event.cid = this.cid;
             
-            data = jQuery.extend( data, {
-                collection: this,
-                item: item
-            } );
-            
-            return data;
+            return event;
         }
     } );
 

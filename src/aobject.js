@@ -58,9 +58,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    /**
 	     * Triggered when the object is initialized
 	     * @event onInit
-         * @param {AFrame.AObject} aobject - the aobject being initialized.
+         * @param {AFrame.Event} event - the event object
 	     */
-	     this.triggerEvent( 'onInit', this );
+	     this.triggerEvent( 'onInit' );
 	},
 	
 	/**
@@ -94,9 +94,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    /**
 	     * triggered whenever tte object is torn down
 	     * @event onTeardown
-         * @param {AFrame.AObject} aobject - the aobject being torn down.
+         * @param {AFrame.Event} e3vent - the event
 	     */
-	    this.triggerEvent( 'onTeardown', this );
+	    this.triggerEvent( 'onTeardown' );
 
 	    this.unbindAll();
 	    this.unbindToAll();

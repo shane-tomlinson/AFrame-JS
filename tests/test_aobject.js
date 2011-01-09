@@ -65,6 +65,24 @@ testsToRun.push( function testAObject( Y ) {
 		    Assert.isTrue( this.aobject.isEventTriggered( 'onInit' ), 'onInit event triggered' );
 		},
 		
+        testTriggerEvent: function() {
+            var triggeredEvent, extraParam = true;
+		    var callback = function( event, extra ) {
+                triggeredEvent = event;
+                extraParam = extra;
+            };
+
+            this.aobject.bindEvent( 'onInit', callback );
+		    this.aobject.triggerEvent( 'onInit' );
+            
+            Assert.areEqual( 'onInit', triggeredEvent.type, 'triggeredEvent type is set' );
+            Assert.areEqual( this.aobject, triggeredEvent.target, 'triggeredEvent target is set' );
+            Assert.isUndefined( extraParam, 'extraParam is undefined' );
+            
+		    this.aobject.triggerEvent( 'onInit', 'blue' );
+            Assert.areEqual( 'blue', extraParam, 'extraParam is set to blue' );
+        },
+        
 		testAddChild: function() {
 			var tornDown = false;
 			var objectToTeardown = {

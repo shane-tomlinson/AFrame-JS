@@ -16,9 +16,21 @@ AFrame.ObservablesMixin = {
 		var event = this.events && this.events[ eventName ];
 		if( event ) {
 			var args = Array.prototype.slice.call( arguments, 1 );
+            var eventObject = this.getEventObject();
+            eventObject.type = eventName;
+            args.splice( 0, 0, eventObject );
 			event.trigger.apply( event, args );
 		}
 	},
+    
+    getEventObject: function() {
+        var event = this.event || {
+            target: this,
+            timeStamp: new Date()
+        };
+        this.event = null;
+        return event;
+    },
 	
 	/**
 	 * Check to see if an event has been triggered
@@ -116,7 +128,14 @@ AFrame.ObservablesMixin = {
 	proxyEvents: function( proxyFrom, eventList ) {
 		eventList.forEach( function( eventName, index ) {
 			proxyFrom.bindEvent( eventName, function() {
-				var args = Array.prototype.slice.call( arguments, 0 );
+                // get rid of the original event, a new one will be created.
+				var args = Array.prototype.slice.call( arguments, 1 );
+                
+                // create a new event, used in getEventObject
+                this.event = arguments[ 0 ];
+                this.event.originalTarget = this.event.target;
+                this.event.target = this;
+                
 				args.splice( 0, 0, eventName );
 				this.triggerEvent.apply( this, args );
 			}.bind( this ), this );

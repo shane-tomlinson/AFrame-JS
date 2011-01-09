@@ -21,20 +21,20 @@ testsToRun.push( function testDataContainer( Y ) {
 		
 		testSet: function() {
 			/* When we set an item, it should trigger a message that the field was set */
-			var onSetData;
-			this.dataContainer.bindEvent( 'onSet', function( data ) {
-				onSetData = data;
+			var eventData;
+			this.dataContainer.bindEvent( 'onSet', function( event ) {
+				eventData = event;
 			} );
 			
 			var oldValue = this.dataContainer.set( 'fieldName', 'fieldValue' );
 			
 			Assert.isUndefined( oldValue, 'initial set with no initial data should return oldValue of undefined' );
 
-			Assert.isObject( onSetData, 'onSet correctly triggered with data' );
-			Assert.isTrue( onSetData.hasOwnProperty( 'oldValue' ), 'oldValue is in data set' );
-			Assert.isString( onSetData.value, 'value is in data set' );
-			Assert.isObject( onSetData.container, 'container is in data set' );
-			Assert.isString( onSetData.fieldName, 'fieldName is in data set' );
+			Assert.isObject( eventData, 'onSet correctly triggered with data' );
+			Assert.isTrue( eventData.hasOwnProperty( 'oldValue' ), 'oldValue is in data set' );
+			Assert.isString( eventData.value, 'value is in data set' );
+			Assert.isObject( eventData.container, 'container is in data set' );
+			Assert.isString( eventData.fieldName, 'fieldName is in data set' );
 			
 			
 			/* second set should give oldValue of fieldValue */
@@ -42,7 +42,7 @@ testsToRun.push( function testDataContainer( Y ) {
 			oldValue = this.dataContainer.set( 'fieldName', 'value2' );
 			
 			Assert.areEqual( 'fieldValue', oldValue, 'second set gives return of correct oldValue' );
-			Assert.areEqual( 'fieldValue', onSetData.oldValue, 'onSetData of second set gives correct oldValue' );
+			Assert.areEqual( 'fieldValue', eventData.oldValue, 'eventData of second set gives correct oldValue' );
 		},
 		
 		testGet: function() {

@@ -63,13 +63,13 @@ testsToRun.push( function testCollectionHash( Y ) {
 		    this.hash.insert( item );
 		  
 		    var beforeRemoveData;
-		    var onBeforeRemove = function( data ) {
-		      beforeRemoveData = data;
+		    var onBeforeRemove = function( event ) {
+		      beforeRemoveData = event;
 		    };
 		    
 		    var removeData;
-		    var onRemove = function( data ) {
-		      removeData = data;
+		    var onRemove = function( event ) {
+		      removeData = event;
 		    };
 		    
 		    this.hash.bindEvent( 'onBeforeRemove', onBeforeRemove );

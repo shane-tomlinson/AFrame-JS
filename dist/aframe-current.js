@@ -1004,7 +1004,7 @@ AFrame.ArrayCommonFuncsMixin = {
 *
 *    Create the hash
 *    var collection = AFrame.construct( {
-*       type: AFrame.CollectionHash
+*       type: CollectionHash
 *    } );
 *
 *    // First item is inserted with a cid
@@ -1032,187 +1032,191 @@ AFrame.ArrayCommonFuncsMixin = {
 * @extends AFrame.AObject
 * @constructor
 */
-AFrame.CollectionHash = function() {
-	AFrame.CollectionHash.sc.constructor.apply( this, arguments );
-};
-AFrame.CollectionHash.currID = 0;
-AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
-	init: function( config ) {
-		this.hash = {};
-		
-		AFrame.CollectionHash.sc.init.apply( this, arguments );
-	},
-	
-	teardown: function() {
-		for( var cid in this.hash ) {
-			AFrame.remove( this.hash, cid );
-		}
-		AFrame.remove( this, 'hash' );
-		
-		AFrame.CollectionHash.sc.teardown.apply( this, arguments );
-	},
-	
-	/**
-	* Get an item from the hash.
-    *
-    *    // using data from example at top of page
-    *    var item = hash.get( 'cid1' );
-    *    // item will be the AFrame Foundary item
-    *
-	* @method get
-	* @param {id} cid - cid of item to get
-	* @return {variant} item if it exists, undefined otw.
-	*/
-	get: function( cid ) {
-		return this.hash[ cid ];
-	},
-	
-	/**
-	* Remove an item from the store.
-    *
-    *    // using data from example at top of page
-    *    var googleItem = hash.remove( googleCID );
-    *    // googleItem will be the google item that was inserted
-    *
-	* @method remove
-	* @param {id} cid - cid of item to remove
-	* @return {variant} item if it exists, undefined otw.
-	*/
-	remove: function( cid ) {
-		var item = this.get( cid );
-		
-		if( item ) {
-			var data = this.getEventData( item, { cid: cid } );
-			
-			/**
-			* Triggered before remove happens.
-			* @event onBeforeRemove
-			* @param {object} data - data field passed.
-			* @param {Collection} data.collection - collection causing event.
-			* @param {variant} data.item - item removed
-			*/
-			this.triggerEvent( 'onBeforeRemove', data );
-			AFrame.remove( this.hash, cid );
-			/**
-			* Triggered after remove happens.
-			* @event onRemove
-			* @param {object} data - data has two fields, item and meta.
-			* @param {Collection} data.collection - collection causing event.
-			* @param {variant} data.item - item removed
-			*/
-			this.triggerEvent( 'onRemove', data );
-		}
-		
-		return item;
-	},
-	
-	/**
-	* Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
-	* it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
-    * exception to be thrown.  If the item being inserted is an Object and does not already have a cid, the
-    * item's cid will be placed on the object under the cid field.
-    *
-    *    // First item is inserted with a cid
-    *    var cid = hash.insert( { cid: 'cid1',
-    *                             name: 'AFrame Foundary',
-    *                             city: 'London',
-    *                             country: 'United Kingdom'
-    *                           } );
-    *    // cid variable will be 'cid1'
-    *
-    *    var googleCID = hash.insert( { name: 'Google',
-    *                                   city: 'Santa Clara',
-    *                                   country: 'United States'
-    *                                 } );
-    *    // googleCID will be assigned by the system
-    *
-	* @method insert
-	* @param {variant} item - item to insert
-	* @return {id} cid of the item.
-	*/
-	insert: function( item ) {
-		var cid = item.cid || AFrame.getUniqueID();
+AFrame.CollectionHash = ( function() {
+    var CollectionHash = function() {
+        CollectionHash.sc.constructor.apply( this, arguments );
+    };
+    CollectionHash.currID = 0;
+    AFrame.extend( CollectionHash, AFrame.AObject, {
+        init: function( config ) {
+            this.hash = {};
+            
+            CollectionHash.sc.init.apply( this, arguments );
+        },
+        
+        teardown: function() {
+            for( var cid in this.hash ) {
+                AFrame.remove( this.hash, cid );
+            }
+            AFrame.remove( this, 'hash' );
+            
+            CollectionHash.sc.teardown.apply( this, arguments );
+        },
+        
+        /**
+        * Get an item from the hash.
+        *
+        *    // using data from example at top of page
+        *    var item = hash.get( 'cid1' );
+        *    // item will be the AFrame Foundary item
+        *
+        * @method get
+        * @param {id} cid - cid of item to get
+        * @return {variant} item if it exists, undefined otw.
+        */
+        get: function( cid ) {
+            return this.hash[ cid ];
+        },
+        
+        /**
+        * Remove an item from the store.
+        *
+        *    // using data from example at top of page
+        *    var googleItem = hash.remove( googleCID );
+        *    // googleItem will be the google item that was inserted
+        *
+        * @method remove
+        * @param {id} cid - cid of item to remove
+        * @return {variant} item if it exists, undefined otw.
+        */
+        remove: function( cid ) {
+            var item = this.get( cid );
+            
+            if( item ) {
+                var data = this.getEventData( item, { cid: cid } );
+                
+                /**
+                * Triggered before remove happens.
+                * @event onBeforeRemove
+                * @param {object} data - data field passed.
+                * @param {CollectionHash} data.collection - collection causing event.
+                * @param {variant} data.item - item removed
+                */
+                this.triggerEvent( 'onBeforeRemove', data );
+                AFrame.remove( this.hash, cid );
+                /**
+                * Triggered after remove happens.
+                * @event onRemove
+                * @param {object} data - data has two fields, item and meta.
+                * @param {CollectionHash} data.collection - collection causing event.
+                * @param {variant} data.item - item removed
+                */
+                this.triggerEvent( 'onRemove', data );
+            }
+            
+            return item;
+        },
+        
+        /**
+        * Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
+        * it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
+        * exception to be thrown.  If the item being inserted is an Object and does not already have a cid, the
+        * item's cid will be placed on the object under the cid field.
+        *
+        *    // First item is inserted with a cid
+        *    var cid = hash.insert( { cid: 'cid1',
+        *                             name: 'AFrame Foundary',
+        *                             city: 'London',
+        *                             country: 'United Kingdom'
+        *                           } );
+        *    // cid variable will be 'cid1'
+        *
+        *    var googleCID = hash.insert( { name: 'Google',
+        *                                   city: 'Santa Clara',
+        *                                   country: 'United States'
+        *                                 } );
+        *    // googleCID will be assigned by the system
+        *
+        * @method insert
+        * @param {variant} item - item to insert
+        * @return {id} cid of the item.
+        */
+        insert: function( item ) {
+            var cid = item.cid || AFrame.getUniqueID();
 
-		if( 'undefined' != typeof( this.get( cid ) ) ) {
-			throw 'duplicate cid';
-		}
+            if( 'undefined' != typeof( this.get( cid ) ) ) {
+                throw 'duplicate cid';
+            }
+            
+            // store the CID on the item.
+            if( item instanceof Object ) {
+                item.cid = cid;
+            }
+            
+            var data = this.getEventData( item, { cid: cid } );
+            
+            /**
+             * Triggered before insertion happens.
+             * @event onBeforeInsert
+             * @param {object} data - data has two fields.
+             * @param {CollectionHash} data.collection - collection causing event.
+             * @param {variant} data.item - item inserted
+             */
+            this.triggerEvent( 'onBeforeInsert', data );
+            this.hash[ cid ] = item;
+            
+            /**
+             * Triggered after insertion happens.
+             * @event onInsert
+             * @param {object} data - data has two fields, item and meta.
+             * @param {CollectionHash} data.collection - collection causing event.
+             * @param {variant} data.item - item inserted
+             */
+            this.triggerEvent( 'onInsert', data );
+            
+            return cid;
+        },
         
-        // store the CID on the item.
-        if( item instanceof Object ) {
-            item.cid = cid;
+        /**
+        * Clear the hash
+        *
+        *    // remove all items from the hash.
+        *    hash.clear();
+        *
+        * @method clear
+        */
+        clear: function() {
+            for( var cid in this.hash ) {
+                this.remove( cid );
+            }
+        },
+        
+        /**
+        * Get the current count of items
+        *
+        *    // using hash from top of the page
+        *    var count = hash.getCount();
+        *
+        * @method getCount
+        * @return {number} current count
+        */
+        getCount: function() {
+            var count = 0;
+            
+            for( var cid in this.hash ) {
+                count++;
+            }
+            
+            return count;
+        },
+        
+        /**
+        * @private
+        */
+        getEventData: function( item, data ) {
+            data = data || {};
+            
+            data = jQuery.extend( data, {
+                collection: this,
+                item: item
+            } );
+            
+            return data;
         }
-		
-		var data = this.getEventData( item, { cid: cid } );
-		
-		/**
-		 * Triggered before insertion happens.
-		 * @event onBeforeInsert
-		 * @param {object} data - data has two fields.
-         * @param {Collection} data.collection - collection causing event.
-         * @param {variant} data.item - item inserted
-		 */
-		this.triggerEvent( 'onBeforeInsert', data );
-		this.hash[ cid ] = item;
-		
-		/**
-		 * Triggered after insertion happens.
-		 * @event onInsert
-		 * @param {object} data - data has two fields, item and meta.
-         * @param {Collection} data.collection - collection causing event.
-         * @param {variant} data.item - item inserted
-		 */
-		this.triggerEvent( 'onInsert', data );
-		
-		return cid;
-	},
-	
-	/**
-	* Clear the hash
-    *
-    *    // remove all items from the hash.
-    *    hash.clear();
-    *
-	* @method clear
-	*/
-	clear: function() {
-		for( var cid in this.hash ) {
-			this.remove( cid );
-		}
-	},
-	
-	/**
-	* Get the current count of items
-    *
-    *    // using hash from top of the page
-    *    var count = hash.getCount();
-    *
-	* @method getCount
-	* @return {number} current count
-	*/
-	getCount: function() {
-		var count = 0;
-		
-		for( var cid in this.hash ) {
-			count++;
-		}
-		
-		return count;
-	},
-	
-	/**
-	* @private
-	*/
-	getEventData: function( item, data ) {
-		data = data || {};
-        
-        data = jQuery.extend( data, {
-            collection: this,
-            item: item
-        } );
-		
-		return data;
-	}
-} );/**
+    } );
+
+    return CollectionHash;
+} )();/**
 * An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via 
 * either a key or an index.  When accessed via a key, the item's CID will be used.  If an item has a cid field when
 * inserted, this cid will be used, otherwise a cid will be assigned.
@@ -1268,215 +1272,218 @@ AFrame.extend( AFrame.CollectionHash, AFrame.AObject, {
 * @uses AFrame.ArrayCommonFuncsMixin
 * @constructor
 */
-AFrame.CollectionArray = function() {
-	AFrame.CollectionArray.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
-	init: function() {
-		this.itemCIDs = [];
+AFrame.CollectionArray = (function(){
+    var CollectionArray = function() {
+        CollectionArray.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
+        init: function() {
+            this.itemCIDs = [];
 
-		AFrame.CollectionArray.sc.init.apply( this, arguments );
-	},
-	
-	teardown: function() {
-		this.itemCIDs.forEach( function( id, index ) {
-			this.itemCIDs[ index ] = null;
-		}, this );
-		AFrame.remove( this, 'itemCIDs' );
-		
-		AFrame.CollectionArray.sc.teardown.apply( this, arguments );
-	},
-	
-	/**
-	* Insert an item into the array.  
-    *
-    *    // First item is inserted with a cid, inserted at the end of the array.
-    *    var aframeCID = collection.insert( { cid: 'cid1',
-    *                             name: 'AFrame Foundary',
-    *                             city: 'London',
-    *                             country: 'United Kingdom'
-    *                           } );
-    *    // aframeCID variable will be 'cid1'
-    *
-    *    // inserts google at the head of the list.
-    *    var googleCID = collection.insert( { name: 'Google',
-    *                                   city: 'Santa Clara',
-    *                                   country: 'United States'
-    *                                 }, 0 );
-    *    // googleCID will be assigned by the system
-    *
-    *    // microsoft inserted at the end of the list.
-    *    var microsoftCID = collection.insert( { name: 'Microsoft',
-    *                                   city: 'Redmond',
-    *                                   country: 'United States'
-    *                                 }, -1 );
-    *    // microsoftCID will be assigned by the system
-	* @method insert
-	* @param {variant} item to insert
-	* @param {integer} index (optional) - index to insert into.  If
-	* 	not defined, insert at the end of the list.
-	* @return {id} cid of the item
-	*/
-	insert: function( item, index ) {
-		index = 'number' == typeof( index ) ? index : -1;
-		this.currentIndex = this.getActualInsertIndex( index );
+            CollectionArray.sc.init.apply( this, arguments );
+        },
         
-		var cid = AFrame.CollectionArray.sc.insert.call( this, item );
-		this.itemCIDs.splice( this.currentIndex, 0, cid );
-		
-		return cid;
-	},
-	
-	/**
-	* Get an item from the array.
-    *
-    *    // Getting an item via index.  This will return google item.
-    *    var item = collection.get( 0 );
-    *    // item will be the google item
-    *
-    *    // Getting an item via negative index.  This will return microsoft item.
-    *    var item = collection.get( -1 );
-    *    // item will be the microsoft item
-    *
-    *    // Getting an item via CID.  This will return the aframe item.
-    *    item = collection.get( aframeCID );
-    *
-	* @method get
-	* @param {number || id} index - index or cid of item to get
-	* @return {variant} item if it exists, undefined otw.
-	*/
-	get: function( index ) {
-		var cid = this.getCID( index );
-		var retval;
-		if( cid ) {
-			retval = AFrame.CollectionArray.sc.get.call( this, cid );
-		}
-		return retval;
-	},
-	
-	/** 
-	* Remove an item from the array
-    *
-    *    var googleItem = collection.remove( googleCID );
-    *    // googleItem will be the google item that was inserted
-    *
-    *    var aframeItem = collection.remove( 0 );
-    *    // aframeItem will be the aframe item since the google item was first but is now removed
-    *
-	* @method remove
-	* @param {number || id} index of item to remove.
-	*/
-	remove: function( index ) {
-		var cid;
-		if( 'string' == typeof( index ) ) {
-			cid = index;
-			index = this.getIndex( index );
-		}
-		else {
-			index = this.getActualIndex( index );
-			cid = this.getCID( index );
-		}
-
-		
-		var retval;
-		if( index > -1 ) {
-			this.itemCIDs.splice( index, 1 );
-            this.currentIndex = index;
-			retval = AFrame.CollectionArray.sc.remove.call( this, cid );
-		}
-		
-		return retval;
-	},
-	
-	/**
-	* Clear the array
-    *
-    *    // Clears the collection.
-    *    collection.clear();
-    *
-	* @method clear
-	*/
-	clear: function() {
-        AFrame.CollectionArray.sc.clear.call( this );
-		
-		this.itemCIDs = [];
-	},
-	
-	/**
-	* Get the current count of items
-    *
-    *    // Get the number of items in the collection.
-    *    var count = collection.clear();
-    *
-	* @method getCount
-	* @return {number} current count
-	*/
-	getCount: function() {
-		return this.itemCIDs.length;
-	},
-	
-	/**
-	* Get an array representation of the CollectionArray
-    *
-    *    // Returns the array representation of the collection.
-    *    var itemsArray = collection.getArray();
-    *
-	* @method getArray
-	* @return {array} array representation of CollectionArray
-	*/
-	getArray: function() {
-		var array = [];
-		this.itemCIDs.forEach( function( cid, index ) {
-			array[ index ] = this.hash.get( cid );
-		} );
-		
-		return array;
-	},
-
-	/**
-	 * @private
-	 */
-	getEventData: function( item, data ) {
-        data = data || {};
+        teardown: function() {
+            this.itemCIDs.forEach( function( id, index ) {
+                this.itemCIDs[ index ] = null;
+            }, this );
+            AFrame.remove( this, 'itemCIDs' );
+            
+            CollectionArray.sc.teardown.apply( this, arguments );
+        },
         
-        data = jQuery.extend( data, {
-            index: this.currentIndex
-        } );
+        /**
+        * Insert an item into the array.  
+        *
+        *    // First item is inserted with a cid, inserted at the end of the array.
+        *    var aframeCID = collection.insert( { cid: 'cid1',
+        *                             name: 'AFrame Foundary',
+        *                             city: 'London',
+        *                             country: 'United Kingdom'
+        *                           } );
+        *    // aframeCID variable will be 'cid1'
+        *
+        *    // inserts google at the head of the list.
+        *    var googleCID = collection.insert( { name: 'Google',
+        *                                   city: 'Santa Clara',
+        *                                   country: 'United States'
+        *                                 }, 0 );
+        *    // googleCID will be assigned by the system
+        *
+        *    // microsoft inserted at the end of the list.
+        *    var microsoftCID = collection.insert( { name: 'Microsoft',
+        *                                   city: 'Redmond',
+        *                                   country: 'United States'
+        *                                 }, -1 );
+        *    // microsoftCID will be assigned by the system
+        * @method insert
+        * @param {variant} item to insert
+        * @param {integer} index (optional) - index to insert into.  If
+        * 	not defined, insert at the end of the list.
+        * @return {id} cid of the item
+        */
+        insert: function( item, index ) {
+            index = 'number' == typeof( index ) ? index : -1;
+            this.currentIndex = this.getActualInsertIndex( index );
+            
+            var cid = CollectionArray.sc.insert.call( this, item );
+            this.itemCIDs.splice( this.currentIndex, 0, cid );
+            
+            return cid;
+        },
+        
+        /**
+        * Get an item from the array.
+        *
+        *    // Getting an item via index.  This will return google item.
+        *    var item = collection.get( 0 );
+        *    // item will be the google item
+        *
+        *    // Getting an item via negative index.  This will return microsoft item.
+        *    var item = collection.get( -1 );
+        *    // item will be the microsoft item
+        *
+        *    // Getting an item via CID.  This will return the aframe item.
+        *    item = collection.get( aframeCID );
+        *
+        * @method get
+        * @param {number || id} index - index or cid of item to get
+        * @return {variant} item if it exists, undefined otw.
+        */
+        get: function( index ) {
+            var cid = this.getCID( index );
+            var retval;
+            if( cid ) {
+                retval = CollectionArray.sc.get.call( this, cid );
+            }
+            return retval;
+        },
+        
+        /** 
+        * Remove an item from the array
+        *
+        *    var googleItem = collection.remove( googleCID );
+        *    // googleItem will be the google item that was inserted
+        *
+        *    var aframeItem = collection.remove( 0 );
+        *    // aframeItem will be the aframe item since the google item was first but is now removed
+        *
+        * @method remove
+        * @param {number || id} index of item to remove.
+        */
+        remove: function( index ) {
+            var cid;
+            if( 'string' == typeof( index ) ) {
+                cid = index;
+                index = this.getIndex( index );
+            }
+            else {
+                index = this.getActualIndex( index );
+                cid = this.getCID( index );
+            }
 
-		return AFrame.CollectionArray.sc.getEventData.call( this, item, data );
-	},
-	
-	/**
-	 * Given an index or cid, get the cid.
-	 * @method getCID
-	 * @param {id || number} index
-	 * @private
-	 */
-	getCID: function( index ) {
-		var cid = index;
-		
-		if( 'number' == typeof( index ) ) {
-            index = this.getActualIndex( index );
-			cid = this.itemCIDs[ index ];
-		}
-		
-		return cid;
-	},
+            
+            var retval;
+            if( index > -1 ) {
+                this.itemCIDs.splice( index, 1 );
+                this.currentIndex = index;
+                retval = CollectionArray.sc.remove.call( this, cid );
+            }
+            
+            return retval;
+        },
+        
+        /**
+        * Clear the array
+        *
+        *    // Clears the collection.
+        *    collection.clear();
+        *
+        * @method clear
+        */
+        clear: function() {
+            CollectionArray.sc.clear.call( this );
+            
+            this.itemCIDs = [];
+        },
+        
+        /**
+        * Get the current count of items
+        *
+        *    // Get the number of items in the collection.
+        *    var count = collection.clear();
+        *
+        * @method getCount
+        * @return {number} current count
+        */
+        getCount: function() {
+            return this.itemCIDs.length;
+        },
+        
+        /**
+        * Get an array representation of the CollectionArray
+        *
+        *    // Returns the array representation of the collection.
+        *    var itemsArray = collection.getArray();
+        *
+        * @method getArray
+        * @return {array} array representation of CollectionArray
+        */
+        getArray: function() {
+            var array = [];
+            this.itemCIDs.forEach( function( cid, index ) {
+                array[ index ] = this.hash.get( cid );
+            } );
+            
+            return array;
+        },
 
-	/**
-	 * Given an index or cid, get the index.
-	 * @method getIndex
-	 * @param {id || number} index
-	 * @private
-	 */
-	getIndex: function( index ) {
-		if( 'string' == typeof( index ) ) {
-			index = this.itemCIDs.indexOf( index );
-		}
-		
-		return index;
-	}
-} );/**
+        /**
+         * @private
+         */
+        getEventData: function( item, data ) {
+            data = data || {};
+            
+            data = jQuery.extend( data, {
+                index: this.currentIndex
+            } );
+
+            return CollectionArray.sc.getEventData.call( this, item, data );
+        },
+        
+        /**
+         * Given an index or cid, get the cid.
+         * @method getCID
+         * @param {id || number} index
+         * @private
+         */
+        getCID: function( index ) {
+            var cid = index;
+            
+            if( 'number' == typeof( index ) ) {
+                index = this.getActualIndex( index );
+                cid = this.itemCIDs[ index ];
+            }
+            
+            return cid;
+        },
+
+        /**
+         * Given an index or cid, get the index.
+         * @method getIndex
+         * @param {id || number} index
+         * @private
+         */
+        getIndex: function( index ) {
+            if( 'string' == typeof( index ) ) {
+                index = this.itemCIDs.indexOf( index );
+            }
+            
+            return index;
+        }
+    } );
+    return CollectionArray;
+} )();/**
  * A base class for a display.  Provides base target and DOM functionality.  A Display is completely
  *  generic, but can be used as the View in the Model-View-Controller paradigm.  See [Field](AFrame.Field.html) for
  *  Views that are tied to specific pieces of data.
@@ -2291,16 +2298,18 @@ AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
 	load: function( options ) {
 		options = this.getOptions( options );
         var callback = options.onComplete;
+        var plugged = this.getPlugged();
         
+        plugged.triggerEvent( 'onLoadStart', { collection: this } );
         options.onComplete = function( items ) {
 			if( items ) {
-				var plugged = this.getPlugged();
 				items.forEach( function( item, index ) {
 					plugged.insert( item );
 				} );
 			}
             options.onComplete = callback;
 			callback && callback( items, options );
+            plugged.triggerEvent( 'onLoadComplete', { collection: this, items: items } );
 		}.bind( this );
         
 		this.loadCallback( options );
@@ -3062,13 +3071,7 @@ AFrame.FieldPluginValidation = (function() {
             }
 
             if( target.hasAttr( 'maxlength' ) ) {
-                var maxlength = parseInt( target.attr( 'maxlength' ), 10 );
-                // firefox sets this to -1 by default
-                // webkit sets this to 524288 by default
-                // ie sets this to 2147483647 by default
-                if( maxlength !== -1 && maxlength !== 524288 && maxlength != 2147483647 ) {
-                    criteria.maxlength = maxlength;
-                }
+                criteria.maxlength = parseInt( target.attr( 'maxlength' ), 10 );
             }
 
             if( target.hasAttr( 'pattern' ) ) {

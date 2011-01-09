@@ -223,14 +223,11 @@ AFrame.CollectionArray = (function(){
         /**
          * @private
          */
-        getEventData: function( item, data ) {
-            data = data || {};
-            
-            data = jQuery.extend( data, {
-                index: this.currentIndex
-            } );
+        getEventObject: function() {
+            var event = CollectionArray.sc.getEventObject.call( this );
+            event.index = this.currentIndex;
 
-            return CollectionArray.sc.getEventData.call( this, item, data );
+            return event;
         },
         
         /**
