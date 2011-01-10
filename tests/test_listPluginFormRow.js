@@ -49,7 +49,9 @@ testsToRun.push( function test( Y ) {
 										this.validateCalled = false;
 										this.clearCalled = false;
 										this.saveCalled = false;
-									}.bind( this )
+									}.bind( this ),
+                                    
+                                    teardown: function() {}
 								};
 								
 								return this.form;
