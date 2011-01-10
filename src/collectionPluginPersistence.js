@@ -213,10 +213,10 @@ AFrame.CollectionPluginPersistence = ( function() {
             * @param {object} eventInfo - event information, has the collection field.
             * @param {CollectionHash} eventInfo.collection - collection causing event.
             */
-            this.setEventData( {
-                collection: this
+            this.triggerEvent( {
+                collection: this,
+                type: 'onLoadStart'
             } );
-            plugged.triggerEvent( 'onLoadStart' );
             options.onComplete = function( items ) {
                 if( items ) {
                     items.forEach( function( item, index ) {
@@ -233,11 +233,11 @@ AFrame.CollectionPluginPersistence = ( function() {
                 * @param {CollectionHash} eventInfo.collection - collection causing event.
                 * @param {variant} eventInfo.items- items loaded inserted
                 */
-                this.setEventData( {
+                this.triggerEvent( {
                     collection: this,
-                    items: items
+                    items: items,
+                    type: 'onLoadComplete'
                 } );
-                plugged.triggerEvent( 'onLoadComplete' );
             }.bind( this );
             
             this.loadCallback( options );

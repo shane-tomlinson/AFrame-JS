@@ -94,12 +94,12 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.setEventData( {
+                this.triggerEvent( {
                     collection: this,
                     item: item,
-                    cid: cid
-                } );                
-                this.triggerEvent( 'onBeforeRemove' );
+                    cid: cid,
+                    type: 'onBeforeRemove'
+                } );
                 AFrame.remove( this.hash, cid );
                 /**
                 * Triggered after remove happens.
@@ -108,12 +108,12 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.setEventData( {
+                this.triggerEvent(  {
                     collection: this,
                     item: item,
-                    cid: cid
-                } );                
-                this.triggerEvent( 'onRemove' );
+                    cid: cid,
+                    type: 'onRemove'
+                } );
             }
             
             return item;
@@ -163,12 +163,12 @@ AFrame.CollectionHash = ( function() {
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.setEventData( {
+            this.triggerEvent( {
                 collection: this,
                 item: item,
-                cid: cid
+                cid: cid,
+                type: 'onBeforeInsert'
             } );                
-            this.triggerEvent( 'onBeforeInsert' );
             this.hash[ cid ] = item;
             
             /**
@@ -178,12 +178,12 @@ AFrame.CollectionHash = ( function() {
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.setEventData( {
+            this.triggerEvent( {
                 collection: this,
                 item: item,
-                cid: cid
+                cid: cid,
+                type: 'onInsert'
             } );                
-            this.triggerEvent( 'onInsert' );
             
             return cid;
         },

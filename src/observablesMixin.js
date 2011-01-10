@@ -41,7 +41,7 @@ AFrame.ObservablesMixin = {
         
 		var event = this.events && this.events[ eventName ];
 		if( event ) {
-            var eventData = isDataObj ? eventData : {
+            eventData = isDataObj ? eventData : {
                 type: eventData
             };
             this.setEventData( eventData );

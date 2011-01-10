@@ -100,13 +100,13 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
 		* @param {object} event.container - the DataContainer
 		*/
-        this.setEventData( {
+        this.triggerEvent( {
             container: this,
             fieldName: fieldName,
             oldValue: oldValue,
-            value: fieldValue
+            value: fieldValue,
+            type: 'onSet'
         } );
-		this.triggerEvent( 'onSet' );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
@@ -117,13 +117,13 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
 		* @param {object} event.container - the DataContainer
 		*/
-        this.setEventData( {
+        this.triggerEvent( {
             container: this,
             fieldName: fieldName,
             oldValue: oldValue,
-            value: fieldValue
+            value: fieldValue,
+            type: 'onSet-' + fieldName
         } );
-		this.triggerEvent( 'onSet-' + fieldName );
 		
 		return oldValue;
 	},
