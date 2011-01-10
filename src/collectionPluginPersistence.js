@@ -213,7 +213,9 @@ AFrame.CollectionPluginPersistence = ( function() {
             * @param {object} eventInfo - event information, has the collection field.
             * @param {CollectionHash} eventInfo.collection - collection causing event.
             */
-            this.items = undefined;
+            this.setEventData( {
+                collection: this
+            } );
             plugged.triggerEvent( 'onLoadStart' );
             options.onComplete = function( items ) {
                 if( items ) {
@@ -231,7 +233,10 @@ AFrame.CollectionPluginPersistence = ( function() {
                 * @param {CollectionHash} eventInfo.collection - collection causing event.
                 * @param {variant} eventInfo.items- items loaded inserted
                 */
-                this.items = items;
+                this.setEventData( {
+                    collection: this,
+                    items: items
+                } );
                 plugged.triggerEvent( 'onLoadComplete' );
             }.bind( this );
             
@@ -308,15 +313,6 @@ AFrame.CollectionPluginPersistence = ( function() {
             options = options || {};
             options.collection = this.getPlugged();
             return options;
-        },
-        
-        getEventObject: function() {
-            var event = Plugin.sc.getEventObject.call( this );
-            
-            event.collection = this;
-            event.items = this.items;
-            
-            return event;
         }
     } );
     

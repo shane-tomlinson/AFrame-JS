@@ -150,9 +150,11 @@ AFrame.List = (function() {
             * @param {object} options.data - data that was inserted
             * @param {object} options.index - index where row was inserted
             */
-            this.rowElement = rowElement;
-            this.data = data;
-            this.index = index;
+            this.setEventData( {
+                rowElement: rowElement,
+                index: index,
+                data: data
+            } );
             this.triggerEvent( 'onInsert' );
 
             return index;
@@ -192,16 +194,16 @@ AFrame.List = (function() {
             * @param {object} options.index - index where row was inserted
             */
             
-            this.rowElement = rowElement;
-            this.data = undefined;
-            this.index = index;
-            
+            this.setEventData( {
+                rowElement: rowElement,
+                index: index
+            } );
             this.triggerEvent( 'onInsertElement' );
             
             return index;
         },
 
-        getEventObject: function() {
+/*        getEventObject: function() {
             var event = List.sc.getEventObject.call( this );
             
             event.rowElement = this.rowElement;
@@ -210,7 +212,7 @@ AFrame.List = (function() {
             
             return event;
         },
-        
+  */      
         /**
          * Remove an item from the list
          *   
@@ -232,10 +234,10 @@ AFrame.List = (function() {
             * @param {object} options.index - index where row was inserted
             */
 
-            this.rowElement = rowElement;
-            this.data = undefined;
-            this.index = index;
-            
+            this.setEventData( {
+                rowElement: rowElement,
+                index: index
+            } );
             this.triggerEvent( 'onRemoveElement' );
         },
         

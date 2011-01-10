@@ -91,10 +91,6 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		var oldValue = this.data[ fieldName ];
 		this.data[ fieldName ] = fieldValue;
 		
-        this.fieldName = fieldName;
-        this.oldValue = oldValue;
-        this.value = fieldValue;
-        
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
@@ -104,6 +100,12 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
 		* @param {object} event.container - the DataContainer
 		*/
+        this.setEventData( {
+            container: this,
+            fieldName: fieldName,
+            oldValue: oldValue,
+            value: fieldValue
+        } );
 		this.triggerEvent( 'onSet' );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
@@ -115,6 +117,12 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
 		* @param {object} event.container - the DataContainer
 		*/
+        this.setEventData( {
+            container: this,
+            fieldName: fieldName,
+            oldValue: oldValue,
+            value: fieldValue
+        } );
 		this.triggerEvent( 'onSet-' + fieldName );
 		
 		return oldValue;
@@ -150,10 +158,12 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @return {id} id that can be used to unbind the field
 	*/
 	bindField: function( fieldName, callback, context ) {
-        this.fieldName = fieldName;
-        this.oldValue = undefined;
-        this.value = this.get( fieldName );
-        
+        this.setEventData( {
+            container: this,
+            fieldName: fieldName,
+            oldValue: undefined,
+            value: this.get( fieldName )
+        } );
 		var event = this.getEventObject();
 		callback.call( context, event );
 		
@@ -171,32 +181,6 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	*/
 	unbindField: function( id ) {
 		return this.unbindEvent( id );
-	},
-	
-	/**
-	* Get an object used when notifying listeners of changes to the field.
-    * A event has four fields:
-    * 
-    * 1. container
-    * 2. fieldName
-    * 3. oldValue
-    * 4. value
-    *
-	* @param {string} fieldName - name of field affected.
-	* @param {variant} value - the current value of the field.
-	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
-	* @return {object} an object with 4 fields, container, fieldName, oldValue, value
-	*/
-	getEventObject: function() {
-        var eventObject = AFrame.DataContainer.sc.getEventObject.call( this );
-
-        // update manually, jQuery.extend does not set undefined values.
-        eventObject.container = this;
-        eventObject.fieldName = this.fieldName;
-        eventObject.oldValue = this.oldValue;
-        eventObject.value = this.value;
-
-		return eventObject;
 	},
 	
 	/**

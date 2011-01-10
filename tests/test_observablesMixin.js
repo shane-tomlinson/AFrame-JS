@@ -130,7 +130,44 @@ testsToRun.push( function testObservablesMixin( Y ) {
 			this.eventSource.unbindTo( id );
 			bindToObject.triggerEvent( 'eventName' );
 			Assert.areEqual( 1, listenerCalls, 'listener was not called after unbindTo' );
-		}
+		},
+        
+        testGetEventObject: function() {
+            var event = this.eventSource.getEventObject();
+            
+            Assert.areEqual( this.eventSource, event.target, 'event target is set' );
+            Assert.isTrue( event.timestamp instanceof Date, 'event timestamp is a date' );
+        },
+        
+        testSetEventData: function() {
+            this.eventSource.setEventData( {
+                eventField: 'eventValue',
+                secondField: 'secondValue'
+            } );
+            
+            var event = this.eventSource.getEventObject();
+            Assert.areEqual( 'eventValue', event.eventField, 'eventField is added' );
+            Assert.areEqual( 'secondValue', event.secondField, 'multiple fields are added' );
+            
+            event = this.eventSource.getEventObject();
+            Assert.isUndefined( event.eventField, 'eventField is undefined on the second call to getEventObject' );
+            Assert.isUndefined( event.secondField, 'secondField is undefined on the second call to getEventObject' );
+
+            this.eventSource.setEventData( {
+                eventField: 'eventValue',
+                secondField: 'secondValue'
+            } );
+            this.eventSource.setEventData( {
+                thirdField: 'thirdValue'
+            } );
+
+            event = this.eventSource.getEventObject();
+            Assert.areEqual( 'eventValue', event.eventField, 'eventField is added' );
+            Assert.areEqual( 'secondValue', event.secondField, 'multiple fields are added' );
+            Assert.areEqual( 'thirdValue', event.thirdField, 'consecutive calls to setEventData add all data' );
+            
+        }
+        
 	} );
 
 	TestRunner.add( test );

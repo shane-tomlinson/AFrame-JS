@@ -16,18 +16,63 @@ AFrame.ObservablesMixin = {
 		var event = this.events && this.events[ eventName ];
 		if( event ) {
 			var args = Array.prototype.slice.call( arguments, 1 );
+            this.setEventData( {
+                type: eventName
+            } );
             var eventObject = this.getEventObject();
-            eventObject.type = eventName;
             args.splice( 0, 0, eventObject );
 			event.trigger.apply( event, args );
 		}
 	},
     
+    /**
+    * Set data to be added on to the next event triggered.
+    *
+    *    object.setEventData( {
+    *        addedField: 'addedValue'
+    *    } );
+    *    // can be called multiple times, new data with same key as old data
+    *    // overwrites old data.
+    *    object.setEventData( {
+    *        secondField: 'secondValue'
+    *    } );
+    *    // the next event that is triggered will have it's event parameter augmented with addedField and secondField.
+    *
+    * @method setEventData
+    * @param {object} data - data to be added to the next event triggered
+    */
+    setEventData: function( data ) {
+        if( !this.eventData ) {
+            this.eventData = data;
+        }
+        else {
+            for( var key in data) {
+                // do this loop manually, jQuery.extend does not copy undefined values
+                this.eventData[ key ] = data[ key ];
+            }
+        }
+    },
+    
+    /**
+    * Get an event object.  Should not be called directly, but can be overridden in subclasses to add
+    *   specialized fields to the event object.
+    * @method getEventObject
+    * @return {AFrame.Event}
+    */
     getEventObject: function() {
         var event = this.event || {
             target: this,
-            timeStamp: new Date()
+            timestamp: new Date()
         };
+        
+        if( this.eventData ) {
+            for( var key in this.eventData) {
+                // do this loop manually, jQuery.extend does not copy undefined values
+                event[ key ] = this.eventData[ key ];
+            }
+            this.eventData = null;
+        }
+        
         this.event = null;
         return event;
     },
