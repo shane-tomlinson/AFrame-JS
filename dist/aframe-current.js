@@ -264,7 +264,20 @@ var AFrame = {
 	*/
 	func: function( itemToCheck ) {
 		return 'function' == typeof( itemToCheck );
-	}
+	},
+    
+    /**
+    * Check whether an item is a string
+    *
+    *    var isString = AFrame.string( valueToCheck );
+    *
+    * @method string
+	* @param {variant} itemToCheck
+	* @return {boolean} true if item is a string, false otw.
+	*/
+    string: function( itemToCheck ) {
+        return 'string' == typeof( itemToCheck );
+    }
 };
 /**
  * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
@@ -370,19 +383,104 @@ AFrame.Observable.prototype = {
 AFrame.ObservablesMixin = {
 	/**
 	 * Trigger an event.
+     *
+     *    // trigger an event using event name only.
+     *    object.triggerEvent( 'eventName' );
+     *    
+     *    // trigger an event using event name and some extra parameters
+     *    object.triggerEvent( 'eventName', 'extraParameterValue' );
+     *
+     *    // Equivalent to first example
+     *    object.triggerEvent( {
+     *        type: 'eventName'
+     *    } );
+     *
+     *    // Equivalent to second example
+     *    object.triggerEvent( {
+     *        type: 'eventName'
+     *    }, 'extraParameterValue' );
+     *
+     *    // Add extra fields to the event
+     *    object.triggerEvent( {
+     *        type: 'eventName',
+     *        extraField: 'extraValue'
+     *    } );
+     *    // event in listeners will be augmented with an extraField field whose value is extraValue
+     *
 	 * @method triggerEvent
-	 * @param {string} name event name to trigger
+	 * @param {string || object} type - event type to trigger or object that serves the same purpose as the data object in setEventData
 	 * @param {variant} (optional) all other arguments are passed to any registered callbacks
 	 */
 	triggerEvent: function() {
-		var eventName = arguments[ 0 ];
-
+		var eventData = arguments[ 0 ];
+        var isDataObj = !AFrame.string( eventData );
+        var eventName = isDataObj ? eventData.type : eventData;
+        
 		var event = this.events && this.events[ eventName ];
 		if( event ) {
+            eventData = isDataObj ? eventData : {
+                type: eventData
+            };
+            this.setEventData( eventData );
+            var eventObject = this.getEventObject();
+            
 			var args = Array.prototype.slice.call( arguments, 1 );
+            args.splice( 0, 0, eventObject );
 			event.trigger.apply( event, args );
 		}
 	},
+    
+    /**
+    * Set data to be added on to the next event triggered.
+    *
+    *    object.setEventData( {
+    *        addedField: 'addedValue'
+    *    } );
+    *    // can be called multiple times, new data with same key as old data
+    *    // overwrites old data.
+    *    object.setEventData( {
+    *        secondField: 'secondValue'
+    *    } );
+    *    // the next event that is triggered will have it's event parameter augmented with addedField and secondField.
+    *
+    * @method setEventData
+    * @param {object} data - data to be added to the next event triggered
+    */
+    setEventData: function( data ) {
+        if( !this.eventData ) {
+            this.eventData = data;
+        }
+        else {
+            for( var key in data) {
+                // do this loop manually, jQuery.extend does not copy undefined values
+                this.eventData[ key ] = data[ key ];
+            }
+        }
+    },
+    
+    /**
+    * Get an event object.  Should not be called directly, but can be overridden in subclasses to add
+    *   specialized fields to the event object.
+    * @method getEventObject
+    * @return {AFrame.Event}
+    */
+    getEventObject: function() {
+        var event = this.event || {
+            target: this,
+            timestamp: new Date()
+        };
+        
+        if( this.eventData ) {
+            for( var key in this.eventData) {
+                // do this loop manually, jQuery.extend does not copy undefined values
+                event[ key ] = this.eventData[ key ];
+            }
+            this.eventData = null;
+        }
+        
+        this.event = null;
+        return event;
+    },
 	
 	/**
 	 * Check to see if an event has been triggered
@@ -480,7 +578,14 @@ AFrame.ObservablesMixin = {
 	proxyEvents: function( proxyFrom, eventList ) {
 		eventList.forEach( function( eventName, index ) {
 			proxyFrom.bindEvent( eventName, function() {
-				var args = Array.prototype.slice.call( arguments, 0 );
+                // get rid of the original event, a new one will be created.
+				var args = Array.prototype.slice.call( arguments, 1 );
+                
+                // create a new event, used in getEventObject
+                this.event = arguments[ 0 ];
+                this.event.originalTarget = this.event.target;
+                this.event.target = this;
+                
 				args.splice( 0, 0, eventName );
 				this.triggerEvent.apply( this, args );
 			}.bind( this ), this );
@@ -588,9 +693,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    /**
 	     * Triggered when the object is initialized
 	     * @event onInit
-         * @param {AFrame.AObject} aobject - the aobject being initialized.
+         * @param {AFrame.Event} event - the event object
 	     */
-	     this.triggerEvent( 'onInit', this );
+	     this.triggerEvent( 'onInit' );
 	},
 	
 	/**
@@ -624,9 +729,9 @@ AFrame.mixin( AFrame.AObject.prototype, {
 	    /**
 	     * triggered whenever tte object is torn down
 	     * @event onTeardown
-         * @param {AFrame.AObject} aobject - the aobject being torn down.
+         * @param {AFrame.Event} e3vent - the event
 	     */
-	    this.triggerEvent( 'onTeardown', this );
+	    this.triggerEvent( 'onTeardown' );
 
 	    this.unbindAll();
 	    this.unbindToAll();
@@ -776,28 +881,39 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		var oldValue = this.data[ fieldName ];
 		this.data[ fieldName ] = fieldValue;
 		
-		var fieldNotificationObject = this.getFieldNotificationObject( fieldName, fieldValue, oldValue );
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
-		* @param {object} fieldNotificationObject - an event object. @see [getFieldNotificationObject](#method_getFieldNotificationObject)
-	    * @param {string} fieldNotificationObject.fieldName - name of field affected.
-	    * @param {variant} fieldNotificationObject.value - the current value of the field.
-	    * @param {variant} fieldNotificationObject.oldValue - the previous value of the field (only applicable if data has changed).
-		* @param {object} fieldNotificationObject.container - the DataContainer
+		* @param {AFrame.event} event - an event object. @see [getEventObject](#method_getEventObject)
+	    * @param {string} event.fieldName - name of field affected.
+	    * @param {variant} event.value - the current value of the field.
+	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
+		* @param {object} event.container - the DataContainer
 		*/
-		this.triggerEvent( 'onSet', fieldNotificationObject );
+        this.triggerEvent( {
+            container: this,
+            fieldName: fieldName,
+            oldValue: oldValue,
+            value: fieldValue,
+            type: 'onSet'
+        } );
 		/**
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
 		* @event onSet-fieldName
-		* @param {object} fieldNotificationObject - an event object.  @see [getFieldNotificationObject](#method_getFieldNotificationObject)
-	    * @param {string} fieldNotificationObject.fieldName - name of field affected.
-	    * @param {variant} fieldNotificationObject.value - the current value of the field.
-	    * @param {variant} fieldNotificationObject.oldValue - the previous value of the field (only applicable if data has changed).
-		* @param {object} fieldNotificationObject.container - the DataContainer
+		* @param {object} event - an event object.  @see [getEventObject](#method_getEventObject)
+	    * @param {string} event.fieldName - name of field affected.
+	    * @param {variant} event.value - the current value of the field.
+	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
+		* @param {object} event.container - the DataContainer
 		*/
-		this.triggerEvent( 'onSet-' + fieldName, fieldNotificationObject );
+        this.triggerEvent( {
+            container: this,
+            fieldName: fieldName,
+            oldValue: oldValue,
+            value: fieldValue,
+            type: 'onSet-' + fieldName
+        } );
 		
 		return oldValue;
 	},
@@ -817,10 +933,10 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	
 	/**
 	* Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
-    *   When function is called, it is called with an FieldNotificationObject.
+    *   When function is called, it is called with an event.
     *
-    *    var onChange = function( fieldNotificationObject ) {
-    *        console.log( 'Name: "' + fieldNotificationObject.fieldName + '" + value: "' + fieldNotificationObject.value + '" oldValue: "' + fieldNotificationObject.oldValue + '"' );
+    *    var onChange = function( event ) {
+    *        console.log( 'Name: "' + event.fieldName + '" + value: "' + event.value + '" oldValue: "' + event.oldValue + '"' );
     *    };
     *    var id = dataContainer.bindField( 'name', onChange );
     *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
@@ -832,8 +948,14 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	* @return {id} id that can be used to unbind the field
 	*/
 	bindField: function( fieldName, callback, context ) {
-		var fieldNotificationObject = this.getFieldNotificationObject( fieldName, this.get( fieldName ), undefined );
-		callback.call( context, fieldNotificationObject );
+        this.setEventData( {
+            container: this,
+            fieldName: fieldName,
+            oldValue: undefined,
+            value: this.get( fieldName )
+        } );
+		var event = this.getEventObject();
+		callback.call( context, event );
 		
 		return this.bindEvent( 'onSet-' + fieldName, callback, context );
 	},
@@ -849,29 +971,6 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 	*/
 	unbindField: function( id ) {
 		return this.unbindEvent( id );
-	},
-	
-	/**
-	* Get an object used when notifying listeners of changes to the field.
-    * A FieldNotificationObject has four fields:
-    * 
-    * 1. container
-    * 2. fieldName
-    * 3. oldValue
-    * 4. value
-    *
-	* @param {string} fieldName - name of field affected.
-	* @param {variant} value - the current value of the field.
-	* @param {variant} oldValue - the previous value of the field (only applicable if data has changed).
-	* @return {object} an object with 4 fields, container, fieldName, oldValue, value
-	*/
-	getFieldNotificationObject: function( fieldName, value, oldValue ) {
-		return {
-			container: this,
-			fieldName: fieldName,
-			oldValue: oldValue,
-			value: value
-		};
 	},
 	
 	/**
@@ -1083,8 +1182,6 @@ AFrame.CollectionHash = ( function() {
             var item = this.get( cid );
             
             if( item ) {
-                var data = this.getEventData( item, { cid: cid } );
-                
                 /**
                 * Triggered before remove happens.
                 * @event onBeforeRemove
@@ -1092,7 +1189,12 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.triggerEvent( 'onBeforeRemove', data );
+                this.triggerEvent( {
+                    collection: this,
+                    item: item,
+                    cid: cid,
+                    type: 'onBeforeRemove'
+                } );
                 AFrame.remove( this.hash, cid );
                 /**
                 * Triggered after remove happens.
@@ -1101,7 +1203,12 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.triggerEvent( 'onRemove', data );
+                this.triggerEvent(  {
+                    collection: this,
+                    item: item,
+                    cid: cid,
+                    type: 'onRemove'
+                } );
             }
             
             return item;
@@ -1143,7 +1250,6 @@ AFrame.CollectionHash = ( function() {
                 item.cid = cid;
             }
             
-            var data = this.getEventData( item, { cid: cid } );
             
             /**
              * Triggered before insertion happens.
@@ -1152,7 +1258,12 @@ AFrame.CollectionHash = ( function() {
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.triggerEvent( 'onBeforeInsert', data );
+            this.triggerEvent( {
+                collection: this,
+                item: item,
+                cid: cid,
+                type: 'onBeforeInsert'
+            } );                
             this.hash[ cid ] = item;
             
             /**
@@ -1162,7 +1273,12 @@ AFrame.CollectionHash = ( function() {
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.triggerEvent( 'onInsert', data );
+            this.triggerEvent( {
+                collection: this,
+                item: item,
+                cid: cid,
+                type: 'onInsert'
+            } );                
             
             return cid;
         },
@@ -1198,20 +1314,6 @@ AFrame.CollectionHash = ( function() {
             }
             
             return count;
-        },
-        
-        /**
-        * @private
-        */
-        getEventData: function( item, data ) {
-            data = data || {};
-            
-            data = jQuery.extend( data, {
-                collection: this,
-                item: item
-            } );
-            
-            return data;
         }
     } );
 
@@ -1441,14 +1543,11 @@ AFrame.CollectionArray = (function(){
         /**
          * @private
          */
-        getEventData: function( item, data ) {
-            data = data || {};
-            
-            data = jQuery.extend( data, {
-                index: this.currentIndex
-            } );
+        getEventObject: function() {
+            var event = CollectionArray.sc.getEventObject.call( this );
+            event.index = this.currentIndex;
 
-            return CollectionArray.sc.getEventData.call( this, item, data );
+            return event;
         },
         
         /**
@@ -1780,187 +1879,206 @@ AFrame.extend( AFrame.Display, AFrame.AObject, {
  * @type {function} (optional)
  * @default this.listElementFactory
  */
-AFrame.List = function() {
-	AFrame.List.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
-	init: function( config ) {
-        if( config.listElementFactory ) {
-            this.listElementFactory = config.listElementFactory;
+AFrame.List = (function() { 
+    var List = function() {
+        List.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
+        init: function( config ) {
+            if( config.listElementFactory ) {
+                this.listElementFactory = config.listElementFactory;
+            }
+            
+            List.sc.init.apply( this, arguments );
+        },
+
+        /**
+         * Clear the list
+         * @method clear
+         */
+        clear: function() {
+            this.getTarget().html( '' );
+        },
+        
+        /**
+        * The factory used to create list elements.
+        *
+        *    // overriden listElementFactory
+        *    listElementFactory: function( index, data ) {
+        *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+        *       return listItem;
+        *    }
+        *
+        * @method listElementFactory
+        * @param {object} data - data used on insert
+        * @param {number} index - index where item should be inserted
+        * @return {Element} element to insert
+        */
+        listElementFactory: function() {
+            return $( '<li />' );
+        },
+        
+        /**
+         * Insert a data item into the list, the list item is created 
+         *  using the listElementFactory.
+         *
+         *   
+         *    // Creates a list item using the factory function, 
+         *    // item is inserted at the end of the list.
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    } );
+         *   
+         *   
+         *    // Item is inserted at index 0, the first item in the list.
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    }, 0 );
+         *   
+         *    // Item is inserted at the end of the list
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    }, -1 );
+         *   
+         *    // Item is inserted two from the end
+         *    list.insert( {
+         *       name: 'Shane Tomlinson',
+         *       employer: 'AFrame Foundary'
+         *    }, -2 );
+         *   
+         * @method insert
+         * @param {object} data - data to use for list item
+         * @param {number} index (optional) - index to insert at
+         * If index > current highest index, inserts at end.
+         * 	If index is negative, item is inserted from end.
+         * 	-1 is at the end.  If not given, inserts at end.
+         * @return {number} index the item is inserted at.
+         */
+        insert: function( data, index ) {
+            index = this.getActualInsertIndex( index );
+
+            var rowElement = this.listElementFactory( data, index );
+            index = this.insertElement( rowElement, index );
+            
+            /**
+            * Triggered whenever a row is inserted into the list
+            * @event onInsert
+            * @param {element} rowElement - the row's list element
+            * @param {object} options - information about the insert
+            * @param {element} options.rowElement - row's element
+            * @param {object} options.data - data that was inserted
+            * @param {object} options.index - index where row was inserted
+            */
+            this.triggerEvent( {
+                rowElement: rowElement,
+                index: index,
+                data: data,
+                type: 'onInsert'
+            } );
+
+            return index;
+        },
+
+        /**
+         * Insert an element into the list.
+         *   
+         *    // Item is inserted at index 0, the first item in the list.
+         *    list.insertElement( $( '<li>Shane Tomlinson, AFrame Foundary</li>' ), 0 );
+         *   
+         * @method insertElement
+         * @param {element} rowElement - element to insert
+         * @param {number} index (optional) - index where to insert element.
+         * If index > current highest index, inserts at end.
+         * 	If index is negative, item is inserted from end.  -1 is at the end.
+         * @return {number} index - the index the item is inserted at.
+         */
+        insertElement: function( rowElement, index ) {
+            var target = this.getTarget();
+            var children = target.children();
+            
+            index = this.getActualInsertIndex( index );
+            if( index === children.length ) {
+                target.append( rowElement );
+            }
+            else {
+                var insertBefore = children.eq( index );
+                rowElement.insertBefore( insertBefore );
+            }
+
+            /**
+            * Triggered whenever an element is inserted into the list
+            * @event onInsertElement
+            * @param {object} options - information about the insert
+            * @param {element} options.rowElement - row's element
+            * @param {object} options.index - index where row was inserted
+            */
+            
+            this.triggerEvent( {
+                rowElement: rowElement,
+                index: index,
+                type: 'onInsertElement'
+            } );
+            
+            return index;
+        },
+
+/*        getEventObject: function() {
+            var event = List.sc.getEventObject.call( this );
+            
+            event.rowElement = this.rowElement;
+            event.index = this.index;
+            event.data = this.data;
+            
+            return event;
+        },
+  */      
+        /**
+         * Remove an item from the list
+         *   
+         *    // Remove first item in the list.
+         *    list.remove( 0 );
+         *   
+         * @method remove
+         * @param {number} index - index of item to remove
+         */
+        remove: function( index ) {
+            var removeIndex = this.getActualIndex( index );
+            var rowElement = this.getTarget().children().eq( removeIndex ).remove();
+            
+            /**
+            * Triggered whenever an element is removed from the list
+            * @event onRemoveElement
+            * @param {object} options - information about the insert
+            * @param {element} options.rowElement - row's element
+            * @param {object} options.index - index where row was inserted
+            */
+
+            this.triggerEvent( {
+                rowElement: rowElement,
+                index: index,
+                type: 'onRemoveElement'
+            } );
+        },
+        
+        /**
+        * Get the number of items
+        *   
+        *    // Get the number of items
+        *    var count = list.getCount();
+        *   
+        * @method getCount
+        * @return {number} number of items
+        */
+        getCount: function() {
+            return this.getTarget().children().length;
         }
-		
-		AFrame.List.sc.init.apply( this, arguments );
-	},
-
-	/**
-	 * Clear the list
-	 * @method clear
-	 */
-	clear: function() {
-		this.getTarget().html( '' );
-	},
+    } );
     
-    /**
-    * The factory used to create list elements.
-    *
-    *    // overriden listElementFactory
-    *    listElementFactory: function( index, data ) {
-    *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
-    *       return listItem;
-    *    }
-    *
-    * @method listElementFactory
-    * @param {object} data - data used on insert
-    * @param {number} index - index where item should be inserted
-    * @return {Element} element to insert
-    */
-    listElementFactory: function() {
-        return $( '<li />' );
-    },
-	
-	/**
-	 * Insert a data item into the list, the list item is created 
-     *  using the listElementFactory.
-     *
-     *   
-     *    // Creates a list item using the factory function, 
-     *    // item is inserted at the end of the list.
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    } );
-     *   
-     *   
-     *    // Item is inserted at index 0, the first item in the list.
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    }, 0 );
-     *   
-     *    // Item is inserted at the end of the list
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    }, -1 );
-     *   
-     *    // Item is inserted two from the end
-     *    list.insert( {
-     *       name: 'Shane Tomlinson',
-     *       employer: 'AFrame Foundary'
-     *    }, -2 );
-     *   
-	 * @method insert
-	 * @param {object} data - data to use for list item
-	 * @param {number} index (optional) - index to insert at
-	 * If index > current highest index, inserts at end.
-	 * 	If index is negative, item is inserted from end.
-	 * 	-1 is at the end.  If not given, inserts at end.
-	 * @return {number} index the item is inserted at.
-	 */
-	insert: function( data, index ) {
-		index = this.getActualInsertIndex( index );
-
-		var rowElement = this.listElementFactory( data, index );
-		index = this.insertElement( rowElement, index );
-		
-		/**
-		* Triggered whenever a row is inserted into the list
-		* @event onInsert
-		* @param {element} rowElement - the row's list element
-		* @param {object} options - information about the insert
-		* @param {element} options.rowElement - row's element
-		* @param {object} options.data - data that was inserted
-		* @param {object} options.index - index where row was inserted
-		*/
-		this.triggerEvent( 'onInsert', {
-			rowElement: rowElement, 
-			data: data,
-			index: index
-		} );
-
-		return index;
-	},
-
-	/**
-	 * Insert an element into the list.
-     *   
-     *    // Item is inserted at index 0, the first item in the list.
-     *    list.insertElement( $( '<li>Shane Tomlinson, AFrame Foundary</li>' ), 0 );
-     *   
-	 * @method insertElement
-	 * @param {element} rowElement - element to insert
-	 * @param {number} index (optional) - index where to insert element.
-	 * If index > current highest index, inserts at end.
-	 * 	If index is negative, item is inserted from end.  -1 is at the end.
-	 * @return {number} index - the index the item is inserted at.
-	 */
-	insertElement: function( rowElement, index ) {
-		var target = this.getTarget();
-		var children = target.children();
-		
-		index = this.getActualInsertIndex( index );
-		if( index === children.length ) {
-			target.append( rowElement );
-		}
-		else {
-			var insertBefore = children.eq( index );
-			rowElement.insertBefore( insertBefore );
-		}
-
-		/**
-		* Triggered whenever an element is inserted into the list
-		* @event onInsertElement
-		* @param {object} options - information about the insert
-		* @param {element} options.rowElement - row's element
-		* @param {object} options.index - index where row was inserted
-		*/
-		this.triggerEvent( 'onInsertElement', {
-			rowElement: rowElement,
-			index: index
-		} );
-		
-		return index;
-	},
-
-	/**
-	 * Remove an item from the list
-     *   
-     *    // Remove first item in the list.
-     *    list.remove( 0 );
-     *   
-	 * @method remove
-	 * @param {number} index - index of item to remove
-	 */
-	remove: function( index ) {
-		var removeIndex = this.getActualIndex( index );
-		var rowElement = this.getTarget().children().eq( removeIndex ).remove();
-		
-		/**
-		* Triggered whenever an element is removed from the list
-		* @event onRemoveElement
-		* @param {object} options - information about the insert
-		* @param {element} options.rowElement - row's element
-		* @param {object} options.index - index where row was inserted
-		*/
-		this.triggerEvent( 'onRemoveElement', {
-			rowElement: rowElement,
-			index: index
-		} );
-	},
-	
-	/**
-	* Get the number of items
-    *   
-    *    // Get the number of items
-    *    var count = list.getCount();
-    *   
-	* @method getCount
-	* @return {number} number of items
-	*/
-	getCount: function() {
-		return this.getTarget().children().length;
-	}
-} );/**
+    return List;
+} )();/**
  * A plugin that binds a list to a collection.  When the collection is updated, the list
  *  is automatically updated to reflect the change.  List updates occure when 
  *  the collection trigger the onInsert or onRemove events.
@@ -2064,14 +2182,14 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
 		AFrame.ListPluginBindToCollection.sc.setPlugged.apply( this, arguments );
 	},
 	
-	onInsert: function( data ) {
-		var index = this.getPlugged().insert( data.item, data.index || -1 );
+	onInsert: function( event ) {
+		var index = this.getPlugged().insert( event.item, event.index || -1 );
 
-		this.cids.splice( index, 0, data.cid );
+		this.cids.splice( index, 0, event.cid );
 	},
 	
-	onRemove: function( data ) {
-		var index = this.cids.indexOf( data.cid );
+	onRemove: function( event ) {
+		var index = this.cids.indexOf( event.cid );
 		
 		this.getPlugged().remove( index );
 		
@@ -2189,205 +2307,229 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  * @extends AFrame.Plugin
  * @constructor
  */
-AFrame.CollectionPluginPersistence = function() {
-	AFrame.CollectionPluginPersistence.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.CollectionPluginPersistence, AFrame.Plugin, {
-	init: function( config ) {
-		/**
-		 * function to call to do add.  Will be called with three parameters, data, options, and callback.
-		 * @config addCallback
-		 * @type function (optional)
-		 */
-		this.addCallback = config.addCallback || this.noPersistenceOp;
-		
-		/**
-		 * function to call to do save.  Will be called with three parameters, data, options, and callback.
-		 * @config saveCallback
-		 * @type function (optional)
-		 */
-		this.saveCallback = config.saveCallback || this.noPersistenceOp;
-		
-		/**
-		 * function to call to do load.  Will be called with two parameters, options, and callback.
-		 * @config loadCallback
-		 * @type function (optional)
-		 */
-		this.loadCallback = config.loadCallback || this.noPersistenceOp;
-		
-		/**
-		 * function to call to do delete.  Will be called with three parameters, data, options, and callback.
-		 * @config deleteCallback
-		 * @type function (optional)
-		 */
-		this.deleteCallback = config.deleteCallback || this.noPersistenceOp;
-		
-		AFrame.CollectionPluginPersistence.sc.init.apply( this, arguments );
-	},
+AFrame.CollectionPluginPersistence = ( function() {
+    var Plugin = function() {
+        Plugin.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( Plugin, AFrame.Plugin, {
+        init: function( config ) {
+            /**
+             * function to call to do add.  Will be called with three parameters, data, options, and callback.
+             * @config addCallback
+             * @type function (optional)
+             */
+            this.addCallback = config.addCallback || this.noPersistenceOp;
+            
+            /**
+             * function to call to do save.  Will be called with three parameters, data, options, and callback.
+             * @config saveCallback
+             * @type function (optional)
+             */
+            this.saveCallback = config.saveCallback || this.noPersistenceOp;
+            
+            /**
+             * function to call to do load.  Will be called with two parameters, options, and callback.
+             * @config loadCallback
+             * @type function (optional)
+             */
+            this.loadCallback = config.loadCallback || this.noPersistenceOp;
+            
+            /**
+             * function to call to do delete.  Will be called with three parameters, data, options, and callback.
+             * @config deleteCallback
+             * @type function (optional)
+             */
+            this.deleteCallback = config.deleteCallback || this.noPersistenceOp;
+            
+            Plugin.sc.init.apply( this, arguments );
+        },
 
-	noPersistenceOp: function( data, options ) {
-        var callback = options.onComplete;
-		callback && callback( data, options );
-	},
+        noPersistenceOp: function( data, options ) {
+            var callback = options.onComplete;
+            callback && callback( data, options );
+        },
 
-	setPlugged: function( plugged ) {
-		plugged.add = this.add.bind( this );
-		plugged.load = this.load.bind( this );
-		plugged.del = this.del.bind( this );
-		plugged.save = this.save.bind( this );
-		
-		AFrame.CollectionPluginPersistence.sc.setPlugged.apply( this, arguments );
-	},
+        setPlugged: function( plugged ) {
+            plugged.add = this.add.bind( this );
+            plugged.load = this.load.bind( this );
+            plugged.del = this.del.bind( this );
+            plugged.save = this.save.bind( this );
+            
+            Plugin.sc.setPlugged.apply( this, arguments );
+        },
 
-	/**
-	 * Add an item to the collection.  The item will be inserted into the collection once the addCallback
-     *  is complete.  Because of this, no cid is returned from the add function, but one will be placed into
-     *  the options data passed to the onComplete callback.
-     *      
-     *     // Adds an item to the collection.  Note, a cid is not given back
-     *     // because this operation is asynchronous and a cid will not be
-     *     // assigned until the persistence operation completes.  A CID
-     *     // will be placed on the items data.
-     *     collection.add( {
-     *          name: 'AFrame',
-     *          company: 'AFrame Foundary'
-     *     }, {
-     *          onComplete: function( data, options ) {
-     *              // cid is available here in either options.cid or data.cid
-     *              alert( 'add complete, cid: ' + options.cid );
-     *          }
-     *     } );
-     *     
-	 * @method add
-	 * @param {object} data - data to add
-	 * @param {object} options - options information.  
-     * @param {function} options.onComplete (optional) - callback to call when complete
-	 *	Will be called with two parameters, the data, and options information.
-     * @param {function} options.insertAt (optional) - data to be passed as second argument to the collection's 
-     *  insert function.  Useful when using CollectionArrays to specify the index
-	 */
-	add: function( data, options ) {
-		options = this.getOptions( options );
-        var callback = options.onComplete;
-        
-        options.onComplete = function() {
-            var cid = this.getPlugged().insert( data, options.insertAt );
-            options.cid = cid;
-            options.onComplete = callback;
-			callback && callback( data, options );
-		}.bind( this );
-        
-		this.addCallback( data, options );
-	},
-
-	/**
-	 * load the collection
-     *
-     *     // Loads the initial data
-     *     collection.load( {
-     *          onComplete: function() {
-     *              alert( 'Collection is loaded' );
-     *          }
-     *     } );
-     *      
-	 * @method load
-	 * @param {object} options - options information.  
-     * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the items, and options information.
-	 */
-	load: function( options ) {
-		options = this.getOptions( options );
-        var callback = options.onComplete;
-        var plugged = this.getPlugged();
-        
-        plugged.triggerEvent( 'onLoadStart', { collection: this } );
-        options.onComplete = function( items ) {
-			if( items ) {
-				items.forEach( function( item, index ) {
-					plugged.insert( item );
-				} );
-			}
-            options.onComplete = callback;
-			callback && callback( items, options );
-            plugged.triggerEvent( 'onLoadComplete', { collection: this, items: items } );
-		}.bind( this );
-        
-		this.loadCallback( options );
-	},
-
-	/**
-	 * delete an item in the collection
-     *
-     *     // delete an item with cid 'cid'.
-     *     collection.del( 'cid', {
-     *          onComplete: function() {
-     *              alert( 'delete complete' );
-     *          }
-     *     } );
-     *
-     * @method del
-	 * @param {id || index} itemID - id or index of item to remove
-	 * @param {object} options - options information.
-     * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the data, and options information.
-	 */
-	del: function( itemID, options ) {
-        var plugged = this.getPlugged();
-		var data = plugged.get( itemID );
-		
-		if( data ) {
-			options = this.getOptions( options );
+        /**
+         * Add an item to the collection.  The item will be inserted into the collection once the addCallback
+         *  is complete.  Because of this, no cid is returned from the add function, but one will be placed into
+         *  the options data passed to the onComplete callback.
+         *      
+         *     // Adds an item to the collection.  Note, a cid is not given back
+         *     // because this operation is asynchronous and a cid will not be
+         *     // assigned until the persistence operation completes.  A CID
+         *     // will be placed on the items data.
+         *     collection.add( {
+         *          name: 'AFrame',
+         *          company: 'AFrame Foundary'
+         *     }, {
+         *          onComplete: function( data, options ) {
+         *              // cid is available here in either options.cid or data.cid
+         *              alert( 'add complete, cid: ' + options.cid );
+         *          }
+         *     } );
+         *     
+         * @method add
+         * @param {object} data - data to add
+         * @param {object} options - options information.  
+         * @param {function} options.onComplete (optional) - callback to call when complete
+         *	Will be called with two parameters, the data, and options information.
+         * @param {function} options.insertAt (optional) - data to be passed as second argument to the collection's 
+         *  insert function.  Useful when using CollectionArrays to specify the index
+         */
+        add: function( data, options ) {
+            options = this.getOptions( options );
             var callback = options.onComplete;
             
             options.onComplete = function() {
-				plugged.remove( itemID, options );
+                var cid = this.getPlugged().insert( data, options.insertAt );
+                options.cid = cid;
                 options.onComplete = callback;
-				callback && callback( data, options );
-			}.bind( this );
+                callback && callback( data, options );
+            }.bind( this );
             
-			this.deleteCallback( data, options );
-		}
-	},
+            this.addCallback( data, options );
+        },
 
-	/**
-	 * save an item in the collection
-     *
-     *     // save an item with cid 'cid'.
-     *     collection.save( 'cid', {
-     *          onComplete: function() {
-     *              alert( 'save complete' );
-     *          }
-     *     } );
-     *
-	 * @method save
-	 * @param {id || index} itemID - id or index of item to save
-	 * @param {object} options - options information.
-     * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-	 *	Callback will be called with two parameters, the data, and options information.
-	 */
-	save: function( itemID, options ) {
-		var data = this.getPlugged().get( itemID );
-
-		if( data ) {
-			options = this.getOptions( options );
+        /**
+         * load the collection
+         *
+         *     // Loads the initial data
+         *     collection.load( {
+         *          onComplete: function() {
+         *              alert( 'Collection is loaded' );
+         *          }
+         *     } );
+         *      
+         * @method load
+         * @param {object} options - options information.  
+         * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
+         *	Callback will be called with two parameters, the items, and options information.
+         */
+        load: function( options ) {
+            options = this.getOptions( options );
             var callback = options.onComplete;
+            var plugged = this.getPlugged();
             
-            options.onComplete = function() {
+            /**
+            * Triggered on the plugged object whenever a load is requested
+            * @event onLoadStart
+            * @param {object} eventInfo - event information, has the collection field.
+            * @param {CollectionHash} eventInfo.collection - collection causing event.
+            */
+            this.triggerEvent( {
+                collection: this,
+                type: 'onLoadStart'
+            } );
+            options.onComplete = function( items ) {
+                if( items ) {
+                    items.forEach( function( item, index ) {
+                        plugged.insert( item );
+                    } );
+                }
                 options.onComplete = callback;
-				callback && callback( data, options );
-			}.bind( this );
+                callback && callback( items, options );
+                
+                /**
+                * Triggered on the plugged object whenever a load is requested
+                * @event onLoadComplete
+                * @param {object} eventInfo - event information, has collection and items fields.
+                * @param {CollectionHash} eventInfo.collection - collection causing event.
+                * @param {variant} eventInfo.items- items loaded inserted
+                */
+                this.triggerEvent( {
+                    collection: this,
+                    items: items,
+                    type: 'onLoadComplete'
+                } );
+            }.bind( this );
             
-			this.saveCallback( data, options );
-		}
-	},
+            this.loadCallback( options );
+        },
 
-	getOptions: function( options ) {
-		options = options || {};
-		options.collection = this.getPlugged();
-		return options;
-	}
-} );
-/**
+        /**
+         * delete an item in the collection
+         *
+         *     // delete an item with cid 'cid'.
+         *     collection.del( 'cid', {
+         *          onComplete: function() {
+         *              alert( 'delete complete' );
+         *          }
+         *     } );
+         *
+         * @method del
+         * @param {id || index} itemID - id or index of item to remove
+         * @param {object} options - options information.
+         * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
+         *	Callback will be called with two parameters, the data, and options information.
+         */
+        del: function( itemID, options ) {
+            var plugged = this.getPlugged();
+            var data = plugged.get( itemID );
+            
+            if( data ) {
+                options = this.getOptions( options );
+                var callback = options.onComplete;
+                
+                options.onComplete = function() {
+                    plugged.remove( itemID, options );
+                    options.onComplete = callback;
+                    callback && callback( data, options );
+                }.bind( this );
+                
+                this.deleteCallback( data, options );
+            }
+        },
+
+        /**
+         * save an item in the collection
+         *
+         *     // save an item with cid 'cid'.
+         *     collection.save( 'cid', {
+         *          onComplete: function() {
+         *              alert( 'save complete' );
+         *          }
+         *     } );
+         *
+         * @method save
+         * @param {id || index} itemID - id or index of item to save
+         * @param {object} options - options information.
+         * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
+         *	Callback will be called with two parameters, the data, and options information.
+         */
+        save: function( itemID, options ) {
+            var data = this.getPlugged().get( itemID );
+
+            if( data ) {
+                options = this.getOptions( options );
+                var callback = options.onComplete;
+                
+                options.onComplete = function() {
+                    options.onComplete = callback;
+                    callback && callback( data, options );
+                }.bind( this );
+                
+                this.saveCallback( data, options );
+            }
+        },
+
+        getOptions: function( options ) {
+            options = options || {};
+            options.collection = this.getPlugged();
+            return options;
+        }
+    } );
+    
+    return Plugin;
+} )();/**
  * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
  * the following functions, clear, save, reset, validate.  A generic Form is not 
  * bound to any data, it is only a collection of form fields.  Note, by default,
