@@ -160,5 +160,18 @@ var AFrame = {
 	*/
 	func: function( itemToCheck ) {
 		return 'function' == typeof( itemToCheck );
-	}
+	},
+    
+    /**
+    * Check whether an item is a string
+    *
+    *    var isString = AFrame.string( valueToCheck );
+    *
+    * @method string
+	* @param {variant} itemToCheck
+	* @return {boolean} true if item is a string, false otw.
+	*/
+    string: function( itemToCheck ) {
+        return 'string' == typeof( itemToCheck );
+    }
 };

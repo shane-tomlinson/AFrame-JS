@@ -6,20 +6,48 @@
 AFrame.ObservablesMixin = {
 	/**
 	 * Trigger an event.
+     *
+     *    // trigger an event using event name only.
+     *    object.triggerEvent( 'eventName' );
+     *    
+     *    // trigger an event using event name and some extra parameters
+     *    object.triggerEvent( 'eventName', 'extraParameterValue' );
+     *
+     *    // Equivalent to first example
+     *    object.triggerEvent( {
+     *        type: 'eventName'
+     *    } );
+     *
+     *    // Equivalent to second example
+     *    object.triggerEvent( {
+     *        type: 'eventName'
+     *    }, 'extraParameterValue' );
+     *
+     *    // Add extra fields to the event
+     *    object.triggerEvent( {
+     *        type: 'eventName',
+     *        extraField: 'extraValue'
+     *    } );
+     *    // event in listeners will be augmented with an extraField field whose value is extraValue
+     *
 	 * @method triggerEvent
-	 * @param {string} name event name to trigger
+	 * @param {string || object} type - event type to trigger or object that serves the same purpose as the data object in setEventData
 	 * @param {variant} (optional) all other arguments are passed to any registered callbacks
 	 */
 	triggerEvent: function() {
-		var eventName = arguments[ 0 ];
-
+		var eventData = arguments[ 0 ];
+        var isDataObj = !AFrame.string( eventData );
+        var eventName = isDataObj ? eventData.type : eventData;
+        
 		var event = this.events && this.events[ eventName ];
 		if( event ) {
-			var args = Array.prototype.slice.call( arguments, 1 );
-            this.setEventData( {
-                type: eventName
-            } );
+            var eventData = isDataObj ? eventData : {
+                type: eventData
+            };
+            this.setEventData( eventData );
             var eventObject = this.getEventObject();
+            
+			var args = Array.prototype.slice.call( arguments, 1 );
             args.splice( 0, 0, eventObject );
 			event.trigger.apply( event, args );
 		}

@@ -166,6 +166,19 @@ testsToRun.push( function testObservablesMixin( Y ) {
             Assert.areEqual( 'secondValue', event.secondField, 'multiple fields are added' );
             Assert.areEqual( 'thirdValue', event.thirdField, 'consecutive calls to setEventData add all data' );
             
+        },
+        
+        testTriggerWithDataObject: function() {
+            var eventData;
+            this.eventSource.bindEvent( 'event', function( event ) {
+                eventData = event;
+            } );
+            
+            this.eventSource.triggerEvent( {
+                type: 'event'
+            } );
+            
+            Assert.areEqual( 'event', eventData.type, 'event triggered with event object' );
         }
         
 	} );
