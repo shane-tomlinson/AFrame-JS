@@ -74,7 +74,7 @@ AFrame.ObservablesMixin = {
             this.eventData = data;
         }
         else {
-            for( var key in data) {
+            for( var key in data ) {
                 // do this loop manually, jQuery.extend does not copy undefined values
                 this.eventData[ key ] = data[ key ];
             }
@@ -88,19 +88,13 @@ AFrame.ObservablesMixin = {
     * @return {AFrame.Event}
     */
     getEventObject: function() {
-        var event = this.event || {
-            target: this,
-            timestamp: new Date()
-        };
-        
-        if( this.eventData ) {
-            for( var key in this.eventData) {
-                // do this loop manually, jQuery.extend does not copy undefined values
-                event[ key ] = this.eventData[ key ];
-            }
-            this.eventData = null;
+        if( !this.eventData.target ) {
+            this.eventData.target = this;
         }
         
+        var event = this.event || AFrame.Event.createEvent( this.eventData );
+        this.eventData = null;
+    
         this.event = null;
         return event;
     },

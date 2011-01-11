@@ -56,7 +56,7 @@ testsToRun.push( function testDisplay( Y ) {
                 error = e;
             }
             
-            Assert.areEqual( 'Error type undefined', error, 'no type error was thrown for createEvent with object' );
+            Assert.areEqual( 'Event type undefined', error, 'no type error was thrown for createEvent with object' );
 
             error = undefined;
             
@@ -66,7 +66,7 @@ testsToRun.push( function testDisplay( Y ) {
                 error = e;
             }
             
-            Assert.areEqual( 'Error type undefined', error, 'no type error was thrown for createEvent with no arguments' );
+            Assert.areEqual( 'Event type undefined', error, 'no type error was thrown for createEvent with no arguments' );
 
             error = undefined;
             
@@ -76,7 +76,7 @@ testsToRun.push( function testDisplay( Y ) {
                 error = e;
             }
             
-            Assert.areEqual( 'Error type undefined', error, 'no type error was thrown for createEvent with empty string' );
+            Assert.areEqual( 'Event type undefined', error, 'no type error was thrown for createEvent with empty string' );
         },
         
         testProxyEventNoTarget: function() {

@@ -162,7 +162,8 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
             container: this,
             fieldName: fieldName,
             oldValue: undefined,
-            value: this.get( fieldName )
+            value: this.get( fieldName ),
+            type: 'onSet:' + fieldName
         } );
 		var event = this.getEventObject();
 		callback.call( context, event );

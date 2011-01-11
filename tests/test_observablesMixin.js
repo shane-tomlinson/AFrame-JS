@@ -133,6 +133,9 @@ testsToRun.push( function testObservablesMixin( Y ) {
 		},
         
         testGetEventObject: function() {
+            this.eventSource.setEventData( {
+                type: 'event'
+            } );
             var event = this.eventSource.getEventObject();
             
             Assert.areEqual( this.eventSource, event.target, 'event target is set' );
@@ -142,23 +145,25 @@ testsToRun.push( function testObservablesMixin( Y ) {
         testSetEventData: function() {
             this.eventSource.setEventData( {
                 eventField: 'eventValue',
-                secondField: 'secondValue'
+                secondField: 'secondValue',
+                type: 'event'
             } );
             
             var event = this.eventSource.getEventObject();
             Assert.areEqual( 'eventValue', event.eventField, 'eventField is added' );
             Assert.areEqual( 'secondValue', event.secondField, 'multiple fields are added' );
-            
+            /*
             event = this.eventSource.getEventObject();
             Assert.isUndefined( event.eventField, 'eventField is undefined on the second call to getEventObject' );
             Assert.isUndefined( event.secondField, 'secondField is undefined on the second call to getEventObject' );
-
+*/
             this.eventSource.setEventData( {
                 eventField: 'eventValue',
                 secondField: 'secondValue'
             } );
             this.eventSource.setEventData( {
-                thirdField: 'thirdValue'
+                thirdField: 'thirdValue',
+                type: 'event'
             } );
 
             event = this.eventSource.getEventObject();

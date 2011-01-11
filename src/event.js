@@ -44,7 +44,7 @@ AFrame.Event = (function() {
             }
             
             if( !this.type ) {
-                throw 'Error type undefined';
+                throw 'Event type undefined';
             }
             
             if( this.target ) {
