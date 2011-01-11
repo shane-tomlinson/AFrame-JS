@@ -101,6 +101,17 @@ testsToRun.push( function testDisplay( Y ) {
 			Assert.isTrue( defaultPrevented, 'default has been prevented' );
 			
 		},
+        
+        testBindClickNoContext: function() {
+            var context;
+			var onClick = function( event ) {
+                context = this;
+			};
+			this.display.bindClick( '.button', onClick );
+
+			$( '.button' ).trigger( 'click' );
+			Assert.areEqual( this.display, context, 'context correctly set to object when no context given' );
+        },
 		
 		testGetDOMElement: function() {
 			var domElement = this.display.getDOMElement();

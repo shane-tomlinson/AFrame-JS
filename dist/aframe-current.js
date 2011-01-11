@@ -878,14 +878,12 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		/**
 		* Triggered whenever any item on the object is set.
 		* @event onSet
-		* @param {AFrame.event} event - an event object. @see [getEventObject](#method_getEventObject)
+		* @param {AFrame.Event} event - an event object. @see [Event](AFrame.Event.html)
 	    * @param {string} event.fieldName - name of field affected.
 	    * @param {variant} event.value - the current value of the field.
 	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
-		* @param {object} event.container - the DataContainer
 		*/
         this.triggerEvent( {
-            container: this,
             fieldName: fieldName,
             oldValue: oldValue,
             value: fieldValue,
@@ -895,14 +893,12 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		* Triggered whenever an item on the object is set.  This is useful to bind
 		*	to whenever a particular field is being changed.
 		* @event onSet-fieldName
-		* @param {object} event - an event object.  @see [getEventObject](#method_getEventObject)
+		* @param {AFrame.Event} event - an event object.  @see [Event](AFrame.Event.html)
 	    * @param {string} event.fieldName - name of field affected.
 	    * @param {variant} event.value - the current value of the field.
 	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
-		* @param {object} event.container - the DataContainer
 		*/
         this.triggerEvent( {
-            container: this,
             fieldName: fieldName,
             oldValue: oldValue,
             value: fieldValue,
@@ -1782,7 +1778,7 @@ AFrame.Display = (function() {
         bindClick: function( target, callback, context ) {
             return this.bindDOMEvent( target, 'click', function( event ) {
                 event.preventDefault();
-                callback.call( context, event );
+                callback.call( this, event );
             }, context );
         },
         
@@ -2027,16 +2023,6 @@ AFrame.List = (function() {
             return index;
         },
 
-/*        getEventObject: function() {
-            var event = List.sc.getEventObject.call( this );
-            
-            event.rowElement = this.rowElement;
-            event.index = this.index;
-            event.data = this.data;
-            
-            return event;
-        },
-  */      
         /**
          * Remove an item from the list
          *   

@@ -203,7 +203,7 @@ AFrame.Display = (function() {
         bindClick: function( target, callback, context ) {
             return this.bindDOMEvent( target, 'click', function( event ) {
                 event.preventDefault();
-                callback.call( context, event );
+                callback.call( this, event );
             }, context );
         },
         
