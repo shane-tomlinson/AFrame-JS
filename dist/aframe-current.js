@@ -1305,6 +1305,69 @@ AFrame.CollectionHash = ( function() {
             }
             
             return count;
+        },
+        
+        /**
+        * Iterate over the collection, calling a function once for each item in the collection.
+        *
+        *    // iterate over the collection
+        *    collection.forEach( function( item, id ) {
+        *        // perform some action on item.
+        *    } );
+        *
+        * @method forEach
+        * @param {function} callback - callback to call for each item.  Will be called with two parameters, 
+        *   the first is the item, the second the identifier (id type depends on type of collection).
+        * @param {object} context - optional context to call callback in.
+        */
+        forEach: function( callback, context ) {
+            var hash = this.hash;
+            for( var cid in hash ) {
+                callback.call( context, hash[ cid ], cid );
+            }
+        },
+        
+        /**
+        * Get a set of items in the collection using the search function.  The search function will
+        *   be called once for each item in the collection.  Any time the search function returns true,
+        *   the item will be added to the results list.
+        *
+        *    // Filter the collection to find a set of items that have company == 'AFrame Foundary'
+        *    var matches = collection.filter( function( item, id, collection ) {
+        *        // do search here, returning true if item matches.
+        *        return item.company == 'AFrame Foundary';
+        *    } );
+        *
+        * @method filter
+        * @param {function} search - the search function
+        * @return {array} array of results.  If no results are found, returns an empty array.
+        */
+        filter: function( search ) {
+            var items = [];
+            
+            this.forEach( function( item, id ) {
+                if( true === search( item, id, this ) ) {
+                    items.push( item );
+                }
+            }, this );
+            
+            return items;
+        },
+        
+        /**
+        * Search for the first item in the collection that matches the search function.
+        *
+        *    // search for the first item with company == 'AFrame Foundary'
+        *    var item = collection.search( function( item, id, collection ) {
+        *        return item.company == 'AFrame Foundary';
+        *    } );
+        *
+        * @method search
+        * @param {function} search - the search function.
+        * @return {item} item if an item matches, undefined otw.
+        */
+        search: function( search ) {
+            return this.filter( search )[ 0 ];
         }
     } );
 
@@ -1570,6 +1633,13 @@ AFrame.CollectionArray = (function(){
             }
             
             return index;
+        },
+        
+        forEach: function( callback, context ) {
+            for( var item, index = 0, cid; cid = this.itemCIDs[ index ]; ++index ) {
+                item = this.get( cid );
+                callback.call( context, item, index );
+            }
         }
     } );
     return CollectionArray;
@@ -2205,7 +2275,7 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  *  functions to the collection, all four functions are assumed to operate asynchronously.  
  *  When configuring the plugin, 4 parameters can be specified, each are optional.
  *  The four paramters are addCallback, saveCallback, loadCallback, and deleteCallback.  When the callbacks are called, they
- *  will be called with three parameters, data, options.  data is the data currently being operated on. options is
+ *  will be called with two parameters, item, options.  item is the item currently being operated on. options is
  *  options data that will contain at least two fields, collection and onComplete. onComplte should be called by the 
  *  adapter when the adapter function
  *  has completed.
@@ -2214,26 +2284,26 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  *     var dbAdapter = {
  *         load: function( options ) {
  *              // functionality here to do the load
- *              
+ *              // a variable named items is set with an array of items.
  *              if( options.onComplete ) {
- *                  options.onComplete();
+ *                  options.onComplete( items );
  *              }
  *         },
- *         add: function( data, options ) {
+ *         add: function( item, options ) {
  *              // functionality here to do the add
  *              
  *              if( options.onComplete ) {
  *                  options.onComplete();
  *              }
  *         },
- *         del: function( data, options ) {
+ *         del: function( item, options ) {
  *              // functionality here to do the delete
  *              
  *              if( options.onComplete ) {
  *                  options.onComplete();
  *              }
  *         },
- *         save: function( data, options ) {   
+ *         save: function( item, options ) {   
  *              // functionality here to do the save
  *              
  *              if( options.onComplete ) {
@@ -2256,9 +2326,9 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  *          } ]
  *     } );
  *     
- *     // Loads the initial data
+ *     // Loads the initial items
  *     collection.load( {
- *          onComplete: function() {
+ *          onComplete: function( items, options ) {
  *              alert( 'Collection is loaded' );
  *          }
  *     } );
@@ -2266,13 +2336,13 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  *     // Adds an item to the collection.  Note, a cid is not given back
  *     // because this operation is asynchronous and a cid will not be
  *     // assigned until the persistence operation completes.  A CID
- *     // will be placed on the items data.
+ *     // will be placed on the item.
  *     collection.add( {
  *          name: 'AFrame',
  *          company: 'AFrame Foundary'
  *     }, {
- *          onComplete: function( data, options ) {
- *              // cid is available here in either options.cid or data.cid
+ *          onComplete: function( item, options ) {
+ *              // cid is available here in either options.cid or item.cid
  *              alert( 'add complete, cid: ' + options.cid );
  *          }
  *     } );
@@ -2302,28 +2372,28 @@ AFrame.CollectionPluginPersistence = ( function() {
     AFrame.extend( Plugin, AFrame.Plugin, {
         init: function( config ) {
             /**
-             * function to call to do add.  Will be called with three parameters, data, options, and callback.
+             * function to call to do add.  Will be called with two parameters, data, and options.
              * @config addCallback
              * @type function (optional)
              */
             this.addCallback = config.addCallback || this.noPersistenceOp;
             
             /**
-             * function to call to do save.  Will be called with three parameters, data, options, and callback.
+             * function to call to do save.  Will be called with two parameters, data, and options.
              * @config saveCallback
              * @type function (optional)
              */
             this.saveCallback = config.saveCallback || this.noPersistenceOp;
             
             /**
-             * function to call to do load.  Will be called with two parameters, options, and callback.
+             * function to call to do load.  Will be called with one parameter, options.
              * @config loadCallback
              * @type function (optional)
              */
             this.loadCallback = config.loadCallback || this.noPersistenceOp;
             
             /**
-             * function to call to do delete.  Will be called with three parameters, data, options, and callback.
+             * function to call to do delete.  Will be called with two parameters, data, and options.
              * @config deleteCallback
              * @type function (optional)
              */
@@ -2349,42 +2419,42 @@ AFrame.CollectionPluginPersistence = ( function() {
         /**
          * Add an item to the collection.  The item will be inserted into the collection once the addCallback
          *  is complete.  Because of this, no cid is returned from the add function, but one will be placed into
-         *  the options data passed to the onComplete callback.
+         *  the options item passed to the onComplete callback.
          *      
          *     // Adds an item to the collection.  Note, a cid is not given back
          *     // because this operation is asynchronous and a cid will not be
          *     // assigned until the persistence operation completes.  A CID
-         *     // will be placed on the items data.
+         *     // will be placed on the item.
          *     collection.add( {
          *          name: 'AFrame',
          *          company: 'AFrame Foundary'
          *     }, {
-         *          onComplete: function( data, options ) {
-         *              // cid is available here in either options.cid or data.cid
+         *          onComplete: function( item, options ) {
+         *              // cid is available here in either options.cid or item.cid
          *              alert( 'add complete, cid: ' + options.cid );
          *          }
          *     } );
          *     
          * @method add
-         * @param {object} data - data to add
+         * @param {object} item - item to add
          * @param {object} options - options information.  
          * @param {function} options.onComplete (optional) - callback to call when complete
-         *	Will be called with two parameters, the data, and options information.
+         *	Will be called with two parameters, the item, and options information.
          * @param {function} options.insertAt (optional) - data to be passed as second argument to the collection's 
          *  insert function.  Useful when using CollectionArrays to specify the index
          */
-        add: function( data, options ) {
+        add: function( item, options ) {
             options = this.getOptions( options );
             var callback = options.onComplete;
             
             options.onComplete = function() {
-                var cid = this.getPlugged().insert( data, options.insertAt );
+                var cid = this.getPlugged().insert( item, options.insertAt );
                 options.cid = cid;
                 options.onComplete = callback;
-                callback && callback( data, options );
+                callback && callback( item, options );
             }.bind( this );
             
-            this.addCallback( data, options );
+            this.addCallback( item, options );
         },
 
         /**
@@ -2392,7 +2462,7 @@ AFrame.CollectionPluginPersistence = ( function() {
          *
          *     // Loads the initial data
          *     collection.load( {
-         *          onComplete: function() {
+         *          onComplete: function( items, options ) {
          *              alert( 'Collection is loaded' );
          *          }
          *     } );
@@ -2444,7 +2514,7 @@ AFrame.CollectionPluginPersistence = ( function() {
          *
          *     // delete an item with cid 'cid'.
          *     collection.del( 'cid', {
-         *          onComplete: function() {
+         *          onComplete: function( item, options ) {
          *              alert( 'delete complete' );
          *          }
          *     } );
@@ -2453,23 +2523,23 @@ AFrame.CollectionPluginPersistence = ( function() {
          * @param {id || index} itemID - id or index of item to remove
          * @param {object} options - options information.
          * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-         *	Callback will be called with two parameters, the data, and options information.
+         *	Callback will be called with two parameters, the item, and options information.
          */
         del: function( itemID, options ) {
             var plugged = this.getPlugged();
-            var data = plugged.get( itemID );
+            var item = plugged.get( itemID );
             
-            if( data ) {
+            if( item ) {
                 options = this.getOptions( options );
                 var callback = options.onComplete;
                 
                 options.onComplete = function() {
                     plugged.remove( itemID, options );
                     options.onComplete = callback;
-                    callback && callback( data, options );
+                    callback && callback( item, options );
                 }.bind( this );
                 
-                this.deleteCallback( data, options );
+                this.deleteCallback( item, options );
             }
         },
 
@@ -2478,7 +2548,7 @@ AFrame.CollectionPluginPersistence = ( function() {
          *
          *     // save an item with cid 'cid'.
          *     collection.save( 'cid', {
-         *          onComplete: function() {
+         *          onComplete: function( item, options ) {
          *              alert( 'save complete' );
          *          }
          *     } );
@@ -2487,21 +2557,21 @@ AFrame.CollectionPluginPersistence = ( function() {
          * @param {id || index} itemID - id or index of item to save
          * @param {object} options - options information.
          * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-         *	Callback will be called with two parameters, the data, and options information.
+         *	Callback will be called with two parameters, the item, and options information.
          */
         save: function( itemID, options ) {
-            var data = this.getPlugged().get( itemID );
+            var item = this.getPlugged().get( itemID );
 
-            if( data ) {
+            if( item ) {
                 options = this.getOptions( options );
                 var callback = options.onComplete;
                 
                 options.onComplete = function() {
                     options.onComplete = callback;
-                    callback && callback( data, options );
+                    callback && callback( item, options );
                 }.bind( this );
                 
-                this.saveCallback( data, options );
+                this.saveCallback( item, options );
             }
         },
 
