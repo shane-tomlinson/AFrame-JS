@@ -259,6 +259,13 @@ AFrame.CollectionArray = (function(){
             }
             
             return index;
+        },
+        
+        forEach: function( callback, context ) {
+            for( var item, index = 0, cid; cid = this.itemCIDs[ index ]; ++index ) {
+                item = this.get( cid );
+                callback.call( context, item, index );
+            }
         }
     } );
     return CollectionArray;

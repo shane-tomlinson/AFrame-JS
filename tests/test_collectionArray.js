@@ -117,7 +117,35 @@ testsToRun.push( function testCollectionArray( Y ) {
 			
 			var item = this.array.get( cid );
 			Assert.isUndefined( item, 'could not get item' );
-		}
+		},
+        
+        testForEach: function() {
+            var items = [ {
+				cid: '1',
+				field: 'field1'
+			}, {
+				cid: '2',
+				field: 'field2',
+                duplicate: 'duplicate'
+			}, {
+				cid: '3',
+				field: 'field3',
+                duplicate: 'duplicate'
+			} ];
+            
+            items.forEach( function( item, index ) {
+                this.array.insert( item );            
+            }, this );
+            
+            var callbackCount = 0;
+            this.array.forEach( function( item, index ) {
+                Assert.isObject( item, 'item is an object' );
+                //Assert.isNumber( index, 'index is a number' );
+                callbackCount++;
+            } );
+            
+            Assert.areEqual( 3, callbackCount, 'callback called once for each item' );            
+        }
 		
 	} );
 	
