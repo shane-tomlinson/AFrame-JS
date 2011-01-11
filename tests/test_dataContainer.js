@@ -33,7 +33,6 @@ testsToRun.push( function testDataContainer( Y ) {
 			Assert.isObject( eventData, 'onSet correctly triggered with data' );
 			Assert.isTrue( eventData.hasOwnProperty( 'oldValue' ), 'oldValue is in data set' );
 			Assert.isString( eventData.value, 'value is in data set' );
-			Assert.isObject( eventData.container, 'container is in data set' );
 			Assert.isString( eventData.fieldName, 'fieldName is in data set' );
 			
 			
