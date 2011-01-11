@@ -203,16 +203,6 @@ AFrame.List = (function() {
             return index;
         },
 
-/*        getEventObject: function() {
-            var event = List.sc.getEventObject.call( this );
-            
-            event.rowElement = this.rowElement;
-            event.index = this.index;
-            event.data = this.data;
-            
-            return event;
-        },
-  */      
         /**
          * Remove an item from the list
          *   
