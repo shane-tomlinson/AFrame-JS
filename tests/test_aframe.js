@@ -150,4 +150,32 @@ testsToRun.push( {
 		}
 } );
 	
-
+testsToRun.push( {
+    name: 'Test Type Check Functions',
+    
+    testDefined: function() {
+        Assert.isFalse( AFrame.defined(), 'undefined value' );
+        Assert.isTrue( AFrame.defined( '1' ), 'defined value' );
+    },
+    
+    testFunc: function() {
+        Assert.isFalse( AFrame.func('1'), 'not a function' );
+        
+        var testFunc = function() {
+        };
+        
+        Assert.isTrue( AFrame.func( testFunc ), 'a function' );
+    },
+    
+    testString: function() {
+        Assert.isFalse( AFrame.string( 1 ), '1 is not a string' );
+        Assert.isTrue( AFrame.string( 'testString' ), 'a string' );
+        Assert.isTrue( AFrame.string( new String( 'testString' ) ), 'a string' );
+    },
+    
+    testArray: function() {
+        Assert.isFalse( AFrame.array( 1 ), '1 is not an array' );
+        Assert.isTrue( AFrame.array( [] ), '[] is not an array' );
+        Assert.isTrue( AFrame.array( new Array() ), 'new Array creates an array' );
+    }
+} )

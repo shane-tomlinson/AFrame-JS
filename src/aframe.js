@@ -172,6 +172,26 @@ var AFrame = {
 	* @return {boolean} true if item is a string, false otw.
 	*/
     string: function( itemToCheck ) {
-        return 'string' == typeof( itemToCheck );
+        return '[object String]' === Object.prototype.toString.apply( itemToCheck );
+    },
+    
+    /**
+    * Check whether an item is an array
+    *
+    *    // returns true
+    *    var isArray = AFrame.array( [] );
+    *
+    *    // returns true
+    *    isArray = AFrame.array( new Array() );
+    *
+    *    // returns false
+    *    isArray = AFrame.array( '' );
+    *
+    * @method array
+    * @param {variant} itemToCheck
+    * @return {boolean} true if item is an array, false otw.
+    */
+    array: function( itemToCheck ) {
+        return '[object Array]' === Object.prototype.toString.apply( itemToCheck );
     }
 };
