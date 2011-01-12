@@ -1,9 +1,4 @@
-testsToRun.push( function test( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var testWithCollectionArray = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.ListPluginFormRow",
 		
@@ -155,9 +150,4 @@ testsToRun.push( function test( Y ) {
             Assert.isTrue( form instanceof AFrame.Form, 'default form returned, is of type form'  );
         }
 		
-		
-		
-	} );
-
-	TestRunner.add( testWithCollectionArray );
 } );

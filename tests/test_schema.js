@@ -1,10 +1,4 @@
-testsToRun.push( function testAObject( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	
-	var testAObject = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.Schema",
 		
@@ -453,9 +447,5 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isFalse( validityState.intField.valid, 'trying to set an integer to a string' );
             Assert.isTrue( validityState.intField.typeMismatch, 'trying to set an integer to a string' );
         }
-		
-	} );
-
-	TestRunner.add( testAObject );
-	
+			
 } );

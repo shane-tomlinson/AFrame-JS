@@ -1,9 +1,4 @@
-testsToRun.push( function testField( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.FieldPluginValidation",
 		
@@ -172,6 +167,4 @@ testsToRun.push( function testField( Y ) {
             Assert.areEqual( 'abc', criteria.pattern, 'pattern set on criteria' );
             
         }
-    } );
-	TestRunner.add( test );
 } );

@@ -1,15 +1,10 @@
 
-testsToRun.push( function testCollectionPluginPersistence( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.CollectionPluginPersistence no callbacks",
 		
 		setUp: function() {
-			this.mockCollection = Y.Mock();
+			this.mockCollection = Mock();
 			AFrame.mixin( this.mockCollection, AFrame.ObservablesMixin );
 
 			this.delCallbackCalled = false;
@@ -70,13 +65,13 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 
 			Assert.isTrue( callbackCalled, 'callback called' );
 			Assert.isString( cid, 'cid assigned' );
-			Y.Mock.verify( this.mockCollection );
+			Mock.verify( this.mockCollection );
 
             callbackCalled = false;
             
-			Y.Mock.expect( this.mockCollection, {
+			Mock.expect( this.mockCollection, {
 				method: 'insert',
-				args: [ Y.Mock.Value.Object, Y.Mock.Value.Number ]
+				args: [ Mock.Value.Object, Mock.Value.Number ]
 			} );
 			this.mockCollection.add( {}, {
 				onComplete: function() {
@@ -85,7 +80,7 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
                 insertAt: 1
 			} );
 			Assert.isTrue( callbackCalled, 'callback called for insert with index' );
-			Y.Mock.verify( this.mockCollection );
+			Mock.verify( this.mockCollection );
 		},
 
 		testDelete: function() {
@@ -156,7 +151,4 @@ testsToRun.push( function testCollectionPluginPersistence( Y ) {
 			Assert.isTrue( callbackCalled, 'callback called' );
 		}
 
-	} );
-
-	TestRunner.add( test );
 } );

@@ -1,9 +1,4 @@
-testsToRun.push( function testField( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.Field",
 		
@@ -284,7 +279,4 @@ testsToRun.push( function testField( Y ) {
             var validityState = field.getValidityState();
             Assert.isTrue( validityState.valueMissing, 'Field was required, does not have a value, getValidityState correctly gets this' );
         }
-	} );
-
-	TestRunner.add( test );
 } );

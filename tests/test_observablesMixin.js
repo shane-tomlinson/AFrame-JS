@@ -1,9 +1,4 @@
-testsToRun.push( function testObservablesMixin( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-
-	var test = new TestCase( {
+testsToRun.push( {
 
 		name: "TestCase AFrame.ObservablesMixin",
 
@@ -186,7 +181,4 @@ testsToRun.push( function testObservablesMixin( Y ) {
             Assert.areEqual( 'event', eventData.type, 'event triggered with event object' );
         }
         
-	} );
-
-	TestRunner.add( test );
 } );

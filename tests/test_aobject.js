@@ -1,10 +1,4 @@
-testsToRun.push( function testAObject( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	
-	var testAObject = new TestCase( {
+testsToRun.push( {
 	 
 		name: "TestCase AFrame.AObject",
 
@@ -117,11 +111,6 @@ testsToRun.push( function testAObject( Y ) {
 			this.aobject.teardown();
 			Assert.isFalse( tornDown, 'child\'s teardown not called since it was already removed' );
 		}
-	} );
-	
-	
-	
-	TestRunner.add( testAObject );
-	
-	
 } );
+	
+	

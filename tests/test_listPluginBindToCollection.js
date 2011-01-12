@@ -1,9 +1,4 @@
-testsToRun.push( function testListPluginBindToCollection( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var testWithCollectionArray = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.ListPluginBindToCollection with CollectionArray",
 		
@@ -78,8 +73,8 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 			Assert.areEqual( 0, index, 'correct index' );
 		}
 	} );
-	
-	var testWithCollectionHash = new TestCase( {
+
+testsToRun.push( {
 		
 		name: "TestCase AFrame.ListPluginBindToCollection with CollectionHash",
 		
@@ -153,8 +148,4 @@ testsToRun.push( function testListPluginBindToCollection( Y ) {
 			var index = this.list.getIndex( 0 );
 			Assert.areEqual( 0, index, 'correct index' );
 		}
-	} );
-	
-	TestRunner.add( testWithCollectionArray );
-	TestRunner.add( testWithCollectionHash );
 } );

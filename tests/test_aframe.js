@@ -39,13 +39,8 @@ var A = {
     }
 };
 
-testsToRun.push( function testAFrame( Y ) {
+testsToRun.push( {
  
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	
-	var testExtend = new Y.Test.Case( {
-	 
 		name: "TestCase AFrame.extend",
 	 
 		setUp : function () {		
@@ -75,10 +70,9 @@ testsToRun.push( function testAFrame( Y ) {
  		    Assert.isTrue( this.subInstance.sharedFunc(), 'sharedFunc calls super class' );
  		    Assert.isTrue( this.subInstance.sharedFuncCalled, 'sharedFunc calls super class sets value' );
 		}
+} );
 
-	} );
-	
-	var testMixin = new Y.Test.Case( {
+testsToRun.push( {
 		name: "TestCase AFrame.mixin",
 	 
 		setUp : function () {		
@@ -99,10 +93,9 @@ testsToRun.push( function testAFrame( Y ) {
 		    Assert.isFunction( this.subInstance.mixedFunction, 'mixedFunction added' );
 		    Assert.isTrue( this.subInstance.mixedFunction(), 'mixedFunction can be called' );
 		}
-	  
-	} );
+} );
 
-	var testRemove = new Y.Test.Case( {
+testsToRun.push( {
 		name: "TestCase AFrame.remove",
 	 
 		setUp : function () {		
@@ -119,9 +112,10 @@ testsToRun.push( function testAFrame( Y ) {
 		    AFrame.remove( this.subInstance, 'itemToRemove' );
 		    Assert.isFalse( this.subInstance.hasOwnProperty( 'itemToRemove' ), 'item is removed' );
 		}
-	} );
+} );
 
-	var testConstruct= new Y.Test.Case( {
+
+testsToRun.push( {
 		name: "TestCase AFrame.construct",
 	 
 		testConstructOneLevel: function() {
@@ -143,9 +137,9 @@ testsToRun.push( function testAFrame( Y ) {
 		    Assert.isObject( instance, 'object with dot created' );
 		}
 
-	} );
+} );
 
-	var testGetUniqueID = new Y.Test.Case( {
+testsToRun.push( {
 		name: 'TestCase AFrame.getUniqueID',
 
 		testGetUniqueID: function() {
@@ -154,13 +148,6 @@ testsToRun.push( function testAFrame( Y ) {
 
 			Assert.areNotEqual( id1, id2, 'ids are unique' );
 		}
-		
-	} );
-	
-	TestRunner.add( testExtend );
-	TestRunner.add( testMixin );
-	TestRunner.add( testRemove );
-	TestRunner.add( testConstruct );
-	TestRunner.add( testGetUniqueID );
-	
 } );
+	
+

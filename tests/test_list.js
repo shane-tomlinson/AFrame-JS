@@ -1,9 +1,4 @@
-testsToRun.push( function testList( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.List",
 		
@@ -157,8 +152,5 @@ testsToRun.push( function testList( Y ) {
         
             Assert.areEqual( 2, $( '.list li' ).length, 'insert happens with default factory' );
         }
-	} );
-
-	TestRunner.add( test );
 } );
     

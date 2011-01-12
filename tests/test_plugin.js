@@ -1,9 +1,4 @@
-testsToRun.push( function testPlugin( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.Plugin",
 		
@@ -53,7 +48,4 @@ testsToRun.push( function testPlugin( Y ) {
 			
 			Assert.isTrue( pluginTeardown, 'plugin was torn down' );
 		}
-	} );
-
-	TestRunner.add( test );
 } );

@@ -1,9 +1,4 @@
-testsToRun.push( function testCollectionHash( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-		
-	var test = new TestCase( {
+testsToRun.push( {
 	 
 		name: "TestCase AFrame.CollectionHash",
 
@@ -273,11 +268,5 @@ testsToRun.push( function testCollectionHash( Y ) {
             Assert.areEqual( 3, callbackCount, 'callback called once for each item' );
         
         }
-
-	} );
-	
-	
-	
-	TestRunner.add( test );
 
 } );

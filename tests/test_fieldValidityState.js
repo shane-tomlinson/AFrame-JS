@@ -1,9 +1,4 @@
-testsToRun.push( function testField( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.FieldValidityState",
 		
@@ -16,7 +11,4 @@ testsToRun.push( function testField( Y ) {
 			var validity = AFrame.FieldValidityState.getInstance( { valid: false } );
 			Assert.isFalse( validity.valid, 'validity set to false' );
 		}
-	} );
-
-	TestRunner.add( test );
 } );

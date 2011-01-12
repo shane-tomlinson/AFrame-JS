@@ -1,9 +1,4 @@
-testsToRun.push( function testDisplay( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.Display",
 		
@@ -142,7 +137,4 @@ testsToRun.push( function testDisplay( Y ) {
             Assert.isTrue( renderEvent, 'onRender was called' );
         }
 
-	} );
-
-	TestRunner.add( test );
 } );

@@ -1,9 +1,4 @@
-testsToRun.push( function testForm( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.Form",
 		
@@ -146,8 +141,4 @@ testsToRun.push( function testForm( Y ) {
             
             Assert.isTrue( field instanceof AFrame.Field, 'default field factory creates a field' );
         }
-	} );
-
-	
-	TestRunner.add( test );
 } );

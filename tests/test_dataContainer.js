@@ -1,9 +1,4 @@
-testsToRun.push( function testDataContainer( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-		
-	var test = new TestCase( {
+testsToRun.push( {
 	 
 		name: "TestCase AFrame.DataContainer",
 
@@ -102,10 +97,5 @@ testsToRun.push( function testDataContainer( Y ) {
 			var thirdDataContainer = AFrame.DataContainer( data );
 			Assert.isTrue( ( thirdDataContainer === dataContainer ), 'making a second DataContainer from data gives back the same DataContainer' );
 		}
-	} );
-	
-	
-	
-	TestRunner.add( test );
 
 } );

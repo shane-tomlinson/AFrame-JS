@@ -1,9 +1,4 @@
-testsToRun.push( function testCollectionArray( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-		
-	var test = new TestCase( {
+testsToRun.push( {
 	 
 		name: "TestCase AFrame.CollectionArray",
 
@@ -147,7 +142,4 @@ testsToRun.push( function testCollectionArray( Y ) {
             Assert.areEqual( 3, callbackCount, 'callback called once for each item' );            
         }
 		
-	} );
-	
-	TestRunner.add( test );	
 } );

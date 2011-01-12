@@ -1,9 +1,4 @@
-testsToRun.push( function testForm( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.DataForm with DataContainer",
 		
@@ -58,12 +53,9 @@ testsToRun.push( function testForm( Y ) {
 		}
 		
 		
-	} );
+} );
 	
-	TestRunner.add( test );	
-	
-	
-	test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.DataForm with Model",
 		
@@ -136,8 +128,4 @@ testsToRun.push( function testForm( Y ) {
 		    
 		}
 		
-		
-	} );
-	
-	TestRunner.add( test );	
 } );

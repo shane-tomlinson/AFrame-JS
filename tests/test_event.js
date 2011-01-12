@@ -1,9 +1,4 @@
-testsToRun.push( function testDisplay( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var test = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.Event",
 		
@@ -110,7 +105,4 @@ testsToRun.push( function testDisplay( Y ) {
         }
 
 
-	} );
-
-	TestRunner.add( test );
 } );

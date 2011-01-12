@@ -1,8 +1,4 @@
-testsToRun.push( function testAObject( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
+(function(){
     var schemaConfig = {
         stringField: { type: 'text', def: 'stringField Default Value' },
         numberField: { type: 'number' },
@@ -17,8 +13,7 @@ testsToRun.push( function testAObject( Y ) {
         }
     } );
     
-	
-	var test = new TestCase( {
+    testsToRun.push( {
 		
 		name: "TestCase AFrame.Model",
 
@@ -75,8 +70,6 @@ testsToRun.push( function testAObject( Y ) {
             
         }
 		
-	} );
-
-	TestRunner.add( test );
 	
-} );
+    } );
+})();

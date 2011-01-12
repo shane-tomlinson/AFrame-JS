@@ -1,10 +1,4 @@
-testsToRun.push( function testAObject( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	
-	var testAObject = new TestCase( {
+testsToRun.push( {
 		
 		name: "TestCase AFrame.DataValidation",
 		
@@ -288,9 +282,5 @@ testsToRun.push( function testAObject( Y ) {
             Assert.isFalse( fieldValidityState.typeMismatch, 'unknown type does not raise a fieldValidityState.typeMismatch' );
             
         }
-	
-	} );
-
-	TestRunner.add( testAObject );
 	
 } );

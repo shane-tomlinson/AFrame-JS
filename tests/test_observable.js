@@ -1,9 +1,4 @@
-testsToRun.push( function testObservable( Y ) {
-	var TestRunner = Y.Test.Runner;
-	var Assert = Y.Assert;
-	var TestCase = Y.Test.Case;
-	
-	var testObservable = new TestCase( {
+testsToRun.push( {
 	 
 		name: "TestCase AFrame.Observable",
 	 
@@ -84,9 +79,4 @@ testsToRun.push( function testObservable( Y ) {
 
 			Assert.areNotEqual( id1, id2, 'ids are unique' );
 		}
-	} );
-	
-	
-	
-	TestRunner.add( testObservable );
 } );
