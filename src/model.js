@@ -2,9 +2,65 @@
 * A Model is a DataContainer that is associated with a Schema.  If no initial data is given, 
 *   default values will be retreived from the schema.  When doing a set, only data that validates
 *   will be set.  If data to set is invalid, set will return a [FieldValidityState](AFrame.FieldValidityState.html).
+*
+*    // create the schema config
+*    var noteSchemaConfig = {
+*        id: { type: 'integer' },
+*        title: { type: 'text', def: 'Note Title' },
+*        contents: { type: 'text' },
+*        date: { type: 'iso8601' },
+*        edit_date: { type: 'iso8601' }
+*    };
+*
+*    // create one schema for all models of the same type
+*    var noteSchema = AFrame.construct( {
+*        type: AFrame.Schema,
+*        config: {
+*            schema: noteSchemaConfig
+*        }
+*    } );
+*    
+*    // Create one instance of the model.
+*    var model = AFrame.construct( {
+*        type: AFrame.Model,
+*        config: {
+*            schema: noteSchema,
+*            data: {
+*                id: '1',
+*                title: 'Get some milk',
+*                contents: 'Go to the supermarket and grab some milk.',
+*                date: '2010-12-10T18:09Z',
+*                edit_date: '2010-12-10T18:23Z'
+*                extra_field: 'this field does not get through'
+*           }
+*       }
+*    } );
+*
+*    // update a field.  prevVal will be 'Get some milk'
+*    var prevVal = model.set( 'title', 'Get some milk and eggs' );
+*
+*    // This is setting the date in error, the prevVal will have a FieldValidityState
+*    // with its typeMismatch field set to true.  This will NOT actually set the value.
+*    prevVal = model.set( 'edit_date', '1' );
+*
+*    // Check the overall model for validity.  Returns true if all valid, an object of
+*    // of FieldValidityStates otherwise
+*    var isValid = model.checkValidity();
+*
 * @class AFrame.Model
 * @extends AFrame.DataContainer
 * @constructor
+*/
+/**
+* The schema to use for the model.
+* @config schema
+* @type {AFrame.Schema}
+*/
+/**
+* Initial data to use for the model.  Note, initial data is not validated in any way.  If
+*   data is not given, data is taken out of the schema's default values.
+* @config data
+* @type {object}
 */
 AFrame.Model = ( function() {
     

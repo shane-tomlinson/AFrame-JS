@@ -1,19 +1,66 @@
 /**
- * A basic data schema, useful for loading/saving data to a persistence store.  When loading data from
- * persistence, if the data is run through the getAppData function, it will make an object with only the fields
+ * A basic data schema, useful for defining a data structure, validating data, and preparing data to 
+ * be loaded from or saved to a persistence store.  Schema's define the data structure and can
+ * be nested to create complex data structures.  Schemas perform serialization duties in getAppData and
+ * serializeItems.  Finally, Schemas define ways to perform data validation.
+ * 
+ * When loading data from persistence, if the data is run through the getAppData function, 
+ * it will make an object with only the fields
  * defined in the schema, and any missing fields will get default values.  If a fixup function is defined
  * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
  * running data through the serializeItems will create an object with only the fields specified in the schema.  If
  * a row has 'save: false' defined, the row will not be added to the form data object. If a row has a cleanup 
  * function defined, the corresponding data value will be run through the cleanup function.
+ *
  * Generic serialization functions can be set for a type using the AFrame.Schema.addDeserializer and 
  * AFrame.Schema.addSerializer.  These are useful for doing conversions where the data persistence
  * layer saves data in a different format than the internal application representation.  A useful
  * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
  * and 'iso8601'.
+ *
  * If a row in the schema config has the has_many field, the field is made into an array and the fixup/cleanup functions
  *	are called on each item in the array.  The default default item for these fields is an empty array.  If
  *	there is no data for the field in serializeItems, the field is left out of the output.
+ *
+ *
+ *    // Schema defines four fields, two with validators
+ *    var librarySchemaConfig = {
+ *        name: { type: 'text', validate: {
+ *                    minlength: 1,
+ *                    maxlength: 75,
+ *                    required: true
+ *                } },
+ *        version: { type: 'text', validate: {
+ *                    minlength: 1,
+ *                    required: true
+ *               } },
+ *        create_date: { type: 'iso8601' },
+ *        downloads: { type: 'integer', fixup: downloadsFixup, cleanup: downloadsCleanup }
+ *    };
+ *
+ *    function downloadsFixup( options ) {
+ *         var value = options.value;
+ *         if( value < 0 ) {
+ *              value = 0;
+ *         }
+ *         return value;
+ *    };
+ *
+ *    function downloadsCleanup( options ) {
+ *         var value = options.value;
+ *         if( value < 0 ) {
+ *              value = 0;
+ *         }
+ *         return value;
+ *    };
+ *
+ *    var librarySchema = AFrame.construct( {
+ *         type: AFrame.Schema,
+ *         config: {
+ *             schema: librarySchemaConfig
+ *         }
+ *    } );
+ *
  * @class AFrame.Schema
  * @constructor
  */
@@ -33,6 +80,10 @@ AFrame.Schema.prototype = {
 	/**
 	 * Get an object with the default values specified.  Only returns values
 	 * of objects with a defined default.
+     *
+     *    // get the default values for all fields.
+     *    var defaults = schema.getDefaults();
+     *
 	 * @method getDefaults
 	 * @return {object} object with default values
 	 */
@@ -46,6 +97,10 @@ AFrame.Schema.prototype = {
 
 	/**
 	* Get the default value for a particular item
+    *
+    *    // get the default value for a particular item
+    *    var value = schema.getDefaultValue( 'name' );
+    *
 	* @method getDefaultValue
 	* @param {string} key - name of item to get default value for
 	* @return {variant} default value if one is defined
@@ -70,6 +125,10 @@ AFrame.Schema.prototype = {
 	 * schema, the default value is used for that item.  Items are finally run through an optionally defined
 	 * fixup function.  If defined, the fixup function should return cleaned data.  If the fixup function
 	 * does not return data, the field will be undefined.
+     *
+     *     // dbData is data coming from the database, still needs to be deserialized.
+     *     var appData = schema.getAppData( dbData );
+     *
 	 * @method getAppData
 	 * @param {object} dataToFix
 	 * @return {object} fixedData
@@ -134,6 +193,10 @@ AFrame.Schema.prototype = {
 	 *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
 	 *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
 	 *	will have values returned.
+     *
+     *     // appData is data from the application ready to send to the DB, needs serialized.
+     *     var serializedData = schema.serializeItems( appData );
+     *
 	 * @method serializeItems
 	 * @param {object} dataToSerialize - data to clean up
 	 * @return {object} cleanedData

@@ -170,9 +170,10 @@
             <p id="schema">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Schemas to Define the Data's Structure</h3>
                 A <a href="docs/AFrame.Schema.html">Schema</a> acts as a template to define the structure of a piece of data.  
-                A Schema, combined with a DataContainer, provide a what is traditionally thought of as a Model.  Schemas are
-                useful for more than just modelling data, they can be used to clean up or transmogrify data either coming from 
-                or going to persistence.  Schemas can even be nested to create complex data structures.
+                Though schemas define the structure of data, they can also be used to validate, clean up or just plain transmogrify data.
+                These capabilities are especially useful when either retreiving data from or sending data to some sort of persistence layer.  
+                Schemas can even be nested to create complex data structures.  A Schema, combined with a DataContainer, 
+                make up what is traditionally thought of as a Model (more on Models in the next section).
             </p>
             
             <p>
@@ -208,34 +209,47 @@
                 
             </p>
             
+            <p></p>
             <p>
-                <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of Schema and DataContainer Together</h4>
+                <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example Making a Model from a Schema and DataContainer</h4>
 <pre>
 
-    /** 
-    * Using the above noteSchema.
-    * 
-    * Taking some text-only data from persistence and converting it 
-    *   for use within the app
-    */
-    var noteData = noteSchema.getAppData( {
-        id: '1',
-        title: 'Get some milk',
-        contents: 'Go to the supermarket and grab some milk.',
-        date: '2010-12-10T18:09Z',
-        edit_date: '2010-12-10T18:23Z'
-        extra_field: 'this field does not get through'
+    
+    // Using the above schema - create an instance of the model.
+    var model = AFrame.construct( {
+        type: AFrame.Model,
+        config: {
+            schema: noteSchema,
+            data: {
+                id: '1',
+                title: 'Get some milk',
+                contents: 'Go to the supermarket and grab some milk.',
+                date: '2010-12-10T18:09Z',
+                edit_date: '2010-12-10T18:23Z'
+                extra_field: 'this field does not get through'
+           }
+       }
     } );
     
     /**
     * Here: 
-    *    noteData.id is the integer 1
-    *    noteData.date is a Javascript Date
-    *    noteData.edit_date is a Javascript Date
+    *    model.id is the integer 1
+    *    model.date is a Javascript Date
+    *    model.edit_date is a Javascript Date
     *    extra_field does not exist
     */
+
+    // update a field.  prevVal will be 'Get some milk'
+    var prevVal = model.set( 'title', 'Get some milk and eggs' );
+
+    // This is setting the date in error, the prevVal will have a FieldValidityState
+    // with its typeMismatch field set to true.  This will NOT actually set the value.
+    prevVal = model.set( 'edit_date', '1' );
+
+    // Check the overall model for validity.  Returns true if all valid, an object of
+    // of FieldValidityStates otherwise
+    var isValid = model.checkValidity();
     
-    var noteModel = AFrame.DataContainer( noteData );
 </pre>            </p>
             
             <p id="collections">

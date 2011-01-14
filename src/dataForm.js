@@ -3,7 +3,7 @@
 *	is used as the data source for all form Fields.  When a Field in the form is created, it
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
-*    
+*
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
 *        version: '0.0.20'
@@ -25,13 +25,58 @@
 *    //    updated.
 *
 *    // Check the validity of the form, if we are valid, save the data back to 
-*    //    the dataContainer
+*    //    the dataContainer.
 *    var isValid = form.checkValidity();
 *    if( isValid ) {
 *        // if the form is valid, the input is saved back to 
 *        //    the libraryDataContainer
 *        form.save();
 *    }
+*
+* If setting up a DataForm with a [Model](AFrame.Model.html), when validating the form,
+*   the model's validators will be called as well.  This is useful to do specialized
+*   model level validation.
+*
+*    // Schema defines two fields with validators
+*    var schemaConfig = {
+*        name: { type: 'text', validate: {
+*                    minlength: 1,
+*                    maxlength: 75,
+*                    required: true
+*                } },
+*        version: { type: 'text', validate: {
+*                    minlength: 1,
+*                    required: true
+*               } }
+*    };
+*
+*    // create the schema
+*    var schema = AFrame.construct( {
+*       type: AFrame.Schema,
+*       config: {
+*           schema: schemaConfig
+*       }
+*    } );
+*
+*    // create the model.
+*    var model = AFrame.construct( {
+*        type: AFrame.Model,
+*        config: {
+*            schema: schema
+*        }
+*    } );
+*
+*    // Set up the form to look under #nameForm for elements with the "data-field" 
+*    //    attribute.  This will find two fields, each field will be tied to the 
+*    //    appropriate field in the libraryDataContainer
+*    var form = AFrame.construct( {
+*        type: DataForm,
+*        config: {
+*            target: $( '#nameForm' ),
+*            dataSource: model
+*        }
+*    } );
+*    
 *
 * @class AFrame.DataForm
 * @extends AFrame.Form
