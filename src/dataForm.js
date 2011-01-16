@@ -50,19 +50,11 @@
 *               } }
 *    };
 *
-*    // create the schema
-*    var schema = AFrame.construct( {
-*       type: AFrame.Schema,
-*       config: {
-*           schema: schemaConfig
-*       }
-*    } );
-*
 *    // create the model.
 *    var model = AFrame.construct( {
 *        type: AFrame.Model,
 *        config: {
-*            schema: schema
+*            schema: schemaConfig
 *        }
 *    } );
 *

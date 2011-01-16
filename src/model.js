@@ -12,19 +12,11 @@
 *        edit_date: { type: 'iso8601' }
 *    };
 *
-*    // create one schema for all models of the same type
-*    var noteSchema = AFrame.construct( {
-*        type: AFrame.Schema,
-*        config: {
-*            schema: noteSchemaConfig
-*        }
-*    } );
-*    
 *    // Create one instance of the model.
 *    var model = AFrame.construct( {
 *        type: AFrame.Model,
 *        config: {
-*            schema: noteSchema,
+*            schema: noteSchemaConfig,
 *            data: {
 *                id: '1',
 *                title: 'Get some milk',
@@ -52,9 +44,9 @@
 * @constructor
 */
 /**
-* The schema to use for the model.
+* The schema to use for the model.  Can be either a Schema or a schema configuration object.
 * @config schema
-* @type {AFrame.Schema}
+* @type {AFrame.Schema || object}
 */
 /**
 * Initial data to use for the model.  Note, initial data is not validated in any way.  If
@@ -152,12 +144,7 @@ AFrame.Model = ( function() {
     
     function getSchema( candidate ) {
         var schema = candidate instanceof AFrame.Schema ? candidate : 
-            AFrame.construct( {
-                type: AFrame.Schema,
-                config: {
-                    schema: candidate
-                }
-            } );
+            AFrame.Schema( candidate );
         
         return schema;
     }

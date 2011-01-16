@@ -60,22 +60,13 @@ testsToRun.push( {
 		name: "TestCase AFrame.DataForm with Model",
 		
 		setUp: function() {
-			this.schema = AFrame.construct( {
-				type: AFrame.Schema,
+			this.dataSource = AFrame.construct( {
+				type: AFrame.Model,
 				config: {
 					schema: {
 						name: { type: 'text' },
 						field2: { type: 'text' } 
-					}
-				}
-			} );
-			
-			
-			
-			this.dataSource = AFrame.construct( {
-				type: AFrame.Model,
-				config: {
-					schema: this.schema,
+					},
 					data: {
 			   		    name: 'AFrame',
 						field2: 'Field2'

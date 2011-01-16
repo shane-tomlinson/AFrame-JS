@@ -5,14 +5,7 @@
         integerField: { type: 'integer' },
         isodatetime: { type: 'iso8601' }
     };
-    
-    var schema = AFrame.construct( {
-        type: AFrame.Schema,
-        config: {
-            schema: schemaConfig
-        }
-    } );
-    
+
     testsToRun.push( {
 		
 		name: "TestCase AFrame.Model",
@@ -21,7 +14,7 @@
 		    this.model = AFrame.construct( {
                 type: AFrame.Model,
                 config: {
-                    schema: schema
+                    schema: schemaConfig
                 }
             } );
 		},
@@ -96,7 +89,7 @@
 		    var model = AFrame.construct( {
                 type: AFrame.Model,
                 config: {
-                    schema: schema,
+                    schema: schemaConfig,
                     data: initialData
                 }
             } );
@@ -108,20 +101,6 @@
             Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'isodatetime deserialized' );
             
             Assert.areSame( initialData, model.getDataObject(), 'deserialization deserializes in same data object' );
-        },
-        
-        testModelWithSchemaConfig: function() {
-		    var model = AFrame.construct( {
-                type: AFrame.Model,
-                config: {
-                    schema: schemaConfig,
-                    data: {
-                        isodatetime: '2011-01-16T11:47:04Z'
-                    }
-                }
-            } );
-            
-            Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'schema created with config' );
         }
 		
 	

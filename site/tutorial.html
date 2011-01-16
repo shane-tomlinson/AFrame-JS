@@ -215,11 +215,13 @@
 <pre>
 
     
-    // Using the above schema - create an instance of the model.
+    // When creating a model, an explicit Schema does not need made, one will
+    //  automatically be created from the schema configuration object (using 
+    //  noteSchemaConfig from above).
     var model = AFrame.construct( {
         type: AFrame.Model,
         config: {
-            schema: noteSchema,
+            schema: noteSchemaConfig,
             data: {
                 id: '1',
                 title: 'Get some milk',
@@ -327,7 +329,7 @@
             
             <p id="field">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Fields</h3>
-                A <a href="docs/AFrame.Field.html">Field</a> are the basic display units for a form.  Fields can be used for 
+                A <a href="docs/AFrame.Field.html">Field</a> is the basic display unit for a form.  Fields can be used for 
                 either input or output.  If the browser is HTML5 compatible, the 
                 <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api">HTML5</a>
                 spec is followed with regards to validation.  The current field state is returned using field.getValidityState() which returns
@@ -375,9 +377,9 @@
                 On form initialization, the Form's descendents will be searched for elements with the "data-field" 
                 attribute.  Each element found will be passed to the field factory, the factory must return a 
                 <a href="docs/AFrame.Field.html">Field</a> compatible object.  A basic Form that is not bound to any particular
-                <a href="docs/AFrame.DataContainer.html">DataContainer</a> is useful primarily to do input validation where data
-                from the form is retreived and used through methods outside of the framework.  To bind a form to data, see
-                the next section, <a href="#bindFormDataContainer">Binding a Form to a DataContainer</a>.
+                <a href="docs/AFrame.DataContainer.html">DataContainer</a> or <a href="docs/AFrame.Model.html">Model</a> is useful primarily 
+                to do input validation where data from the form is retreived and used through methods outside of the framework.  
+                To bind a form to data, see the next section, <a href="#bindFormDataContainer">Binding a Form to a DataContainer/Model</a>.
             </p>
             
             <p>
@@ -432,7 +434,7 @@
             </p>
 
             <p id="bindFormDataContainer">
-                <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Binding a Form to a DataContainer</h3>
+                <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Binding a Form to a DataContainer or Model</h3>
                 Basic forms are very useful in themselves, but frequently a form is bound to a particular set of data.  
                 By binding a <a href="docs/AFrame.DataForm.html">DataForm</a> to a <a href="docs/AFrame.DataContainer.html">DataContainer</a>, 
                 the DataContainer is used as both the source and the receiver of information.  Form fields will automatically have their values populated
