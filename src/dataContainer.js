@@ -27,12 +27,15 @@
 *    
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
+* @uses AFrame.EnumerableMixin
 * @constructor
 * @param {object || AFrame.DataContainer} data (optional) If given, creates a new AFrame.DataContainer for the data.  
 *   If already an AFrame.DataContainer, returns self, if the data already has an AFrame.DataContainer associated with 
 *	it, then the original AFrame.DataContainer is used.
 */
 AFrame.DataContainer = ( function() {
+    "use strict";
+    
     var DataContainer = function( data ) {
         if( data instanceof DataContainer ) {
             return data;
@@ -54,7 +57,7 @@ AFrame.DataContainer = ( function() {
     };
 
 
-    AFrame.extend( DataContainer, AFrame.AObject, {
+    AFrame.extend( DataContainer, AFrame.AObject, AFrame.EnumerableMixin, {
         /**
         * Initialize the data container.
         * @method init
@@ -213,8 +216,6 @@ AFrame.DataContainer = ( function() {
             }
         }
     } );
-    
-    AFrame.mixin( DataContainer.prototype, AFrame.EnumerableMixin );
     
     return DataContainer;
 }() );

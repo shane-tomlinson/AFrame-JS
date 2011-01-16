@@ -38,11 +38,13 @@
 * @constructor
 */
 AFrame.CollectionHash = ( function() {
+    "use strict";
+    
     var CollectionHash = function() {
         CollectionHash.sc.constructor.apply( this, arguments );
     };
     CollectionHash.currID = 0;
-    AFrame.extend( CollectionHash, AFrame.AObject, {
+    AFrame.extend( CollectionHash, AFrame.AObject, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.hash = {};
             
@@ -224,7 +226,5 @@ AFrame.CollectionHash = ( function() {
         }
     } );
     
-    AFrame.mixin( CollectionHash.prototype, AFrame.EnumerableMixin );
-
     return CollectionHash;
 } )();

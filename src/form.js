@@ -56,6 +56,7 @@
  *    
  * @class AFrame.Form
  * @extends AFrame.Display
+ * @uses AFrame.EnumerableMixin
  * @constructor
  */
 /**
@@ -75,174 +76,184 @@
  * @type {function}
  * @default this.formFieldFactory;
  */
-AFrame.Form = function() {
-	AFrame.Form.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.Form, AFrame.Display, {
-	init: function( config ) {
-		this.formFieldFactory = config.formFieldFactory || this.formFieldFactory;
-		this.formElements = [];
-		this.formFields = [];
-		
-		AFrame.Form.sc.init.apply( this, arguments );
+AFrame.Form = ( function() {
+    "use strict";
+    
+    var Form = function() {
+        Form.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( Form, AFrame.Display, AFrame.EnumerableMixin, {
+        init: function( config ) {
+            this.formFieldFactory = config.formFieldFactory || this.formFieldFactory;
+            this.formElements = [];
+            this.formFields = [];
+            
+            Form.sc.init.apply( this, arguments );
 
-		this.bindFormElements();
-	},
+            this.bindFormElements();
+        },
 
-    /**
-    * The factory used to create fields.
-    *
-    *     // example of overloaded formFieldFactory
-    *     formFieldFactory: function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
-    *       } );
-    *     };
-    *
-    * @method formFieldFactory
-    * @param {Element} element - element where to create field
-    * @return {AFrame.Field} field for element.
-    */
-    formFieldFactory: function( element ) {
-       return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
+        /**
+        * The factory used to create fields.
+        *
+        *     // example of overloaded formFieldFactory
+        *     formFieldFactory: function( element ) {
+        *       return AFrame.construct( {
+        *           type: AFrame.SpecializedField,
+        *           config: {
+        *               target: element
+        *           }
+        *       } );
+        *     };
+        *
+        * @method formFieldFactory
+        * @param {Element} element - element where to create field
+        * @return {AFrame.Field} field for element.
+        */
+        formFieldFactory: function( element ) {
+           return AFrame.construct( {
+                type: AFrame.Field,
+                config: {
+                    target: element
+                }
+            } );
+        },
+
+        bindFormElements: function() {
+            var formElements = $( '[data-field]', this.getTarget() );
+            
+            formElements.each( function( index, formElement ) {
+                this.bindFormElement( formElement );
+            }.bind( this ) );
+        },
+
+        teardown: function() {
+            this.forEach( function( formField, index ) {
+                formField.teardown();
+                this.formFields[ index ] = null;
+            }, this );
+            this.formFields = null;
+            this.formElements = null;
+            Form.sc.teardown.apply( this, arguments );
+        },
+        
+        /**
+         * bind a form element to the form
+         *
+         *    // Bind a field in the given element.
+         *    var field = form.bindFormElement( $( '#button' ) );
+         *
+         * @method bindFormElement
+         * @param {selector || element} formElement the form element to bind to.
+         * @returns {AFrame.Field}
+         */
+        bindFormElement: function( formElement ) {
+            var target = $( formElement );
+            this.formElements.push( target );
+
+            var formField = this.formFieldFactory( target );
+            this.formFields.push( formField );
+            
+            return formField;
+        },
+        
+        /**
+         * Get the form field elements
+         *
+         *    // Get the form field elements
+         *    var fields = form.getFormElements();
+         *
+         * @method getFormElements
+         * @return {array} the form elements
+         */
+        getFormElements: function() {
+            return this.formElements;
+        },
+
+        /**
+         * Get the form fields
+         *
+         *    // Get the form fields
+         *    var fields = form.getFormFields();
+         *
+         * @method getFormFields
+         * @return {array} the form fields
+         */
+        getFormFields: function() {
+            return this.formFields;
+        },
+
+        /**
+         * Validate the form.
+         *
+         *    // Check the validity of the form
+         *    var isValid = form.checkValidity();
+         *
+         * @method checkValidity
+         * @return {boolean} true if form is valid, false otw.
+         */
+        checkValidity: function() {
+            var valid = true;
+
+            for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
+                valid = formField.checkValidity();
             }
-        } );
-    },
+            
+            return valid;
+        },
 
-	bindFormElements: function() {
-		var formElements = $( '[data-field]', this.getTarget() );
-		
-		formElements.each( function( index, formElement ) {
-			this.bindFormElement( formElement );
-		}.bind( this ) );
-	},
+        /**
+         * Clear the form, does not affect data
+         *
+         *    // Clear the form, does not affect data.
+         *    form.clear();
+         *
+         * @method clear
+         */
+        clear: function() {
+            this.fieldAction( 'clear' );
+        },
 
-	teardown: function() {
-		this.formFields && this.formFields.forEach( function( formField, index ) {
-			formField.teardown();
-			this.formFields[ index ] = null;
-		}, this );
-		this.formFields = null;
-		this.formElements = null;
-		AFrame.Form.sc.teardown.apply( this, arguments );
-	},
-	
-	/**
-	 * bind a form element to the form
-     *
-     *    // Bind a field in the given element.
-     *    var field = form.bindFormElement( $( '#button' ) );
-     *
-	 * @method bindFormElement
-	 * @param {selector || element} formElement the form element to bind to.
-	 * @returns {AFrame.Field}
-	 */
-	bindFormElement: function( formElement ) {
-		var target = $( formElement );
-		this.formElements.push( target );
+        /**
+         * Reset the form to its original state
+         *
+         *    // Resets the form to its original state.
+         *    form.reset();
+         *
+         * @method reset
+         */
+        reset: function() {
+            this.fieldAction( 'reset' );
+        },
 
-		var formField = this.formFieldFactory( target );
-		this.formFields.push( formField );
-		
-		return formField;
-	},
-	
-	/**
-	 * Get the form field elements
-     *
-     *    // Get the form field elements
-     *    var fields = form.getFormElements();
-     *
-	 * @method getFormElements
-	 * @return {array} the form elements
-	 */
-	getFormElements: function() {
-		return this.formElements;
-	},
+        /**
+         * Have all fields save their data if the form is valid
+         *
+         *    // Have all fields save their data if the form is valid
+         *    var saved = form.save();
+         *
+         * @method save
+         * @return {boolean} true if the form was valid and saved, false otw.
+         */
+        save: function() {
+            var valid = this.checkValidity();
+            if( valid ) {
+                this.fieldAction( 'save' );
+            }
+            
+            return valid;
+        },
 
-	/**
-	 * Get the form fields
-     *
-     *    // Get the form fields
-     *    var fields = form.getFormFields();
-     *
-	 * @method getFormFields
-	 * @return {array} the form fields
-	 */
-	getFormFields: function() {
-		return this.formFields;
-	},
-
-	/**
-	 * Validate the form.
-     *
-     *    // Check the validity of the form
-     *    var isValid = form.checkValidity();
-     *
-	 * @method checkValidity
-	 * @return {boolean} true if form is valid, false otw.
-	 */
-	checkValidity: function() {
-		var valid = true;
-
-		for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
-			valid = formField.checkValidity();
-		}
-		
-		return valid;
-	},
-
-	/**
-	 * Clear the form, does not affect data
-     *
-     *    // Clear the form, does not affect data.
-     *    form.clear();
-     *
-	 * @method clear
-	 */
-	clear: function() {
-		this.fieldAction( 'clear' );
-	},
-
-	/**
-	 * Reset the form to its original state
-     *
-     *    // Resets the form to its original state.
-     *    form.reset();
-     *
-	 * @method reset
-	 */
-	reset: function() {
-		this.fieldAction( 'reset' );
-	},
-
-	/**
-	 * Have all fields save their data if the form is valid
-     *
-     *    // Have all fields save their data if the form is valid
-     *    var saved = form.save();
-     *
-	 * @method save
-	 * @return {boolean} true if the form was valid and saved, false otw.
-	 */
-	save: function() {
-		var valid = this.checkValidity();
-		if( valid ) {
-			this.fieldAction( 'save' );
-		}
-		
-		return valid;
-	},
-
-	fieldAction: function( action ) {
-		this.formFields.forEach( function( formField, index ) {
-			formField[ action ]();
-		} );
-	}
-} );
+        fieldAction: function( action ) {
+            this.forEach( function( formField, index ) {
+                formField[ action ]();
+            } );
+        },
+        
+        forEach: function( callback, context ) {
+            this.formFields && this.formFields.forEach( callback, context );
+        }
+    } );
+    
+    return Form;
+}() );

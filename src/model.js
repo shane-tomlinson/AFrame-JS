@@ -55,6 +55,7 @@
 * @type {object}
 */
 AFrame.Model = ( function() {
+    "use strict";
     
     function Model() {
         Model.sc.constructor.call( this );

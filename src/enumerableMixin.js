@@ -6,6 +6,8 @@
 * @static
 */
 AFrame.EnumerableMixin = ( function() {
+    "use strict";
+    
     var Mixin = {
         /**
         * Get a set of items in the collection using the search function.  The search function will
