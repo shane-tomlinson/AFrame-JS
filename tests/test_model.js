@@ -82,6 +82,32 @@
             Assert.areEqual( 1.25, serializedItems.numberField, 'numberField is good' );
             Assert.areEqual( 1, serializedItems.integerField, 'integerField is good' );
             Assert.isString( serializedItems.isodatetime, 'isodatetime is good' );
+        },
+        
+        testDeserializeItemsOnCreation: function() {
+            
+            var initialData = {
+                stringField: 'string value',
+                numberField: '1.25',
+                integerField: '1',
+                isodatetime: '2011-01-16T11:47:04Z'
+            };
+                    
+		    var model = AFrame.construct( {
+                type: AFrame.Model,
+                config: {
+                    schema: schema,
+                    data: initialData
+                }
+            } );
+            
+            Assert.areSame( 'string value', model.get( 'stringField' ), 'stringField deserialize OK' );
+            Assert.areSame( 1.25, model.get( 'numberField' ), 'numberField deserialized' );
+            Assert.areSame( 1, model.get( 'integerField' ), 'integerField deserialized' );
+            
+            Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'isodatetime deserialized' );
+            
+            Assert.areSame( initialData, model.getDataObject(), 'deserialization deserializes in same data object' );
         }
 		
 	

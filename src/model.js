@@ -153,6 +153,14 @@ AFrame.Model = ( function() {
         if( !initialData ) {
             initialData = schema.getDefaults();
         }
+        
+        // use the initialData structure to store deserialized data
+        //  so that we do not have two copies of the data running around.
+        var deserialized = schema.getAppData( initialData );
+        for( var key in deserialized ) {
+            initialData[ key ] = deserialized[ key ];
+        }
+        
         return initialData;
     }
 
