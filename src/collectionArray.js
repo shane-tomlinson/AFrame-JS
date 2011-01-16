@@ -54,7 +54,9 @@
 * @uses AFrame.ArrayCommonFuncsMixin
 * @constructor
 */
-AFrame.CollectionArray = (function(){
+AFrame.CollectionArray = ( function() {
+    "use strict";
+    
     var CollectionArray = function() {
         CollectionArray.sc.constructor.apply( this, arguments );
     };

@@ -110,195 +110,202 @@ if( !window.console ) {
  * @class AFrame
  * @static
 */
-var AFrame = {
-	/**
-	* Used to extend a class with another class and optional functions.
-    *
-    *    AFrame.NewClass = function() {
-    *        AFrame.NewClass.sc.constructor.apply( this, arguments );
-    *    }
-    *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
-    *        someFunc: function() { 
-    *            // do something here
-    *        }
-    *    } );
-    *
-	* @method extend
-	* @param {function} derived - class to extend
-	* @param {function} sc - class to extend with.
-	* @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
-	*/
-	extend: function( derived, sc ) {
-		var F = function() {};
-		F.prototype = sc.prototype;
-		derived.prototype = new F();
-		derived.prototype.constuctor = derived;
-		derived.superclass = sc.prototype;  // superclass and sc are aliases
-		derived.sc = sc.prototype;
-
-		var mixins = Array.prototype.slice.call( arguments, 2 );
-		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
-			AFrame.mixin( derived.prototype, mixin );
-		}
-	},
-
-	/**
-	* extend an object with the members of another object.
-    *
-    *    var objectToMixinTo = {
-    *         name: 'AFrame'
-    *    };
-    *    AFrame.mixin( objectToMixinTo, '{ version: 1.0 } );
-    *
-	* @method mixin
-	* @param {object} toExtend - object to extend
-	* @param {object} mixin (optional) - object with optional functions to extend bc with
-	*/
-	mixin: function( toExtend, mixin ) {
-		toExtend = jQuery.extend( toExtend, mixin );
-	},
-
-
-	/**
-	* Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
-    *   and init is called on the created object.
-    *
-    *    var newObj = construct( {
-    *       type: AFrame.SomeObject,
-    *       config: {
-    *           param1: val1
-    *       },
-    *       plugins: [ {
-    *         type: AFrame.SomePlugin
-    *       } ]
-    *    } );
-    *
-    * @method construct
-	* @param {object} obj_config - configuration.
-	* @param {function} obj_config.type - Function to use as the constructor
-	* @param {object} obj_config.config - configuration to pass to object's init function
-	* @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
-	* @return {object} - created object.
-	*/
-	construct: function( obj_config ) {
-		var constuct = obj_config.type;
-		var config = obj_config.config || {};
-		var plugins = obj_config.plugins || [];
-		var retval;
-
-		if( constuct ) {
-			try {
-				retval = new constuct();
-			} catch ( e ) {
-				console.log( e.toString() );
-			}
-
-			for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-				var pluginObj = AFrame.construct( plugin );
-
-				pluginObj.setPlugged( retval );
-			}
-
-			retval.init( config );
-		}
-		else {
-			throw 'Class does not exist.';
-		}
-
-		return retval;
-	},
-
-	/**
-	 * Remove an item from an object freeing the reference to the item.
-	 *
-     *     var obj = {
-     *        name: 'AFrame'
-     *     };
-     *     AFrame.remove( obj, 'name' );
-     *     
-	 * @method remove
-	 * @param {object} object to remove item from.
-	 * @param {string} key of item to remove
-	 */
-	remove: function( object, key ) {
-	  object[ key ] = null;
-	  delete object[ key ];
-	},
-
-	currentID: 0,
-	
-	/**
-	 * Get a unique ID
-	 *
-     *     var uniqueID = AFrame.getUniqueID();
-     *     
-	 * @method getUniqueID
-	 * @return {id} a unique id
-	 */
-	getUniqueID: function() {
-		this.currentID++;
-		return 'cid' + this.currentID;
-	},
-
-	/**
-	 * Check whether an item is defined
-	 *
-     *     var isDefined = AFrame.func( valueToCheck );
-     *     
-	 * @method defined
-	 * @param {variant} itemToCheck
-	 * @return {boolean} true if item is defined, false otw.
-	 */
-	defined: function( itemToCheck ) {
-		return 'undefined' != typeof( itemToCheck );
-	},
-	
-	/**
-	* Check whether an item is a function
-	 *
-     *     var isFunc = AFrame.func( valueToCheck );
-     *     
-	* @method func
-	* @param {variant} itemToCheck
-	* @return {boolean} true if item is a function, false otw.
-	*/
-	func: function( itemToCheck ) {
-		return 'function' == typeof( itemToCheck );
-	},
+var AFrame = ( function() {
+    "use strict";
     
-    /**
-    * Check whether an item is a string
-    *
-    *    var isString = AFrame.string( valueToCheck );
-    *
-    * @method string
-	* @param {variant} itemToCheck
-	* @return {boolean} true if item is a string, false otw.
-	*/
-    string: function( itemToCheck ) {
-        return '[object String]' === Object.prototype.toString.apply( itemToCheck );
-    },
+    var AFrame = {	
+        /**
+        * Used to extend a class with another class and optional functions.
+        *
+        *    AFrame.NewClass = function() {
+        *        AFrame.NewClass.sc.constructor.apply( this, arguments );
+        *    }
+        *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
+        *        someFunc: function() { 
+        *            // do something here
+        *        }
+        *    } );
+        *
+        * @method extend
+        * @param {function} derived - class to extend
+        * @param {function} sc - class to extend with.
+        * @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
+        */
+        extend: function( derived, sc ) {
+            var F = function() {};
+            F.prototype = sc.prototype;
+            derived.prototype = new F();
+            derived.prototype.constuctor = derived;
+            derived.superclass = sc.prototype;  // superclass and sc are aliases
+            derived.sc = sc.prototype;
+
+            var mixins = Array.prototype.slice.call( arguments, 2 );
+            for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
+                AFrame.mixin( derived.prototype, mixin );
+            }
+        },
+
+        /**
+        * extend an object with the members of another object.
+        *
+        *    var objectToMixinTo = {
+        *         name: 'AFrame'
+        *    };
+        *    AFrame.mixin( objectToMixinTo, '{ version: 1.0 } );
+        *
+        * @method mixin
+        * @param {object} toExtend - object to extend
+        * @param {object} mixin (optional) - object with optional functions to extend bc with
+        */
+        mixin: function( toExtend, mixin ) {
+            toExtend = jQuery.extend( toExtend, mixin );
+        },
+
+
+        /**
+        * Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
+        *   and init is called on the created object.
+        *
+        *    var newObj = construct( {
+        *       type: AFrame.SomeObject,
+        *       config: {
+        *           param1: val1
+        *       },
+        *       plugins: [ {
+        *         type: AFrame.SomePlugin
+        *       } ]
+        *    } );
+        *
+        * @method construct
+        * @param {object} obj_config - configuration.
+        * @param {function} obj_config.type - Function to use as the constructor
+        * @param {object} obj_config.config - configuration to pass to object's init function
+        * @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
+        * @return {object} - created object.
+        */
+        construct: function( obj_config ) {
+            var constuct = obj_config.type;
+            var config = obj_config.config || {};
+            var plugins = obj_config.plugins || [];
+            var retval;
+
+            if( constuct ) {
+                try {
+                    retval = new constuct();
+                } catch ( e ) {
+                    console.log( e.toString() );
+                }
+
+                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+                    var pluginObj = AFrame.construct( plugin );
+
+                    pluginObj.setPlugged( retval );
+                }
+
+                retval.init( config );
+            }
+            else {
+                throw 'Class does not exist.';
+            }
+
+            return retval;
+        },
+
+        /**
+         * Remove an item from an object freeing the reference to the item.
+         *
+         *     var obj = {
+         *        name: 'AFrame'
+         *     };
+         *     AFrame.remove( obj, 'name' );
+         *     
+         * @method remove
+         * @param {object} object to remove item from.
+         * @param {string} key of item to remove
+         */
+        remove: function( object, key ) {
+          object[ key ] = null;
+          delete object[ key ];
+        },
+
+        currentID: 0,
+        
+        /**
+         * Get a unique ID
+         *
+         *     var uniqueID = AFrame.getUniqueID();
+         *     
+         * @method getUniqueID
+         * @return {id} a unique id
+         */
+        getUniqueID: function() {
+            this.currentID++;
+            return 'cid' + this.currentID;
+        },
+
+        /**
+         * Check whether an item is defined
+         *
+         *     var isDefined = AFrame.func( valueToCheck );
+         *     
+         * @method defined
+         * @param {variant} itemToCheck
+         * @return {boolean} true if item is defined, false otw.
+         */
+        defined: function( itemToCheck ) {
+            return 'undefined' != typeof( itemToCheck );
+        },
+        
+        /**
+        * Check whether an item is a function
+         *
+         *     var isFunc = AFrame.func( valueToCheck );
+         *     
+        * @method func
+        * @param {variant} itemToCheck
+        * @return {boolean} true if item is a function, false otw.
+        */
+        func: function( itemToCheck ) {
+            return 'function' == typeof( itemToCheck );
+        },
+        
+        /**
+        * Check whether an item is a string
+        *
+        *    var isString = AFrame.string( valueToCheck );
+        *
+        * @method string
+        * @param {variant} itemToCheck
+        * @return {boolean} true if item is a string, false otw.
+        */
+        string: function( itemToCheck ) {
+            return '[object String]' === Object.prototype.toString.apply( itemToCheck );
+        },
+        
+        /**
+        * Check whether an item is an array
+        *
+        *    // returns true
+        *    var isArray = AFrame.array( [] );
+        *
+        *    // returns true
+        *    isArray = AFrame.array( new Array() );
+        *
+        *    // returns false
+        *    isArray = AFrame.array( '' );
+        *
+        * @method array
+        * @param {variant} itemToCheck
+        * @return {boolean} true if item is an array, false otw.
+        */
+        array: function( itemToCheck ) {
+            return '[object Array]' === Object.prototype.toString.apply( itemToCheck );
+        }
+    };
     
-    /**
-    * Check whether an item is an array
-    *
-    *    // returns true
-    *    var isArray = AFrame.array( [] );
-    *
-    *    // returns true
-    *    isArray = AFrame.array( new Array() );
-    *
-    *    // returns false
-    *    isArray = AFrame.array( '' );
-    *
-    * @method array
-    * @param {variant} itemToCheck
-    * @return {boolean} true if item is an array, false otw.
-    */
-    array: function( itemToCheck ) {
-        return '[object Array]' === Object.prototype.toString.apply( itemToCheck );
-    }
-};
+    return AFrame;
+
+}() );
 /**
  * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
  * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
@@ -308,94 +315,100 @@ var AFrame = {
  * 
  * @class AFrame.Observable
  */
-AFrame.Observable = function() {
-};
+AFrame.Observable = ( function() {
+    "use strict";
+    
+    var Observable = function() {};
+    /**
+     * Get an instance of the observable
+     *
+     *    var observable = Observable.getInstance();
+     *    var id = observable.bind( this.onInit, this );
+     
+     * @method Observable.getInstance
+     * @return {Observable}
+     */
+    Observable.getInstance = function() {
+        return AFrame.construct( {
+            type: Observable
+        } );
+    };
+    Observable.prototype = {
+        /**
+         * Initialize the observable
+         * @method init
+         */
+        init: function() {
+            this.callbacks = {};
+        },
+        
+        /**
+         * Tear the observable down, free references
+         * @method teardown
+         */
+        teardown: function() {
+            this.unbindAll();
+        },
+        
+        /**
+         * Trigger the observable, calls any callbacks bound to the observable.
+         * @method trigger
+         * @param {variant} optional - any arguments will be passed to the callbacks
+         */
+        trigger: function() {
+            this.triggered = true;
+            for( var key in this.callbacks ) {
+                var callback = this.callbacks[ key ];
+                callback.apply( this, arguments );
+            }
+        },
+        
+        /**
+         * Bind a callback to the observable
+         * @method bind
+         * @param {function} callback - callback to register
+         * @return {id} id that can be used to unbind the callback.  Note, all ids for all bindings are unique.
+         */
+        bind: function( callback ) {
+            var id = AFrame.getUniqueID();
+            
+            this.callbacks[ id ] = callback;
+            
+            return id;
+        },
+        
+        /**
+         * Unbind an observable
+         * @method unbind
+         * @param {id} id - id of observable to unbind
+         */
+        unbind: function( id ) {
+            AFrame.remove( this.callbacks, id );
+        },
+        
+        /**
+         * Unbind all observables
+         * @method unbindAll
+         */
+        unbindAll: function() {
+            for( var key in this.callbacks ) {
+              AFrame.remove( this.callbacks, key );
+            }
+        },
+        
+        /**
+         * Check whether the observable has been triggered
+         * @method isTriggered
+         * @return {boolean} true if observable has been triggered, false otw.
+         */
+        isTriggered: function() {
+            return !!this.triggered;
+        }
+    };
+    
+    return Observable;
+}() );
 /**
- * Get an instance of the observable
- *
- *    var observable = AFrame.Observable.getInstance();
- *    var id = observable.bind( this.onInit, this );
- 
- * @method AFrame.Observable.getInstance
- * @return {AFrame.Observable}
- */
-AFrame.Observable.getInstance = function() {
-    return AFrame.construct( {
-	type: AFrame.Observable
-    } );
-};
-AFrame.Observable.prototype = {
-	/**
-	 * Initialize the observable
-	 * @method init
-	 */
-	init: function() {
-		this.callbacks = {};
-	},
-	
-	/**
-	 * Tear the observable down, free references
-	 * @method teardown
-	 */
-	teardown: function() {
-	    this.unbindAll();
-	},
-	
-	/**
-	 * Trigger the observable, calls any callbacks bound to the observable.
-	 * @method trigger
-	 * @param {variant} optional - any arguments will be passed to the callbacks
-	 */
-	trigger: function() {
-		this.triggered = true;
-		for( var key in this.callbacks ) {
-			var callback = this.callbacks[ key ];
-			callback.apply( this, arguments );
-		}
-	},
-	
-	/**
-	 * Bind a callback to the observable
-	 * @method bind
-	 * @param {function} callback - callback to register
-	 * @return {id} id that can be used to unbind the callback.  Note, all ids for all bindings are unique.
-	 */
-	bind: function( callback ) {
-		var id = AFrame.getUniqueID();
-		
-		this.callbacks[ id ] = callback;
-		
-		return id;
-	},
-	
-	/**
-	 * Unbind an observable
-	 * @method unbind
-	 * @param {id} id - id of observable to unbind
-	 */
-	unbind: function( id ) {
-	    AFrame.remove( this.callbacks, id );
-	},
-	
-	/**
-	 * Unbind all observables
-	 * @method unbindAll
-	 */
-	unbindAll: function() {
-		for( var key in this.callbacks ) {
-		  AFrame.remove( this.callbacks, key );
-		}
-	},
-	
-	/**
-	 * Check whether the observable has been triggered
-	 * @method isTriggered
-	 * @return {boolean} true if observable has been triggered, false otw.
-	 */
-	isTriggered: function() {
-	    return !!this.triggered;
-	}
-};/**
  * Gives objects the ability to have a basic event system.  This must be mixed in to other classes and objects.
  * @class AFrame.ObservablesMixin
  * @static
@@ -648,6 +661,82 @@ AFrame.ObservablesMixin = {
 		this.boundTo = {};
 	}
 };/**
+* A collection of functions common to enumerable objects.  When mixing in 
+* this class, the class being mixed into must define a forEach function.
+*
+* @class AFrame.EnumerableMixin
+* @static
+*/
+AFrame.EnumerableMixin = ( function() {
+    "use strict";
+    
+    var Mixin = {
+        /**
+        * Get a set of items in the collection using the search function.  The search function will
+        *   be called once for each item in the collection.  Any time the search function returns true,
+        *   the item will be added to the results list.
+        *
+        *    // Filter the collection to find a set of items that have company == 'AFrame Foundary'
+        *    var matches = collection.filter( function( item, id, collection ) {
+        *        // do search here, returning true if item matches.
+        *        return item.company == 'AFrame Foundary';
+        *    } );
+        *
+        * @method filter
+        * @param {function} search - the search function
+        * @return {array} array of results.  If no results are found, returns an empty array.
+        */
+        filter: function( search ) {
+            var items = [];
+            
+            this.forEach( function( item, id ) {
+                if( true === search( item, id, this ) ) {
+                    items.push( item );
+                }
+            }, this );
+            
+            return items;
+        },
+        
+        /**
+        * Search for the first item in the collection that matches the search function.
+        *
+        *    // search for the first item with company == 'AFrame Foundary'
+        *    var item = collection.search( function( item, id, collection ) {
+        *        return item.company == 'AFrame Foundary';
+        *    } );
+        *
+        * @method search
+        * @param {function} search - the search function.
+        * @return {item} item if an item matches, undefined otw.
+        */
+        search: function( search ) {
+            return this.filter( search )[ 0 ];
+        },
+
+        /**
+        * Get the current count of items
+        *
+        *    // using hash from top of the page
+        *    var count = hash.getCount();
+        *
+        * @method getCount
+        * @return {number} current count
+        */
+        getCount: function() {
+            var count = 0;
+            
+            this.forEach( function( item ) {
+                count++;
+            } );
+            
+            return count;
+        }
+    };
+    
+    return Mixin;
+
+}() );/**
  * The base object of nearly everything.  It is recommended to create all new classes as a subclass
  * of AObject since it provides general functionality such as event binding and teardown housekeeping.
  * All AObjects in the system have a cid, a cid is a unique identifier within the application.  
@@ -683,126 +772,133 @@ AFrame.ObservablesMixin = {
  * cid for the object, if not given, a unique id is assigned
  * @config {cid} cid
  */
-AFrame.AObject = function() {};
-AFrame.mixin( AFrame.AObject.prototype, {
-	constructor: AFrame.AObject,
-	/**
-	 * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
-     *
-     *    var obj = new AFrame.SomeObject();
-     *    obj.init( { name: 'value' } );
-     *
-     * 
-	 * @method init
-	 * @param config {object} - configuration
-	 * @param config.cid {id} - cid to give to the object, if not given, one is generated.
-	 */
-	init: function( config ) {
-	    this.config = config;
-	    this.cid = config.cid || AFrame.getUniqueID();
-	    this.children = {};
-	    
-	    this.bindEvents();
-	    
-	    /**
-	     * Triggered when the object is initialized
-	     * @event onInit
-         * @param {AFrame.Event} event - the event object
-	     */
-	     this.triggerEvent( 'onInit' );
-	},
-	
-	/**
-	 * Return the configuration object given in init.
-     *
-     *     var config = this.getConfig();
-     *
-	 * @method getConfig
-	 * @return {object} the configuration object
-	 */
-	getConfig: function() {
-	    return this.config;
-	},
-	
-	/**
-	 * Override to do any event binding
-	 * @method bindEvents
-	 */
-	bindEvents: function() {
-		
-	},
-	
-	/**
-	 * Tear the object down, free any references
-     *
-     *    this.teardown();
-     *
-	 * @method teardown
-	 */
-	teardown: function() {
-	    /**
-	     * triggered whenever tte object is torn down
-	     * @event onTeardown
-         * @param {AFrame.Event} e3vent - the event
-	     */
-	    this.triggerEvent( 'onTeardown' );
+AFrame.AObject = (function(){ 
+    "use strict";
+    
+    var AObject = function() {};
+    AFrame.mixin( AObject.prototype, {
+        constructor: AObject,
+        /**
+         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
+         *
+         *    var obj = new AFrame.SomeObject();
+         *    obj.init( { name: 'value' } );
+         *
+         * 
+         * @method init
+         * @param config {object} - configuration
+         * @param config.cid {id} - cid to give to the object, if not given, one is generated.
+         */
+        init: function( config ) {
+            this.config = config;
+            this.cid = config.cid || AFrame.getUniqueID();
+            this.children = {};
+            
+            this.bindEvents();
+            
+            /**
+             * Triggered when the object is initialized
+             * @event onInit
+             * @param {AFrame.Event} event - the event object
+             */
+             this.triggerEvent( 'onInit' );
+        },
+        
+        /**
+         * Return the configuration object given in init.
+         *
+         *     var config = this.getConfig();
+         *
+         * @method getConfig
+         * @return {object} the configuration object
+         */
+        getConfig: function() {
+            return this.config;
+        },
+        
+        /**
+         * Override to do any event binding
+         * @method bindEvents
+         */
+        bindEvents: function() {
+            
+        },
+        
+        /**
+         * Tear the object down, free any references
+         *
+         *    this.teardown();
+         *
+         * @method teardown
+         */
+        teardown: function() {
+            /**
+             * triggered whenever tte object is torn down
+             * @event onTeardown
+             * @param {AFrame.Event} e3vent - the event
+             */
+            this.triggerEvent( 'onTeardown' );
 
-	    this.unbindAll();
-	    this.unbindToAll();
-	    this.teardownChildren();
-		this.config = this.cid = this.children = null;
-	},
-	
-	teardownChildren: function() {
-	    for( var cid in this.children ) {
-	    	var child = this.children[ cid ];
-	    	child.teardown();
-			AFrame.remove( this.children, cid );
-	    }
-	},
-	
-	/**
-	 * Get the CID of the object
-     *
-     *     var cid = this.getCID();
-     *
-	 * @method getCID
-	 * @returns {cid}
-	 */
-	getCID: function() {
-		return this.cid;
-	},
-	
-	/**
-	 * Add a child.  All children are torn down on this object's teardown
-     *
-     *     // childToBeTornDown is an AObject based item created by this AObject.
-     *     // childToBeTornDown needs torn down whenever this object is torn down.
-     *     this.addChild( childToBeTornDown );
-     *
-	 * @method addChild
-	 * @param {AFrame.AObject} child - child object
-	 */
-	addChild: function( child ) {
-		this.children[ child.getCID() ] = child;
-	},
-	
-	/**
-	 * Remove a child.
-     *
-     *    // childToRemove is a child that this object has already 
-     *    // created and no longer needs.
-     *    this.removeChild( childToRemove.getCID() );
-     *
-	 * @method removeChild
-	 * @param {cid} cid - cid of item to remove
-	 */
-	removeChild: function( cid ) {
-		AFrame.remove( this.children, cid );
-	}
-} );
+            this.unbindAll();
+            this.unbindToAll();
+            this.teardownChildren();
+            this.config = this.cid = this.children = null;
+        },
+        
+        teardownChildren: function() {
+            for( var cid in this.children ) {
+                var child = this.children[ cid ];
+                child.teardown();
+                AFrame.remove( this.children, cid );
+            }
+        },
+        
+        /**
+         * Get the CID of the object
+         *
+         *     var cid = this.getCID();
+         *
+         * @method getCID
+         * @returns {cid}
+         */
+        getCID: function() {
+            return this.cid;
+        },
+        
+        /**
+         * Add a child.  All children are torn down on this object's teardown
+         *
+         *     // childToBeTornDown is an AObject based item created by this AObject.
+         *     // childToBeTornDown needs torn down whenever this object is torn down.
+         *     this.addChild( childToBeTornDown );
+         *
+         * @method addChild
+         * @param {AObject} child - child object
+         */
+        addChild: function( child ) {
+            this.children[ child.getCID() ] = child;
+        },
+        
+        /**
+         * Remove a child.
+         *
+         *    // childToRemove is a child that this object has already 
+         *    // created and no longer needs.
+         *    this.removeChild( childToRemove.getCID() );
+         *
+         * @method removeChild
+         * @param {cid} cid - cid of item to remove
+         */
+        removeChild: function( cid ) {
+            AFrame.remove( this.children, cid );
+        }
+    } );
 
-AFrame.mixin( AFrame.AObject.prototype, AFrame.ObservablesMixin );/**
+    AFrame.mixin( AObject.prototype, AFrame.ObservablesMixin );
+    
+    return AObject;
+}() );
+/**
 * A basic data container. Used like a hash. Provides functionality that allows the binding of callbacks
 * to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
 * do 
@@ -831,178 +927,198 @@ AFrame.mixin( AFrame.AObject.prototype, AFrame.ObservablesMixin );/**
 *    
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
+* @uses AFrame.EnumerableMixin
 * @constructor
 * @param {object || AFrame.DataContainer} data (optional) If given, creates a new AFrame.DataContainer for the data.  
 *   If already an AFrame.DataContainer, returns self, if the data already has an AFrame.DataContainer associated with 
 *	it, then the original AFrame.DataContainer is used.
 */
-AFrame.DataContainer = function( data ) {
-	if( data instanceof AFrame.DataContainer ) {
-		return data;
-	}
-	else if( data ) {
-		var dataContainer = data.__dataContainer;
-		if( !dataContainer ) {
-			dataContainer = AFrame.construct( {
-				type: AFrame.DataContainer,
-				config: {
-					data: data
-				}
-			} );
-		}
-		return dataContainer;
-	}
-	AFrame.DataContainer.sc.constructor.apply( this, arguments );
+AFrame.DataContainer = ( function() {
+    "use strict";
+    
+    var DataContainer = function( data ) {
+        if( data instanceof DataContainer ) {
+            return data;
+        }
+        else if( data ) {
+            var dataContainer = data.__dataContainer;
+            if( !dataContainer ) {
+                dataContainer = AFrame.construct( {
+                    type: DataContainer,
+                    config: {
+                        data: data
+                    }
+                } );
+            }
+            return dataContainer;
+        }
+        DataContainer.sc.constructor.apply( this, arguments );
 
-};
+    };
 
 
-AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
-	/**
-	* Initialize the data container.
-	* @method init
-	*/
-	init: function( config ) {
-		/**
-		* Initial data
-		* @config data
-		* @type {object}
-		* @default {}
-		*/
-		this.data = config.data || {};
-		
-		if( this.data.__dataContainer ) {
-			throw Error( 'Cannot create a second AFrame.DataContainer for an object' );
-		}
-		
-		this.data.__dataContainer = this;
-		this.fieldBindings = {};
-		
-		AFrame.DataContainer.sc.init.apply( this, arguments );
-	},
-	
-	/**
-	* Set an item of data.  
-    *
-    *    dataContainer.set( 'name', 'Shane Tomlinson' );
-    *
-	* @method set
-	* @param {string} fieldName name of field
-	* @param {variant} fieldValue value of field
-	* @return {variant} previous value of field
-	*/
-	set: function( fieldName, fieldValue ) {
-		var oldValue = this.data[ fieldName ];
-		this.data[ fieldName ] = fieldValue;
-		
-		/**
-		* Triggered whenever any item on the object is set.
-		* @event onSet
-		* @param {AFrame.Event} event - an event object. @see [Event](AFrame.Event.html)
-	    * @param {string} event.fieldName - name of field affected.
-	    * @param {variant} event.value - the current value of the field.
-	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
-		*/
-        this.triggerEvent( {
-            fieldName: fieldName,
-            oldValue: oldValue,
-            value: fieldValue,
-            type: 'onSet'
-        } );
-		/**
-		* Triggered whenever an item on the object is set.  This is useful to bind
-		*	to whenever a particular field is being changed.
-		* @event onSet-fieldName
-		* @param {AFrame.Event} event - an event object.  @see [Event](AFrame.Event.html)
-	    * @param {string} event.fieldName - name of field affected.
-	    * @param {variant} event.value - the current value of the field.
-	    * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
-		*/
-        this.triggerEvent( {
-            fieldName: fieldName,
-            oldValue: oldValue,
-            value: fieldValue,
-            type: 'onSet-' + fieldName
-        } );
-		
-		return oldValue;
-	},
-	
-	/**
-	* Get the value of a field
-    *
-    *    var value = dataContainer.get( 'name' );
-    *
-	* @method get
-	* @param {string} fieldName - name of the field to get
-	* @return {variant} value of field
-	*/
-	get: function( fieldName ) {
-		return this.data[ fieldName ];
-	},
-	
-	/**
-	* Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
-    *   When function is called, it is called with an event.
-    *
-    *    var onChange = function( event ) {
-    *        console.log( 'Name: "' + event.fieldName + '" + value: "' + event.value + '" oldValue: "' + event.oldValue + '"' );
-    *    };
-    *    var id = dataContainer.bindField( 'name', onChange );
-    *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
-    *
-	* @method bindField
-	* @param {string} fieldName name of field
-	* @param {function} callback callback to call
-	* @param {object} context context to call callback in
-	* @return {id} id that can be used to unbind the field
-	*/
-	bindField: function( fieldName, callback, context ) {
-        this.setEventData( {
-            container: this,
-            fieldName: fieldName,
-            oldValue: undefined,
-            value: this.get( fieldName ),
-            type: 'onSet:' + fieldName
-        } );
-		var event = this.getEventObject();
-		callback.call( context, event );
-		
-		return this.bindEvent( 'onSet-' + fieldName, callback, context );
-	},
-	
-	/**
-	* Unbind a field.
-    *
-    *    var id = dataContainer.bindField(...
-    *    dataContainer.unbindField( id );
-    *
-	* @method unbindField
-	* @param {id} id given by bindField
-	*/
-	unbindField: function( id ) {
-		return this.unbindEvent( id );
-	},
-	
-	/**
-	* Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
-    *
-    *    dataCollection.forEach( function( item, index ) {
-    *       // process item here
-    *    } );
-    *
-	* @method forEach
-	* @param {function} function to call
-	* @param {object} context (optional) optional context
-	*/
-	forEach: function( callback, context ) {
-		for( var key in this.data ) {
-			if( key !== '__dataContainer' ) {
-				callback.call( context, this.data[ key ], key );
-			}
-		}
-	}
-} );
+    AFrame.extend( DataContainer, AFrame.AObject, AFrame.EnumerableMixin, {
+        /**
+        * Initialize the data container.
+        * @method init
+        */
+        init: function( config ) {
+            /**
+            * Initial data
+            * @config data
+            * @type {object}
+            * @default {}
+            */
+            this.data = config.data || {};
+            
+            if( this.data.__dataContainer ) {
+                throw Error( 'Cannot create a second DataContainer for an object' );
+            }
+            
+            this.data.__dataContainer = this;
+            this.fieldBindings = {};
+            
+            DataContainer.sc.init.apply( this, arguments );
+        },
+        
+        /**
+        * Set an item of data.  
+        *
+        *    dataContainer.set( 'name', 'Shane Tomlinson' );
+        *
+        * @method set
+        * @param {string} fieldName name of field
+        * @param {variant} fieldValue value of field
+        * @return {variant} previous value of field
+        */
+        set: function( fieldName, fieldValue ) {
+            var oldValue = this.data[ fieldName ];
+            this.data[ fieldName ] = fieldValue;
+            
+            /**
+            * Triggered whenever any item on the object is set.
+            * @event onSet
+            * @param {AFrame.Event} event - an event object. @see [Event](AFrame.Event.html)
+            * @param {string} event.fieldName - name of field affected.
+            * @param {variant} event.value - the current value of the field.
+            * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
+            */
+            this.triggerEvent( {
+                fieldName: fieldName,
+                oldValue: oldValue,
+                value: fieldValue,
+                type: 'onSet'
+            } );
+            /**
+            * Triggered whenever an item on the object is set.  This is useful to bind
+            *	to whenever a particular field is being changed.
+            * @event onSet-fieldName
+            * @param {AFrame.Event} event - an event object.  @see [Event](AFrame.Event.html)
+            * @param {string} event.fieldName - name of field affected.
+            * @param {variant} event.value - the current value of the field.
+            * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
+            */
+            this.triggerEvent( {
+                fieldName: fieldName,
+                oldValue: oldValue,
+                value: fieldValue,
+                type: 'onSet-' + fieldName
+            } );
+            
+            return oldValue;
+        },
+        
+        /**
+        * Get the value of a field
+        *
+        *    var value = dataContainer.get( 'name' );
+        *
+        * @method get
+        * @param {string} fieldName - name of the field to get
+        * @return {variant} value of field
+        */
+        get: function( fieldName ) {
+            return this.data[ fieldName ];
+        },
+        
+        /**
+        * Get an object with all fields contained in the DataContainer.
+        *
+        *    // Get an object with all fields contained in the DataContainer.
+        *    var dataObject = dataContainer.getDataObject();
+        *
+        * @method getDataObject
+        * @return {object}
+        */
+        getDataObject: function() {
+            return this.data;
+        },
+        
+        /**
+        * Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
+        *   When function is called, it is called with an event.
+        *
+        *    var onChange = function( event ) {
+        *        console.log( 'Name: "' + event.fieldName + '" + value: "' + event.value + '" oldValue: "' + event.oldValue + '"' );
+        *    };
+        *    var id = dataContainer.bindField( 'name', onChange );
+        *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
+        *
+        * @method bindField
+        * @param {string} fieldName name of field
+        * @param {function} callback callback to call
+        * @param {object} context context to call callback in
+        * @return {id} id that can be used to unbind the field
+        */
+        bindField: function( fieldName, callback, context ) {
+            this.setEventData( {
+                container: this,
+                fieldName: fieldName,
+                oldValue: undefined,
+                value: this.get( fieldName ),
+                type: 'onSet:' + fieldName
+            } );
+            var event = this.getEventObject();
+            callback.call( context, event );
+            
+            return this.bindEvent( 'onSet-' + fieldName, callback, context );
+        },
+        
+        /**
+        * Unbind a field.
+        *
+        *    var id = dataContainer.bindField(...
+        *    dataContainer.unbindField( id );
+        *
+        * @method unbindField
+        * @param {id} id given by bindField
+        */
+        unbindField: function( id ) {
+            return this.unbindEvent( id );
+        },
+        
+        /**
+        * Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
+        *
+        *    dataCollection.forEach( function( item, index ) {
+        *       // process item here
+        *    } );
+        *
+        * @method forEach
+        * @param {function} function to call
+        * @param {object} context (optional) optional context
+        */
+        forEach: function( callback, context ) {
+            for( var key in this.data ) {
+                if( key !== '__dataContainer' ) {
+                    callback.call( context, this.data[ key ], key );
+                }
+            }
+        }
+    } );
+    
+    return DataContainer;
+}() );
 /**
 * A basic plugin, used to extend functionality of an object without either subclassing or directly
 *	extending that object.  Plugins make it easy to create configurable objects by adding
@@ -1013,38 +1129,45 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 * @extends AFrame.AObject
 * @constructor
 */
-AFrame.Plugin = function() {
-	AFrame.Plugin.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.Plugin, AFrame.AObject, {
-	/**
-	* Set the reference to the plugged object.  Subclasses can override this function to bind event
-	*	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
-	*	do setup as soon as the plugged object is ready.  If a subclass overrides this function,
-	*	the base setPlugged must still be called.
-	* @method setPlugged
-	* @param {AFrame.AObject} plugged - the plugged object
-	*/
-	setPlugged: function( plugged ) {
-		this.plugged = plugged;
-		
-		this.plugged.bindEvent( 'onTeardown', this.teardown, this );
-	},
-	
-	/**
-	* Get a reference to the plugged object.
-	* @method getPlugged
-	* @return {AFrame.AObject} the plugged object
-	*/
-	getPlugged: function() {
-		return this.plugged;
-	},
-	
-	teardown: function() {
-		AFrame.remove( this, 'plugged' );
-		AFrame.Plugin.sc.teardown.apply( this, arguments );
-	}
-} );/**
+AFrame.Plugin = ( function() {
+    "use strict";
+    
+    var Plugin = function() {
+        Plugin.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( Plugin, AFrame.AObject, {
+        /**
+        * Set the reference to the plugged object.  Subclasses can override this function to bind event
+        *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
+        *	do setup as soon as the plugged object is ready.  If a subclass overrides this function,
+        *	the base setPlugged must still be called.
+        * @method setPlugged
+        * @param {AFrame.AObject} plugged - the plugged object
+        */
+        setPlugged: function( plugged ) {
+            this.plugged = plugged;
+            
+            this.plugged.bindEvent( 'onTeardown', this.teardown, this );
+        },
+        
+        /**
+        * Get a reference to the plugged object.
+        * @method getPlugged
+        * @return {AFrame.AObject} the plugged object
+        */
+        getPlugged: function() {
+            return this.plugged;
+        },
+        
+        teardown: function() {
+            AFrame.remove( this, 'plugged' );
+            Plugin.sc.teardown.apply( this, arguments );
+        }
+    } );
+
+    return Plugin;
+}() );
+/**
 * Common functions to all arrays
 * @class AFrame.ArrayCommonFuncsMixin
 * @static
@@ -1140,14 +1263,17 @@ AFrame.ArrayCommonFuncsMixin = {
 *
 * @class AFrame.CollectionHash
 * @extends AFrame.AObject
+* @uses AFrame.EnumerableMixin
 * @constructor
 */
 AFrame.CollectionHash = ( function() {
+    "use strict";
+    
     var CollectionHash = function() {
         CollectionHash.sc.constructor.apply( this, arguments );
     };
     CollectionHash.currID = 0;
-    AFrame.extend( CollectionHash, AFrame.AObject, {
+    AFrame.extend( CollectionHash, AFrame.AObject, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.hash = {};
             
@@ -1309,25 +1435,6 @@ AFrame.CollectionHash = ( function() {
         },
         
         /**
-        * Get the current count of items
-        *
-        *    // using hash from top of the page
-        *    var count = hash.getCount();
-        *
-        * @method getCount
-        * @return {number} current count
-        */
-        getCount: function() {
-            var count = 0;
-            
-            for( var cid in this.hash ) {
-                count++;
-            }
-            
-            return count;
-        },
-        
-        /**
         * Iterate over the collection, calling a function once for each item in the collection.
         *
         *    // iterate over the collection
@@ -1345,52 +1452,9 @@ AFrame.CollectionHash = ( function() {
             for( var cid in hash ) {
                 callback.call( context, hash[ cid ], cid );
             }
-        },
-        
-        /**
-        * Get a set of items in the collection using the search function.  The search function will
-        *   be called once for each item in the collection.  Any time the search function returns true,
-        *   the item will be added to the results list.
-        *
-        *    // Filter the collection to find a set of items that have company == 'AFrame Foundary'
-        *    var matches = collection.filter( function( item, id, collection ) {
-        *        // do search here, returning true if item matches.
-        *        return item.company == 'AFrame Foundary';
-        *    } );
-        *
-        * @method filter
-        * @param {function} search - the search function
-        * @return {array} array of results.  If no results are found, returns an empty array.
-        */
-        filter: function( search ) {
-            var items = [];
-            
-            this.forEach( function( item, id ) {
-                if( true === search( item, id, this ) ) {
-                    items.push( item );
-                }
-            }, this );
-            
-            return items;
-        },
-        
-        /**
-        * Search for the first item in the collection that matches the search function.
-        *
-        *    // search for the first item with company == 'AFrame Foundary'
-        *    var item = collection.search( function( item, id, collection ) {
-        *        return item.company == 'AFrame Foundary';
-        *    } );
-        *
-        * @method search
-        * @param {function} search - the search function.
-        * @return {item} item if an item matches, undefined otw.
-        */
-        search: function( search ) {
-            return this.filter( search )[ 0 ];
         }
     } );
-
+    
     return CollectionHash;
 } )();/**
 * An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via 
@@ -1448,7 +1512,9 @@ AFrame.CollectionHash = ( function() {
 * @uses AFrame.ArrayCommonFuncsMixin
 * @constructor
 */
-AFrame.CollectionArray = (function(){
+AFrame.CollectionArray = ( function() {
+    "use strict";
+    
     var CollectionArray = function() {
         CollectionArray.sc.constructor.apply( this, arguments );
     };
@@ -1724,6 +1790,8 @@ AFrame.CollectionArray = (function(){
  * @constructor
  */
 AFrame.Display = (function() {
+    "use strict";
+    
     var currDOMEventID = 0;
 
     var Display = function() {
@@ -1967,7 +2035,9 @@ AFrame.Display = (function() {
  * @type {function} (optional)
  * @default this.listElementFactory
  */
-AFrame.List = (function() { 
+AFrame.List = ( function() {
+    "use strict";
+    
     var List = function() {
         List.sc.constructor.apply( this, arguments );
     };
@@ -2234,61 +2304,68 @@ AFrame.List = (function() {
  * @extends AFrame.Plugin
  * @constructor
  */
-AFrame.ListPluginBindToCollection = function() {
-	AFrame.ListPluginBindToCollection.sc.constructor.apply( this, arguments );
-};
+AFrame.ListPluginBindToCollection = ( function() { 
+    "use strict";
+    
+    var Plugin = function() {
+        Plugin.sc.constructor.apply( this, arguments );
+    };
 
-AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
-	init: function( config ) {
-		/**
-		 * The collection to bind to
-		 * @config collection
-		 * @type {Collection}
-		 */
-		this.collection = config.collection;
-		this.collection.bindEvent( 'onInsert', this.onInsert, this );
-		this.collection.bindEvent( 'onRemove', this.onRemove, this );
+    AFrame.extend( Plugin, AFrame.Plugin, {
+        init: function( config ) {
+            /**
+             * The collection to bind to
+             * @config collection
+             * @type {Collection}
+             */
+            this.collection = config.collection;
+            this.collection.bindEvent( 'onInsert', this.onInsert, this );
+            this.collection.bindEvent( 'onRemove', this.onRemove, this );
 
-		this.cids = [];
-		
-		AFrame.ListPluginBindToCollection.sc.init.apply( this, arguments );
-	},
-	
-	setPlugged: function( plugged ) {
-		plugged.getIndex = this.getIndex.bind( this );
-		
-		AFrame.ListPluginBindToCollection.sc.setPlugged.apply( this, arguments );
-	},
-	
-	onInsert: function( event ) {
-		var index = this.getPlugged().insert( event.item, event.index || -1 );
+            this.cids = [];
+            
+            Plugin.sc.init.apply( this, arguments );
+        },
+        
+        setPlugged: function( plugged ) {
+            plugged.getIndex = this.getIndex.bind( this );
+            
+            Plugin.sc.setPlugged.apply( this, arguments );
+        },
+        
+        onInsert: function( event ) {
+            var index = this.getPlugged().insert( event.item, event.index || -1 );
 
-		this.cids.splice( index, 0, event.cid );
-	},
-	
-	onRemove: function( event ) {
-		var index = this.cids.indexOf( event.cid );
-		
-		this.getPlugged().remove( index );
-		
-		this.cids.splice( index, 1 );
-	},
-	
-	/**
-	 * Given an index or cid, get the index.
-	 * @param {number || id} indexCID - either the index or the cid of an item
-	 * @return {number} index of item
-	 */
-	getIndex: function( indexCID ) {
-		var index = indexCID;
-		
-		if( 'string' == typeof( indexCID ) ) {
-			index = this.cids.indexOf( indexCID );
-		}
-		
-		return index;
-	}
-} );/**
+            this.cids.splice( index, 0, event.cid );
+        },
+        
+        onRemove: function( event ) {
+            var index = this.cids.indexOf( event.cid );
+            
+            this.getPlugged().remove( index );
+            
+            this.cids.splice( index, 1 );
+        },
+        
+        /**
+         * Given an index or cid, get the index.
+         * @param {number || id} indexCID - either the index or the cid of an item
+         * @return {number} index of item
+         */
+        getIndex: function( indexCID ) {
+            var index = indexCID;
+            
+            if( 'string' == typeof( indexCID ) ) {
+                index = this.cids.indexOf( indexCID );
+            }
+            
+            return index;
+        }
+    } );
+    
+    return Plugin;
+}() );
+/**
  * A plugin to a collection to give the collection db ops.  This is part of what is usually called an Adapter
  *  when referring to collections with a hookup to a database.  The CollectionPluginPersistence is not the actual 
  *  Adapter but binds a collection to an Adapter.  The CollectionPluginPersistence adds load, add, save, del 
@@ -2386,6 +2463,8 @@ AFrame.extend( AFrame.ListPluginBindToCollection, AFrame.Plugin, {
  * @constructor
  */
 AFrame.CollectionPluginPersistence = ( function() {
+    "use strict";
+    
     var Plugin = function() {
         Plugin.sc.constructor.apply( this, arguments );
     };
@@ -2661,6 +2740,7 @@ AFrame.CollectionPluginPersistence = ( function() {
  *    
  * @class AFrame.Form
  * @extends AFrame.Display
+ * @uses AFrame.EnumerableMixin
  * @constructor
  */
 /**
@@ -2680,177 +2760,188 @@ AFrame.CollectionPluginPersistence = ( function() {
  * @type {function}
  * @default this.formFieldFactory;
  */
-AFrame.Form = function() {
-	AFrame.Form.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.Form, AFrame.Display, {
-	init: function( config ) {
-		this.formFieldFactory = config.formFieldFactory || this.formFieldFactory;
-		this.formElements = [];
-		this.formFields = [];
-		
-		AFrame.Form.sc.init.apply( this, arguments );
+AFrame.Form = ( function() {
+    "use strict";
+    
+    var Form = function() {
+        Form.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( Form, AFrame.Display, AFrame.EnumerableMixin, {
+        init: function( config ) {
+            this.formFieldFactory = config.formFieldFactory || this.formFieldFactory;
+            this.formElements = [];
+            this.formFields = [];
+            
+            Form.sc.init.apply( this, arguments );
 
-		this.bindFormElements();
-	},
+            this.bindFormElements();
+        },
 
-    /**
-    * The factory used to create fields.
-    *
-    *     // example of overloaded formFieldFactory
-    *     formFieldFactory: function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
-    *       } );
-    *     };
-    *
-    * @method formFieldFactory
-    * @param {Element} element - element where to create field
-    * @return {AFrame.Field} field for element.
-    */
-    formFieldFactory: function( element ) {
-       return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
+        /**
+        * The factory used to create fields.
+        *
+        *     // example of overloaded formFieldFactory
+        *     formFieldFactory: function( element ) {
+        *       return AFrame.construct( {
+        *           type: AFrame.SpecializedField,
+        *           config: {
+        *               target: element
+        *           }
+        *       } );
+        *     };
+        *
+        * @method formFieldFactory
+        * @param {Element} element - element where to create field
+        * @return {AFrame.Field} field for element.
+        */
+        formFieldFactory: function( element ) {
+           return AFrame.construct( {
+                type: AFrame.Field,
+                config: {
+                    target: element
+                }
+            } );
+        },
+
+        bindFormElements: function() {
+            var formElements = $( '[data-field]', this.getTarget() );
+            
+            formElements.each( function( index, formElement ) {
+                this.bindFormElement( formElement );
+            }.bind( this ) );
+        },
+
+        teardown: function() {
+            this.forEach( function( formField, index ) {
+                formField.teardown();
+                this.formFields[ index ] = null;
+            }, this );
+            this.formFields = null;
+            this.formElements = null;
+            Form.sc.teardown.apply( this, arguments );
+        },
+        
+        /**
+         * bind a form element to the form
+         *
+         *    // Bind a field in the given element.
+         *    var field = form.bindFormElement( $( '#button' ) );
+         *
+         * @method bindFormElement
+         * @param {selector || element} formElement the form element to bind to.
+         * @returns {AFrame.Field}
+         */
+        bindFormElement: function( formElement ) {
+            var target = $( formElement );
+            this.formElements.push( target );
+
+            var formField = this.formFieldFactory( target );
+            this.formFields.push( formField );
+            
+            return formField;
+        },
+        
+        /**
+         * Get the form field elements
+         *
+         *    // Get the form field elements
+         *    var fields = form.getFormElements();
+         *
+         * @method getFormElements
+         * @return {array} the form elements
+         */
+        getFormElements: function() {
+            return this.formElements;
+        },
+
+        /**
+         * Get the form fields
+         *
+         *    // Get the form fields
+         *    var fields = form.getFormFields();
+         *
+         * @method getFormFields
+         * @return {array} the form fields
+         */
+        getFormFields: function() {
+            return this.formFields;
+        },
+
+        /**
+         * Validate the form.
+         *
+         *    // Check the validity of the form
+         *    var isValid = form.checkValidity();
+         *
+         * @method checkValidity
+         * @return {boolean} true if form is valid, false otw.
+         */
+        checkValidity: function() {
+            var valid = true;
+
+            for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
+                valid = formField.checkValidity();
             }
-        } );
-    },
+            
+            return valid;
+        },
 
-	bindFormElements: function() {
-		var formElements = $( '[data-field]', this.getTarget() );
-		
-		formElements.each( function( index, formElement ) {
-			this.bindFormElement( formElement );
-		}.bind( this ) );
-	},
+        /**
+         * Clear the form, does not affect data
+         *
+         *    // Clear the form, does not affect data.
+         *    form.clear();
+         *
+         * @method clear
+         */
+        clear: function() {
+            this.fieldAction( 'clear' );
+        },
 
-	teardown: function() {
-		this.formFields && this.formFields.forEach( function( formField, index ) {
-			formField.teardown();
-			this.formFields[ index ] = null;
-		}, this );
-		this.formFields = null;
-		this.formElements = null;
-		AFrame.Form.sc.teardown.apply( this, arguments );
-	},
-	
-	/**
-	 * bind a form element to the form
-     *
-     *    // Bind a field in the given element.
-     *    var field = form.bindFormElement( $( '#button' ) );
-     *
-	 * @method bindFormElement
-	 * @param {selector || element} formElement the form element to bind to.
-	 * @returns {AFrame.Field}
-	 */
-	bindFormElement: function( formElement ) {
-		var target = $( formElement );
-		this.formElements.push( target );
+        /**
+         * Reset the form to its original state
+         *
+         *    // Resets the form to its original state.
+         *    form.reset();
+         *
+         * @method reset
+         */
+        reset: function() {
+            this.fieldAction( 'reset' );
+        },
 
-		var formField = this.formFieldFactory( target );
-		this.formFields.push( formField );
-		
-		return formField;
-	},
-	
-	/**
-	 * Get the form field elements
-     *
-     *    // Get the form field elements
-     *    var fields = form.getFormElements();
-     *
-	 * @method getFormElements
-	 * @return {array} the form elements
-	 */
-	getFormElements: function() {
-		return this.formElements;
-	},
+        /**
+         * Have all fields save their data if the form is valid
+         *
+         *    // Have all fields save their data if the form is valid
+         *    var saved = form.save();
+         *
+         * @method save
+         * @return {boolean} true if the form was valid and saved, false otw.
+         */
+        save: function() {
+            var valid = this.checkValidity();
+            if( valid ) {
+                this.fieldAction( 'save' );
+            }
+            
+            return valid;
+        },
 
-	/**
-	 * Get the form fields
-     *
-     *    // Get the form fields
-     *    var fields = form.getFormFields();
-     *
-	 * @method getFormFields
-	 * @return {array} the form fields
-	 */
-	getFormFields: function() {
-		return this.formFields;
-	},
-
-	/**
-	 * Validate the form.
-     *
-     *    // Check the validity of the form
-     *    var isValid = form.checkValidity();
-     *
-	 * @method checkValidity
-	 * @return {boolean} true if form is valid, false otw.
-	 */
-	checkValidity: function() {
-		var valid = true;
-
-		for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
-			valid = formField.checkValidity();
-		}
-		
-		return valid;
-	},
-
-	/**
-	 * Clear the form, does not affect data
-     *
-     *    // Clear the form, does not affect data.
-     *    form.clear();
-     *
-	 * @method clear
-	 */
-	clear: function() {
-		this.fieldAction( 'clear' );
-	},
-
-	/**
-	 * Reset the form to its original state
-     *
-     *    // Resets the form to its original state.
-     *    form.reset();
-     *
-	 * @method reset
-	 */
-	reset: function() {
-		this.fieldAction( 'reset' );
-	},
-
-	/**
-	 * Have all fields save their data if the form is valid
-     *
-     *    // Have all fields save their data if the form is valid
-     *    var saved = form.save();
-     *
-	 * @method save
-	 * @return {boolean} true if the form was valid and saved, false otw.
-	 */
-	save: function() {
-		var valid = this.checkValidity();
-		if( valid ) {
-			this.fieldAction( 'save' );
-		}
-		
-		return valid;
-	},
-
-	fieldAction: function( action ) {
-		this.formFields.forEach( function( formField, index ) {
-			formField[ action ]();
-		} );
-	}
-} );/**
+        fieldAction: function( action ) {
+            this.forEach( function( formField, index ) {
+                formField[ action ]();
+            } );
+        },
+        
+        forEach: function( callback, context ) {
+            this.formFields && this.formFields.forEach( callback, context );
+        }
+    } );
+    
+    return Form;
+}() );
+/**
  * The base class for a field.  A field is a basic unit for a form.  With the new HTML5 spec,
  * each form field has an invalid event.  Some browsers display an error message whenever the
  * invalid event is triggered.  If default browser error message handling is desired, set 
@@ -2883,160 +2974,166 @@ AFrame.extend( AFrame.Form, AFrame.Display, {
  * @extends AFrame.Display
  * @constructor
  */
-AFrame.Field = function() {
-	AFrame.Field.sc.constructor.apply( this, arguments );
-};
-AFrame.Field.cancelInvalid = true;
-AFrame.extend( AFrame.Field, AFrame.Display, {
-	init: function( config ) {
-        this.createValidator();
-
-		AFrame.Field.sc.init.apply( this, arguments );
-
-		this.resetVal = this.getDisplayed();
-	},
+AFrame.Field = ( function() {
+    "use strict";
     
-    createValidator: function() {
-        if( !this.validate ) {
-            var fieldValidator = AFrame.construct( {
-                type: AFrame.FieldPluginValidation
-            } );
-            fieldValidator.setPlugged( this );
+    var Field = function() {
+        AFrame.Field.sc.constructor.apply( this, arguments );
+    };
+    Field.cancelInvalid = true;
+    AFrame.extend( Field, AFrame.Display, {
+        init: function( config ) {
+            this.createValidator();
+
+            Field.sc.init.apply( this, arguments );
+
+            this.resetVal = this.getDisplayed();
+        },
+        
+        createValidator: function() {
+            if( !this.validate ) {
+                var fieldValidator = AFrame.construct( {
+                    type: AFrame.FieldPluginValidation
+                } );
+                fieldValidator.setPlugged( this );
+            }
+        },
+
+        bindEvents: function() {
+            var target = this.getTarget();
+            this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
+            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
+            
+            Field.sc.bindEvents.apply( this, arguments );
+        },
+
+        /**
+         * Set the value of the field and display the value.  Sets the rest value to the value entered.
+         * 
+         *    nameField.set( 'AFrame' );
+         *
+         * @method set
+         * @param {variant} val value to display
+         */
+        set: function( val ) {
+            this.resetVal = val;
+            this.display( val );
+            this.onFieldChange();
+        },
+        
+        /**
+        * Display a value, does not affect the reset value.  Using this function can be useful to
+        *	change how a piece of data is visually represented on the screen.
+        *
+        *    nameField.display( 'AFrame' );
+        *
+        * @method display
+        * @param {variant} val value to dipslay
+        */
+        display: function( val ) {
+            var target = this.getTarget();
+
+            if( this.isValBased( target ) ) {
+                target.val( val );
+            }
+            else {
+                target.html( val );
+            }
+        },
+        
+        /**
+        * Get the value that is displayed in the field.  This can be different from what get returns
+        *	if the visual representation of the data is different from the data itself.
+        *
+        *    var displayed = nameField.getDisplayed();
+        *    console.log( 'displayedValue: ' + displayed );
+        *
+        * @method getDisplayed
+        * @returns {string}
+        */
+        getDisplayed: function() {
+            var target = this.getTarget();
+            var retval = '';
+            if( this.isValBased( target ) ) {
+                retval = target.val();
+            }
+            else {
+                retval = target.html();
+            }
+            return retval;
+        },
+
+        /**
+         * Reset the field to its last 'set' value.
+         *
+         *    nameField.reset();
+         *
+         * @method reset
+         */
+        reset: function() {
+            this.set( this.resetVal );
+        },
+
+        /**
+         * Clear the field.  A reset after this will cause the field to go back to the blank state.
+         *
+         *    nameField.clear();
+         *
+         * @method clear
+         */
+        clear: function() {
+            this.set( '' );
+        },
+        
+        /**
+         * Get the value of the field.  The value returned can be different if the visual representation is 
+         *	different from the underlying data.  Returns an empty string if no value entered.  
+         *
+         *    var val = nameField.get();
+         *
+         * @method get
+         * @return {variant} the value of the field
+         */
+         
+        get: function() {
+            return this.resetVal;
+        },
+        
+        /**
+         * Save the current value as a reset point
+         *
+         *    nameField.save();
+         *
+         * @method save
+         */
+        save: function() {
+            var displayed = this.getDisplayed();
+            
+            this.resetVal = displayed;
+        },
+        
+        onFieldChange: function() {
+            /**
+            * triggered whenever the field value changes
+            * @event onChange
+            * @param {string} fieldVal - the current field value.
+            */
+            this.triggerEvent( 'onChange', this, this.get() );
+        },
+
+        onFieldInvalid: function( event ) {
+            if( Field.cancelInvalid ) {
+                event.preventDefault();
+            }
+        },
+        
+        isValBased: function( target ) {
+            return target.is( 'input' ) || target.is( 'textarea' );
         }
-    },
-
-	bindEvents: function() {
-		var target = this.getTarget();
-		this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
-		this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
-		
-		AFrame.Field.sc.bindEvents.apply( this, arguments );
-	},
-
-	/**
-	 * Set the value of the field and display the value.  Sets the rest value to the value entered.
-     * 
-     *    nameField.set( 'AFrame' );
-     *
-	 * @method set
-	 * @param {variant} val value to display
-	 */
-	set: function( val ) {
-		this.resetVal = val;
-        this.display( val );
-        this.onFieldChange();
-	},
-	
-	/**
-	* Display a value, does not affect the reset value.  Using this function can be useful to
-	*	change how a piece of data is visually represented on the screen.
-    *
-    *    nameField.display( 'AFrame' );
-    *
-	* @method display
-	* @param {variant} val value to dipslay
-	*/
-	display: function( val ) {
-		var target = this.getTarget();
-
-		if( this.isValBased( target ) ) {
-			target.val( val );
-		}
-		else {
-			target.html( val );
-		}
-	},
-	
-	/**
-	* Get the value that is displayed in the field.  This can be different from what get returns
-	*	if the visual representation of the data is different from the data itself.
-    *
-    *    var displayed = nameField.getDisplayed();
-    *    console.log( 'displayedValue: ' + displayed );
-    *
-	* @method getDisplayed
-	* @returns {string}
-	*/
-	getDisplayed: function() {
-		var target = this.getTarget();
-		var retval = '';
-		if( this.isValBased( target ) ) {
-			retval = target.val();
-		}
-		else {
-			retval = target.html();
-		}
-		return retval;
-	},
-
-	/**
-	 * Reset the field to its last 'set' value.
-     *
-     *    nameField.reset();
-     *
-	 * @method reset
-	 */
-	reset: function() {
-		this.set( this.resetVal );
-	},
-
-	/**
-	 * Clear the field.  A reset after this will cause the field to go back to the blank state.
-     *
-     *    nameField.clear();
-     *
-	 * @method clear
-	 */
-	clear: function() {
-		this.set( '' );
-	},
-	
-	/**
-	 * Get the value of the field.  The value returned can be different if the visual representation is 
-	 *	different from the underlying data.  Returns an empty string if no value entered.  
-     *
-     *    var val = nameField.get();
-     *
-	 * @method get
-	 * @return {variant} the value of the field
-	 */
-	 
-	get: function() {
-		return this.resetVal;
-	},
-	
-	/**
-	 * Save the current value as a reset point
-     *
-     *    nameField.save();
-     *
-	 * @method save
-	 */
-	save: function() {
-		var displayed = this.getDisplayed();
-		
-		this.resetVal = displayed;
-	},
-	
-	onFieldChange: function() {
-		/**
-		* triggered whenever the field value changes
-		* @event onChange
-		* @param {string} fieldVal - the current field value.
-		*/
-		this.triggerEvent( 'onChange', this, this.get() );
-	},
-
-	onFieldInvalid: function( event ) {
-		if( AFrame.Field.cancelInvalid ) {
-			event.preventDefault();
-		}
-	},
-	
-	isValBased: function( target ) {
-		return target.is( 'input' ) || target.is( 'textarea' );
-	}
-} );
+    } );
+    
+    return Field;
+}() );
 
 /**
 * Takes care of validation for a [Field](AFrame.Field.html), using an HTML5 based 
@@ -3117,6 +3214,8 @@ AFrame.extend( AFrame.Field, AFrame.Display, {
 * @constructor
 */
 AFrame.FieldPluginValidation = (function() {
+    "use strict";
+    
     var FieldPluginValidation = function() {
         FieldPluginValidation.sc.constructor.call( this );
     };
@@ -3528,21 +3627,66 @@ AFrame.FieldPlaceholderDecorator = {
 })();
 
 /**
- * A basic data schema, useful for loading/saving data to a persistence store.  When loading data from
- * persistence, if the data is run through the getAppData function, it will make an object with only the fields
+ * A basic data schema, useful for defining a data structure, validating data, and preparing data to 
+ * be loaded from or saved to a persistence store.  Schema's define the data structure and can
+ * be nested to create complex data structures.  Schemas perform serialization duties in getAppData and
+ * serializeItems.  Finally, Schemas define ways to perform data validation.
+ * 
+ * When loading data from persistence, if the data is run through the getAppData function, 
+ * it will make an object with only the fields
  * defined in the schema, and any missing fields will get default values.  If a fixup function is defined
  * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
  * running data through the serializeItems will create an object with only the fields specified in the schema.  If
  * a row has 'save: false' defined, the row will not be added to the form data object. If a row has a cleanup 
  * function defined, the corresponding data value will be run through the cleanup function.
+ *
  * Generic serialization functions can be set for a type using the AFrame.Schema.addDeserializer and 
  * AFrame.Schema.addSerializer.  These are useful for doing conversions where the data persistence
  * layer saves data in a different format than the internal application representation.  A useful
  * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
  * and 'iso8601'.
+ *
  * If a row in the schema config has the has_many field, the field is made into an array and the fixup/cleanup functions
  *	are called on each item in the array.  The default default item for these fields is an empty array.  If
  *	there is no data for the field in serializeItems, the field is left out of the output.
+ *
+ *
+ *    // Schema defines four fields, two with validators
+ *    var librarySchemaConfig = {
+ *        name: { type: 'text', validate: {
+ *                    minlength: 1,
+ *                    maxlength: 75,
+ *                    required: true
+ *                } },
+ *        version: { type: 'text', validate: {
+ *                    minlength: 1,
+ *                    required: true
+ *               } },
+ *        create_date: { type: 'iso8601' },
+ *        downloads: { type: 'integer', fixup: downloadsFixup, cleanup: downloadsCleanup }
+ *    };
+ *
+ *    function downloadsFixup( options ) {
+ *         var value = options.value;
+ *         if( value < 0 ) {
+ *              value = 0;
+ *         }
+ *         return value;
+ *    };
+ *
+ *    function downloadsCleanup( options ) {
+ *         var value = options.value;
+ *         if( value < 0 ) {
+ *              value = 0;
+ *         }
+ *         return value;
+ *    };
+ *
+ *    // recommended to use AFrame.Schema to create schemas so
+ *    // that duplicate schemas are not created for the same
+ *    // configuration.
+ *    var librarySchema = AFrame.Schema( librarySchemaConfig );
+ *
  * @class AFrame.Schema
  * @constructor
  */
@@ -3552,341 +3696,386 @@ AFrame.FieldPlaceholderDecorator = {
  * @config schema
  * @type {object}
  */
-AFrame.Schema = function() {
-};
-AFrame.Schema.prototype = {
-	init: function( config ) {
-		this.schema = config.schema;
-	},
-
-	/**
-	 * Get an object with the default values specified.  Only returns values
-	 * of objects with a defined default.
-	 * @method getDefaults
-	 * @return {object} object with default values
-	 */
-	getDefaults: function() {
-		var defaultObject = {};
-		for( var key in this.schema ) {
-			defaultObject[ key ] = this.getDefaultValue( key );
-		}
-		return defaultObject;
-	},
-
-	/**
-	* Get the default value for a particular item
-	* @method getDefaultValue
-	* @param {string} key - name of item to get default value for
-	* @return {variant} default value if one is defined
-	*/
-	getDefaultValue: function( key ) {
-		var defValue = this.schema[ key ].def;
-		if( AFrame.func( defValue ) ) {
-			defValue = defValue();
-		}
-		else if( this.schema[ key ].has_many ) {
-			defValue = [];
-		}
-		else if( AFrame.Schema.getSchema( this.schema[ key ].type ) ) {
-			defValue = {};
-		}
-		return defValue;
-	},
-	
-	/**
-	 * Fix a data object for use in the application.  Creates a new object using the specified data 
-	 * as a template for values.  If a value is not specified but a default value is specified in the 
-	 * schema, the default value is used for that item.  Items are finally run through an optionally defined
-	 * fixup function.  If defined, the fixup function should return cleaned data.  If the fixup function
-	 * does not return data, the field will be undefined.
-	 * @method getAppData
-	 * @param {object} dataToFix
-	 * @return {object} fixedData
-	 */
-	getAppData: function( dataToFix ) {
-		var fixedData = {};
-
-		this.forEach( function( schemaRow, key ) {
-			var value = dataToFix[ key ];
-			
-			// no value, use default
-			if( !AFrame.defined( value ) ) {
-				value = this.getDefaultValue( key );
-			}
-			
-			if( schemaRow.has_many ) {
-				value && value.forEach && value.forEach( function( current, index ) {
-					value[ index ] = this.getAppDataValue( current, schemaRow, dataToFix, fixedData );
-				}, this );
-			}
-			else {
-				value = this.getAppDataValue( value, schemaRow, dataToFix, fixedData );
-			}
-			
-			fixedData[ key ] = value;
-		}, this );
-		
-		return fixedData;
-	},
-
-	getAppDataValue: function( value, schemaRow, dataToFix, fixedData ) {
-		// If the object has a type and there is a schema for the type,
-		//	fix up the value.  If there is no schema for the type, but the value
-		//	is defined and there is a type converter fix function, convert the value.
-		var schema = AFrame.Schema.getSchema( schemaRow.type );
-		if( schema ) {
-			value = schema.getAppData( value );
-		}
-		else if( AFrame.defined( value ) ) {
-			// call the generic type deserializer function
-			var convert = AFrame.Schema.deserializers[ schemaRow.type ];
-			if( AFrame.func( convert ) ) {
-				value = convert( value );
-			}
-		}
-		
-		// apply the fixup function if defined.
-		var fixup = schemaRow.fixup;
-		if( AFrame.func( fixup ) ) {
-			value = fixup( {
-				value: value,
-				data: dataToFix,
-				fixed: fixedData
-			} );
-		}
-		
-		return value;
-	},
-	
-	/**
-	 * Get an object suitable to send to persistence.  This is based roughly on converting
-	 *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
-	 *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
-	 *	will have values returned.
-	 * @method serializeItems
-	 * @param {object} dataToSerialize - data to clean up
-	 * @return {object} cleanedData
-	 */
-	serializeItems: function( dataToSerialize ) {
-		var cleanedData = {};
-		
-		this.forEach( function( schemaRow, key ) {
-			if( schemaRow.save !== false ) {
-				var value = dataToSerialize[ key ];
-
-				if( schemaRow.has_many ) {
-					value && value.forEach && value.forEach( function( current, index ) {
-						value[ index ] = this.getSerializedValue( current, schemaRow, dataToSerialize, cleanedData );
-					}, this );
-				}
-				else {
-					value = this.getSerializedValue( value, schemaRow, dataToSerialize, cleanedData );
-				}
-				
-				cleanedData[ key ] = value;
-			}
-		}, this );
-		
-		return cleanedData;
-	},
-	
-	getSerializedValue: function( value, schemaRow, dataToSerialize, cleanedData ) {
-		// apply the cleanup function if defined.
-		var cleanup = schemaRow.cleanup;
-		if( AFrame.defined( cleanup ) ) {
-			value = cleanup( {
-				value: value,
-				data: dataToSerialize,
-				cleaned: cleanedData
-			} );
-		}
-
-		if( AFrame.defined( value ) ) {
-			var schema = AFrame.Schema.getSchema( schemaRow.type );
-			/*
-			* first, check if there is a schema, if there is a schema let the schema
-			*	take care of things.  If there is no schema but there is a value and
-			*  a saveCleaner, run the value through the save cleaner.
-			*/
-			if( schema ) {
-				value = schema.serializeItems( value );
-			}
-			else {
-				var convert = AFrame.Schema.serializers[ schemaRow.type ];
-				if( AFrame.func( convert ) ) {
-					value = convert( value );
-				}
-			}
-		}
-		
-		return value;
-	},
-	
-
-	/**
-	 * An iterator.  Iterates over every row in the schema.
-	 * The callback is called with the schema row and the key of the row.
-	 * @method forEach
-	 * @param {function} callback - callback to call.
-	 * @param {object} context (optional) context to call callback in
-	 */
-	forEach: function( callback, context ) {
-		for( var key in this.schema ) {
-			var schemaRow = this.schema[ key ];
-			callback.call( context, schemaRow, key );
-		}
-	},
+AFrame.Schema = (function() {
+    "use strict";
     
-    /**
-    * Validate a set of data against the schema
-    *
-    *    // validate, but ignore fields defined in the schema that are missing from data.
-    *    var validity = schema.validate( data, true );
-    *    // validity is true if all data is valid
-    *    // validity is an an object with each field in data, 
-    *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
-    *
-    * @method validate
-    * @param {object} data - data to validate
-    * @param {boolean} ignoreMissing (optional) - if set to true, fields missing from data are not validated.  Defaults to false.
-    *   Note, even if set to true, and a field in data has an undefined value, the field will be validated against the
-    *   the undefined value.
-    * @return {variant} true if all fields are valid, an object with each field in data, for each field there 
-    *   is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
-    */
-    validate: function( data, ignoreMissing ) {
-        var statii = {};
-        var areErrors = false;
-        
-        this.forEach( function( row, key ) {
-            var rowCriteria = row.validate || {};
-            var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
-            var field = data[ key ];
+    var SCHEMA_ID_KEY = '__SchemaID';
+    
+    Schema = function( config ) {
+        if( config ) {
+            if( !config[ SCHEMA_ID_KEY ] ) {
+                config[ SCHEMA_ID_KEY ] = AFrame.getUniqueID();
+                Schema.addSchemaConfig( config[ SCHEMA_ID_KEY ], config );
+            }
             
-            // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,
-            //  even if ignoreMissing is set to true, we validate against it.
-            if( !ignoreMissing || data.hasOwnProperty( key ) ) {
-                var validityState = this.validateData( data[ key ], criteriaCopy );
-                // if the row is valid, then just give the row a true status
-                if( validityState.valid ) {
-                    statii[ key ] = true;
+            return Schema.getSchema( config[ SCHEMA_ID_KEY ] );
+        }
+        else {
+            Schema.sc.constructor.call( this );
+        }
+    };
+    AFrame.extend( Schema, AFrame.AObject, {
+        init: function( config ) {
+            this.schema = config.schema;
+            
+            if( !config.schema ) {
+                throw 'Schema.js: Schema requires a schema configuration object';
+            }
+            
+            Schema.sc.init.call( this, config );
+        },
+
+        /**
+         * Get an object with the default values specified.  Only returns values
+         * of objects with a defined default.
+         *
+         *    // get the default values for all fields.
+         *    var defaults = schema.getDefaults();
+         *
+         * @method getDefaults
+         * @return {object} object with default values
+         */
+        getDefaults: function() {
+            var defaultObject = {};
+
+            this.forEach( function( schemaRow, key ) {
+                defaultObject[ key ] = this.getDefaultValue( key );
+            }, this );
+            
+            return defaultObject;
+        },
+
+        /**
+        * Get the default value for a particular item
+        *
+        *    // get the default value for a particular item
+        *    var value = schema.getDefaultValue( 'name' );
+        *
+        * @method getDefaultValue
+        * @param {string} key - name of item to get default value for
+        * @return {variant} default value if one is defined
+        */
+        getDefaultValue: function( key ) {
+            var defValue = this.schema[ key ].def;
+            if( AFrame.func( defValue ) ) {
+                defValue = defValue();
+            }
+            else if( this.schema[ key ].has_many ) {
+                defValue = [];
+            }
+            else if( Schema.getSchema( this.schema[ key ].type ) ) {
+                defValue = {};
+            }
+            return defValue;
+        },
+        
+        /**
+         * Fix a data object for use in the application.  Creates a new object using the specified data 
+         * as a template for values.  If a value is not specified but a default value is specified in the 
+         * schema, the default value is used for that item.  Items are finally run through an optionally defined
+         * fixup function.  If defined, the fixup function should return cleaned data.  If the fixup function
+         * does not return data, the field will be undefined.
+         *
+         *     // dbData is data coming from the database, still needs to be deserialized.
+         *     var appData = schema.getAppData( dbData );
+         *
+         * @method getAppData
+         * @param {object} dataToFix
+         * @return {object} fixedData
+         */
+        getAppData: function( dataToFix ) {
+            var fixedData = {};
+
+            this.forEach( function( schemaRow, key ) {
+                var value = dataToFix[ key ];
+                
+                // no value, use default
+                if( !AFrame.defined( value ) ) {
+                    value = this.getDefaultValue( key );
+                }
+                
+                if( schemaRow.has_many ) {
+                    value && value.forEach && value.forEach( function( current, index ) {
+                        value[ index ] = this.getAppDataValue( current, schemaRow, dataToFix, fixedData );
+                    }, this );
                 }
                 else {
-                    // the row is invalid, so save its validityState.
-                    statii[ key ] = validityState;
-                    areErrors = true;
+                    value = this.getAppDataValue( value, schemaRow, dataToFix, fixedData );
+                }
+                
+                fixedData[ key ] = value;
+            }, this );
+            
+            return fixedData;
+        },
+
+        getAppDataValue: function( value, schemaRow, dataToFix, fixedData ) {
+            // If the object has a type and there is a schema for the type,
+            //	fix up the value.  If there is no schema for the type, but the value
+            //	is defined and there is a type converter fix function, convert the value.
+            var schema = Schema.getSchema( schemaRow.type );
+            if( schema ) {
+                value = schema.getAppData( value );
+            }
+            else if( AFrame.defined( value ) ) {
+                // call the generic type deserializer function
+                var convert = Schema.deserializers[ schemaRow.type ];
+                if( AFrame.func( convert ) ) {
+                    value = convert( value );
                 }
             }
-        }, this );
+            
+            // apply the fixup function if defined.
+            var fixup = schemaRow.fixup;
+            if( AFrame.func( fixup ) ) {
+                value = fixup( {
+                    value: value,
+                    data: dataToFix,
+                    fixed: fixedData
+                } );
+            }
+            
+            return value;
+        },
         
-        return areErrors ? statii : true;
-    },
+        /**
+         * Get an object suitable to send to persistence.  This is based roughly on converting
+         *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
+         *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
+         *	will have values returned.
+         *
+         *     // appData is data from the application ready to send to the DB, needs serialized.
+         *     var serializedData = schema.serializeItems( appData );
+         *
+         * @method serializeItems
+         * @param {object} dataToSerialize - data to clean up
+         * @return {object} cleanedData
+         */
+        serializeItems: function( dataToSerialize ) {
+            var cleanedData = {};
+            
+            this.forEach( function( schemaRow, key ) {
+                if( schemaRow.save !== false ) {
+                    var value = dataToSerialize[ key ];
+
+                    if( schemaRow.has_many ) {
+                        value && value.forEach && value.forEach( function( current, index ) {
+                            value[ index ] = this.getSerializedValue( current, schemaRow, dataToSerialize, cleanedData );
+                        }, this );
+                    }
+                    else {
+                        value = this.getSerializedValue( value, schemaRow, dataToSerialize, cleanedData );
+                    }
+                    
+                    cleanedData[ key ] = value;
+                }
+            }, this );
+            
+            return cleanedData;
+        },
+        
+        getSerializedValue: function( value, schemaRow, dataToSerialize, cleanedData ) {
+            // apply the cleanup function if defined.
+            var cleanup = schemaRow.cleanup;
+            if( AFrame.defined( cleanup ) ) {
+                value = cleanup( {
+                    value: value,
+                    data: dataToSerialize,
+                    cleaned: cleanedData
+                } );
+            }
+
+            if( AFrame.defined( value ) ) {
+                var schema = Schema.getSchema( schemaRow.type );
+                /*
+                * first, check if there is a schema, if there is a schema let the schema
+                *	take care of things.  If there is no schema but there is a value and
+                *  a saveCleaner, run the value through the save cleaner.
+                */
+                if( schema ) {
+                    value = schema.serializeItems( value );
+                }
+                else {
+                    var convert = Schema.serializers[ schemaRow.type ];
+                    if( AFrame.func( convert ) ) {
+                        value = convert( value );
+                    }
+                }
+            }
+            
+            return value;
+        },
+        
+
+        /**
+         * An iterator.  Iterates over every row in the schema.
+         * The callback is called with the schema row and the key of the row.
+         * @method forEach
+         * @param {function} callback - callback to call.
+         * @param {object} context (optional) context to call callback in
+         */
+        forEach: function( callback, context ) {
+            for( var key in this.schema ) {
+                if( key !== SCHEMA_ID_KEY ) {
+                    var schemaRow = this.schema[ key ];
+                    callback.call( context, schemaRow, key );
+                }
+            }
+        },
+        
+        /**
+        * Validate a set of data against the schema
+        *
+        *    // validate, but ignore fields defined in the schema that are missing from data.
+        *    var validity = schema.validate( data, true );
+        *    // validity is true if all data is valid
+        *    // validity is an an object with each field in data, 
+        *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+        *
+        * @method validate
+        * @param {object} data - data to validate
+        * @param {boolean} ignoreMissing (optional) - if set to true, fields missing from data are not validated.  Defaults to false.
+        *   Note, even if set to true, and a field in data has an undefined value, the field will be validated against the
+        *   the undefined value.
+        * @return {variant} true if all fields are valid, an object with each field in data, for each field there 
+        *   is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+        */
+        validate: function( data, ignoreMissing ) {
+            var statii = {};
+            var areErrors = false;
+            
+            this.forEach( function( row, key ) {
+                var rowCriteria = row.validate || {};
+                var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
+                var field = data[ key ];
+                
+                // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,
+                //  even if ignoreMissing is set to true, we validate against it.
+                if( !ignoreMissing || data.hasOwnProperty( key ) ) {
+                    var validityState = this.validateData( data[ key ], criteriaCopy );
+                    // if the row is valid, then just give the row a true status
+                    if( validityState.valid ) {
+                        statii[ key ] = true;
+                    }
+                    else {
+                        // the row is invalid, so save its validityState.
+                        statii[ key ] = validityState;
+                        areErrors = true;
+                    }
+                }
+            }, this );
+            
+            return areErrors ? statii : true;
+        },
+        
+        validateData: function( data, criteria ) {
+            return AFrame.DataValidation.validate( {
+                data: data,
+                criteria: criteria 
+            } );
+        }
+    } );
+    AFrame.mixin( Schema, {
+        deserializers: {},
+        serializers: {},
+        schemaConfigs: {},
+        schemaCache: {},
+        
+        /**
+         * Add a universal function that fixes data in [getAppData](#method_getAppData). This is used to convert
+         * data from a version the backend sends to one that is used internally.
+         * @method Schema.addDeserializer
+         * @param {string} type - type of field.
+         * @param {function} callback - to call
+         */
+        addDeserializer: function( type, callback ) {
+            Schema.deserializers[ type ] = callback;
+        },
+        
+        /**
+         * Add a universal function that gets data ready to save to persistence.  This is used
+         * to convert data from an internal representation of a piece of data to a 
+         * representation the backend is expecting.
+         * @method Schema.addSerializer
+         * @param {string} type - type of field.
+         * @param {function} callback - to call
+         */
+        addSerializer: function( type, callback ) {
+            Schema.serializers[ type ] = callback;
+        },
+        
+        /**
+        * Add a schema config
+        * @method Schema.addSchemaConfig
+        * @param {id} type - identifier type
+        * @param {SchemaConfig} config - the schema configuration
+        */
+        addSchemaConfig: function( type, config ) {
+            Schema.schemaConfigs[ type ] = config;
+        },
+        
+        /**
+        * Get a schema
+        * @method Schema.getSchema
+        * @param {id} type - type of schema to get, a config must be registered for type.
+        * @return {Schema}
+        */
+        getSchema: function( type ) {
+            if( !Schema.schemaCache[ type ] && Schema.schemaConfigs[ type ] ) {
+                Schema.schemaCache[ type ] = AFrame.construct( {
+                    type: Schema,
+                    config: {
+                        schema: Schema.schemaConfigs[ type ]
+                    }
+                } );
+            }
+            
+            return Schema.schemaCache[ type ];
+        }
+    } );
+
+    Schema.addDeserializer( 'number', function( value ) {
+        return parseFloat( value );
+    } );
+
+    Schema.addDeserializer( 'integer', function( value ) {
+        return parseInt( value, 10 );
+    } );
+
+    Schema.addDeserializer( 'iso8601', function( str ) {
+        // we assume str is a UTC date ending in 'Z'
+        try{
+            var parts = str.split('T'),
+            dateParts = parts[0].split('-'),
+            timeParts = parts[1].split('Z'),
+            timeSubParts = timeParts[0].split(':'),
+            timeSecParts = timeSubParts[2].split('.'),
+            timeHours = Number(timeSubParts[0]),
+            _date = new Date;
+            
+            _date.setUTCFullYear(Number(dateParts[0]));
+            _date.setUTCMonth(Number(dateParts[1])-1);
+            _date.setUTCDate(Number(dateParts[2]));
+            _date.setUTCHours(Number(timeHours));
+            _date.setUTCMinutes(Number(timeSubParts[1]));
+            _date.setUTCSeconds(Number(timeSecParts[0]));
+            if (timeSecParts[1]) {
+                _date.setUTCMilliseconds(Number(timeSecParts[1]));
+            }
+            
+            // by using setUTC methods the date has already been converted to local time(?)
+            return _date;
+        }
+        catch(e) {}
+    } );
+
+    Schema.addSerializer( 'iso8601', function( date ) {
+        return date.toISOString();
+    } );
     
-    validateData: function( data, criteria ) {
-        return AFrame.DataValidation.validate( {
-            data: data,
-            criteria: criteria 
-        } );
-    }
-};
-AFrame.mixin( AFrame.Schema, {
-	deserializers: {},
-	serializers: {},
-	schemaConfigs: {},
-	schemaCache: {},
-	
-	/**
-	 * Add a universal function that fixes data in [getAppData](#method_getAppData). This is used to convert
-	 * data from a version the backend sends to one that is used internally.
-	 * @method AFrame.Schema.addDeserializer
-	 * @param {string} type - type of field.
-	 * @param {function} callback - to call
-	 */
-	addDeserializer: function( type, callback ) {
-		AFrame.Schema.deserializers[ type ] = callback;
-	},
+    return Schema;
     
-	/**
-	 * Add a universal function that gets data ready to save to persistence.  This is used
-	 * to convert data from an internal representation of a piece of data to a 
-	 * representation the backend is expecting.
-	 * @method AFrame.Schema.addSerializer
-	 * @param {string} type - type of field.
-	 * @param {function} callback - to call
-	 */
-	addSerializer: function( type, callback ) {
-		AFrame.Schema.serializers[ type ] = callback;
-	},
-	
-	/**
-	* Add a schema config
-	* @method AFrame.Schema.addSchemaConfig
-	* @param {id} type - identifier type
-	* @param {SchemaConfig} config - the schema configuration
-	*/
-	addSchemaConfig: function( type, config ) {
-		AFrame.Schema.schemaConfigs[ type ] = config;
-	},
-	
-	/**
-	* Get a schema
-	* @method AFrame.Schema.getSchema
-	* @param {id} type - type of schema to get, a config must be registered for type.
-	* @return {AFrame.Schema}
-	*/
-	getSchema: function( type ) {
-		if( !AFrame.Schema.schemaCache[ type ] && AFrame.Schema.schemaConfigs[ type ] ) {
-			AFrame.Schema.schemaCache[ type ] = AFrame.construct( {
-				type: AFrame.Schema,
-				config: {
-					schema: AFrame.Schema.schemaConfigs[ type ]
-				}
-			} );
-		}
-		
-		return AFrame.Schema.schemaCache[ type ];
-	}
-} );
-
-AFrame.Schema.addDeserializer( 'number', function( value ) {
-	return parseFloat( value );
-} );
-
-AFrame.Schema.addDeserializer( 'integer', function( value ) {
-	return parseInt( value, 10 );
-} );
-
-AFrame.Schema.addDeserializer( 'iso8601', function( str ) {
-	// we assume str is a UTC date ending in 'Z'
-	try{
-		var parts = str.split('T'),
-		dateParts = parts[0].split('-'),
-		timeParts = parts[1].split('Z'),
-		timeSubParts = timeParts[0].split(':'),
-		timeSecParts = timeSubParts[2].split('.'),
-		timeHours = Number(timeSubParts[0]),
-		_date = new Date;
-		
-		_date.setUTCFullYear(Number(dateParts[0]));
-		_date.setUTCMonth(Number(dateParts[1])-1);
-		_date.setUTCDate(Number(dateParts[2]));
-		_date.setUTCHours(Number(timeHours));
-		_date.setUTCMinutes(Number(timeSubParts[1]));
-		_date.setUTCSeconds(Number(timeSecParts[0]));
-		if (timeSecParts[1]) {
-			_date.setUTCMilliseconds(Number(timeSecParts[1]));
-		}
-		
-		// by using setUTC methods the date has already been converted to local time(?)
-		return _date;
-	}
-	catch(e) {}
-} );
-
-AFrame.Schema.addSerializer( 'iso8601', function( date ) {
-	return date.toISOString();
-} );
-
+}() );
 /**
  * Create an AFrame.Form based object for each item in the list.  Adds the functions [validate](#method_validate), 
  * [save](#method_save), [clear](#method_clear), [reset](#method_reset), and [getForm](#method_getForm) to the 
@@ -3967,12 +4156,67 @@ AFrame.Schema.addSerializer( 'iso8601', function( date ) {
  * @extends AFrame.Plugin
  * @constructor 
  */
-AFrame.ListPluginFormRow = function() {
-	AFrame.ListPluginFormRow.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
-	init: function( config ) {
-		/**
+AFrame.ListPluginFormRow = ( function() {
+    "use strict";
+    
+    var Plugin = function() {
+        Plugin.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( Plugin, AFrame.Plugin, {
+        init: function( config ) {
+            /**
+             * The factory function used to create forms.  formFactory will be called once for each
+             *	row in the list, it will be called with two parameters, the rowElement and the data
+             *	passed in the list's onInsert call.  An AFrame.Form compatible object must be returned.
+             *
+             *     ...
+             *     formFactory: function( rowElement, data ) {
+             *          var form = AFrame.construct( {
+             *              type: AFrame.SpecializedForm,
+             *              config: {
+             *                  target: rowElement,
+             *                  dataSource: data
+             *              }
+             *          } );
+             *           
+             *          return form;
+             *      },
+             *      ....
+             *
+             * @config formFactory
+             * @type {function} (optional)
+             * @default this.formFactory
+             */
+            this.formFactory = config.formFactory || this.formFactory;
+            
+            this.forms = [];
+            
+            Plugin.sc.init.apply( this, arguments );
+        },
+        
+        setPlugged: function( plugged ) {
+            plugged.bindEvent( 'onInsert', this.onInsertRow, this );
+            plugged.bindEvent( 'onRemove', this.onRemoveRow, this );
+            
+            plugged.validate = this.validate.bind( this );
+            plugged.save = this.save.bind( this );
+            plugged.reset = this.reset.bind( this );
+            plugged.clear = this.clear.bind( this );
+            plugged.getForm = this.getForm.bind( this );
+            
+            Plugin.sc.setPlugged.apply( this, arguments );		
+        },
+        
+        teardown: function() {
+            this.forms.forEach( function( form, index ) {
+                form.teardown();
+                this.forms[ index ] = null;
+            }, this );
+            
+            Plugin.sc.teardown.apply( this, arguments );		
+        },
+        
+        /**
          * The factory function used to create forms.  formFactory will be called once for each
          *	row in the list, it will be called with two parameters, the rowElement and the data
          *	passed in the list's onInsert call.  An AFrame.Form compatible object must be returned.
@@ -3991,213 +4235,164 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
          *      },
          *      ....
          *
-		 * @config formFactory
-		 * @type {function} (optional)
-         * @default this.formFactory
-		 */
-        this.formFactory = config.formFactory || this.formFactory;
-		
-		this.forms = [];
-		
-		AFrame.ListPluginFormRow.sc.init.apply( this, arguments );
-	},
-    
-	setPlugged: function( plugged ) {
-		plugged.bindEvent( 'onInsert', this.onInsertRow, this );
-		plugged.bindEvent( 'onRemove', this.onRemoveRow, this );
-		
-		plugged.validate = this.validate.bind( this );
-		plugged.save = this.save.bind( this );
-		plugged.reset = this.reset.bind( this );
-		plugged.clear = this.clear.bind( this );
-		plugged.getForm = this.getForm.bind( this );
-		
-		AFrame.ListPluginFormRow.sc.setPlugged.apply( this, arguments );		
-	},
-	
-	teardown: function() {
-		this.forms.forEach( function( form, index ) {
-			form.teardown();
-			this.forms[ index ] = null;
-		}, this );
-		
-		AFrame.ListPluginFormRow.sc.teardown.apply( this, arguments );		
-	},
-	
-    /**
-     * The factory function used to create forms.  formFactory will be called once for each
-     *	row in the list, it will be called with two parameters, the rowElement and the data
-     *	passed in the list's onInsert call.  An AFrame.Form compatible object must be returned.
-     *
-     *     ...
-     *     formFactory: function( rowElement, data ) {
-     *          var form = AFrame.construct( {
-     *              type: AFrame.SpecializedForm,
-     *              config: {
-     *                  target: rowElement,
-     *                  dataSource: data
-     *              }
-     *          } );
-     *           
-     *          return form;
-     *      },
-     *      ....
-     *
-     * @method formFactory
-     * @type {function}
-     */
-    formFactory: function( rowElement, data ) {
-        var form = AFrame.construct( {
-            type: AFrame.DataForm,
-            config: {
-                target: rowElement,
-                dataSource: data
-            }
-        } );
+         * @method formFactory
+         * @type {function}
+         */
+        formFactory: function( rowElement, data ) {
+            var form = AFrame.construct( {
+                type: AFrame.DataForm,
+                config: {
+                    target: rowElement,
+                    dataSource: data
+                }
+            } );
+            
+            return form;
+        },
         
-        return form;
-    },
-	
-	onInsertRow: function( data, index ) {
-		var form = this.formFactory( data.rowElement, data );
-		this.forms.splice( index, 0, form );
-	},
-	
-	onRemoveRow: function( data, index ) {
-		var form = this.forms[ index ];
-		form.teardown();
-		
-		this.forms[ index ] = null;
-		this.forms.splice( index, 1 );
-	},
-	
-	/**
-	 * Validate a form.
-     * 
-     *     // list is an AFrame.List with the AFrame.ListPluginFormRow plugin
-     *
-     *     // validate all forms in the entire list
-     *     var valid = list.validate();
-     *
-     *     // validate one row
-     *     var valid = list.validate( 0 );
-     *
-	 * @method validate
-	 * @param {number} index (optional) index of row.  If not given,
-	 * validate all rows.
-	 * @return {boolean} true if form is valid, false otw.
-	 */
-	validate: function( index ) {
-		var valid = true;
-		var form;
-		
-		if( AFrame.defined( index ) ) {
-			form = this.forms[ index ];
-			if( form ) {
-				valid = form.validate();				
-			}
-		}
-		else {
-			for( index = 0; valid && ( form = this.forms[ index ] ); ++index ) {
-				valid = form.validate();
-			}
-		}
-		
-		return valid;
-	},
-	
-	/**
-	 * Save a form's data to its DataContainer
-     * 
-     *     // list is an AFrame.List with the AFrame.ListPluginFormRow plugin
-     *
-     *     // save all forms in the entire list
-     *     list.save();
-     *
-     *     // save one row
-     *     list.save( 0 );
-     *
-	 * @method save
-	 * @param {number} index (optional) index of row.  If not given,
-	 * save all rows.
-	 */
-	save: function( index ) {
-		this.formFunc( index, 'save' );
-	},
-	
-	/**
-	 * Reset a form
-     * 
-     *     // list is an AFrame.List with the AFrame.ListPluginFormRow plugin
-     *
-     *     // reset all forms in the entire list
-     *     list.reset();
-     *
-     *     // reset one row
-     *     list.reset( 0 );
-     *
-	 * @method reset
-	 * @param {number} index (optional) index of row.  If not given,
-	 * reset all rows.
-	 */
-	reset: function( index ) {
-		this.formFunc( index, 'reset' );
-	},
-	
-	/**
-	 * Clear a form
-     * 
-     *     // list is an AFrame.List with the AFrame.ListPluginFormRow plugin
-     *
-     *     // clear all forms in the entire list
-     *     list.clear();
-     *
-     *     // clear one row
-     *     list.clear( 0 );
-     *
-	 * @method clear
-	 * @param {number} index (optional) index of row.  If not given,
-	 * clear all rows.
-	 */
-	clear: function( index ) {
-		this.formFunc( index, 'clear' );
-	},
-	
-	formFunc: function( index, funcName ) {
-		if( AFrame.defined( index ) ) {
-			var form = this.forms[ index ];
-			if( form ) {
-				form[ funcName ]();				
-			}
-		}
-		else {
-			this.forms.forEach( function( form, index ) {
-				form[ funcName ]();
-			} );
-		}
-	},
-    
-    /**
-    * Get the reference to a form
-    * 
-    *     // list is an AFrame.List with the AFrame.ListPluginFormRow plugin
-    *
-    *     // get the form for one row.
-    *     var form = list.getForm( 0 );
-    *
-    * @method getForm
-    * @param {number} index - index of form to get
-    * @return {AFrame.Form} form if available, undefined otw.
-    */
-    getForm: function( index ) {
-        return this.forms[ index ];
-    }
-} );/**
+        onInsertRow: function( data, index ) {
+            var form = this.formFactory( data.rowElement, data );
+            this.forms.splice( index, 0, form );
+        },
+        
+        onRemoveRow: function( data, index ) {
+            var form = this.forms[ index ];
+            form.teardown();
+            
+            this.forms[ index ] = null;
+            this.forms.splice( index, 1 );
+        },
+        
+        /**
+         * Validate a form.
+         * 
+         *     // list is an AFrame.List with the Plugin plugin
+         *
+         *     // validate all forms in the entire list
+         *     var valid = list.validate();
+         *
+         *     // validate one row
+         *     var valid = list.validate( 0 );
+         *
+         * @method validate
+         * @param {number} index (optional) index of row.  If not given,
+         * validate all rows.
+         * @return {boolean} true if form is valid, false otw.
+         */
+        validate: function( index ) {
+            var valid = true;
+            var form;
+            
+            if( AFrame.defined( index ) ) {
+                form = this.forms[ index ];
+                if( form ) {
+                    valid = form.validate();				
+                }
+            }
+            else {
+                for( index = 0; valid && ( form = this.forms[ index ] ); ++index ) {
+                    valid = form.validate();
+                }
+            }
+            
+            return valid;
+        },
+        
+        /**
+         * Save a form's data to its DataContainer
+         * 
+         *     // list is an AFrame.List with the Plugin plugin
+         *
+         *     // save all forms in the entire list
+         *     list.save();
+         *
+         *     // save one row
+         *     list.save( 0 );
+         *
+         * @method save
+         * @param {number} index (optional) index of row.  If not given,
+         * save all rows.
+         */
+        save: function( index ) {
+            this.formFunc( index, 'save' );
+        },
+        
+        /**
+         * Reset a form
+         * 
+         *     // list is an AFrame.List with the Plugin plugin
+         *
+         *     // reset all forms in the entire list
+         *     list.reset();
+         *
+         *     // reset one row
+         *     list.reset( 0 );
+         *
+         * @method reset
+         * @param {number} index (optional) index of row.  If not given,
+         * reset all rows.
+         */
+        reset: function( index ) {
+            this.formFunc( index, 'reset' );
+        },
+        
+        /**
+         * Clear a form
+         * 
+         *     // list is an AFrame.List with the Plugin plugin
+         *
+         *     // clear all forms in the entire list
+         *     list.clear();
+         *
+         *     // clear one row
+         *     list.clear( 0 );
+         *
+         * @method clear
+         * @param {number} index (optional) index of row.  If not given,
+         * clear all rows.
+         */
+        clear: function( index ) {
+            this.formFunc( index, 'clear' );
+        },
+        
+        formFunc: function( index, funcName ) {
+            if( AFrame.defined( index ) ) {
+                var form = this.forms[ index ];
+                if( form ) {
+                    form[ funcName ]();				
+                }
+            }
+            else {
+                this.forms.forEach( function( form, index ) {
+                    form[ funcName ]();
+                } );
+            }
+        },
+        
+        /**
+        * Get the reference to a form
+        * 
+        *     // list is an AFrame.List with the Plugin plugin
+        *
+        *     // get the form for one row.
+        *     var form = list.getForm( 0 );
+        *
+        * @method getForm
+        * @param {number} index - index of form to get
+        * @return {AFrame.Form} form if available, undefined otw.
+        */
+        getForm: function( index ) {
+            return this.forms[ index ];
+        }
+    } );
+    return Plugin;
+}() );
+/**
 * A Form that is bound to data.  Each DataForm is bound to a DataContainer, the DataContainer
 *	is used as the data source for all form Fields.  When a Field in the form is created, it
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
-*    
+*
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
 *        version: '0.0.20'
@@ -4219,7 +4414,7 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 *    //    updated.
 *
 *    // Check the validity of the form, if we are valid, save the data back to 
-*    //    the dataContainer
+*    //    the dataContainer.
 *    var isValid = form.checkValidity();
 *    if( isValid ) {
 *        // if the form is valid, the input is saved back to 
@@ -4227,12 +4422,51 @@ AFrame.extend( AFrame.ListPluginFormRow, AFrame.Plugin, {
 *        form.save();
 *    }
 *
+* If setting up a DataForm with a [Model](AFrame.Model.html), when validating the form,
+*   the model's validators will be called as well.  This is useful to do specialized
+*   model level validation.
+*
+*    // Schema defines two fields with validators
+*    var schemaConfig = {
+*        name: { type: 'text', validate: {
+*                    minlength: 1,
+*                    maxlength: 75,
+*                    required: true
+*                } },
+*        version: { type: 'text', validate: {
+*                    minlength: 1,
+*                    required: true
+*               } }
+*    };
+*
+*    // create the model.
+*    var model = AFrame.construct( {
+*        type: AFrame.Model,
+*        config: {
+*            schema: schemaConfig
+*        }
+*    } );
+*
+*    // Set up the form to look under #nameForm for elements with the "data-field" 
+*    //    attribute.  This will find two fields, each field will be tied to the 
+*    //    appropriate field in the libraryDataContainer
+*    var form = AFrame.construct( {
+*        type: DataForm,
+*        config: {
+*            target: $( '#nameForm' ),
+*            dataSource: model
+*        }
+*    } );
+*    
+*
 * @class AFrame.DataForm
 * @extends AFrame.Form
 * @constructor
 */
 
 AFrame.DataForm = ( function() {
+    "use strict";
+    
     var DataForm = function() {
 	    DataForm.sc.constructor.apply( this, arguments );
     };
@@ -4378,7 +4612,9 @@ AFrame.DataForm = ( function() {
 * @class AFrame.DataValidation
 * @static
 */
-AFrame.DataValidation = (function() {
+AFrame.DataValidation = ( function() {
+    "use strict";
+    
     var defined = AFrame.defined;
     var validationFuncs = {};
     var jsTypes = {
@@ -4541,18 +4777,68 @@ AFrame.DataValidation = (function() {
 * A Model is a DataContainer that is associated with a Schema.  If no initial data is given, 
 *   default values will be retreived from the schema.  When doing a set, only data that validates
 *   will be set.  If data to set is invalid, set will return a [FieldValidityState](AFrame.FieldValidityState.html).
+*
+*    // create the schema config
+*    var noteSchemaConfig = {
+*        id: { type: 'integer' },
+*        title: { type: 'text', def: 'Note Title' },
+*        contents: { type: 'text' },
+*        date: { type: 'iso8601' },
+*        edit_date: { type: 'iso8601' }
+*    };
+*
+*    // Create one instance of the model.
+*    var model = AFrame.construct( {
+*        type: AFrame.Model,
+*        config: {
+*            schema: noteSchemaConfig,
+*            data: {
+*                id: '1',
+*                title: 'Get some milk',
+*                contents: 'Go to the supermarket and grab some milk.',
+*                date: '2010-12-10T18:09Z',
+*                edit_date: '2010-12-10T18:23Z'
+*                extra_field: 'this field does not get through'
+*           }
+*       }
+*    } );
+*
+*    // update a field.  prevVal will be 'Get some milk'
+*    var prevVal = model.set( 'title', 'Get some milk and eggs' );
+*
+*    // This is setting the date in error, the prevVal will have a FieldValidityState
+*    // with its typeMismatch field set to true.  This will NOT actually set the value.
+*    prevVal = model.set( 'edit_date', '1' );
+*
+*    // Check the overall model for validity.  Returns true if all valid, an object of
+*    // of FieldValidityStates otherwise
+*    var isValid = model.checkValidity();
+*
 * @class AFrame.Model
 * @extends AFrame.DataContainer
 * @constructor
 */
+/**
+* The schema to use for the model.  Can be either a Schema or a schema configuration object.
+* @config schema
+* @type {AFrame.Schema || object}
+*/
+/**
+* Initial data to use for the model.  Note, initial data is not validated in any way.  If
+*   data is not given, data is taken out of the schema's default values.
+* @config data
+* @type {object}
+*/
 AFrame.Model = ( function() {
+    "use strict";
     
     function Model() {
         Model.sc.constructor.call( this );
     }
     AFrame.extend( Model, AFrame.DataContainer, {
         init: function( config ) {
-            this.schema = config.schema;
+            this.schema = getSchema( config.schema );
+            
             config.data = getInitialData( this.schema, config.data );
             
             Model.sc.init.call( this, config );
@@ -4610,17 +4896,51 @@ AFrame.Model = ( function() {
             }
             
             return fieldValidity;
+        },
+        
+        /**
+        * Get an object suitable to send to persistence.  This is based roughly on converting
+        *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
+        *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
+        *	will have values returned.
+        *
+        *     // Get an object suitable to send to persistence.
+        *     var serializedData = model.serializeItems();
+        *
+        * @method serializeItems
+        * @return {object}
+        */
+        serializeItems: function() {
+            var dataObject = this.getDataObject();
+            return this.schema.serializeItems( dataObject );
         }
     } );
     
     return Model;
     
+    function getSchema( candidate ) {
+        var schema = candidate instanceof AFrame.Schema ? candidate : 
+            AFrame.Schema( candidate );
+        
+        return schema;
+    }
+    
     function getInitialData( schema, initialData ) {
         if( !initialData ) {
             initialData = schema.getDefaults();
         }
+        
+        // use the initialData structure to store deserialized data
+        //  so that we do not have two copies of the data running around.
+        var deserialized = schema.getAppData( initialData );
+        for( var key in deserialized ) {
+            initialData[ key ] = deserialized[ key ];
+        }
+        
         return initialData;
     }
+    
+
 
     
 } )();
@@ -4655,6 +4975,8 @@ AFrame.Model = ( function() {
 * @type {object}
 */
 AFrame.Event = (function() {
+    "use strict";
+    
     var Event = function() {};
     Event.prototype = {
         constructor: Event,

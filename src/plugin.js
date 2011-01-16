@@ -8,35 +8,41 @@
 * @extends AFrame.AObject
 * @constructor
 */
-AFrame.Plugin = function() {
-	AFrame.Plugin.sc.constructor.apply( this, arguments );
-};
-AFrame.extend( AFrame.Plugin, AFrame.AObject, {
-	/**
-	* Set the reference to the plugged object.  Subclasses can override this function to bind event
-	*	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
-	*	do setup as soon as the plugged object is ready.  If a subclass overrides this function,
-	*	the base setPlugged must still be called.
-	* @method setPlugged
-	* @param {AFrame.AObject} plugged - the plugged object
-	*/
-	setPlugged: function( plugged ) {
-		this.plugged = plugged;
-		
-		this.plugged.bindEvent( 'onTeardown', this.teardown, this );
-	},
-	
-	/**
-	* Get a reference to the plugged object.
-	* @method getPlugged
-	* @return {AFrame.AObject} the plugged object
-	*/
-	getPlugged: function() {
-		return this.plugged;
-	},
-	
-	teardown: function() {
-		AFrame.remove( this, 'plugged' );
-		AFrame.Plugin.sc.teardown.apply( this, arguments );
-	}
-} );
+AFrame.Plugin = ( function() {
+    "use strict";
+    
+    var Plugin = function() {
+        Plugin.sc.constructor.apply( this, arguments );
+    };
+    AFrame.extend( Plugin, AFrame.AObject, {
+        /**
+        * Set the reference to the plugged object.  Subclasses can override this function to bind event
+        *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
+        *	do setup as soon as the plugged object is ready.  If a subclass overrides this function,
+        *	the base setPlugged must still be called.
+        * @method setPlugged
+        * @param {AFrame.AObject} plugged - the plugged object
+        */
+        setPlugged: function( plugged ) {
+            this.plugged = plugged;
+            
+            this.plugged.bindEvent( 'onTeardown', this.teardown, this );
+        },
+        
+        /**
+        * Get a reference to the plugged object.
+        * @method getPlugged
+        * @return {AFrame.AObject} the plugged object
+        */
+        getPlugged: function() {
+            return this.plugged;
+        },
+        
+        teardown: function() {
+            AFrame.remove( this, 'plugged' );
+            Plugin.sc.teardown.apply( this, arguments );
+        }
+    } );
+
+    return Plugin;
+}() );

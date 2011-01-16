@@ -96,6 +96,8 @@
  * @constructor
  */
 AFrame.CollectionPluginPersistence = ( function() {
+    "use strict";
+    
     var Plugin = function() {
         Plugin.sc.constructor.apply( this, arguments );
     };

@@ -76,6 +76,8 @@
 */
 
 AFrame.DataForm = ( function() {
+    "use strict";
+    
     var DataForm = function() {
 	    DataForm.sc.constructor.apply( this, arguments );
     };

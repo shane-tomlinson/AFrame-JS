@@ -2,6 +2,7 @@ includes.list=core.js,\
 aframe.js,\
 observable.js,\
 observablesMixin.js,\
+enumerableMixin.js,\
 aobject.js,\
 dataContainer.js,\
 plugin.js,\

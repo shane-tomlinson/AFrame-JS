@@ -78,6 +78,8 @@
 * @constructor
 */
 AFrame.FieldPluginValidation = (function() {
+    "use strict";
+    
     var FieldPluginValidation = function() {
         FieldPluginValidation.sc.constructor.call( this );
     };

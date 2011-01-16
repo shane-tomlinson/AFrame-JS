@@ -59,6 +59,8 @@
  * @constructor
  */
 AFrame.Display = (function() {
+    "use strict";
+    
     var currDOMEventID = 0;
 
     var Display = function() {

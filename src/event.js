@@ -29,6 +29,8 @@
 * @type {object}
 */
 AFrame.Event = (function() {
+    "use strict";
+    
     var Event = function() {};
     Event.prototype = {
         constructor: Event,

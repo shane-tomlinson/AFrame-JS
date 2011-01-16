@@ -46,7 +46,9 @@
 * @class AFrame.DataValidation
 * @static
 */
-AFrame.DataValidation = (function() {
+AFrame.DataValidation = ( function() {
+    "use strict";
+    
     var defined = AFrame.defined;
     var validationFuncs = {};
     var jsTypes = {

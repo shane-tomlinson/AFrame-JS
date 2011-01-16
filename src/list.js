@@ -57,7 +57,9 @@
  * @type {function} (optional)
  * @default this.listElementFactory
  */
-AFrame.List = (function() { 
+AFrame.List = ( function() {
+    "use strict";
+    
     var List = function() {
         List.sc.constructor.apply( this, arguments );
     };
