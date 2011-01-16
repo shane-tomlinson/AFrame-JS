@@ -6,7 +6,7 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     var testCases = [];
     
     testsToRun.forEach( function( testConfig, index ) {
-	    var test = new TestCase( testConfig );
+    	var test = new TestCase( testConfig );
         testCases.push( test );
         TestRunner.add( test );
         
@@ -17,7 +17,9 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     var yconsole = new Y.Console( {
     	newestOnTop: true
     } );
-	yconsole.render( '#log' );
+    yconsole.render( '#log' );
+
+
 
     TestRunner.run();
     
