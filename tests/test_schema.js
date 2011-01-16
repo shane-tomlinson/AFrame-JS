@@ -446,6 +446,19 @@ testsToRun.push( {
 
             Assert.isFalse( validityState.intField.valid, 'trying to set an integer to a string' );
             Assert.isTrue( validityState.intField.typeMismatch, 'trying to set an integer to a string' );
+        },
+            
+        testSchemaNoConfigError: function() {
+            var errorThrown;
+            try {
+                var schema = AFrame.construct( {
+                    type: AFrame.Schema
+                } );
+            }
+            catch( e ) {
+                errorThrown = e;
+            }
+            
+            Assert.areEqual( 'Schema.js: Schema requires a schema configuration object', errorThrown, 'correct error thrown' );
         }
-			
 } );

@@ -75,6 +75,10 @@ AFrame.Schema = function() {
 AFrame.Schema.prototype = {
 	init: function( config ) {
 		this.schema = config.schema;
+        
+        if( !config.schema ) {
+            throw 'Schema.js: Schema requires a schema configuration object';
+        }
 	},
 
 	/**
