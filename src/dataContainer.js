@@ -137,6 +137,19 @@ AFrame.extend( AFrame.DataContainer, AFrame.AObject, {
 		return this.data[ fieldName ];
 	},
 	
+    /**
+    * Get an object with all fields contained in the DataContainer.
+    *
+    *    // Get an object with all fields contained in the DataContainer.
+    *    var dataObject = dataContainer.getDataObject();
+    *
+    * @method getDataObject
+    * @return {object}
+    */
+    getDataObject: function() {
+        return this.data;
+    },
+    
 	/**
 	* Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
     *   When function is called, it is called with an event.

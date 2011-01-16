@@ -127,6 +127,23 @@ AFrame.Model = ( function() {
             }
             
             return fieldValidity;
+        },
+        
+        /**
+        * Get an object suitable to send to persistence.  This is based roughly on converting
+        *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
+        *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
+        *	will have values returned.
+        *
+        *     // Get an object suitable to send to persistence.
+        *     var serializedData = model.serializeItems();
+        *
+        * @method serializeItems
+        * @return {object}
+        */
+        serializeItems: function() {
+            var dataObject = this.getDataObject();
+            return this.schema.serializeItems( dataObject );
         }
     } );
     

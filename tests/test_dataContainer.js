@@ -96,6 +96,18 @@ testsToRun.push( {
 			
 			var thirdDataContainer = AFrame.DataContainer( data );
 			Assert.isTrue( ( thirdDataContainer === dataContainer ), 'making a second DataContainer from data gives back the same DataContainer' );
-		}
+		},
+        
+        testGetDataObject: function() {
+			var data = {
+				field1: 'value1',
+				field2: 'value2'
+			};
+			
+			var dataContainer = AFrame.DataContainer( data );
+            
+            var dataObject = dataContainer.getDataObject();
+            Assert.areEqual( dataObject, data, 'getDataObject returns original data' );
+        }
 
 } );
