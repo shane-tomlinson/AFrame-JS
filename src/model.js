@@ -69,7 +69,8 @@ AFrame.Model = ( function() {
     }
     AFrame.extend( Model, AFrame.DataContainer, {
         init: function( config ) {
-            this.schema = config.schema;
+            this.schema = getSchema( config.schema );
+            
             config.data = getInitialData( this.schema, config.data );
             
             Model.sc.init.call( this, config );
@@ -149,6 +150,18 @@ AFrame.Model = ( function() {
     
     return Model;
     
+    function getSchema( candidate ) {
+        var schema = candidate instanceof AFrame.Schema ? candidate : 
+            AFrame.construct( {
+                type: AFrame.Schema,
+                config: {
+                    schema: candidate
+                }
+            } );
+        
+        return schema;
+    }
+    
     function getInitialData( schema, initialData ) {
         if( !initialData ) {
             initialData = schema.getDefaults();
@@ -163,6 +176,8 @@ AFrame.Model = ( function() {
         
         return initialData;
     }
+    
+
 
     
 } )();

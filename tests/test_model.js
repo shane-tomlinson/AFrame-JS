@@ -108,6 +108,20 @@
             Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'isodatetime deserialized' );
             
             Assert.areSame( initialData, model.getDataObject(), 'deserialization deserializes in same data object' );
+        },
+        
+        testModelWithSchemaConfig: function() {
+		    var model = AFrame.construct( {
+                type: AFrame.Model,
+                config: {
+                    schema: schemaConfig,
+                    data: {
+                        isodatetime: '2011-01-16T11:47:04Z'
+                    }
+                }
+            } );
+            
+            Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'schema created with config' );
         }
 		
 	
