@@ -151,6 +151,27 @@ testsToRun.push( {
             list.insert( {} );
         
             Assert.areEqual( 2, $( '.list li' ).length, 'insert happens with default factory' );
+        },
+        
+        testForEach: function() {
+            $( '.list' ).empty();
+            
+			var list = AFrame.construct( {
+				type: AFrame.List,
+				config: {
+					target: '.list'
+				}
+			} );
+            
+            list.insert( {} );
+            list.insert( {} );
+        
+            var maxIndex;
+            list.forEach( function( listElement, index ) {
+                maxIndex = index;
+            } );
+            
+            Assert.areEqual( 1, maxIndex, 'forEach calls callback twice' );
         }
 } );
     

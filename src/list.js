@@ -47,6 +47,7 @@
  * @class AFrame.List
  * @extends AFrame.Display
  * @uses AFrame.ArrayCommonFuncsMixin
+ * @uses AFrame.EnumerableMixin
  * @constructor
  */
 /**
@@ -63,7 +64,7 @@ AFrame.List = ( function() {
     var List = function() {
         List.sc.constructor.apply( this, arguments );
     };
-    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, {
+    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
         init: function( config ) {
             if( config.listElementFactory ) {
                 this.listElementFactory = config.listElementFactory;
@@ -234,16 +235,17 @@ AFrame.List = ( function() {
         },
         
         /**
-        * Get the number of items
-        *   
-        *    // Get the number of items
-        *    var count = list.getCount();
-        *   
-        * @method getCount
-        * @return {number} number of items
+        * Call a callback for each element in the list.  The callback will be called 
+        * with the rowElement and the index
+        * @method forEach
+        * @param {function} callback - callback to call
+        * @param {object} context (optional) - context to call the callback in
         */
-        getCount: function() {
-            return this.getTarget().children().length;
+        forEach: function( callback, context ) {
+            var children = this.getTarget().children();
+            children.each( function( index, element ) {
+                callback.call( context, element, index );
+            } );
         }
     } );
     
