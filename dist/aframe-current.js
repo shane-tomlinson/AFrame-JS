@@ -1350,7 +1350,8 @@ AFrame.CollectionHash = ( function() {
                     collection: this,
                     item: item,
                     cid: cid,
-                    type: 'onBeforeRemove'
+                    type: 'onBeforeRemove',
+                    force: options && options.force
                 } );
                 
                 if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
@@ -1425,7 +1426,8 @@ AFrame.CollectionHash = ( function() {
                 collection: this,
                 item: item,
                 cid: cid,
-                type: 'onBeforeInsert'
+                type: 'onBeforeInsert',
+                force: options && options.force
             } );
             
             if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
@@ -1492,7 +1494,8 @@ AFrame.CollectionHash = ( function() {
     } );
     
     return CollectionHash;
-} )();/**
+} )();
+/**
 * An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via 
 * either a key or an index.  When accessed via a key, the item's CID will be used.  If an item has a cid field when
 * inserted, this cid will be used, otherwise a cid will be assigned.
