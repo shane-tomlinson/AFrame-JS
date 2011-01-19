@@ -7,8 +7,8 @@ AFrame.ObservablesMixin = {
 	/**
 	 * Trigger an event.
      *
-     *    // trigger an event using event name only.
-     *    object.triggerEvent( 'eventName' );
+     *    // trigger an event using event name only.  Event object returned.
+     *    var event = object.triggerEvent( 'eventName' );
      *    
      *    // trigger an event using event name and some extra parameters
      *    object.triggerEvent( 'eventName', 'extraParameterValue' );
