@@ -1347,14 +1347,13 @@ AFrame.CollectionHash = ( function() {
                 * @param {variant} data.item - item removed
                 */
                 var event = this.triggerEvent( {
-                    collection: this,
                     item: item,
                     cid: cid,
                     type: 'onBeforeRemove',
                     force: options && options.force
                 } );
                 
-                if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
+                if( this.shouldDoAction( options, event ) ) {
                     AFrame.remove( this.hash, cid );
                     /**
                     * Triggered after remove happens.
@@ -1364,10 +1363,10 @@ AFrame.CollectionHash = ( function() {
                     * @param {variant} data.item - item removed
                     */
                     this.triggerEvent(  {
-                        collection: this,
                         item: item,
                         cid: cid,
-                        type: 'onRemove'
+                        type: 'onRemove',
+                        force: options && options.force
                     } );
                     
                     return item;
@@ -1423,14 +1422,13 @@ AFrame.CollectionHash = ( function() {
              * @param {variant} data.item - item inserted
              */
             var event = this.triggerEvent( {
-                collection: this,
                 item: item,
                 cid: cid,
                 type: 'onBeforeInsert',
                 force: options && options.force
             } );
             
-            if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
+            if( this.shouldDoAction( options, event ) ) {
             
                 // store the CID on the item.
                 if( item instanceof Object ) {
@@ -1447,15 +1445,19 @@ AFrame.CollectionHash = ( function() {
                  * @param {variant} data.item - item inserted
                  */
                 this.triggerEvent( {
-                    collection: this,
                     item: item,
                     cid: cid,
-                    type: 'onInsert'
+                    type: 'onInsert',
+                    force: options && options.force
                 } );                
                 
                 return cid;
             }
 
+        },
+        
+        shouldDoAction: function( options, event ) {
+            return ( options && options.force ) || !( event && event.isDefaultPrevented() );
         },
         
         /**
@@ -2584,17 +2586,24 @@ AFrame.CollectionPluginPersistence = ( function() {
          *  insert function.  Useful when using CollectionArrays to specify the index
          */
         add: function( item, options ) {
-            options = this.getOptions( options );
+            options = getOptions.call( this, options );
             var callback = options.onComplete;
             
-            options.onComplete = function() {
-                var cid = this.getPlugged().insert( item, options.insertAt );
-                options.cid = cid;
-                options.onComplete = callback;
-                callback && callback( item, options );
-            }.bind( this );
+            var plugged = this.getPlugged();
+            var event = plugged.triggerEvent( getEvent( 'onBeforeAdd', item, options ) );
             
-            this.addCallback( item, options );
+            if( plugged.shouldDoAction( options, event ) ) {
+                options.onComplete = function() {
+                    var cid = plugged.insert( item, options.insertAt );
+                    options.cid = cid;
+                    options.onComplete = callback;
+                    callback && callback( item, options );
+                    
+                    plugged.triggerEvent( getEvent( 'onAdd', item, options ) );
+                }.bind( this );
+                
+                this.addCallback( item, options );
+            }
         },
 
         /**
@@ -2613,7 +2622,7 @@ AFrame.CollectionPluginPersistence = ( function() {
          *	Callback will be called with two parameters, the items, and options information.
          */
         load: function( options ) {
-            options = this.getOptions( options );
+            options = getOptions.call( this, options );
             var callback = options.onComplete;
             var plugged = this.getPlugged();
             
@@ -2670,16 +2679,23 @@ AFrame.CollectionPluginPersistence = ( function() {
             var item = plugged.get( itemID );
             
             if( item ) {
-                options = this.getOptions( options );
-                var callback = options.onComplete;
+                var event = plugged.triggerEvent( getEvent( 'onBeforeDelete', item, options ) );
+            
+                if( plugged.shouldDoAction( options, event ) ) {
+                    options = getOptions.call( this, options );
+                    var callback = options.onComplete;
+                    
+                    options.onComplete = function() {
+                        plugged.remove( itemID, options );
+                        options.onComplete = callback;
+                        callback && callback( item, options );
+                    }.bind( this );
+                    
+                    this.deleteCallback( item, options );
+                    
+                    plugged.triggerEvent( getEvent( 'onDelete', item, options ) );
+                }
                 
-                options.onComplete = function() {
-                    plugged.remove( itemID, options );
-                    options.onComplete = callback;
-                    callback && callback( item, options );
-                }.bind( this );
-                
-                this.deleteCallback( item, options );
             }
         },
 
@@ -2703,7 +2719,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             var item = this.getPlugged().get( itemID );
 
             if( item ) {
-                options = this.getOptions( options );
+                options = getOptions.call( this, options );
                 var callback = options.onComplete;
                 
                 options.onComplete = function() {
@@ -2713,14 +2729,31 @@ AFrame.CollectionPluginPersistence = ( function() {
                 
                 this.saveCallback( item, options );
             }
-        },
-
-        getOptions: function( options ) {
-            options = options || {};
-            options.collection = this.getPlugged();
-            return options;
         }
     } );
+    
+    function getOptions( options ) {
+        options = options || {};
+        options.collection = this.getPlugged();
+        return options;
+    }
+    
+    function getEvent( type, item, options ) {
+        var event = {
+            type: type,
+            item: item
+        };
+        
+        if( item.cid ) {
+            event.cid = item.cid;
+        }
+        
+        if( options && options.force ) {
+            event.force = true;
+        }
+        
+        return event;
+    }
     
     return Plugin;
 } )();/**
