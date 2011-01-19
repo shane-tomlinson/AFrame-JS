@@ -26,7 +26,7 @@ testsToRun.push( {
 			this.eventSource.bindEvent( 'onCallback', callback );
 			this.eventSource.bindEvent( 'onCallback', callbackWithContext, this );
 			
-			this.eventSource.triggerEvent( 'onCallback', 1, 2 );
+			var event = this.eventSource.triggerEvent( 'onCallback', 1, 2 );
 			
 			Assert.isTrue( callbackCalled, 'callback bound & called' );
 			Assert.isTrue( this.callbackCalled, 'callback bound & called with context' );
@@ -35,6 +35,8 @@ testsToRun.push( {
 			Assert.areEqual( 'onCallback', this.args[ 0 ].type, 'event with type is first item passed' );
 			Assert.areEqual( 1, this.args[ 1 ], 'arguments passed correctly with trigger' );
 			Assert.areEqual( 2, this.args[ 2 ], 'arguments passed correctly with trigger' );
+            
+            Assert.isTrue( event instanceof AFrame.Event, 'the returned event is an Event object' );
 			
 		},
 		
@@ -180,5 +182,7 @@ testsToRun.push( {
             
             Assert.areEqual( 'event', eventData.type, 'event triggered with event object' );
         }
+        
+        
         
 } );

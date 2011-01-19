@@ -33,14 +33,16 @@ AFrame.ObservablesMixin = {
 	 * @method triggerEvent
 	 * @param {string || object} type - event type to trigger or object that serves the same purpose as the data object in setEventData
 	 * @param {variant} (optional) all other arguments are passed to any registered callbacks
+	 * @return {AFrame.Event} - event object that is passed to event listeners, only returned if there
+     *  are any listeners
 	 */
 	triggerEvent: function() {
 		var eventData = arguments[ 0 ];
         var isDataObj = !AFrame.string( eventData );
         var eventName = isDataObj ? eventData.type : eventData;
         
-		var event = this.events && this.events[ eventName ];
-		if( event ) {
+		var observable = this.events && this.events[ eventName ];
+		if( observable ) {
             eventData = isDataObj ? eventData : {
                 type: eventData
             };
@@ -49,7 +51,9 @@ AFrame.ObservablesMixin = {
             
 			var args = Array.prototype.slice.call( arguments, 1 );
             args.splice( 0, 0, eventObject );
-			event.trigger.apply( event, args );
+			observable.trigger.apply( observable, args );
+            
+            return eventObject;
 		}
 	},
     
@@ -117,7 +121,19 @@ AFrame.ObservablesMixin = {
 	},
 	
 	/**
-	 * Bind a callback to an event.
+	 * Bind a callback to an event.  When an event is triggered and the callback is called,
+     *  the first argument to the callback will be an [AFrame.Event](AFrame.Event.html) object.
+     *  The subsequent arguments will be those passed to the triggerEvent function.
+     *
+     *     // Bind a callback to an event
+     *     obj.bindEvent( 'eventname', function( event, arg1 ) {
+     *         // event is an AFrame.Event, arg1 is the first argument passed 
+     *         // (when triggered below, will be 'arg1Value')
+     *     } );
+     *
+     *     // trigger the event
+     *     obj.triggerEvent( 'eventname', 'arg1Value' );
+     *
 	 * @method bindEvent
 	 * @param {string} eventName name of event to register on
 	 * @param {function} callback callback to call
