@@ -84,42 +84,50 @@ AFrame.CollectionHash = ( function() {
         *
         * @method remove
         * @param {id} cid - cid of item to remove
+        * @param {object} options - options
+        * @param {boolean} options.force - force removal, if set to true, onBeforeRemove event has
+        *   no effect.
         * @return {variant} item if it exists, undefined otw.
         */
-        remove: function( cid ) {
+        remove: function( cid, options ) {
             var item = this.get( cid );
             
             if( item ) {
                 /**
-                * Triggered before remove happens.
+                * Triggered before remove happens.  If listeners call preventDefault on the
+                *   event object, the remove will not happen.
                 * @event onBeforeRemove
                 * @param {object} data - data field passed.
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                this.triggerEvent( {
+                var event = this.triggerEvent( {
                     collection: this,
                     item: item,
                     cid: cid,
                     type: 'onBeforeRemove'
                 } );
-                AFrame.remove( this.hash, cid );
-                /**
-                * Triggered after remove happens.
-                * @event onRemove
-                * @param {object} data - data has two fields, item and meta.
-                * @param {CollectionHash} data.collection - collection causing event.
-                * @param {variant} data.item - item removed
-                */
-                this.triggerEvent(  {
-                    collection: this,
-                    item: item,
-                    cid: cid,
-                    type: 'onRemove'
-                } );
+                
+                if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
+                    AFrame.remove( this.hash, cid );
+                    /**
+                    * Triggered after remove happens.
+                    * @event onRemove
+                    * @param {object} data - data has two fields, item and meta.
+                    * @param {CollectionHash} data.collection - collection causing event.
+                    * @param {variant} data.item - item removed
+                    */
+                    this.triggerEvent(  {
+                        collection: this,
+                        item: item,
+                        cid: cid,
+                        type: 'onRemove'
+                    } );
+                    
+                    return item;
+                }
             }
             
-            return item;
         },
         
         /**
@@ -127,6 +135,9 @@ AFrame.CollectionHash = ( function() {
         * it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
         * exception to be thrown.  If the item being inserted is an Object and does not already have a cid, the
         * item's cid will be placed on the object under the cid field.
+        *
+        * When onBeforeInsert is triggered, if the event has had preventDefault called, 
+        *   the insert will be cancelled
         *
         *    // First item is inserted with a cid
         *    var cid = hash.insert( { cid: 'cid1',
@@ -144,51 +155,60 @@ AFrame.CollectionHash = ( function() {
         *
         * @method insert
         * @param {variant} item - item to insert
+        * @param {object} options - options
+        * @param {boolean} options.force - force insertion, if set to true, onBeforeInsert event has
+        *   no effect (duplicate cid constraints still apply)
         * @return {id} cid of the item.
         */
-        insert: function( item ) {
+        insert: function( item, options ) {
             var cid = item.cid || AFrame.getUniqueID();
 
             if( 'undefined' != typeof( this.get( cid ) ) ) {
                 throw 'duplicate cid';
             }
             
-            // store the CID on the item.
-            if( item instanceof Object ) {
-                item.cid = cid;
-            }
-            
             
             /**
-             * Triggered before insertion happens.
+             * Triggered before insertion happens.  If listeners call preventDefault on the event,
+             *  item will not be inserted
              * @event onBeforeInsert
              * @param {object} data - data has two fields.
              * @param {CollectionHash} data.collection - collection causing event.
              * @param {variant} data.item - item inserted
              */
-            this.triggerEvent( {
+            var event = this.triggerEvent( {
                 collection: this,
                 item: item,
                 cid: cid,
                 type: 'onBeforeInsert'
-            } );                
-            this.hash[ cid ] = item;
+            } );
             
-            /**
-             * Triggered after insertion happens.
-             * @event onInsert
-             * @param {object} data - data has two fields, item and meta.
-             * @param {CollectionHash} data.collection - collection causing event.
-             * @param {variant} data.item - item inserted
-             */
-            this.triggerEvent( {
-                collection: this,
-                item: item,
-                cid: cid,
-                type: 'onInsert'
-            } );                
+            if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
             
-            return cid;
+                // store the CID on the item.
+                if( item instanceof Object ) {
+                    item.cid = cid;
+                }
+                
+                this.hash[ cid ] = item;
+                
+                /**
+                 * Triggered after insertion happens.
+                 * @event onInsert
+                 * @param {object} data - data has two fields, item and meta.
+                 * @param {CollectionHash} data.collection - collection causing event.
+                 * @param {variant} data.item - item inserted
+                 */
+                this.triggerEvent( {
+                    collection: this,
+                    item: item,
+                    cid: cid,
+                    type: 'onInsert'
+                } );                
+                
+                return cid;
+            }
+
         },
         
         /**

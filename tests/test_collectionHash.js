@@ -46,6 +46,49 @@ testsToRun.push( {
 		    var noItemToRemove = this.hash.remove( 2 );
 		    Assert.isUndefined( noItemToRemove, 'no item to remove doesn\'t blow up' );
 		},
+        
+        testRemovePreventedInOnBeforeRemove: function() {
+            var bindCID = this.hash.bindEvent( 'onBeforeRemove', function( event ) {
+                event.preventDefault();
+            } );
+            
+            var cid = 1;
+            var item = {
+                cid: cid,
+                fieldName: 'fieldValue'
+            };
+            
+            this.hash.insert( item );
+            
+            var removedItem = this.hash.remove( 1 );
+            
+            Assert.isUndefined( removedItem, 'onBeforeRemove prevented the removal of the item' );
+            
+            this.hash.unbindEvent( bindCID );
+        },
+        
+        testRemoveForced: function() {
+            var bindCID = this.hash.bindEvent( 'onBeforeRemove', function( event ) {
+                event.preventDefault();
+            } );
+            
+            var cid = 1;
+            var item = {
+                cid: cid,
+                fieldName: 'fieldValue'
+            };
+            
+            this.hash.insert( item );
+            
+            var removedItem = this.hash.remove( 1, {
+                force: true
+            } );
+            
+            Assert.areEqual( removedItem, item, 'item was forcibly removed' );
+            
+            this.hash.unbindEvent( bindCID );
+        },
+        
 		
 		testRemoveEvents: function() {
 		    var cid = 1;
@@ -102,7 +145,43 @@ testsToRun.push( {
             
 			//Assert.areSame( cid, insertData.cid, 'ids are the same' );
 		},
+        
+        testInsertHashPreventedInOnBeforeInsert: function() {
+            var bindCID = this.hash.bindEvent( 'onBeforeInsert', function( event ) {
+                event.preventDefault();
+            } );
+            
+		    var item = {
+				fieldName: 'fieldValue'
+		    };
+		            
+            var cid = this.hash.insert( item );
+            
+            Assert.isUndefined( cid, 'onBeforeInsert prevented the insertion of the item' );
+            
+            this.hash.unbindEvent( bindCID );
+            
+        },
 
+        testInsertForced: function() {
+            var bindCID = this.hash.bindEvent( 'onBeforeInsert', function( event ) {
+                event.preventDefault();
+            } );
+            
+            var item = {
+                fieldName: 'fieldValue'
+            };
+            
+            var cid = this.hash.insert( item, {
+                force: true
+            } );
+            
+            Assert.isString( cid, 'item was forcibly inserted' );
+            
+            this.hash.unbindEvent( bindCID );
+        },
+        
+        
 		testInsertWithExistingCID: function() {
 			var dataWithCID = {
 				cid: 'externalcid',
