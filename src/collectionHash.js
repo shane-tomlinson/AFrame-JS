@@ -102,14 +102,13 @@ AFrame.CollectionHash = ( function() {
                 * @param {variant} data.item - item removed
                 */
                 var event = this.triggerEvent( {
-                    collection: this,
                     item: item,
                     cid: cid,
                     type: 'onBeforeRemove',
                     force: options && options.force
                 } );
                 
-                if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
+                if( this.shouldDoAction( options, event ) ) {
                     AFrame.remove( this.hash, cid );
                     /**
                     * Triggered after remove happens.
@@ -119,7 +118,6 @@ AFrame.CollectionHash = ( function() {
                     * @param {variant} data.item - item removed
                     */
                     this.triggerEvent(  {
-                        collection: this,
                         item: item,
                         cid: cid,
                         type: 'onRemove',
@@ -179,14 +177,13 @@ AFrame.CollectionHash = ( function() {
              * @param {variant} data.item - item inserted
              */
             var event = this.triggerEvent( {
-                collection: this,
                 item: item,
                 cid: cid,
                 type: 'onBeforeInsert',
                 force: options && options.force
             } );
             
-            if( ( options && options.force ) || !event || false === event.isDefaultPrevented() ) {
+            if( this.shouldDoAction( options, event ) ) {
             
                 // store the CID on the item.
                 if( item instanceof Object ) {
@@ -203,7 +200,6 @@ AFrame.CollectionHash = ( function() {
                  * @param {variant} data.item - item inserted
                  */
                 this.triggerEvent( {
-                    collection: this,
                     item: item,
                     cid: cid,
                     type: 'onInsert',
@@ -213,6 +209,10 @@ AFrame.CollectionHash = ( function() {
                 return cid;
             }
 
+        },
+        
+        shouldDoAction: function( options, event ) {
+            return ( options && options.force ) || !( event && event.isDefaultPrevented() );
         },
         
         /**
