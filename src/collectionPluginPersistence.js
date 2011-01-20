@@ -179,7 +179,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             
             var plugged = this.getPlugged();
             /**
-            * Triggered before an add is sent to persistence.  If the event has preventDefault called,
+            * Triggered on the collection before an add is sent to persistence.  If the event has preventDefault called,
             *   the add will be cancelled as long as the options.force is not set to true
             * @event onBeforeAdd
             * @param {AFrame.Event} event - event object
@@ -197,7 +197,7 @@ AFrame.CollectionPluginPersistence = ( function() {
                     callback && callback( item, options );
                     
                     /**
-                    * Triggered after an item is sent to persistence and is added to the Collection.  
+                    * Triggered on the collection after an item is sent to persistence and is added to the Collection.  
                     * @event onAdd
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being added
@@ -233,7 +233,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             var plugged = this.getPlugged();
 
             /**
-            * Triggered before a load occurs.  If the listener calls preventDefault on the event,
+            * Triggered on the collection before a load occurs.  If the listener calls preventDefault on the event,
             *   the load will be cancelled unless the load is forced.
             * @event onBeforeLoad
             * @param {object} event - event information
@@ -246,7 +246,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             if( plugged.shouldDoAction( options, event ) ) {
                 var callback = options.onComplete;
                 /**
-                * Triggered on the plugged object whenever a load is requested
+                * Triggered on the collection whenever a load is starting
                 * @event onLoadStart
                 * @param {object} event - event information
                 * @param {boolean} event.force - whether the load is being forced.
@@ -265,15 +265,15 @@ AFrame.CollectionPluginPersistence = ( function() {
                     callback && callback( items, options );
                     
                     /**
-                    * Triggered on the plugged object whenever a load is requested
-                    * @event onLoadComplete
+                    * Triggered on the collection whenever a load has completed
+                    * @event onLoad
                     * @param {object} event - event information, has collection and items fields.
                     * @param {variant} event.items- items loaded inserted
                     * @param {boolean} event.force - whether the load is being forced.
                     */
                     plugged.triggerEvent( {
                         items: items,
-                        type: 'onLoadComplete',
+                        type: 'onLoad',
                         force: options && options.force
                     } );
                 };
@@ -305,7 +305,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             
             if( item ) {
                 /**
-                * Triggered before a delete is sent to persistence.  If the event has preventDefault called,
+                * Triggered on the collection before a delete is sent to persistence.  If the event has preventDefault called,
                 *   the delete will be cancelled as long as the options.force is not set to true
                 * @event onBeforeDelete
                 * @param {AFrame.Event} event - event object
@@ -327,7 +327,7 @@ AFrame.CollectionPluginPersistence = ( function() {
                     this.deleteCallback( item, options );
                     
                     /**
-                    * Triggered after an item is deleted from persistence and is removed from the Collection.  
+                    * Triggered on the collection after an item is deleted from persistence and is removed from the Collection.  
                     * @event onDelete
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being deleted
@@ -362,7 +362,7 @@ AFrame.CollectionPluginPersistence = ( function() {
 
             if( item ) {
                 /**
-                * Triggered before a save is sent to persistence.  If the event has preventDefault called,
+                * Triggered on the collection before a save is sent to persistence.  If the event has preventDefault called,
                 *   the save elete will be cancelled as long as the options.force is not set to true
                 * @event onBeforeSave
                 * @param {AFrame.Event} event - event object
@@ -383,7 +383,7 @@ AFrame.CollectionPluginPersistence = ( function() {
                     this.saveCallback( item, options );
 
                     /**
-                    * Triggered after an item is saved to persistence.  
+                    * Triggered on the collection after an item is saved to persistence.  
                     * @event onSave
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being saved
