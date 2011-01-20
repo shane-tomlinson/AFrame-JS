@@ -2518,36 +2518,32 @@ AFrame.CollectionPluginPersistence = ( function() {
              * @config addCallback
              * @type function (optional)
              */
-            this.addCallback = config.addCallback || this.noPersistenceOp;
+            this.addCallback = config.addCallback || noPersistenceOp;
             
             /**
              * function to call to do save.  Will be called with two parameters, data, and options.
              * @config saveCallback
              * @type function (optional)
              */
-            this.saveCallback = config.saveCallback || this.noPersistenceOp;
+            this.saveCallback = config.saveCallback || noPersistenceOp;
             
             /**
              * function to call to do load.  Will be called with one parameter, options.
              * @config loadCallback
              * @type function (optional)
              */
-            this.loadCallback = config.loadCallback || this.noPersistenceOp;
+            this.loadCallback = config.loadCallback || noPersistenceOp;
             
             /**
              * function to call to do delete.  Will be called with two parameters, data, and options.
              * @config deleteCallback
              * @type function (optional)
              */
-            this.deleteCallback = config.deleteCallback || this.noPersistenceOp;
+            this.deleteCallback = config.deleteCallback || noPersistenceOp;
             
             Plugin.sc.init.apply( this, arguments );
         },
 
-        noPersistenceOp: function( data, options ) {
-            var callback = options.onComplete;
-            callback && callback( data, options );
-        },
 
         setPlugged: function( plugged ) {
             plugged.add = this.add.bind( this );
@@ -2584,12 +2580,22 @@ AFrame.CollectionPluginPersistence = ( function() {
          *	Will be called with two parameters, the item, and options information.
          * @param {function} options.insertAt (optional) - data to be passed as second argument to the collection's 
          *  insert function.  Useful when using CollectionArrays to specify the index
+         * @param {boolean} options.force (optional) - If set to true, an add will be forced even if
+         *  onBeforeAdd has its preventDefault called.
          */
         add: function( item, options ) {
-            options = getOptions.call( this, options );
+            options = getOptions( this, options );
             var callback = options.onComplete;
             
             var plugged = this.getPlugged();
+            /**
+            * Triggered before an add is sent to persistence.  If the event has preventDefault called,
+            *   the add will be cancelled as long as the options.force is not set to true
+            * @event onBeforeAdd
+            * @param {AFrame.Event} event - event object
+            * @param {variant} event.item - the item being added
+            * @param {boolean} event.force - whether the add is being forced.
+            */
             var event = plugged.triggerEvent( getEvent( 'onBeforeAdd', item, options ) );
             
             if( plugged.shouldDoAction( options, event ) ) {
@@ -2597,14 +2603,25 @@ AFrame.CollectionPluginPersistence = ( function() {
                     var cid = plugged.insert( item, options.insertAt );
                     options.cid = cid;
                     options.onComplete = callback;
+                    
                     callback && callback( item, options );
                     
+                    /**
+                    * Triggered after an item is sent to persistence and is added to the Collection.  
+                    * @event onAdd
+                    * @param {AFrame.Event} event - event object
+                    * @param {variant} event.item - the item being added
+                    * @param {boolean} event.force - whether the add is being forced.
+                    * @param {id} event.cid - item's cid
+                    */
                     plugged.triggerEvent( getEvent( 'onAdd', item, options ) );
-                }.bind( this );
+                };
                 
                 this.addCallback( item, options );
             }
         },
+        
+        
 
         /**
          * load the collection
@@ -2622,40 +2639,58 @@ AFrame.CollectionPluginPersistence = ( function() {
          *	Callback will be called with two parameters, the items, and options information.
          */
         load: function( options ) {
-            options = getOptions.call( this, options );
-            var callback = options.onComplete;
+            options = getOptions( this, options );
             var plugged = this.getPlugged();
-            
+
             /**
-            * Triggered on the plugged object whenever a load is requested
-            * @event onLoadStart
-            * @param {object} eventInfo - event information, has the collection field.
-            * @param {CollectionHash} eventInfo.collection - collection causing event.
+            * Triggered before a load occurs.  If the listener calls preventDefault on the event,
+            *   the load will be cancelled unless the load is forced.
+            * @event onBeforeLoad
+            * @param {object} event - event information
+            * @param {boolean} event.force - whether the load is being forced.
             */
-            plugged.triggerEvent( 'onLoadStart' );
-            options.onComplete = function( items ) {
-                if( items ) {
-                    items.forEach( function( item, index ) {
-                        plugged.insert( item );
-                    } );
-                }
-                options.onComplete = callback;
-                callback && callback( items, options );
-                
+            var event = plugged.triggerEvent( {
+                type: 'onBeforeLoad',
+                force: options && options.force
+            } );
+            if( plugged.shouldDoAction( options, event ) ) {
+                var callback = options.onComplete;
                 /**
                 * Triggered on the plugged object whenever a load is requested
-                * @event onLoadComplete
-                * @param {object} eventInfo - event information, has collection and items fields.
-                * @param {CollectionHash} eventInfo.collection - collection causing event.
-                * @param {variant} eventInfo.items- items loaded inserted
+                * @event onLoadStart
+                * @param {object} event - event information
+                * @param {boolean} event.force - whether the load is being forced.
                 */
                 plugged.triggerEvent( {
-                    items: items,
-                    type: 'onLoadComplete'
+                    type: 'onLoadStart',
+                    force: options && options.force
                 } );
-            }.bind( this );
+                options.onComplete = function( items ) {
+                    if( items ) {
+                        items.forEach( function( item, index ) {
+                            plugged.insert( item );
+                        } );
+                    }
+                    options.onComplete = callback;
+                    callback && callback( items, options );
+                    
+                    /**
+                    * Triggered on the plugged object whenever a load is requested
+                    * @event onLoadComplete
+                    * @param {object} event - event information, has collection and items fields.
+                    * @param {variant} event.items- items loaded inserted
+                    * @param {boolean} event.force - whether the load is being forced.
+                    */
+                    plugged.triggerEvent( {
+                        items: items,
+                        type: 'onLoadComplete',
+                        force: options && options.force
+                    } );
+                };
+                
+                this.loadCallback( options );
+            }
             
-            this.loadCallback( options );
         },
 
         /**
@@ -2679,20 +2714,36 @@ AFrame.CollectionPluginPersistence = ( function() {
             var item = plugged.get( itemID );
             
             if( item ) {
+                /**
+                * Triggered before a delete is sent to persistence.  If the event has preventDefault called,
+                *   the delete will be cancelled as long as the options.force is not set to true
+                * @event onBeforeDelete
+                * @param {AFrame.Event} event - event object
+                * @param {variant} event.item - the item being deleted
+                * @param {boolean} event.force - whether the delete is being forced.
+                */
                 var event = plugged.triggerEvent( getEvent( 'onBeforeDelete', item, options ) );
             
                 if( plugged.shouldDoAction( options, event ) ) {
-                    options = getOptions.call( this, options );
+                    options = getOptions( this, options );
                     var callback = options.onComplete;
                     
                     options.onComplete = function() {
                         plugged.remove( itemID, options );
                         options.onComplete = callback;
                         callback && callback( item, options );
-                    }.bind( this );
+                    };
                     
                     this.deleteCallback( item, options );
                     
+                    /**
+                    * Triggered after an item is deleted from persistence and is removed from the Collection.  
+                    * @event onDelete
+                    * @param {AFrame.Event} event - event object
+                    * @param {variant} event.item - the item being deleted
+                    * @param {boolean} event.force - whether the delete is being forced.
+                    * @param {id} event.cid - item's cid
+                    */
                     plugged.triggerEvent( getEvent( 'onDelete', item, options ) );
                 }
                 
@@ -2716,28 +2767,61 @@ AFrame.CollectionPluginPersistence = ( function() {
          *	Callback will be called with two parameters, the item, and options information.
          */
         save: function( itemID, options ) {
-            var item = this.getPlugged().get( itemID );
+            var plugged = this.getPlugged();
+            var item = plugged.get( itemID );
 
             if( item ) {
-                options = getOptions.call( this, options );
-                var callback = options.onComplete;
-                
-                options.onComplete = function() {
-                    options.onComplete = callback;
-                    callback && callback( item, options );
-                }.bind( this );
-                
-                this.saveCallback( item, options );
+                /**
+                * Triggered before a save is sent to persistence.  If the event has preventDefault called,
+                *   the save elete will be cancelled as long as the options.force is not set to true
+                * @event onBeforeSave
+                * @param {AFrame.Event} event - event object
+                * @param {variant} event.item - the item being saved
+                * @param {boolean} event.force - whether the save is being forced.
+                */
+                var event = plugged.triggerEvent( getEvent( 'onBeforeSave', item, options ) );
+                if( plugged.shouldDoAction( options, event ) ) {
+
+                    options = getOptions( this, options );
+                    var callback = options.onComplete;
+                    
+                    options.onComplete = function() {
+                        options.onComplete = callback;
+                        callback && callback( item, options );
+                    }.bind( this );
+                    
+                    this.saveCallback( item, options );
+
+                    /**
+                    * Triggered after an item is saved to persistence.  
+                    * @event onSave
+                    * @param {AFrame.Event} event - event object
+                    * @param {variant} event.item - the item being saved
+                    * @param {boolean} event.force - whether the save is being forced.
+                    * @param {id} event.cid - item's cid
+                    */
+                    plugged.triggerEvent( getEvent( 'onSave', item, options ) );
+                }
             }
         }
     } );
     
-    function getOptions( options ) {
+    /**
+    * Get the persistence options
+    * @method getOptions
+    * @private
+    */
+    function getOptions( context, options ) {
         options = options || {};
-        options.collection = this.getPlugged();
+        options.collection = context.getPlugged();
         return options;
     }
     
+    /**
+    * Get an event object.  Used when triggering the on[Add|Delete|Save|Load]* events
+    * @method getEvent
+    * @private
+    */
     function getEvent( type, item, options ) {
         var event = {
             type: type,
@@ -2753,6 +2837,17 @@ AFrame.CollectionPluginPersistence = ( function() {
         }
         
         return event;
+    }
+    
+    /**
+    * A NoOp type function that just calls the onComplete function, used for persistence functions
+    *   where no callback is specified.
+    * @method noPersistenceOp
+    * @private
+    */
+    function noPersistenceOp( data, options ) {
+        var callback = options.onComplete;
+        callback && callback( data, options );
     }
     
     return Plugin;

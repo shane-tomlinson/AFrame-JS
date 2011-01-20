@@ -10,33 +10,89 @@ testsToRun.push( {
                 shouldDoAction: AFrame.CollectionHash.prototype.shouldDoAction
 			} );
 
-			this.delCallbackCalled = false;
-			this.saveCallbackCalled = false;
-			this.loadCallbackCalled = false;
-			
+            this.mockCollection.canGet = function() {
+                this.get = function() {
+                    return "someData";
+                };
+            }
+            
+            this.mockCollection.cannotGet = function() {
+                this.get = function() {};
+            };
+            
+            this.removeCalled = false;
+            this.mockCollection.remove = function() {
+                this.removeCalled = true;
+            }.bind( this );
+            
+            this.insertCalled = false;
+            this.mockCollection.insert = function() {
+                this.insertCalled = true;
+                return 'cid';
+            }.bind( this );
+            
+            
+            /*
+            * Sets up the generic adapter callback functions
+            */
+            var callbacks = this.callbacksCalled = {};
+            var genericCallback = function( data, options ) {
+                if( !options ) {
+                    options = data;
+                }
+                var callback = options && options.onComplete;
+                callbacks[ this ] = true;
+                if( this == 'load' ) {
+                    callback( [ { item: 'item' } ] );
+                }
+                else {
+                    callback();
+                }
+            };
+            
 			this.mixin = AFrame.construct( {
 				type: AFrame.CollectionPluginPersistence,
 				config: {
-					deleteCallback: function( data, options ) {
-                        var callback = options.onComplete;
-						this.delCallbackCalled = true;
-						callback();
-					}.bind( this ),
-					saveCallback: function( data, options ) {
-                        var callback = options.onComplete;
-						this.saveCallbackCalled = true;
-						callback();
-					}.bind( this ),
-					loadCallback: function( options ) {
-                        var callback = options.onComplete;
-						this.loadCallbackCalled = true;
-						callback( [ { item: 'item' } ] );
-					}.bind( this )
+					deleteCallback: genericCallback.bind( 'delete' ),
+					saveCallback: genericCallback.bind( 'save' ),
+					loadCallback: genericCallback.bind( 'load' )
 				}
 			} );
 
 			this.mixin.setPlugged( this.mockCollection );
 			this.mockCollection.triggerEvent( 'onInit' );
+            
+            /*
+            * These are generic event handlers that are used everywhere.  They keep track of which
+            *   events were called
+            */
+            var events = this.events = {};
+            this.genericEventHandler = function( event ) {
+                events[ event.type ] = event;
+            };
+            
+            this.genericPreventDefaultEventHandler = function( event ) {
+                events[ event.type ] = event;
+                event.preventDefault();
+            };
+            
+            /*
+            * These are generic persistence options.  One forces, the other doesn't, both have
+            *   onComplete functions
+            */
+            this.onCompleteCallbackCalled = false;
+            this.persistenceOptions = {
+				onComplete: function() {
+					this.onCompleteCallbackCalled = true;
+				}.bind( this )
+			};
+
+            this.persistenceOptionsForced = {
+				onComplete: function() {
+					this.onCompleteCallbackCalled = true;
+				}.bind( this ),
+                force: true
+			};
 		},
 
 		teardDown: function() {
@@ -53,22 +109,10 @@ testsToRun.push( {
 		},
 
 		testAdd: function() {
-			this.mockCollection.insert = function() {
-                return 'cid';
-			};
-			
-			var callbackCalled = false;
-            var cid;
+			var callbackCalled = false, cid;
             
-            var beforeAddEvent;
-            var beforeAddCID = this.mockCollection.bindEvent( 'onBeforeAdd', function( event ) {
-                beforeAddEvent = event;
-            } );
-            
-            var addEvent;
-            var addCID = this.mockCollection.bindEvent( 'onAdd', function( event ) {
-                addEvent = event;
-            } );
+            var beforeAddCID = this.mockCollection.bindEvent( 'onBeforeAdd', this.genericEventHandler );
+            var addCID = this.mockCollection.bindEvent( 'onAdd', this.genericEventHandler );
             
 			this.mockCollection.add( {}, {
 				onComplete: function( data, options ) {
@@ -79,10 +123,9 @@ testsToRun.push( {
 
 			Assert.isTrue( callbackCalled, 'callback called' );
 			Assert.isString( cid, 'cid assigned' );
-			Mock.verify( this.mockCollection );
             
-            Assert.isObject( addEvent );
-            Assert.isObject( beforeAddEvent );
+            Assert.isObject( this.events[ 'onAdd' ] );
+            Assert.isObject( this.events[ 'onBeforeAdd' ] );
             
             this.mockCollection.unbindEvent( beforeAddCID );
             this.mockCollection.unbindEvent( addCID );
@@ -91,10 +134,6 @@ testsToRun.push( {
         testAddIndex: function() {
             var callbackCalled = false;
             
-			Mock.expect( this.mockCollection, {
-				method: 'insert',
-				args: [ Mock.Value.Object, Mock.Value.Number ]
-			} );
 			this.mockCollection.add( {}, {
 				onComplete: function() {
 					callbackCalled = true;
@@ -102,46 +141,26 @@ testsToRun.push( {
                 insertAt: 1
 			} );
 			Assert.isTrue( callbackCalled, 'callback called for insert with index' );
-			Mock.verify( this.mockCollection );
 		},
         
         
         testAddCancelled: function() {
-            var beforeAddCID = this.mockCollection.bindEvent( 'onBeforeAdd', function( event ) {
-                event.preventDefault();
-            } );
+            var beforeAddCID = this.mockCollection.bindEvent( 'onBeforeAdd', this.genericPreventDefaultEventHandler );
             
-			var callbackCalled = false;
-			this.mockCollection.add( {}, {
-				onComplete: function( data, options ) {
-					callbackCalled = true;
-				}
-			} );
+			this.mockCollection.add( {}, this.persistenceOptions );
 
-			Assert.isFalse( callbackCalled, 'insert never occurred, onBeforeAdd event had preventDefault called' );
+			Assert.isFalse( this.onCompleteCallbackCalled, 'insert never occurred, onBeforeAdd event had preventDefault called' );
 			Mock.verify( this.mockCollection );
             
             this.mockCollection.unbindEvent( beforeAddCID );
         },
 
         testAddForced: function() {
-			this.mockCollection.insert = function() {
-                return 'cid';
-			};
-			
-            var beforeAddCID = this.mockCollection.bindEvent( 'onBeforeAdd', function( event ) {
-                event.preventDefault();
-            } );
+            var beforeAddCID = this.mockCollection.bindEvent( 'onBeforeAdd', this.genericPreventDefaultEventHandler )
             
-			var callbackCalled = false;
-			this.mockCollection.add( {}, {
-				onComplete: function( data, options ) {
-					callbackCalled = true;
-				},
-                force: true
-			} );
+			this.mockCollection.add( {}, this.persistenceOptionsForced );
 
-			Assert.isTrue( callbackCalled, 'insert was forced' );
+			Assert.isTrue( this.onCompleteCallbackCalled, 'insert was forced' );
 			Mock.verify( this.mockCollection );
             
             this.mockCollection.unbindEvent( beforeAddCID );
@@ -149,130 +168,131 @@ testsToRun.push( {
 
         
 
-		testDelete: function() {
-			var getData;
-			var removeCalled = false;
-			
-			this.mockCollection.remove = function(){
-				removeCalled = true;
-			};
-			
-			this.mockCollection.get = function( rowID ) {
-				return getData;
-			}.bind( this.mockCollection );
+		testDeleteNoData: function() {
+            this.mockCollection.cannotGet();
 
-            var events = {};
-            var eventListener = function( event ) {
-                events[ event.type ] = event;
-            };
-            
-            var beforeDeleteCID = this.mockCollection.bindEvent( 'onBeforeDelete', eventListener );
-            var deleteCID = this.mockCollection.bindEvent( 'onDelete', eventListener );
-            
 			// using a fake rowID because rowID is undefined.
-			this.mockCollection.del( 'rowID', {} );
+			this.mockCollection.del( 'rowID', this.persistenceOptions );
 
-			Assert.isFalse( this.delCallbackCalled, 'row did not exist to delete data' );
-			Assert.isFalse( removeCalled, 'row did not exist to delete data' );
-			
-			getData = "someData";
-			var callbackCalled = false;
-			this.mockCollection.del( 'rowID', {
-				onComplete: function() {
-					callbackCalled = true;
-				}
-			} );
-			Assert.isTrue( this.delCallbackCalled, 'delete callback called' );
-			Assert.isTrue( removeCalled, 'remove called' );
-			Assert.isTrue( callbackCalled, 'callback called' );
-            
-            this.mockCollection.unbindEvent( beforeDeleteCID );
-            this.mockCollection.unbindEvent( deleteCID );
+			Assert.isUndefined( this.callbacksCalled[ 'delete' ], 'row did not exist to delete data' );
+			Assert.isFalse( this.removeCalled, 'row did not exist to delete data' );
+        },
+        
+		testDelete: function() {	
+			this.mockCollection.canGet();
+
+			this.mockCollection.del( 'rowID', this.persistenceOptions );
+
+			Assert.isTrue( this.callbacksCalled[ 'delete' ], 'delete callback called' );
+			Assert.isTrue( this.removeCalled, 'remove called' );
+			Assert.isTrue( this.onCompleteCallbackCalled, 'callback called' );
 		},
         
         testDeleteCancelled: function() {
-			var getData = "someData";
-
-            var beforeDeleteCID = this.mockCollection.bindEvent( 'onBeforeDelete', function( event ) {
-                event.preventDefault();
-            } );
+            var beforeDeleteCID = this.mockCollection.bindEvent( 'onBeforeDelete', 
+                this.genericPreventDefaultEventHandler );
             
-			this.mockCollection.get = function( rowID ) {
-				return getData;
-			}.bind( this.mockCollection );
-
-			var callbackCalled = false;
-			this.mockCollection.del( 'rowID', {
-				onComplete: function() {
-					callbackCalled = true;
-				}
-			} );
+			this.mockCollection.canGet();
+			this.mockCollection.del( 'rowID', this.persistenceOptions );
             
-			Assert.isFalse( callbackCalled, 'callback not called' );
+			Assert.isFalse( this.onCompleteCallbackCalled, 'callback not called' );
             
             this.mockCollection.unbindEvent( beforeDeleteCID );
         },
 
         testDeleteForced: function() {
-			var getData = "someData";
+            var beforeDeleteCID = this.mockCollection.bindEvent( 'onBeforeDelete',
+                this.genericPreventDefaultEventHandler );
+                
+			this.mockCollection.canGet();
 
-            var beforeDeleteCID = this.mockCollection.bindEvent( 'onBeforeDelete', function( event ) {
-                event.preventDefault();
-            } );
-            this.mockCollection.remove = function() {};
-			this.mockCollection.get = function( rowID ) {
-				return getData;
-			}.bind( this.mockCollection );
-
-			var callbackCalled = false;
-			this.mockCollection.del( 'rowID', {
-				onComplete: function() {
-					callbackCalled = true;
-				},
-                force: true
-			} );
+			this.mockCollection.del( 'rowID', this.persistenceOptionsForced );
             
-			Assert.isTrue( callbackCalled, 'delete was forced' );
+			Assert.isTrue( this.onCompleteCallbackCalled, 'delete was forced' );
+			Assert.isTrue( this.removeCalled, 'delete was forced' );
             
             this.mockCollection.unbindEvent( beforeDeleteCID );
         },
 
 		testLoad: function() {
-			var callbackCalled = false;
-			var insertCalled = true;
-			this.mockCollection.insert = function( data, options ) {
-				insertCalled = true;
-			};
-			this.mockCollection.load( {
-				onComplete: function() {
-					callbackCalled = true;
-				}
-			} );
-			Assert.isTrue( callbackCalled, 'callback called' );
-			Assert.isTrue( this.loadCallbackCalled, 'loadCallbackCalled called' );
-			Assert.isTrue( insertCalled, 'insert called for one item' );
+			this.mockCollection.canGet();
+			this.mockCollection.load( this.persistenceOptions );
+            
+			Assert.isTrue( this.onCompleteCallbackCalled, 'callback called' );
+			Assert.isTrue( this.callbacksCalled[ 'load' ], 'callbacks[ \'load\' ] called' );
+			Assert.isTrue( this.insertCalled, 'insert called for one item' );
 		},
+        
+        testLoadCancelled: function() {
+			this.mockCollection.canGet();
+            var beforeLoadCID = this.mockCollection.bindEvent( 'onBeforeLoad', this.genericPreventDefaultEventHandler );
 
-		testSave: function() {
-			var getData;
-			this.mockCollection.get = function( rowID ) {
-				return getData;
-			}.bind( this.mockCollection );
+			this.mockCollection.load( this.persistenceOptions );
+            
+			Assert.isFalse( this.onCompleteCallbackCalled, 'callback not called, load cancelled' );
+			Assert.isUndefined( this.callbacksCalled[ 'load' ], 'callbacks[ \'load\' ] not called, load cancelled' );
+
+            this.mockCollection.unbindEvent( beforeLoadCID );
+        },
+        
+
+		testLoadForced: function() {
+			this.mockCollection.canGet();
+
+            var beforeLoadCID = this.mockCollection.bindEvent( 'onBeforeLoad', this.genericPreventDefaultEventHandler );
+
+			this.mockCollection.load( this.persistenceOptionsForced );
+            
+			Assert.isTrue( this.onCompleteCallbackCalled, 'callback called, load forced' );
+			Assert.isTrue( this.callbacksCalled[ 'load' ], 'callbacks[ \'load\' ] called, load forced' );
+			Assert.isTrue( this.insertCalled, 'insert called for one item, load forced' );
+
+            this.mockCollection.unbindEvent( beforeLoadCID );
+		},
+        
+
+		testSaveNoData: function() {
+			this.mockCollection.cannotGet();
 			
-			// using a fake rowID because rowID is undefined.
+			// using a fake rowID because rowID is undefined - since the collection cannot get it,
+            //  that means there is no data to save
 			this.mockCollection.save( 'rowID', {} );
-			Assert.isFalse( this.saveCallbackCalled, 'row did not exist to save data' );
-
-			getData = "someData";
+			Assert.isUndefined( this.callbacksCalled[ 'save' ], 'row did not exist to save data' );
+        },
+        
+        testSave: function() {
+			this.mockCollection.canGet();
 			
-			var callbackCalled = false;
-			this.mockCollection.save( 'rowID', {
-				onComplete: function() {
-					callbackCalled = true;
-				}
-			} );
-			Assert.isTrue( this.saveCallbackCalled, 'save callback called' );
-			Assert.isTrue( callbackCalled, 'callback called' );
-		}
+			this.mockCollection.save( 'rowID', this.persistenceOptions );
+            
+			Assert.isTrue( this.callbacksCalled[ 'save' ], 'save callback called' );
+			Assert.isTrue( this.onCompleteCallbackCalled, 'callback called' );
+		},
+        
+        testSaveCancelled: function() {
+			this.mockCollection.canGet();
+			
+            var beforeSaveCID = this.mockCollection.bindEvent( 'onBeforeSave', this.genericPreventDefaultEventHandler );
+            
+			this.mockCollection.save( 'rowID', this.persistenceOptions );
+            
+			Assert.isUndefined( this.callbacksCalled[ 'save' ], 'save was cancelled' );
+			Assert.isFalse( this.onCompleteCallbackCalled, 'callback not called, save was cancelled' );
+            
+            this.mockCollection.unbindEvent( beforeSaveCID );
+        },
+        
+        testSaveForced: function() {
+			this.mockCollection.canGet();
+			
+            var beforeSaveCID = this.mockCollection.bindEvent( 'onBeforeSave', this.genericPreventDefaultEventHandler );
+            
+			this.mockCollection.save( 'rowID', this.persistenceOptionsForced );
+            
+			Assert.isTrue( this.callbacksCalled[ 'save' ], 'save was forced' );
+			Assert.isTrue( this.onCompleteCallbackCalled, 'callback called, save was forced' );
+            
+            this.mockCollection.unbindEvent( beforeSaveCID );
+        }
 
 } );
