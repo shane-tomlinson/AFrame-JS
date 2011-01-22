@@ -23,7 +23,7 @@
 *    var field = AFrame.construct( {
 *       type: AFrame.Field,
 *       config: {
-*           target: $( '#numberInput' )
+*           target: '#numberInput'
 *       }
 *    } );
 *   
@@ -63,7 +63,7 @@
 *    var field = AFrame.construct( {
 *        type: AFrame.Field,
 *        config: {
-*            target: $( '#numberInput' )
+*            target: '#numberInput'
 *        },
 *        plugins: [ {
 *            type: ValidatorPlugin
@@ -194,7 +194,7 @@ AFrame.FieldPluginValidation = (function() {
 	    */
         setError: function( error ) {
             this.updateValidityState( true );
-            this.getPlugged().getTarget().trigger( 'invalid' );
+            AFrame.DOM.fireEvent( this.getPlugged().getTarget(), 'invalid' );
             
             return this.validityState.setError( error );
         },
@@ -211,7 +211,7 @@ AFrame.FieldPluginValidation = (function() {
 	    */
         setCustomValidity: function( customValidity ) {
             this.updateValidityState( true );
-            this.getPlugged().getTarget().trigger( 'invalid' );
+            AFrame.DOM.fireEvent( this.getPlugged().getTarget(), 'invalid' );
 
             return this.validityState.setCustomValidity( customValidity );
         },
@@ -224,7 +224,10 @@ AFrame.FieldPluginValidation = (function() {
         */
         getCriteria: function() {
             var target = this.getPlugged().getTarget();
-            var type = target.attr( 'type' );
+            var hasAttr = AFrame.DOM.hasAttr;
+            var getAttr = AFrame.DOM.getAttr;
+            
+            var type = getAttr( target, 'type' );
             if( !type || type == 'textarea' ) {
                 type = 'text';
             }
@@ -233,28 +236,28 @@ AFrame.FieldPluginValidation = (function() {
                 type: type
             };
 
-            if( target.hasAttr( 'required' ) ) {
+            if( hasAttr( target, 'required' ) ) {
                 criteria.required = true;
             }
 
-            if( target.hasAttr( 'min' ) ) {
-                criteria.min = parseFloat( target.attr( 'min' ) );
+            if( hasAttr( target, 'min' ) ) {
+                criteria.min = parseFloat( getAttr( target, 'min' ) );
             }
 
-            if( target.hasAttr( 'max' ) ) {
-                criteria.max = parseFloat( target.attr( 'max' ) );
+            if( hasAttr( target, 'max' ) ) {
+                criteria.max = parseFloat( getAttr( target, 'max' ) );
             }
             
-            if( target.hasAttr( 'step' ) ) {
-                criteria.step = parseFloat( target.attr( 'step' ) );
+            if( hasAttr( target, 'step' ) ) {
+                criteria.step = parseFloat( getAttr( target, 'step' ) );
             }
 
-            if( target.hasAttr( 'maxlength' ) ) {
-                criteria.maxlength = parseInt( target.attr( 'maxlength' ), 10 );
+            if( hasAttr( target, 'maxlength' ) ) {
+                criteria.maxlength = parseInt( getAttr( target, 'maxlength' ), 10 );
             }
 
-            if( target.hasAttr( 'pattern' ) ) {
-                criteria.pattern = target.attr( 'pattern' );
+            if( hasAttr( target, 'pattern' ) ) {
+                criteria.pattern = getAttr( target, 'pattern' );
             }
 
             return criteria;
@@ -264,7 +267,3 @@ AFrame.FieldPluginValidation = (function() {
     return FieldPluginValidation;
 } )();
 
-$.fn.hasAttr = function(name) {
-    var val = this[0].getAttribute( name );
-    return val !== null;
-};

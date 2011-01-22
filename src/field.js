@@ -15,7 +15,7 @@
  *    var field = AFrame.construct( {
  *       type: AFrame.Field,
  *       config: {
- *           target: $( '#numberInput' )
+ *           target: '#numberInput'
  *       }
  *    } );
  *   
@@ -89,13 +89,7 @@ AFrame.Field = ( function() {
         */
         display: function( val ) {
             var target = this.getTarget();
-
-            if( this.isValBased( target ) ) {
-                target.val( val );
-            }
-            else {
-                target.html( val );
-            }
+            AFrame.DOM.setInner( target, val );
         },
         
         /**
@@ -110,14 +104,7 @@ AFrame.Field = ( function() {
         */
         getDisplayed: function() {
             var target = this.getTarget();
-            var retval = '';
-            if( this.isValBased( target ) ) {
-                retval = target.val();
-            }
-            else {
-                retval = target.html();
-            }
-            return retval;
+            return AFrame.DOM.getInner( target );
         },
 
         /**
@@ -182,10 +169,6 @@ AFrame.Field = ( function() {
             if( Field.cancelInvalid ) {
                 event.preventDefault();
             }
-        },
-        
-        isValBased: function( target ) {
-            return target.is( 'input' ) || target.is( 'textarea' );
         }
     } );
     

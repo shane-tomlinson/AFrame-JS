@@ -18,7 +18,7 @@
  *    var form = AFrame.construct( {
  *       type: AFrame.Form,
  *       config: {
- *           target: $( '#nameForm' )
+ *           target: '#nameForm'
  *       }
  *    } );
  *   
@@ -49,7 +49,7 @@
  *    var form = AFrame.construct( {
  *       type: AFrame.Form,
  *       config: {
- *           target: $( '#nameForm' ),
+ *           target: '#nameForm',
  *           formFieldFactory: fieldFactory
  *       }
  *    } );
@@ -120,7 +120,7 @@ AFrame.Form = ( function() {
         },
 
         bindFormElements: function() {
-            var formElements = $( '[data-field]', this.getTarget() );
+            var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
             
             formElements.each( function( index, formElement ) {
                 this.bindFormElement( formElement );
@@ -141,14 +141,14 @@ AFrame.Form = ( function() {
          * bind a form element to the form
          *
          *    // Bind a field in the given element.
-         *    var field = form.bindFormElement( $( '#button' ) );
+         *    var field = form.bindFormElement( '#button' );
          *
          * @method bindFormElement
          * @param {selector || element} formElement the form element to bind to.
          * @returns {AFrame.Field}
          */
         bindFormElement: function( formElement ) {
-            var target = $( formElement );
+            var target = AFrame.DOM.getElements( formElement );
             this.formElements.push( target );
 
             var formField = this.formFieldFactory( target );

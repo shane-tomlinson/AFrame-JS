@@ -64,7 +64,7 @@ AFrame.FieldPlaceholderDecorator = {
     decoratorDisplay: function( val ) {
         var target = this.getTarget();
         var func = val == AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) ? 'addClass' : 'removeClass';
-        target[ func ]( 'empty' );
+        AFrame.DOM[ func ](target, 'empty' );
 
         AFrame.FieldPlaceholderDecorator._display.call( this, val );
     },
@@ -99,7 +99,7 @@ AFrame.FieldPlaceholderDecorator = {
     
     getPlaceholder: function() {
         var target = this.getTarget();
-        return target.attr( 'placeholder' ) || '';
+        return AFrame.DOM.getAttr( target, 'placeholder' ) || '';
     }
 
     

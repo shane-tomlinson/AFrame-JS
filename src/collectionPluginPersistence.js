@@ -255,30 +255,32 @@ AFrame.CollectionPluginPersistence = ( function() {
                     type: 'onLoadStart',
                     force: options && options.force
                 } );
-                options.onComplete = function( items ) {
-                    if( items ) {
-                        items.forEach( function( item, index ) {
-                            plugged.insert( item );
-                        } );
-                    }
-                    options.onComplete = callback;
-                    callback && callback( items, options );
-                    
-                    /**
-                    * Triggered on the collection whenever a load has completed
-                    * @event onLoad
-                    * @param {object} event - event information, has collection and items fields.
-                    * @param {variant} event.items- items loaded inserted
-                    * @param {boolean} event.force - whether the load is being forced.
-                    */
-                    plugged.triggerEvent( {
-                        items: items,
-                        type: 'onLoad',
-                        force: options && options.force
-                    } );
-                };
+                options.onComplete = onComplete.bind( this, callback, options );
                 
                 this.loadCallback( options );
+            }
+            
+            function onComplete( callback, options, items ) {
+                if( items ) {
+                    items.forEach( function( item, index ) {
+                        plugged.insert( item );
+                    } );
+                }
+                options.onComplete = callback;
+                callback && callback( items, options );
+                
+                /**
+                * Triggered on the collection whenever a load has completed
+                * @event onLoad
+                * @param {object} event - event information, has collection and items fields.
+                * @param {variant} event.items- items loaded inserted
+                * @param {boolean} event.force - whether the load is being forced.
+                */
+                plugged.triggerEvent( {
+                    items: items,
+                    type: 'onLoad',
+                    force: options && options.force
+                } );
             }
             
         },

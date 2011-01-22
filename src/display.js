@@ -19,16 +19,16 @@
  *    } );
  *   
  *    // When binding to a DOM event, must define the target, which 
- *    //    can be any jQuery element or selector. If a selector is given, 
+ *    //    can be any element or selector. If a selector is given, 
  *    //    the target is looked for as a descendant of the display's 
  *    //    target.
- *    button.bindClick( $( buttonSelector ), function( event ) {
+ *    button.bindClick( buttonSelector, function( event ) {
  *      // take care of the click, the event's default action is 
  *      //     already prevented.
  *    } );
  *   
  *    // Any DOM event can be bound to.
- *    button.bindDOMEvent( $( buttonSelector ), 'mouseenter', function( event ) {
+ *    button.bindDOMEvent( buttonSelector, 'mouseenter', function( event ) {
  *       // Do a button highlight or some other such thing.
  *    } );
  *
@@ -41,7 +41,8 @@
  * overriding the render method.  When using render, be sure to use the sc's render method.
  *
  *     ...
- * 
+ *     // Using the jQuery DOM adapter.
+ *     
  *     // Example of render which directly inserts HTML
  *     render: function() {
  *         this.getTarget().html( '<div>This is rendered inside of ' +
@@ -73,7 +74,7 @@ AFrame.Display = (function() {
          * @type {element || selector}
          */
         init: function( config ) {
-            this.target = $( config.target );
+            this.target = AFrame.DOM.getElements( config.target );
             
             if( !this.target.length ) {
                 throw 'invalid target';
@@ -172,7 +173,7 @@ AFrame.Display = (function() {
         bindDOMEvent: function( target, eventName, callback, context ) {
             var eventCallback = callback.bind( context || this );
             var eventTarget = this.getEventTarget( target );
-            eventTarget.bind( eventName, eventCallback );
+            AFrame.DOM.bindEvent( eventTarget, eventName, eventCallback );
 
             currDOMEventID++;
             var id = currDOMEventID;
@@ -221,7 +222,7 @@ AFrame.Display = (function() {
         unbindDOMEvent: function( id ) {
             var event = this.domEvents[ id ];
             if( event ) {
-                event.target.unbind( event.eventName, event.callback );
+                AFrame.DOM.unbindEvent( event.target, event.eventName, event.callback );
                 event.target = null;
                 event.eventName = null;
                 event.callback = null;
@@ -233,10 +234,10 @@ AFrame.Display = (function() {
             var eventTarget;
 
             if( 'string' == typeof( target ) ) {
-                eventTarget = $( target, this.getTarget() );
+                eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
             }
             else {
-                eventTarget = $( target );
+                eventTarget = AFrame.DOM.getElements( target );
             }
             
             return eventTarget;

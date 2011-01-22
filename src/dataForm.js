@@ -15,7 +15,7 @@
 *    var form = AFrame.construct( {
 *        type: DataForm,
 *        config: {
-*            target: $( '#nameForm' ),
+*            target: '#nameForm',
 *            dataSource: libraryDataContainer
 *        }
 *    } );
@@ -64,7 +64,7 @@
 *    var form = AFrame.construct( {
 *        type: DataForm,
 *        config: {
-*            target: $( '#nameForm' ),
+*            target: '#nameForm',
 *            dataSource: model
 *        }
 *    } );
@@ -165,7 +165,7 @@ AFrame.DataForm = ( function() {
     }
 
     function fieldGetName( formField ) {
-        return formField.getTarget().attr( 'data-field' );
+        return AFrame.DOM.getAttr( formField.getTarget(), 'data-field' );
     }
 
     function fieldSetValue( data ) {

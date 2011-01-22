@@ -9,12 +9,13 @@
 
 	<script type="text/javascript" src="ext/jquery.cookie.js"></script>
 	<script type="text/javascript" src="ext/json.js"></script>
-	
+    
 	<!-- this has to go first -->
 	<script type="text/javascript" src="test_harness_start.js"></script>
 
 	<script type="text/javascript" src="../src/core.js"></script>
 	<script type="text/javascript" src="../src/aframe.js"></script>
+	<script type="text/javascript" src="../src/dom.js"></script>
 	<script type="text/javascript" src="../src/observable.js"></script>
 	<script type="text/javascript" src="../src/observablesMixin.js"></script>
 	<script type="text/javascript" src="../src/enumerableMixin.js"></script>
@@ -66,6 +67,7 @@
 	<script type="text/javascript" src="test_model.js"></script>
 	<script type="text/javascript" src="test_event.js"></script>
 	<script type="text/javascript" src="test_enumerableMixin.js"></script>
+	<script type="text/javascript" src="test_dom.js"></script>
 	
 	<!-- this has to go last -->
 	<script type="text/javascript" src="test_harness_end.js"></script>
@@ -131,6 +133,16 @@
         <textarea id="textAreaField" data-field="name" required></textarea>
 
         <input type="text" id="validationField" />
+        <div id="testSetInnerNonInput"></div>
+        
+        <div class="DOMSelection">
+            <div>Part 1</div>
+            <div>Part 2</div>
+            <div>Part 3</div>
+        </div>
+
+        
+
     </div>
 </body>
 </html>
