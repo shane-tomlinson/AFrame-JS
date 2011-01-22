@@ -1,6 +1,8 @@
 /**
 * A DOM Manipulation adapter.  DOM functionality is being ported over to use this instead
 *   of direct jQuery access so that we can write adapters for Mootools, YUI, etc.
+* @class AFrame.DOM
+* @static
 */
 AFrame.DOM = ( function() {
     var DOM = {

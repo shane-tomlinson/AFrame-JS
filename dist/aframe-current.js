@@ -8,13 +8,28 @@
  * @module AFrame
 */
 
-if( !Function.prototype.bind ) {
-	Function.prototype.bind = function( context ) {
-		var callback = this;
-		return function() {
-			return callback.apply( context, arguments );
-		};
-	};
+/**
+* bind a function to a context - taken from https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
+* @methopd Function.prototype.bind
+*/
+if ( !Function.prototype.bind ) {
+
+  Function.prototype.bind = function( obj ) {
+    var slice = [].slice,
+        args = slice.call(arguments, 1), 
+        self = this, 
+        nop = function () {}, 
+        bound = function () {
+          return self.apply( this instanceof nop ? this : ( obj || {} ), 
+                              args.concat( slice.call(arguments) ) );    
+        };
+
+    nop.prototype = self.prototype;
+
+    bound.prototype = new nop();
+
+    return bound;
+  };
 }
   
 /**
@@ -307,6 +322,193 @@ var AFrame = ( function() {
 
 }() );
 /**
+* A DOM Manipulation adapter.  DOM functionality is being ported over to use this instead
+*   of direct jQuery access so that we can write adapters for Mootools, YUI, etc.
+* @class AFrame.DOM
+* @static
+*/
+AFrame.DOM = ( function() {
+    var DOM = {
+        /**
+        * Get a set of elements that match the selector
+        * @method getElements
+        * @param {string || element} selector - if a string, a selector to search for.
+        * @return {array} array of elements
+        */
+        getElements: function( selector ) {
+            return $( selector );
+        },
+        
+        /**
+        * Get a set of descendent elements that match the selector
+        * @method getDescendentElements
+        * @param {string} selector - The selector to search for.
+        * @param {element} root - root node to search from
+        * @return {array} array of elements
+        */
+        getDescendentElements: function( selector, root ) {
+            return $( root ).find( selector );
+        },
+        
+        /**
+        * Get a set of descendent elements that match the selector, include the root node if it
+        *   matches the selector
+        * @method getElementsIncludeRoot
+        * @param {string} selector - The selector to search for.
+        * @param {element} root - root node to search from
+        * @return {array} array of elements
+        */
+        getElementsIncludeRoot: function( selector, root ) {
+            root = $( root );
+            var set = root.find( selector );
+            if( root.is( selector ) ) {
+                set = root.add( set );
+            }
+            return set;
+        },
+        
+        /**
+        * Bind to an elements DOM Event
+        * @method bindEvent
+        * @param {string || element} element to bind on
+        * @param {string} eventName - name of event
+        * @param {function} callback - callback to call
+        */
+        bindEvent: function( element, eventName, callback ) {
+            return $( element ).bind( eventName, callback );
+        },
+        
+        /**
+        * Unbind an already bound DOM Event from an element.
+        * @method unbindEvent
+        * @param {string || element} element to unbind from
+        * @param {string} eventName - name of event
+        * @param {function} callback - callback
+        */
+        unbindEvent: function( element, eventName, callback ) {
+            return $( element ).unbind( eventName, callback );
+        },
+        
+        /**
+        * Fire a DOM event on an element
+        * @method fireEvent
+        * @param {string || element} element
+        * @param {string || event object} event - event to fire
+        */
+        fireEvent: function( element, event ) {
+            return $( element ).trigger( event );
+        },
+        
+        /**
+        * Set the inner value of an element, including input elements
+        * @method setInner
+        * @param {string || element} element - element to set
+        * @param {string} value - value to set
+        */
+        setInner: function( element, value ) {
+            var target = $( element );
+            if( isValBased( target ) ) {
+                target.val( value );
+            }
+            else {
+                target.html( value );
+            }
+
+        },
+        
+        /**
+        * Get the inner value of an element, including input elements
+        * @method getInner
+        * @param {string || element} element
+        * @return {string} inner value of the element
+        */
+        getInner: function( element ) {
+            var target = $( element );
+            var retval = '';
+            
+            if( isValBased( target ) ) {
+                retval = target.val();
+            }
+            else {
+                retval = target.html();
+            }
+            return retval;
+        },
+        
+        /**
+        * Set an element's attribute.
+        * @method setAttr
+        * @param {string || element} element
+        * @param {string} attrName - the attribute name
+        * @param {string} value - value to set
+        */
+        setAttr: function( element, attrName, value ) {
+            $( element ).attr( attrName, value );
+        },
+        
+        /**
+        * Get an element's attribute.
+        * @method getAttr
+        * @param {string || element} element
+        * @param {string} attrName - the attribute name
+        * @return {string} attribute's value
+        */
+        getAttr: function( element, attrName ) {
+            return $( element ).attr( attrName );
+        },
+        
+        /**
+        * Check if an element has an attribute
+        * @method hasAttr
+        * @param {string || element} element
+        * @param {string} attrName - the attribute name
+        * @return {boolean} true if the element has the attribute, false otw.
+        */
+        hasAttr: function( element, attrName ) {
+            var val = $( element )[ 0 ].getAttribute( attrName );
+            return val !== null;
+        },
+        
+        /**
+        * Add a class to an element
+        * @method addClass
+        * @param {string || element} element
+        * @param {string} className
+        */
+        addClass: function( element, className ) {
+            $( element ).addClass( className );
+        },
+        
+        /**
+        * Remove a class from an element
+        * @method removeClass
+        * @param {string || element} element
+        * @param {string} className
+        */
+        removeClass: function( element, className ) {
+            $( element ).removeClass( className );
+        },
+        
+        /**
+        * Check if an element has a class
+        * @method hasClass
+        * @param {string || element} element
+        * @param {string} className
+        * @return {boolean} true if element has class, false otw.
+        */
+        hasClass: function( element, className ) {
+            return $( element ).hasClass( className );
+        }
+        
+        
+    };
+    
+    function isValBased( target ) {
+        return target.is( 'input' ) || target.is( 'textarea' );
+    }
+    
+    return DOM;
+}() );/**
  * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
  * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
  * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
@@ -1791,16 +1993,16 @@ AFrame.CollectionArray = ( function() {
  *    } );
  *   
  *    // When binding to a DOM event, must define the target, which 
- *    //    can be any jQuery element or selector. If a selector is given, 
+ *    //    can be any element or selector. If a selector is given, 
  *    //    the target is looked for as a descendant of the display's 
  *    //    target.
- *    button.bindClick( $( buttonSelector ), function( event ) {
+ *    button.bindClick( buttonSelector, function( event ) {
  *      // take care of the click, the event's default action is 
  *      //     already prevented.
  *    } );
  *   
  *    // Any DOM event can be bound to.
- *    button.bindDOMEvent( $( buttonSelector ), 'mouseenter', function( event ) {
+ *    button.bindDOMEvent( buttonSelector, 'mouseenter', function( event ) {
  *       // Do a button highlight or some other such thing.
  *    } );
  *
@@ -1813,7 +2015,8 @@ AFrame.CollectionArray = ( function() {
  * overriding the render method.  When using render, be sure to use the sc's render method.
  *
  *     ...
- * 
+ *     // Using the jQuery DOM adapter.
+ *     
  *     // Example of render which directly inserts HTML
  *     render: function() {
  *         this.getTarget().html( '<div>This is rendered inside of ' +
@@ -1845,7 +2048,7 @@ AFrame.Display = (function() {
          * @type {element || selector}
          */
         init: function( config ) {
-            this.target = $( config.target );
+            this.target = AFrame.DOM.getElements( config.target );
             
             if( !this.target.length ) {
                 throw 'invalid target';
@@ -1944,7 +2147,7 @@ AFrame.Display = (function() {
         bindDOMEvent: function( target, eventName, callback, context ) {
             var eventCallback = callback.bind( context || this );
             var eventTarget = this.getEventTarget( target );
-            eventTarget.bind( eventName, eventCallback );
+            AFrame.DOM.bindEvent( eventTarget, eventName, eventCallback );
 
             currDOMEventID++;
             var id = currDOMEventID;
@@ -1993,7 +2196,7 @@ AFrame.Display = (function() {
         unbindDOMEvent: function( id ) {
             var event = this.domEvents[ id ];
             if( event ) {
-                event.target.unbind( event.eventName, event.callback );
+                AFrame.DOM.unbindEvent( event.target, event.eventName, event.callback );
                 event.target = null;
                 event.eventName = null;
                 event.callback = null;
@@ -2005,10 +2208,10 @@ AFrame.Display = (function() {
             var eventTarget;
 
             if( 'string' == typeof( target ) ) {
-                eventTarget = $( target, this.getTarget() );
+                eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
             }
             else {
-                eventTarget = $( target );
+                eventTarget = AFrame.DOM.getElements( target );
             }
             
             return eventTarget;
@@ -2589,7 +2792,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             
             var plugged = this.getPlugged();
             /**
-            * Triggered before an add is sent to persistence.  If the event has preventDefault called,
+            * Triggered on the collection before an add is sent to persistence.  If the event has preventDefault called,
             *   the add will be cancelled as long as the options.force is not set to true
             * @event onBeforeAdd
             * @param {AFrame.Event} event - event object
@@ -2607,7 +2810,7 @@ AFrame.CollectionPluginPersistence = ( function() {
                     callback && callback( item, options );
                     
                     /**
-                    * Triggered after an item is sent to persistence and is added to the Collection.  
+                    * Triggered on the collection after an item is sent to persistence and is added to the Collection.  
                     * @event onAdd
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being added
@@ -2643,7 +2846,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             var plugged = this.getPlugged();
 
             /**
-            * Triggered before a load occurs.  If the listener calls preventDefault on the event,
+            * Triggered on the collection before a load occurs.  If the listener calls preventDefault on the event,
             *   the load will be cancelled unless the load is forced.
             * @event onBeforeLoad
             * @param {object} event - event information
@@ -2656,7 +2859,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             if( plugged.shouldDoAction( options, event ) ) {
                 var callback = options.onComplete;
                 /**
-                * Triggered on the plugged object whenever a load is requested
+                * Triggered on the collection whenever a load is starting
                 * @event onLoadStart
                 * @param {object} event - event information
                 * @param {boolean} event.force - whether the load is being forced.
@@ -2665,30 +2868,32 @@ AFrame.CollectionPluginPersistence = ( function() {
                     type: 'onLoadStart',
                     force: options && options.force
                 } );
-                options.onComplete = function( items ) {
-                    if( items ) {
-                        items.forEach( function( item, index ) {
-                            plugged.insert( item );
-                        } );
-                    }
-                    options.onComplete = callback;
-                    callback && callback( items, options );
-                    
-                    /**
-                    * Triggered on the plugged object whenever a load is requested
-                    * @event onLoadComplete
-                    * @param {object} event - event information, has collection and items fields.
-                    * @param {variant} event.items- items loaded inserted
-                    * @param {boolean} event.force - whether the load is being forced.
-                    */
-                    plugged.triggerEvent( {
-                        items: items,
-                        type: 'onLoadComplete',
-                        force: options && options.force
-                    } );
-                };
+                options.onComplete = onComplete.bind( this, callback, options );
                 
                 this.loadCallback( options );
+            }
+            
+            function onComplete( callback, options, items ) {
+                if( items ) {
+                    items.forEach( function( item, index ) {
+                        plugged.insert( item );
+                    } );
+                }
+                options.onComplete = callback;
+                callback && callback( items, options );
+                
+                /**
+                * Triggered on the collection whenever a load has completed
+                * @event onLoad
+                * @param {object} event - event information, has collection and items fields.
+                * @param {variant} event.items- items loaded inserted
+                * @param {boolean} event.force - whether the load is being forced.
+                */
+                plugged.triggerEvent( {
+                    items: items,
+                    type: 'onLoad',
+                    force: options && options.force
+                } );
             }
             
         },
@@ -2715,7 +2920,7 @@ AFrame.CollectionPluginPersistence = ( function() {
             
             if( item ) {
                 /**
-                * Triggered before a delete is sent to persistence.  If the event has preventDefault called,
+                * Triggered on the collection before a delete is sent to persistence.  If the event has preventDefault called,
                 *   the delete will be cancelled as long as the options.force is not set to true
                 * @event onBeforeDelete
                 * @param {AFrame.Event} event - event object
@@ -2737,7 +2942,7 @@ AFrame.CollectionPluginPersistence = ( function() {
                     this.deleteCallback( item, options );
                     
                     /**
-                    * Triggered after an item is deleted from persistence and is removed from the Collection.  
+                    * Triggered on the collection after an item is deleted from persistence and is removed from the Collection.  
                     * @event onDelete
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being deleted
@@ -2772,7 +2977,7 @@ AFrame.CollectionPluginPersistence = ( function() {
 
             if( item ) {
                 /**
-                * Triggered before a save is sent to persistence.  If the event has preventDefault called,
+                * Triggered on the collection before a save is sent to persistence.  If the event has preventDefault called,
                 *   the save elete will be cancelled as long as the options.force is not set to true
                 * @event onBeforeSave
                 * @param {AFrame.Event} event - event object
@@ -2793,7 +2998,7 @@ AFrame.CollectionPluginPersistence = ( function() {
                     this.saveCallback( item, options );
 
                     /**
-                    * Triggered after an item is saved to persistence.  
+                    * Triggered on the collection after an item is saved to persistence.  
                     * @event onSave
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being saved
@@ -2871,7 +3076,7 @@ AFrame.CollectionPluginPersistence = ( function() {
  *    var form = AFrame.construct( {
  *       type: AFrame.Form,
  *       config: {
- *           target: $( '#nameForm' )
+ *           target: '#nameForm'
  *       }
  *    } );
  *   
@@ -2902,7 +3107,7 @@ AFrame.CollectionPluginPersistence = ( function() {
  *    var form = AFrame.construct( {
  *       type: AFrame.Form,
  *       config: {
- *           target: $( '#nameForm' ),
+ *           target: '#nameForm',
  *           formFieldFactory: fieldFactory
  *       }
  *    } );
@@ -2973,7 +3178,7 @@ AFrame.Form = ( function() {
         },
 
         bindFormElements: function() {
-            var formElements = $( '[data-field]', this.getTarget() );
+            var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
             
             formElements.each( function( index, formElement ) {
                 this.bindFormElement( formElement );
@@ -2994,14 +3199,14 @@ AFrame.Form = ( function() {
          * bind a form element to the form
          *
          *    // Bind a field in the given element.
-         *    var field = form.bindFormElement( $( '#button' ) );
+         *    var field = form.bindFormElement( '#button' );
          *
          * @method bindFormElement
          * @param {selector || element} formElement the form element to bind to.
          * @returns {AFrame.Field}
          */
         bindFormElement: function( formElement ) {
-            var target = $( formElement );
+            var target = AFrame.DOM.getElements( formElement );
             this.formElements.push( target );
 
             var formField = this.formFieldFactory( target );
@@ -3127,7 +3332,7 @@ AFrame.Form = ( function() {
  *    var field = AFrame.construct( {
  *       type: AFrame.Field,
  *       config: {
- *           target: $( '#numberInput' )
+ *           target: '#numberInput'
  *       }
  *    } );
  *   
@@ -3201,13 +3406,7 @@ AFrame.Field = ( function() {
         */
         display: function( val ) {
             var target = this.getTarget();
-
-            if( this.isValBased( target ) ) {
-                target.val( val );
-            }
-            else {
-                target.html( val );
-            }
+            AFrame.DOM.setInner( target, val );
         },
         
         /**
@@ -3222,14 +3421,7 @@ AFrame.Field = ( function() {
         */
         getDisplayed: function() {
             var target = this.getTarget();
-            var retval = '';
-            if( this.isValBased( target ) ) {
-                retval = target.val();
-            }
-            else {
-                retval = target.html();
-            }
-            return retval;
+            return AFrame.DOM.getInner( target );
         },
 
         /**
@@ -3294,10 +3486,6 @@ AFrame.Field = ( function() {
             if( Field.cancelInvalid ) {
                 event.preventDefault();
             }
-        },
-        
-        isValBased: function( target ) {
-            return target.is( 'input' ) || target.is( 'textarea' );
         }
     } );
     
@@ -3328,7 +3516,7 @@ AFrame.Field = ( function() {
 *    var field = AFrame.construct( {
 *       type: AFrame.Field,
 *       config: {
-*           target: $( '#numberInput' )
+*           target: '#numberInput'
 *       }
 *    } );
 *   
@@ -3368,7 +3556,7 @@ AFrame.Field = ( function() {
 *    var field = AFrame.construct( {
 *        type: AFrame.Field,
 *        config: {
-*            target: $( '#numberInput' )
+*            target: '#numberInput'
 *        },
 *        plugins: [ {
 *            type: ValidatorPlugin
@@ -3499,7 +3687,7 @@ AFrame.FieldPluginValidation = (function() {
 	    */
         setError: function( error ) {
             this.updateValidityState( true );
-            this.getPlugged().getTarget().trigger( 'invalid' );
+            AFrame.DOM.fireEvent( this.getPlugged().getTarget(), 'invalid' );
             
             return this.validityState.setError( error );
         },
@@ -3516,7 +3704,7 @@ AFrame.FieldPluginValidation = (function() {
 	    */
         setCustomValidity: function( customValidity ) {
             this.updateValidityState( true );
-            this.getPlugged().getTarget().trigger( 'invalid' );
+            AFrame.DOM.fireEvent( this.getPlugged().getTarget(), 'invalid' );
 
             return this.validityState.setCustomValidity( customValidity );
         },
@@ -3529,7 +3717,10 @@ AFrame.FieldPluginValidation = (function() {
         */
         getCriteria: function() {
             var target = this.getPlugged().getTarget();
-            var type = target.attr( 'type' );
+            var hasAttr = AFrame.DOM.hasAttr;
+            var getAttr = AFrame.DOM.getAttr;
+            
+            var type = getAttr( target, 'type' );
             if( !type || type == 'textarea' ) {
                 type = 'text';
             }
@@ -3538,28 +3729,28 @@ AFrame.FieldPluginValidation = (function() {
                 type: type
             };
 
-            if( target.hasAttr( 'required' ) ) {
+            if( hasAttr( target, 'required' ) ) {
                 criteria.required = true;
             }
 
-            if( target.hasAttr( 'min' ) ) {
-                criteria.min = parseFloat( target.attr( 'min' ) );
+            if( hasAttr( target, 'min' ) ) {
+                criteria.min = parseFloat( getAttr( target, 'min' ) );
             }
 
-            if( target.hasAttr( 'max' ) ) {
-                criteria.max = parseFloat( target.attr( 'max' ) );
+            if( hasAttr( target, 'max' ) ) {
+                criteria.max = parseFloat( getAttr( target, 'max' ) );
             }
             
-            if( target.hasAttr( 'step' ) ) {
-                criteria.step = parseFloat( target.attr( 'step' ) );
+            if( hasAttr( target, 'step' ) ) {
+                criteria.step = parseFloat( getAttr( target, 'step' ) );
             }
 
-            if( target.hasAttr( 'maxlength' ) ) {
-                criteria.maxlength = parseInt( target.attr( 'maxlength' ), 10 );
+            if( hasAttr( target, 'maxlength' ) ) {
+                criteria.maxlength = parseInt( getAttr( target, 'maxlength' ), 10 );
             }
 
-            if( target.hasAttr( 'pattern' ) ) {
-                criteria.pattern = target.attr( 'pattern' );
+            if( hasAttr( target, 'pattern' ) ) {
+                criteria.pattern = getAttr( target, 'pattern' );
             }
 
             return criteria;
@@ -3569,10 +3760,6 @@ AFrame.FieldPluginValidation = (function() {
     return FieldPluginValidation;
 } )();
 
-$.fn.hasAttr = function(name) {
-    var val = this[0].getAttribute( name );
-    return val !== null;
-};
 /**
 * An object that keeps track of a field's validity, mirrors the 
 * [HTML5](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api) spec.
@@ -3744,7 +3931,7 @@ AFrame.FieldPlaceholderDecorator = {
     decoratorDisplay: function( val ) {
         var target = this.getTarget();
         var func = val == AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) ? 'addClass' : 'removeClass';
-        target[ func ]( 'empty' );
+        AFrame.DOM[ func ](target, 'empty' );
 
         AFrame.FieldPlaceholderDecorator._display.call( this, val );
     },
@@ -3779,7 +3966,7 @@ AFrame.FieldPlaceholderDecorator = {
     
     getPlaceholder: function() {
         var target = this.getTarget();
-        return target.attr( 'placeholder' ) || '';
+        return AFrame.DOM.getAttr( target, 'placeholder' ) || '';
     }
 
     
@@ -4573,7 +4760,7 @@ AFrame.ListPluginFormRow = ( function() {
 *    var form = AFrame.construct( {
 *        type: DataForm,
 *        config: {
-*            target: $( '#nameForm' ),
+*            target: '#nameForm',
 *            dataSource: libraryDataContainer
 *        }
 *    } );
@@ -4622,7 +4809,7 @@ AFrame.ListPluginFormRow = ( function() {
 *    var form = AFrame.construct( {
 *        type: DataForm,
 *        config: {
-*            target: $( '#nameForm' ),
+*            target: '#nameForm',
 *            dataSource: model
 *        }
 *    } );
@@ -4723,7 +4910,7 @@ AFrame.DataForm = ( function() {
     }
 
     function fieldGetName( formField ) {
-        return formField.getTarget().attr( 'data-field' );
+        return AFrame.DOM.getAttr( formField.getTarget(), 'data-field' );
     }
 
     function fieldSetValue( data ) {

@@ -1,5 +1,6 @@
 includes.list=core.js,\
 aframe.js,\
+dom.js,\
 observable.js,\
 observablesMixin.js,\
 enumerableMixin.js,\
