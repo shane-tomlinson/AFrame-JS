@@ -78,7 +78,7 @@ AFrame.List = ( function() {
          * @method clear
          */
         clear: function() {
-            this.getTarget().html( '' );
+            AFrame.DOM.setInner( this.getTarget(), '' );
         },
         
         /**
@@ -237,9 +237,7 @@ AFrame.List = ( function() {
         */
         forEach: function( callback, context ) {
             var children = AFrame.DOM.getChildren( this.getTarget() );
-            children.each( function( index, element ) {
-                callback.call( context, element, index );
-            } );
+            AFrame.DOM.forEach( children, callback, context );
         }
     } );
     

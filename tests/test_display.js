@@ -45,11 +45,11 @@ testsToRun.push( {
 			
 			var id = this.display.bindDOMEvent( '.button', 'click', onClick, this );
 
-			$( '.button' ).trigger( 'click' );
+			AFrame.DOM.fireEvent( '.button', 'click' );
 			Assert.areEqual( 1, this.callbackCount, 'event callback triggered' );
 			Assert.isNotUndefined( id, 'id is defined' );
 			
-			$( '.target' ).trigger( 'click' );
+			AFrame.DOM.fireEvent( '.target', 'click' );
 			Assert.areEqual( 1, this.callbackCount, 'event bound to correct child item' );
 		},
 
@@ -75,7 +75,7 @@ testsToRun.push( {
 			
 			var id = this.display.bindDOMEvent( '.button', 'click', onClick, this );
 			this.display.unbindDOMEvent( id );
-			$( '.button' ).trigger( 'click' );
+			AFrame.DOM.fireEvent( '.button', 'click' );
 			
 			Assert.areEqual( 0, this.callbackCount2, 'event callback correctly unbound' );
 			
@@ -87,11 +87,11 @@ testsToRun.push( {
 			var defaultPrevented = false;
 			var onClick = function( event ) {
 				this.callbackCount++;
-				defaultPrevented = event.isDefaultPrevented();
+				defaultPrevented = event.isDefaultPrevented && event.isDefaultPrevented();
 			};
 			this.display.bindClick( '.button', onClick, this );
 
-			$( '.button' ).trigger( 'click' );
+			AFrame.DOM.fireEvent( '.button', 'click' );
 			Assert.areEqual( 1, this.callbackCount, 'event callback triggered' );
 			Assert.isTrue( defaultPrevented, 'default has been prevented' );
 			
@@ -104,7 +104,7 @@ testsToRun.push( {
 			};
 			this.display.bindClick( '.button', onClick );
 
-			$( '.button' ).trigger( 'click' );
+			AFrame.DOM.fireEvent( '.button', 'click' );
 			Assert.areEqual( this.display, context, 'context correctly set to object when no context given' );
         },
 		
@@ -125,7 +125,7 @@ testsToRun.push( {
             
             // create a new display but override its render function.
             display.render = function() {
-                this.getTarget().html( 'rendered inside of target' );
+                AFrame.DOM.setInner( this.getTarget(), 'rendered inside of target' );
                 AFrame.Display.prototype.render.call( this );
             };
             

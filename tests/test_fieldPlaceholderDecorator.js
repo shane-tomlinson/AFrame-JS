@@ -32,7 +32,7 @@
                     var textField = AFrame.construct( {
                         type: AFrame.Field,
                         config: {
-                            target: target
+                            target: '#noValueFormElement'
                         }
                     } );
 
@@ -40,10 +40,10 @@
                     Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     
-                    target.trigger( 'focus' );
+                    AFrame.DOM.fireEvent( '#noValueFormElement', 'focus' );
                     Assert.areSame( '', textField.getDisplayed(), 'when a focus happens, help text is cleared' );
                     
-                    target.trigger( 'blur' );
+                    AFrame.DOM.fireEvent( '#noValueFormElement', 'blur' );
                     Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed on blur' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     textField.save();
@@ -52,10 +52,10 @@
                     textField.display( 'New Value' );
                     Assert.isFalse( target.hasClass( 'empty' ), 'empty class name removed with normal text' );
                     
-                    target.trigger( 'focus' );
+                    AFrame.DOM.fireEvent( '#noValueFormElement', 'focus' );
                     Assert.areSame( 'New Value', textField.getDisplayed(), 'when a focus happens, updated value is not cleared' );
                     
-                    target.trigger( 'blur' );
+                    AFrame.DOM.fireEvent( '#noValueFormElement', 'blur' );
                     Assert.areSame( 'New Value', textField.getDisplayed(), 'when blur happens, updated text is not reverted to help text' );
                     
                     textField.set( '' );

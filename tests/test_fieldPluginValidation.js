@@ -73,12 +73,12 @@ testsToRun.push( {
 			var field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'textarea[data-field=name]'
 				}
 			} );
             
             var invalidTriggered = false;
-            target.bind( 'invalid', function( event ) {
+            AFrame.DOM.bindEvent( 'textarea[data-field=name]', 'invalid', function( event ) {
                 invalidTriggered = true;
             } );
             
@@ -97,7 +97,7 @@ testsToRun.push( {
 			var field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'textarea[data-field=name]'
 				}
 			} );
             
@@ -130,18 +130,18 @@ testsToRun.push( {
             validation.setPlugged( field );
             
             var criteria = validation.getCriteria();
-            Assert.areEqual( 'text', criteria.type, 'input with no type sets type to text' );
+            Assert.areSame( 'text', criteria.type, 'input with no type sets type to text' );
 
             Assert.isUndefined( criteria.min, 'min not set' );
 			target.attr( 'min', 10 );
             criteria = validation.getCriteria();
-            Assert.areEqual( 10, criteria.min, 'min set on criteria' );
+            Assert.areSame( 10, criteria.min, 'min set on criteria' );
 
 			
             Assert.isUndefined( criteria.max, 'max not set' );
 			target.attr( 'max', 100 );
             criteria = validation.getCriteria();
-            Assert.areEqual( 100, criteria.max, 'max set on criteria' );
+            Assert.areSame( 100, criteria.max, 'max set on criteria' );
 
 			
             Assert.isUndefined( criteria.required, 'required not set' );
@@ -153,18 +153,18 @@ testsToRun.push( {
             Assert.isUndefined( criteria.step, 'step not set' );
 			target.attr( 'step', .25 );
             criteria = validation.getCriteria();
-            Assert.areEqual( .25, criteria.step, 'step set on criteria' );
+            Assert.areSame( .25, criteria.step, 'step set on criteria' );
 
 
             Assert.isUndefined( criteria.maxlength, 'maxlength not set' );
 			target.attr( 'maxlength', '15' );
             criteria = validation.getCriteria();
-            Assert.areEqual( 15, criteria.maxlength, 'maxlength set on criteria' );
+            Assert.areSame( 15, criteria.maxlength, 'maxlength set on criteria' );
 
             Assert.isUndefined( criteria.pattern, 'pattern not set' );
 			target.attr( 'pattern', 'abc' );
             criteria = validation.getCriteria();
-            Assert.areEqual( 'abc', criteria.pattern, 'pattern set on criteria' );
+            Assert.areSame( 'abc', criteria.pattern, 'pattern set on criteria' );
             
         }
 } );

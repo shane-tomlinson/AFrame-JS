@@ -122,9 +122,9 @@ AFrame.Form = ( function() {
         bindFormElements: function() {
             var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
             
-            formElements.each( function( index, formElement ) {
+            AFrame.DOM.forEach( formElements, function( formElement, index ) {
                 this.bindFormElement( formElement );
-            }.bind( this ) );
+            }, this );
         },
 
         teardown: function() {

@@ -3,11 +3,10 @@ testsToRun.push( {
 		name: "TestCase AFrame.Field",
 		
 		setUp: function() {
-			var target = $( 'input[data-field=name]' );
 			this.field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'input[data-field=name]'
 				}
 			} );
 		},
@@ -36,7 +35,7 @@ testsToRun.push( {
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'span[data-field=name]'
 				}
 			} );
 			
@@ -60,7 +59,7 @@ testsToRun.push( {
 			var textAreaField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'textarea[data-field=name]'
 				}
 			} );
 			textAreaField.set( 'Charlotte Tomlinson' );
@@ -81,7 +80,7 @@ testsToRun.push( {
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'span[data-field=name]'
 				}
 			} );
 
@@ -98,7 +97,7 @@ testsToRun.push( {
 			var fieldValueRequired = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'textarea[data-field=name]'
 				}
 			} );
 
@@ -164,7 +163,7 @@ testsToRun.push( {
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'span[data-field=name]'
 				}
 			} );
 
@@ -234,25 +233,25 @@ testsToRun.push( {
 			var fieldValueRequired = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'textarea[data-field=name]'
 				}
 			} );
 
 			
 			var defaultPrevented = false;
-			target.bind( 'invalid', function( event ) {
-				defaultPrevented = event.isDefaultPrevented();
+			AFrame.DOM.bindEvent( 'textarea[data-field=name]', 'invalid', function( event ) {
+				defaultPrevented = event.isDefaultPrevented && event.isDefaultPrevented();
 			} );
 			
 			// We cancel the browser handle the invalid event, no browser will show the error message
             // default is the to cancel the event.
-			target.trigger( 'invalid' );
+            AFrame.DOM.fireEvent( 'textarea[data-field=name]', 'invalid' );
 			
 			Assert.isTrue( defaultPrevented, 'with AFrame.Field.cancelInvalid = true, invalid\'s default is prevented' );
 
 			// We let the browser handle the invalid event, some browsers show an error message.
 			AFrame.Field.cancelInvalid = false;
-			target.trigger( 'invalid' );
+			AFrame.DOM.fireEvent( 'textarea[data-field=name]', 'invalid' );
 			
 			Assert.isFalse( defaultPrevented, 'with AFrame.Field.cancelInvalid = false, invalid occurs normally' );
             AFrame.Field.cancelInvalid = true;
@@ -265,7 +264,7 @@ testsToRun.push( {
 			var field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target
+					target: 'textarea[data-field=name]'
 				}
 			} );
             

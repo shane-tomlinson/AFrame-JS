@@ -389,6 +389,19 @@ AFrame.DOM = ( function() {
         },
         
         /**
+        * Iterate over a set of elements
+        * @method forEach
+        * @param {Elements} elements - elements to iterate over
+        * @param {function} callback - callback to call.  Callback called with: callback( element, index );
+        * @param {context} context - context to callback in
+        */
+        forEach: function( elements, callback, context ) {
+            $( elements ).each( function( index, element ) {
+                callback.call( context, element, index );
+            } );
+        },
+        
+        /**
         * Remove an element
         * @method removeElement
         * @param {selector || element} selector - element to remove
@@ -423,10 +436,10 @@ AFrame.DOM = ( function() {
         * Fire a DOM event on an element
         * @method fireEvent
         * @param {selector || element} element
-        * @param {string || event object} event - event to fire
+        * @param {string} type - event to fire
         */
-        fireEvent: function( element, event ) {
-            return $( element ).trigger( event );
+        fireEvent: function( element, type ) {
+            return $( element ).trigger( type );
         },
         
         /**
@@ -592,7 +605,9 @@ AFrame.DOM = ( function() {
     }
     
     return DOM;
-}() );/**
+    
+}() );
+/**
  * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
  * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
  * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
@@ -2384,7 +2399,7 @@ AFrame.List = ( function() {
          * @method clear
          */
         clear: function() {
-            this.getTarget().html( '' );
+            AFrame.DOM.setInner( this.getTarget(), '' );
         },
         
         /**
@@ -2543,9 +2558,7 @@ AFrame.List = ( function() {
         */
         forEach: function( callback, context ) {
             var children = AFrame.DOM.getChildren( this.getTarget() );
-            children.each( function( index, element ) {
-                callback.call( context, element, index );
-            } );
+            AFrame.DOM.forEach( children, callback, context );
         }
     } );
     
@@ -3258,9 +3271,9 @@ AFrame.Form = ( function() {
         bindFormElements: function() {
             var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
             
-            formElements.each( function( index, formElement ) {
+            AFrame.DOM.forEach( formElements, function( formElement, index ) {
                 this.bindFormElement( formElement );
-            }.bind( this ) );
+            }, this );
         },
 
         teardown: function() {
@@ -3562,7 +3575,7 @@ AFrame.Field = ( function() {
 
         onFieldInvalid: function( event ) {
             if( Field.cancelInvalid ) {
-                event.preventDefault();
+                event && event.preventDefault();
             }
         }
     } );

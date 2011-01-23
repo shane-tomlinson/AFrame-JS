@@ -167,7 +167,7 @@ AFrame.Field = ( function() {
 
         onFieldInvalid: function( event ) {
             if( Field.cancelInvalid ) {
-                event.preventDefault();
+                event && event.preventDefault();
             }
         }
     } );

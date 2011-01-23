@@ -13,7 +13,7 @@ AFrame.DOM = ( function() {
         * @return {array} array of elements
         */
         getElements: function( selector ) {
-            return $( selector );
+            return $$( selector );
         },
         
         /**
@@ -24,7 +24,7 @@ AFrame.DOM = ( function() {
         * @return {array} array of elements
         */
         getDescendentElements: function( selector, root ) {
-            return $( root ).find( selector );
+            return $$( root ).getElements( selector ).flatten();
         },
         
         /**
@@ -36,10 +36,11 @@ AFrame.DOM = ( function() {
         * @return {array} array of elements
         */
         getElementsIncludeRoot: function( selector, root ) {
-            root = $( root );
-            var set = root.find( selector );
-            if( root.is( selector ) ) {
-                set = root.add( set );
+            root = $$( root );
+            var set = root.getElements( selector ).flatten();
+            if( root.match( selector ) ) {
+                root.combine( set );
+                set = root;
             }
             return set;
         },
@@ -51,7 +52,7 @@ AFrame.DOM = ( function() {
         * @return {array} an array of children
         */
         getChildren: function( selector ) {
-            return $( selector ).children();
+            return $$( selector ).getChildren().flatten();
         },
         
         /**
@@ -62,7 +63,7 @@ AFrame.DOM = ( function() {
         * @return {element} the nth child if it exists.
         */
         getNthChild: function( selector, index ) {
-            return $( selector ).children()[ index ];
+            return $$( selector ).getChildren().flatten()[ index ];
         },
         
         /**
@@ -71,11 +72,9 @@ AFrame.DOM = ( function() {
         * @param {Elements} elements - elements to iterate over
         * @param {function} callback - callback to call.  Callback called with: callback( element, index );
         * @param {context} context - context to callback in
-        */
+        */        
         forEach: function( elements, callback, context ) {
-            $( elements ).each( function( index, element ) {
-                callback.call( context, element, index );
-            } );
+            $$( elements ).each( callback, context );
         },
         
         /**
@@ -84,7 +83,7 @@ AFrame.DOM = ( function() {
         * @param {selector || element} selector - element to remove
         */
         removeElement: function( selector ) {
-            $( selector ).remove();
+            $$( selector ).dispose();
         },
         
         /**
@@ -95,7 +94,7 @@ AFrame.DOM = ( function() {
         * @param {function} callback - callback to call
         */
         bindEvent: function( element, eventName, callback ) {
-            return $( element ).bind( eventName, callback );
+            return $$( element ).addEvent( eventName, callback );
         },
         
         /**
@@ -106,7 +105,7 @@ AFrame.DOM = ( function() {
         * @param {function} callback - callback
         */
         unbindEvent: function( element, eventName, callback ) {
-            return $( element ).unbind( eventName, callback );
+            return $$( element ).removeEvent( eventName, callback );
         },
         
         /**
@@ -116,7 +115,33 @@ AFrame.DOM = ( function() {
         * @param {string} type - event to fire
         */
         fireEvent: function( element, type ) {
-            return $( element ).trigger( type );
+            // taken from http://davidwalsh.name/mootools-event
+            var e = window.event;
+            type = type || 'click';
+
+            if (document.createEvent){
+                e = document.createEvent('HTMLEvents');
+                e.initEvent(
+                    type, //event type
+                    false, //bubbles - set to false because the event should like normal fireEvent
+                    true //cancelable
+                );
+            }
+            e = new Event(e);
+            var elements = $$( element );
+            e.target = $$( element )[ 0 ];
+            
+            e._preventDefault = e.preventDefault;
+            e.preventDefault = function() {
+                this.__defaultPrevented = true;
+                this._preventDefault && this._preventDefault();
+            };
+            
+            e.isDefaultPrevented = function() {
+                return !!this.__defaultPrevented;
+            };
+            
+            return elements.fireEvent( type, e );
         },
         
         /**
@@ -126,12 +151,12 @@ AFrame.DOM = ( function() {
         * @param {string} value - value to set
         */
         setInner: function( element, value ) {
-            var target = $( element );
+            var target = $$( element );
             if( isValBased( target ) ) {
-                target.val( value );
+                target.set( 'value', value );
             }
             else {
-                target.html( value );
+                target.set( 'html', value );
             }
 
         },
@@ -143,16 +168,16 @@ AFrame.DOM = ( function() {
         * @return {string} inner value of the element
         */
         getInner: function( element ) {
-            var target = $( element );
+            var target = $$( element );
             var retval = '';
             
             if( isValBased( target ) ) {
-                retval = target.val();
+                retval = target.get( 'value' );
             }
             else {
-                retval = target.html();
+                retval = target.get( 'html' );
             }
-            return retval;
+            return retval[ 0 ];
         },
         
         /**
@@ -163,7 +188,7 @@ AFrame.DOM = ( function() {
         * @param {string} value - value to set
         */
         setAttr: function( element, attrName, value ) {
-            $( element ).attr( attrName, value );
+            $$( element ).set( attrName, value );
         },
         
         /**
@@ -174,7 +199,7 @@ AFrame.DOM = ( function() {
         * @return {string} attribute's value
         */
         getAttr: function( element, attrName ) {
-            return $( element ).attr( attrName );
+            return $$( element ).get( attrName )[ 0 ];
         },
         
         /**
@@ -185,7 +210,7 @@ AFrame.DOM = ( function() {
         * @return {boolean} true if the element has the attribute, false otw.
         */
         hasAttr: function( element, attrName ) {
-            var val = $( element )[ 0 ].getAttribute( attrName );
+            var val = $$( element )[ 0 ].getAttribute( attrName );
             return val !== null;
         },
         
@@ -196,7 +221,7 @@ AFrame.DOM = ( function() {
         * @param {string} className
         */
         addClass: function( element, className ) {
-            $( element ).addClass( className );
+            $$( element ).addClass( className );
         },
         
         /**
@@ -206,7 +231,7 @@ AFrame.DOM = ( function() {
         * @param {string} className
         */
         removeClass: function( element, className ) {
-            $( element ).removeClass( className );
+            $$( element ).removeClass( className );
         },
         
         /**
@@ -217,7 +242,8 @@ AFrame.DOM = ( function() {
         * @return {boolean} true if element has class, false otw.
         */
         hasClass: function( element, className ) {
-            return $( element ).hasClass( className );
+            var val = $$( element ).hasClass( className )[ 0 ];
+            return val;
         },
         
         /**
@@ -228,7 +254,7 @@ AFrame.DOM = ( function() {
         * @return {element} created element
         */
         createElement: function( type, html ) {
-            var element = $( '<' + type + '/>' );
+            var element = new Element( type );
             if( html ) {
                 AFrame.DOM.setInner( element, html );
             }
@@ -242,7 +268,7 @@ AFrame.DOM = ( function() {
         * @param {selector || element} elementToAppendTo
         */
         appendTo: function( elementToInsert, elementToAppendTo ) {
-            $( elementToInsert ).appendTo( $( elementToAppendTo ) );
+            $$( elementToAppendTo ).adopt( $$( elementToInsert ) );
         },
         
         /**
@@ -252,7 +278,7 @@ AFrame.DOM = ( function() {
         * @param {selector || element} elementToInsertBefore
         */
         insertBefore: function( elementToInsert, elementToInsertBefore ) {
-            $( elementToInsert ).insertBefore( elementToInsertBefore );
+            $$( elementToInsert ).inject( $$( elementToInsertBefore )[ 0 ], 'before' );
         },
         
         /**
@@ -263,13 +289,13 @@ AFrame.DOM = ( function() {
         * @param {number} index
         */
         insertAsNthChild: function( elementToInsert, parent, index ) {
-            var children = $( parent ).children();
+            var children = $$( parent ).getChildren().flatten();
             if( index === children.length ) {
-                elementToInsert.appendTo( parent );
+                this.appendTo( elementToInsert, parent )
             }
             else {
-                var insertBefore = children.eq( index );
-                elementToInsert.insertBefore( insertBefore );
+                var insertBefore = children[ index ];
+                this.insertBefore( elementToInsert, insertBefore );
             }
         
         }
@@ -278,9 +304,8 @@ AFrame.DOM = ( function() {
     };
     
     function isValBased( target ) {
-        return target.is( 'input' ) || target.is( 'textarea' );
+        return target.match( 'input' )[ 0 ] || target.match( 'textarea' )[ 0 ];
     }
     
     return DOM;
-    
 }() );
