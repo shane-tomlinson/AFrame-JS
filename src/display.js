@@ -45,7 +45,7 @@
  *     
  *     // Example of render which directly inserts HTML
  *     render: function() {
- *         this.getTarget().html( '<div>This is rendered inside of ' +
+ *         AFrame.DOM.setInner( this.getTarget(), '<div>This is rendered inside of ' +
  *              'the Dislay\'s target</div>' );
  *     },
  *
@@ -109,7 +109,7 @@ AFrame.Display = (function() {
         * 
         *     // Example of render which directly inserts HTML
         *     render: function() {
-        *         this.getTarget().html( '<div>This is rendered inside of ' +
+        *         AFrame.DOM.setInner( this.getTarget(), '<div>This is rendered inside of ' +
         *              'the Dislay\'s target</div>' );
         *     },
         *

@@ -36,6 +36,16 @@ function DOMTest( adapter ) {
             Assert.areEqual( 4, divsIncludingRoot.length, 'getElementsIncludeRoot gets the correct number of elements' );
         },
         
+        testGetChildren: function() {
+            var children = DOM.getChildren( '.DOMSelection' );
+            Assert.areEqual( 3, children.length, 'getChildren returns the children' );
+        },
+        
+        testGetNthChild: function() {
+            var child = DOM.getNthChild( '.DOMSelection', 0 );
+            Assert.isObject( child, 'we got a child' );
+        },
+        
         testBindEvent: function() {
             DOM.bindEvent( '.DOMSelection', 'click', genericHandler );
             
@@ -121,6 +131,47 @@ function DOMTest( adapter ) {
 
             DOM.removeClass( '#testSetInnerNonInput', 'testClass' );
             Assert.isFalse( DOM.hasClass( '#testSetInnerNonInput', 'testClass' ), 'hasClass is working when no class' );
+        },
+        
+        testCreateElement: function() {
+            var contents = 'some <span>html contents</span>';
+            var element = DOM.createElement( 'div', contents );
+            
+            Assert.isTrue( element.is( 'div' ), 'element created' );
+            Assert.areEqual( contents, element.html(), 'element has contents set' );
+        },
+        
+        testAppendTo: function() {
+            $( '.DOMSelection' ).empty();
+            
+            DOM.appendTo( DOM.createElement( 'div', 'empty div' ), '.DOMSelection' );
+            
+            Assert.areEqual( 1, $( '.DOMSelection' ).children().length, 'appendTo appends' );
+        },
+        
+        testInsertBefore: function() {
+            $( '.DOMSelection' ).empty();
+            
+            var first = DOM.createElement( 'div', 'first div' );
+            DOM.appendTo( first, '.DOMSelection' );
+            DOM.insertBefore( DOM.createElement( 'div', 'second div' ), first );
+            
+            Assert.areEqual( 2, $( '.DOMSelection' ).children().length, 'appendTo appends' );
+        },
+        
+        testInsertAsNthChild: function() {
+            var second = DOM.createElement( 'div', '2nd child' );
+            DOM.addClass( second, 'second' );
+            
+            DOM.insertAsNthChild( second, '.DOMSelection', 1 );
+            
+            Assert.areEqual( 3, $( '.DOMSelection' ).children().length, 'appendTo appends' );
+        },
+        
+        testRemoveElement: function() {
+            DOM.removeElement( '.second' );
+            
+            Assert.areEqual( 0, $( '.second' ).length, 'remove has worked' );
         }
     };
 }

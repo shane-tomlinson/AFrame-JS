@@ -16,7 +16,7 @@
  *    // Set up a factory to create list elements.  This can create the elements 
  *    // directly or use sort of templating system.
  *    var factory = function( index, data ) {
- *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+ *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
  *   
@@ -36,7 +36,7 @@
  *    } );
  *   
  *    // Inserts a pre-made list item at the head of the list
- *    list.insertRow( $( '<li>Joe Smith, the Coffee Shop</li>' ), 0 );
+ *    list.insertRow( AFrame.DOM.createElement( 'li', 'Joe Smith, the Coffee Shop' ), 0 );
  *    ---------
  *
  *    <ul id="clientList">
@@ -86,7 +86,7 @@ AFrame.List = ( function() {
         *
         *    // overriden listElementFactory
         *    listElementFactory: function( index, data ) {
-        *       var listItem = $( '<li>' + data.name + ', ' + data.employer + '</li>' );
+        *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
         *       return listItem;
         *    }
         *
@@ -96,7 +96,7 @@ AFrame.List = ( function() {
         * @return {Element} element to insert
         */
         listElementFactory: function() {
-            return $( '<li />' );
+            return AFrame.DOM.createElement( 'li' );
         },
         
         /**
@@ -167,7 +167,7 @@ AFrame.List = ( function() {
          * Insert an element into the list.
          *   
          *    // Item is inserted at index 0, the first item in the list.
-         *    list.insertElement( $( '<li>Shane Tomlinson, AFrame Foundary</li>' ), 0 );
+         *    list.insertElement( AFrame.DOM.createElement( 'li', 'Shane Tomlinson, AFrame Foundary' ), 0 );
          *   
          * @method insertElement
          * @param {element} rowElement - element to insert
@@ -178,16 +178,9 @@ AFrame.List = ( function() {
          */
         insertElement: function( rowElement, index ) {
             var target = this.getTarget();
-            var children = target.children();
             
             index = this.getActualInsertIndex( index );
-            if( index === children.length ) {
-                target.append( rowElement );
-            }
-            else {
-                var insertBefore = children.eq( index );
-                rowElement.insertBefore( insertBefore );
-            }
+            AFrame.DOM.insertAsNthChild( rowElement, target, index );
 
             /**
             * Triggered whenever an element is inserted into the list
@@ -217,7 +210,8 @@ AFrame.List = ( function() {
          */
         remove: function( index ) {
             var removeIndex = this.getActualIndex( index );
-            var rowElement = this.getTarget().children().eq( removeIndex ).remove();
+            var rowElement = AFrame.DOM.getNthChild( this.getTarget(), removeIndex );
+            AFrame.DOM.removeElement( rowElement );
             
             /**
             * Triggered whenever an element is removed from the list
@@ -242,7 +236,7 @@ AFrame.List = ( function() {
         * @param {object} context (optional) - context to call the callback in
         */
         forEach: function( callback, context ) {
-            var children = this.getTarget().children();
+            var children = AFrame.DOM.getChildren( this.getTarget() );
             children.each( function( index, element ) {
                 callback.call( context, element, index );
             } );

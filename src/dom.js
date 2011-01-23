@@ -9,7 +9,7 @@ AFrame.DOM = ( function() {
         /**
         * Get a set of elements that match the selector
         * @method getElements
-        * @param {string || element} selector - if a string, a selector to search for.
+        * @param {selector || element} selector - if a string, a selector to search for.
         * @return {array} array of elements
         */
         getElements: function( selector ) {
@@ -45,9 +45,39 @@ AFrame.DOM = ( function() {
         },
         
         /**
+        * Get the children for an element
+        * @method getChildren
+        * @param {selector || element} selector - element to get children for
+        * @return {array} an array of children
+        */
+        getChildren: function( selector ) {
+            return $( selector ).children();
+        },
+        
+        /**
+        * Get the nth child element
+        * @method getNthChild
+        * @param {selector || element} selector - element to get children for
+        * @param {number} index - index of the child to get
+        * @return {element} the nth child if it exists.
+        */
+        getNthChild: function( selector, index ) {
+            return $( selector ).children()[ index ];
+        },
+        
+        /**
+        * Remove an element
+        * @method removeElement
+        * @param {selector || element} selector - element to remove
+        */
+        removeElement: function( selector ) {
+            $( selector ).remove();
+        },
+        
+        /**
         * Bind to an elements DOM Event
         * @method bindEvent
-        * @param {string || element} element to bind on
+        * @param {selector || element} element to bind on
         * @param {string} eventName - name of event
         * @param {function} callback - callback to call
         */
@@ -58,7 +88,7 @@ AFrame.DOM = ( function() {
         /**
         * Unbind an already bound DOM Event from an element.
         * @method unbindEvent
-        * @param {string || element} element to unbind from
+        * @param {selector || element} element to unbind from
         * @param {string} eventName - name of event
         * @param {function} callback - callback
         */
@@ -69,7 +99,7 @@ AFrame.DOM = ( function() {
         /**
         * Fire a DOM event on an element
         * @method fireEvent
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string || event object} event - event to fire
         */
         fireEvent: function( element, event ) {
@@ -79,7 +109,7 @@ AFrame.DOM = ( function() {
         /**
         * Set the inner value of an element, including input elements
         * @method setInner
-        * @param {string || element} element - element to set
+        * @param {selector || element} element - element to set
         * @param {string} value - value to set
         */
         setInner: function( element, value ) {
@@ -96,7 +126,7 @@ AFrame.DOM = ( function() {
         /**
         * Get the inner value of an element, including input elements
         * @method getInner
-        * @param {string || element} element
+        * @param {selector || element} element
         * @return {string} inner value of the element
         */
         getInner: function( element ) {
@@ -115,7 +145,7 @@ AFrame.DOM = ( function() {
         /**
         * Set an element's attribute.
         * @method setAttr
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string} attrName - the attribute name
         * @param {string} value - value to set
         */
@@ -126,7 +156,7 @@ AFrame.DOM = ( function() {
         /**
         * Get an element's attribute.
         * @method getAttr
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string} attrName - the attribute name
         * @return {string} attribute's value
         */
@@ -137,7 +167,7 @@ AFrame.DOM = ( function() {
         /**
         * Check if an element has an attribute
         * @method hasAttr
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string} attrName - the attribute name
         * @return {boolean} true if the element has the attribute, false otw.
         */
@@ -149,7 +179,7 @@ AFrame.DOM = ( function() {
         /**
         * Add a class to an element
         * @method addClass
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string} className
         */
         addClass: function( element, className ) {
@@ -159,7 +189,7 @@ AFrame.DOM = ( function() {
         /**
         * Remove a class from an element
         * @method removeClass
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string} className
         */
         removeClass: function( element, className ) {
@@ -169,12 +199,66 @@ AFrame.DOM = ( function() {
         /**
         * Check if an element has a class
         * @method hasClass
-        * @param {string || element} element
+        * @param {selector || element} element
         * @param {string} className
         * @return {boolean} true if element has class, false otw.
         */
         hasClass: function( element, className ) {
             return $( element ).hasClass( className );
+        },
+        
+        /**
+        * Create an element
+        * @method createElement
+        * @param {string} type - element type
+        * @param {string} html (optional) - inner HTML
+        * @return {element} created element
+        */
+        createElement: function( type, html ) {
+            var element = $( '<' + type + '/>' );
+            if( html ) {
+                AFrame.DOM.setInner( element, html );
+            }
+            return element;
+        },
+      
+        /**
+        * Append an element as the last child of another element
+        * @method appendTo
+        * @param {selector || element} elementToInsert
+        * @param {selector || element} elementToAppendTo
+        */
+        appendTo: function( elementToInsert, elementToAppendTo ) {
+            $( elementToInsert ).appendTo( $( elementToAppendTo ) );
+        },
+        
+        /**
+        * Insert an element before another element
+        * @method insertBefore
+        * @param {selector || element} elementToInsert
+        * @param {selector || element} elementToInsertBefore
+        */
+        insertBefore: function( elementToInsert, elementToInsertBefore ) {
+            $( elementToInsert ).insertBefore( elementToInsertBefore );
+        },
+        
+        /**
+        * Insert as the nth child of an element
+        * @method insertAsNthChild
+        * @param {selector || element} elementToInsert
+        * @param {selector || element} parent
+        * @param {number} index
+        */
+        insertAsNthChild: function( elementToInsert, parent, index ) {
+            var children = $( parent ).children();
+            if( index === children.length ) {
+                elementToInsert.appendTo( parent );
+            }
+            else {
+                var insertBefore = children.eq( index );
+                elementToInsert.insertBefore( insertBefore );
+            }
+        
         }
         
         
