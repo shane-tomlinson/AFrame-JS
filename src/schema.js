@@ -73,7 +73,7 @@ AFrame.Schema = (function() {
     
     var SCHEMA_ID_KEY = '__SchemaID';
     
-    Schema = function( config ) {
+    var Schema = function( config ) {
         if( config ) {
             if( !config[ SCHEMA_ID_KEY ] ) {
                 config[ SCHEMA_ID_KEY ] = AFrame.getUniqueID();
