@@ -5,10 +5,10 @@ AFrame JS - The Javascript Application Framework
 -----------------------
 
 AFrame is an MVC library that aims to provide a foundation for developing applications in Javascript using the same
-methodologies other languages have been using for years.  This is NOT another DOM manipulation library.  
-There are plenty of DOM manipulation libraries (jQuery, MooTools, Prototype, Dojo, YUI), other libraries that provide 
-hundreds of widgets (Dojo, YUI, Sencha Labs) and others that shield you from writing Javascript (Cappachino).  But why?  
-There is a need for a light weight APPLICATION library which provide a clean way to write apps in a traditional MVC style.  
+methodologies other languages have been using for years.  This is NOT another DOM manipulation library. There are
+plenty of DOM manipulation libraries (jQuery, MooTools, Prototype, Dojo, YUI), other libraries that provide 
+hundreds of widgets (Dojo, YUI, Sencha Labs) and others that shield you from writing Javascript (Cappachino).  But why?
+There is a need for a light weight APPLICATION library which provide a clean way to write apps in a traditional MVC style.
 Backbone and Knockout-JS are two similar options, and now AFrame addresses this need.
 
 AFrame has no dependency on any DOM framework in particular, all DOM interaction is done through DOM adapters.  Currently,
