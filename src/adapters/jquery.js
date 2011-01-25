@@ -1,10 +1,10 @@
 /**
-* A DOM Manipulation adapter.  DOM functionality is being ported over to use this instead
-*   of direct jQuery access so that we can write adapters for Mootools, YUI, etc.
+* A DOM Manipulation adapter for jQuery.
 * @class AFrame.DOM
 * @static
 */
 AFrame.DOM = ( function() {
+    var jQuery = window.jQuery;
     var DOM = {
         /**
         * Get a set of elements that match the selector
@@ -13,7 +13,7 @@ AFrame.DOM = ( function() {
         * @return {array} array of elements
         */
         getElements: function( selector ) {
-            return $( selector );
+            return jQuery( selector );
         },
         
         /**
@@ -24,7 +24,7 @@ AFrame.DOM = ( function() {
         * @return {array} array of elements
         */
         getDescendentElements: function( selector, root ) {
-            return $( root ).find( selector );
+            return jQuery( root ).find( selector );
         },
         
         /**
@@ -36,7 +36,7 @@ AFrame.DOM = ( function() {
         * @return {array} array of elements
         */
         getElementsIncludeRoot: function( selector, root ) {
-            root = $( root );
+            root = jQuery( root );
             var set = root.find( selector );
             if( root.is( selector ) ) {
                 set = root.add( set );
@@ -51,7 +51,7 @@ AFrame.DOM = ( function() {
         * @return {array} an array of children
         */
         getChildren: function( selector ) {
-            return $( selector ).children();
+            return jQuery( selector ).children();
         },
         
         /**
@@ -62,7 +62,7 @@ AFrame.DOM = ( function() {
         * @return {element} the nth child if it exists.
         */
         getNthChild: function( selector, index ) {
-            return $( selector ).children()[ index ];
+            return jQuery( selector ).children()[ index ];
         },
         
         /**
@@ -73,7 +73,7 @@ AFrame.DOM = ( function() {
         * @param {context} context - context to callback in
         */
         forEach: function( elements, callback, context ) {
-            $( elements ).each( function( index, element ) {
+            jQuery( elements ).each( function( index, element ) {
                 callback.call( context, element, index );
             } );
         },
@@ -84,7 +84,7 @@ AFrame.DOM = ( function() {
         * @param {selector || element} selector - element to remove
         */
         removeElement: function( selector ) {
-            $( selector ).remove();
+            jQuery( selector ).remove();
         },
         
         /**
@@ -95,7 +95,7 @@ AFrame.DOM = ( function() {
         * @param {function} callback - callback to call
         */
         bindEvent: function( element, eventName, callback ) {
-            return $( element ).bind( eventName, callback );
+            return jQuery( element ).bind( eventName, callback );
         },
         
         /**
@@ -106,7 +106,7 @@ AFrame.DOM = ( function() {
         * @param {function} callback - callback
         */
         unbindEvent: function( element, eventName, callback ) {
-            return $( element ).unbind( eventName, callback );
+            return jQuery( element ).unbind( eventName, callback );
         },
         
         /**
@@ -116,7 +116,7 @@ AFrame.DOM = ( function() {
         * @param {string} type - event to fire
         */
         fireEvent: function( element, type ) {
-            return $( element ).trigger( type );
+            return jQuery( element ).trigger( type );
         },
         
         /**
@@ -126,7 +126,7 @@ AFrame.DOM = ( function() {
         * @param {string} value - value to set
         */
         setInner: function( element, value ) {
-            var target = $( element );
+            var target = jQuery( element );
             if( isValBased( target ) ) {
                 target.val( value );
             }
@@ -143,7 +143,7 @@ AFrame.DOM = ( function() {
         * @return {string} inner value of the element
         */
         getInner: function( element ) {
-            var target = $( element );
+            var target = jQuery( element );
             var retval = '';
             
             if( isValBased( target ) ) {
@@ -163,7 +163,7 @@ AFrame.DOM = ( function() {
         * @param {string} value - value to set
         */
         setAttr: function( element, attrName, value ) {
-            $( element ).attr( attrName, value );
+            jQuery( element ).attr( attrName, value );
         },
         
         /**
@@ -174,7 +174,7 @@ AFrame.DOM = ( function() {
         * @return {string} attribute's value
         */
         getAttr: function( element, attrName ) {
-            return $( element ).attr( attrName );
+            return jQuery( element ).attr( attrName );
         },
         
         /**
@@ -185,7 +185,7 @@ AFrame.DOM = ( function() {
         * @return {boolean} true if the element has the attribute, false otw.
         */
         hasAttr: function( element, attrName ) {
-            var val = $( element )[ 0 ].getAttribute( attrName );
+            var val = jQuery( element )[ 0 ].getAttribute( attrName );
             return val !== null;
         },
         
@@ -196,7 +196,7 @@ AFrame.DOM = ( function() {
         * @param {string} className
         */
         addClass: function( element, className ) {
-            $( element ).addClass( className );
+            jQuery( element ).addClass( className );
         },
         
         /**
@@ -206,7 +206,7 @@ AFrame.DOM = ( function() {
         * @param {string} className
         */
         removeClass: function( element, className ) {
-            $( element ).removeClass( className );
+            jQuery( element ).removeClass( className );
         },
         
         /**
@@ -217,7 +217,7 @@ AFrame.DOM = ( function() {
         * @return {boolean} true if element has class, false otw.
         */
         hasClass: function( element, className ) {
-            return $( element ).hasClass( className );
+            return jQuery( element ).hasClass( className );
         },
         
         /**
@@ -228,7 +228,7 @@ AFrame.DOM = ( function() {
         * @return {element} created element
         */
         createElement: function( type, html ) {
-            var element = $( '<' + type + '/>' );
+            var element = jQuery( '<' + type + '/>' );
             if( html ) {
                 AFrame.DOM.setInner( element, html );
             }
@@ -242,7 +242,7 @@ AFrame.DOM = ( function() {
         * @param {selector || element} elementToAppendTo
         */
         appendTo: function( elementToInsert, elementToAppendTo ) {
-            $( elementToInsert ).appendTo( $( elementToAppendTo ) );
+            jQuery( elementToInsert ).appendTo( jQuery( elementToAppendTo ) );
         },
         
         /**
@@ -252,7 +252,7 @@ AFrame.DOM = ( function() {
         * @param {selector || element} elementToInsertBefore
         */
         insertBefore: function( elementToInsert, elementToInsertBefore ) {
-            $( elementToInsert ).insertBefore( elementToInsertBefore );
+            jQuery( elementToInsert ).insertBefore( elementToInsertBefore );
         },
         
         /**
@@ -263,7 +263,7 @@ AFrame.DOM = ( function() {
         * @param {number} index
         */
         insertAsNthChild: function( elementToInsert, parent, index ) {
-            var children = $( parent ).children();
+            var children = jQuery( parent ).children();
             if( index === children.length ) {
                 elementToInsert.appendTo( parent );
             }

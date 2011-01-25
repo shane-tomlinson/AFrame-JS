@@ -9,7 +9,7 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     	var test = new TestCase( testConfig );
         testCases.push( test );
         
-        $( '<li><input type="checkbox" value="' + index + '" />' + test.name + '</li>' ).appendTo( $( '#testList' ) );
+        jQuery( '<li><input type="checkbox" value="' + index + '" />' + test.name + '</li>' ).appendTo( jQuery( '#testList' ) );
     } );
 
     //initialize the console
@@ -19,7 +19,7 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     yconsole.render( '#log' );
 
     var items = [];
-    var cookie = $.cookie( 'tests_to_run' );
+    var cookie = jQuery.cookie( 'tests_to_run' );
     if( cookie ) {
         items = JSON.parse( cookie ) || [];
     }
@@ -28,48 +28,48 @@ YUI( { logInclude: { TestRunner: true } } ).use( 'console', 'overlay', 'test', f
     }
     
     items.forEach( function( itemID, index ) {
-        $( '#testList input[type=checkbox][value=' + itemID + ']' ).attr( 'checked', true );
+        jQuery( '#testList input[type=checkbox][value=' + itemID + ']' ).attr( 'checked', true );
     } );
     runItems( items );
     
-    $( '#btnRunTests' ).click( function() {
+    jQuery( '#btnRunTests' ).click( function() {
         var items = getChecked();
         runItems( items );
     } );
     
-    $( '#chkAllTests' ).click( function( event ) {
-        var checked = $( this ).is( ':checked' );
+    jQuery( '#chkAllTests' ).click( function( event ) {
+        var checked = jQuery( this ).is( ':checked' );
         
         if( checked ) {
-            $( '#testList input[type=checkbox]' ).attr( 'checked', true );
+            jQuery( '#testList input[type=checkbox]' ).attr( 'checked', true );
         }
         else {
-            $( '#testList input[type=checkbox]' ).removeAttr( 'checked' );
+            jQuery( '#testList input[type=checkbox]' ).removeAttr( 'checked' );
         }
     } );
     
-    $( '#testList input[type=checkbox]' ).click( function( event ) {
-        var el = $( this );
+    jQuery( '#testList input[type=checkbox]' ).click( function( event ) {
+        var el = jQuery( this );
         if( false == el.is( '#chkAllTests' ) ) {
             var checked = el.is( ':checked' );
             if( false == checked ) {
-                $( '#chkAllTests' ).removeAttr( 'checked' );
+                jQuery( '#chkAllTests' ).removeAttr( 'checked' );
             }
         }
     } );
 
     
-    $( window ).bind( 'beforeunload', function( event ) {
+    jQuery( window ).bind( 'beforeunload', function( event ) {
         var items = getChecked();
         var cookie = JSON.stringify( items );
-        $.cookie( 'tests_to_run', cookie );
+        jQuery.cookie( 'tests_to_run', cookie );
     } );
 
     function getChecked() {
         var checkedIndex = [];
 
-        $( '#testList input[type=checkbox]:checked' ).each( function( index, item ) {
-            var testID = $( item ).val();
+        jQuery( '#testList input[type=checkbox]:checked' ).each( function( index, item ) {
+            var testID = jQuery( item ).val();
             
             checkedIndex.push( testID );
         } );

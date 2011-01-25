@@ -32,7 +32,7 @@ testsToRun.push( {
 
 		testGetTarget: function() {
 			var target = this.display.getTarget();
-			Assert.areSame( target[ 0 ], $( '.target' )[ 0 ], 'correct target' );
+			Assert.areSame( target[ 0 ], jQuery( '.target' )[ 0 ], 'correct target' );
 		},
 		
 		testBindDOM: function() {
@@ -61,7 +61,7 @@ testsToRun.push( {
 				this.callbackCount++;
 			};
 			
-			this.display.bindDOMEvent( $( '#externalButton' ), 'click', onClick, this );
+			this.display.bindDOMEvent( AFrame.DOM.getElements( '#externalButton' ), 'click', onClick, this );
 			Assert.areEqual( 0, this.callbackCount, 'external target correct' );
 		},
 
@@ -133,7 +133,7 @@ testsToRun.push( {
                 target: '.target'
             } );
             
-            Assert.areEqual( 'rendered inside of target', $( '.target' ).html(), 'target was rendered' );
+            Assert.areEqual( 'rendered inside of target', jQuery( '.target' ).html(), 'target was rendered' );
             Assert.isTrue( renderEvent, 'onRender was called' );
         }
 

@@ -14,7 +14,7 @@ function DOMTest( adapter, name ) {
         
         setUp: function() {
             events = {};
-            $( '.DOMSelection' ).empty().append( '<div>Part 1</div><div>Part 2</div><div>Part 3</div>' );
+            jQuery( '.DOMSelection' ).empty().append( '<div>Part 1</div><div>Part 2</div><div>Part 3</div>' );
         },
         
         tearDown: function() {
@@ -23,7 +23,15 @@ function DOMTest( adapter, name ) {
         testGetElements: function() {
             var elements = DOM.getElements( 'body' );
             
-            Assert.areSame( 1, elements.length, 'getElements returns an array' );
+            Assert.areSame( 1, elements.length, 'getElements with a selector returns an array' );
+
+            var regetElements = DOM.getElements( elements );
+            Assert.areSame( 1, regetElements.length, 'getElements with an element returns an array with 1 element' );
+            Assert.areSame( elements[ 0 ], regetElements[ 0 ], 'getElements with an element returns an array with same element' );
+            
+            var regetSingleElement = DOM.getElements( elements[ 0 ] );
+            Assert.areSame( 1, regetSingleElement.length, 'getElements with an element returns an array with 1 element' );
+            Assert.areSame( elements[ 0 ], regetSingleElement[ 0 ], 'getElements with an element returns an array with same element' );
         },
         
         testGetDescendentElements: function() {
@@ -83,13 +91,13 @@ function DOMTest( adapter, name ) {
         testSetInnerInput: function() {
             DOM.setInner( '#validationField', 'test element value' );
             
-            Assert.areSame( 'test element value', $( '#validationField' ).val(), 'setInner working on input' );
+            Assert.areSame( 'test element value', jQuery( '#validationField' ).val(), 'setInner working on input' );
         },
         
         testSetInnerNonInput: function() {
             DOM.setInner( '#testSetInnerNonInput', 'test element value' );
             
-            Assert.areSame( 'test element value', $( '#testSetInnerNonInput' ).html(), 'setInner working on div' );
+            Assert.areSame( 'test element value', jQuery( '#testSetInnerNonInput' ).html(), 'setInner working on div' );
         },
         
         testGetInnerInput: function() {
@@ -111,7 +119,7 @@ function DOMTest( adapter, name ) {
         testSetAttr: function() {
             DOM.setAttr( '#testSetInnerNonInput', 'data-attr', 'test attr' );
             
-            Assert.areSame( 'test attr', $( '#testSetInnerNonInput' ).attr( 'data-attr' ), 'setAttr working' );
+            Assert.areSame( 'test attr', jQuery( '#testSetInnerNonInput' ).attr( 'data-attr' ), 'setAttr working' );
         },
         
         testGetAttr: function() {
@@ -128,14 +136,14 @@ function DOMTest( adapter, name ) {
         testAddClass: function() {
             DOM.addClass( '#testSetInnerNonInput', 'testClass' );
             
-            Assert.isTrue( $( '#testSetInnerNonInput' ).hasClass( 'testClass' ), 'addClass is working' );
+            Assert.isTrue( jQuery( '#testSetInnerNonInput' ).hasClass( 'testClass' ), 'addClass is working' );
         },
         
         testRemoveClass: function() {
             DOM.addClass( '#testSetInnerNonInput', 'testClass' );
             DOM.removeClass( '#testSetInnerNonInput', 'testClass' );
             
-            Assert.isFalse( $( '#testSetInnerNonInput' ).hasClass( 'testClass' ), 'removeClass is working' );
+            Assert.isFalse( jQuery( '#testSetInnerNonInput' ).hasClass( 'testClass' ), 'removeClass is working' );
         },
 
         testHasClass: function() {
@@ -150,26 +158,26 @@ function DOMTest( adapter, name ) {
             var contents = 'some <span>html contents</span>';
             var element = DOM.createElement( 'div', contents );
             
-            Assert.isTrue( $( element ).is( 'div' ), 'element created' );
-            Assert.areSame( contents, $( element ).html(), 'element has contents set' );
+            Assert.isTrue( jQuery( element ).is( 'div' ), 'element created' );
+            Assert.areSame( contents, jQuery( element ).html(), 'element has contents set' );
         },
         
         testAppendTo: function() {
-            $( '.DOMSelection' ).empty();
+            jQuery( '.DOMSelection' ).empty();
             
             DOM.appendTo( DOM.createElement( 'div', 'empty div' ), '.DOMSelection' );
             
-            Assert.areSame( 1, $( '.DOMSelection' ).children().length, 'appendTo appends' );
+            Assert.areSame( 1, jQuery( '.DOMSelection' ).children().length, 'appendTo appends' );
         },
         
         testInsertBefore: function() {
-            $( '.DOMSelection' ).empty();
+            jQuery( '.DOMSelection' ).empty();
             
             var first = DOM.createElement( 'div', 'first div' );
             DOM.appendTo( first, '.DOMSelection' );
             DOM.insertBefore( DOM.createElement( 'div', 'second div' ), first );
             
-            Assert.areSame( 2, $( '.DOMSelection' ).children().length, 'appendTo appends' );
+            Assert.areSame( 2, jQuery( '.DOMSelection' ).children().length, 'appendTo appends' );
         },
         
         testInsertAsNthChild: function() {
@@ -178,15 +186,14 @@ function DOMTest( adapter, name ) {
             
             DOM.insertAsNthChild( second, '.DOMSelection', 1 );
             
-            Assert.areSame( 4, $( '.DOMSelection' ).children().length, 'appendTo appends' );
+            Assert.areSame( 4, jQuery( '.DOMSelection' ).children().length, 'appendTo appends' );
         },
         
         testRemoveElement: function() {
-            DOM.removeElement( '.second' );
+            DOM.removeElement( '.DOMSelection' );
             
-            Assert.areSame( 0, $( '.second' ).length, 'remove has worked' );
+            Assert.areSame( 0, jQuery( '.DOMSelection' ).length, 'remove has worked' );
         }
     };
 }
-testsToRun.push( DOMTest( AFrame.DOM, 'jQuery' ) );
-testsToRun.push( DOMTest( AFrame.DOMMOO, 'MooTools' ) );
+testsToRun.push( DOMTest( AFrame.DOM, 'DOM Adapter' ) );

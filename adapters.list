@@ -1,2 +1,3 @@
 adapters.list=jquery,\
-mootools
+mootools,\
+prototype

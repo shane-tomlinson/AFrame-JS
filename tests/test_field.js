@@ -18,7 +18,7 @@ testsToRun.push( {
 		},
 
 		testInput: function() {
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set' );
@@ -31,7 +31,7 @@ testsToRun.push( {
 		},
 
 		testText: function() {
-			var target = $( 'span[data-field=name]' );
+			var target = jQuery( 'span[data-field=name]' );
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
@@ -55,7 +55,7 @@ testsToRun.push( {
 		},
 
 		testTextArea: function() {
-			var target = $( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field=name]' );
 			var textAreaField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
@@ -76,7 +76,7 @@ testsToRun.push( {
 		},
 
 		testCheckValidity: function() {
-			var target = $( 'span[data-field=name]' );
+			var target = jQuery( 'span[data-field=name]' );
 			var textField = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
@@ -93,7 +93,7 @@ testsToRun.push( {
 			textField.teardown();
 			textField = null;
 			
-			target = $( 'textarea[data-field=name]' );
+			target = jQuery( 'textarea[data-field=name]' );
 			var fieldValueRequired = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
@@ -117,7 +117,7 @@ testsToRun.push( {
 		},
 
 		testClear: function() {
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			target.val( 'Charlotte Tomlinson' );
 
 			this.field.clear();
@@ -126,19 +126,19 @@ testsToRun.push( {
 		},
 
 		testSet: function() {
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			this.field.set( 'AFrame' );
 			Assert.areEqual( 'AFrame', target.val(), 'set sets the field correctly' );
 		},
 		
 		testGet: function() {	
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			this.field.set( 'Shane Tomlinson' );
 			Assert.areEqual( 'Shane Tomlinson', this.field.get(), 'get gets field correctly' );
 		},
 		
 		testReset: function() {
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			
 			this.field.set( 'Charlotte' );
 			target.val( 'Shane' );
@@ -147,7 +147,7 @@ testsToRun.push( {
 		},
 		
 		testSave: function() {
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			
 			target.val( 'Shane' );
 			this.field.save();
@@ -157,7 +157,7 @@ testsToRun.push( {
 		},
 		
 		testFieldWithInitialValue: function() {
-			var target = $( 'span[data-field=name]' );
+			var target = jQuery( 'span[data-field=name]' );
 			target.html( 'Charlotte Tomlinson' );
 			
 			var textField = AFrame.construct( {
@@ -176,7 +176,7 @@ testsToRun.push( {
 		},
 		
 		testGetDisplayed: function() {
-			var target = $( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field=name]' );
 			
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', this.field.getDisplayed(), 'getDisplayed works' );
@@ -228,7 +228,7 @@ testsToRun.push( {
 		},
 		
 		testInvalidCancellable: function() {
-			var target = $( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field=name]' );
 			
 			var fieldValueRequired = AFrame.construct( {
 				type: AFrame.Field,
@@ -259,7 +259,7 @@ testsToRun.push( {
 		},
         
         testSetCausesInvalid: function() {
-			var target = $( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field=name]' );
 			
 			var field = AFrame.construct( {
 				type: AFrame.Field,

@@ -14,7 +14,9 @@ testsToRun.push( {
 					listElementFactory: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
-						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + '">Inserted Element</li>' );
+                        
+						var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
+                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
 						return rowElement;
 					}.bind( this )
 					
@@ -43,23 +45,23 @@ testsToRun.push( {
 			this.store.insert( { cid: 'inserted0' } );
 			this.store.insert( { cid: 'inserted1' } );
 			
-			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted0' ).length, 'list element0 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'list element1 inserted' );
 		},
 		
 		testRemove: function() {
 			this.store.insert( { cid: 'inserted0' } );
 			this.store.insert( { cid: 'inserted1' } );
 			
-			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted0' ).length, 'list element0 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'list element1 inserted' );
 			
 			this.store.remove( 0 );
-			Assert.areEqual( 0, $( 'ul > li#inserted0' ).length, 'list element0 removed' );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 not removed' );
+			Assert.areEqual( 0, jQuery( 'ul > li#inserted0' ).length, 'list element0 removed' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'list element1 not removed' );
 
 			this.store.remove( 'inserted1' );
-			Assert.areEqual( 0, $( 'ul > li#inserted1' ).length, 'list element1 removed' );
+			Assert.areEqual( 0, jQuery( 'ul > li#inserted1' ).length, 'list element1 removed' );
 		},
 		
 		testGetIndex: function() {
@@ -90,7 +92,8 @@ testsToRun.push( {
 					listElementFactory: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
-						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + '">Inserted Element</li>' );
+						var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
+                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
 						return rowElement;
 					}.bind( this )
 					
@@ -119,23 +122,23 @@ testsToRun.push( {
 			this.store.insert( { cid: 'inserted0' } );
 			this.store.insert( { cid: 'inserted1' } );
 			
-			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted0' ).length, 'list element0 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'list element1 inserted' );
 		},
 		
 		testRemove: function() {
 			this.store.insert( { cid: 'inserted0' } );
 			this.store.insert( { cid: 'inserted1' } );
 			
-			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element0 inserted' );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted0' ).length, 'list element0 inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'list element1 inserted' );
 			
 			this.store.remove( 'inserted0' );
-			Assert.areEqual( 0, $( 'ul > li#inserted0' ).length, 'list element0 removed' );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'list element1 not removed' );
+			Assert.areEqual( 0, jQuery( 'ul > li#inserted0' ).length, 'list element0 removed' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'list element1 not removed' );
 			
 			this.store.remove( 'inserted1' );
-			Assert.areEqual( 0, $( 'ul > li#inserted1' ).length, 'list element1 removed' );
+			Assert.areEqual( 0, jQuery( 'ul > li#inserted1' ).length, 'list element1 removed' );
 		},
 		
 		testGetIndex: function() {

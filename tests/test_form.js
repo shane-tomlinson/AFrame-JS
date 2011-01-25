@@ -67,7 +67,7 @@ testsToRun.push( {
 		},
 
 		testFactoryPassedWithCorrectData: function() {
-			var expectedFormElement = $( '#textFormElement2' )[ 0 ];
+			var expectedFormElement = jQuery( '#textFormElement2' )[ 0 ];
 			Assert.areEqual( expectedFormElement, this.factoryFormElement[ 0 ], 'formElement passed correctly' );
 		},
 
@@ -126,7 +126,7 @@ testsToRun.push( {
 		},
 		
 		testBindFormElement: function() {
-			var field = this.form.bindFormElement( $( '#formElement' ) );
+			var field = this.form.bindFormElement( '#formElement' );
 			Assert.isNotUndefined( field, 'field was created' );
 		},
         
@@ -137,7 +137,7 @@ testsToRun.push( {
 					target: '#AFrame_Form'
 				}
 			} );
-			var field = form.bindFormElement( $( '#formElement' ) );
+			var field = form.bindFormElement( '#formElement' );
             
             Assert.isTrue( field instanceof AFrame.Field, 'default field factory creates a field' );
         }

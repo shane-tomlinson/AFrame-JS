@@ -3,12 +3,10 @@ testsToRun.push( {
 		name: "TestCase AFrame.FieldPluginValidation",
 		
 		setUp: function() {
-			target = $( 'textarea[data-field=name]' );
-			
 			this.field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: target,
+					target: 'textarea[data-field=name]',
 				}
 			} );
             
@@ -54,7 +52,7 @@ testsToRun.push( {
             var field = AFrame.construct( {
                 type: AFrame.Field,
                 config: {
-                    target: $( 'textarea[data-field=name]' )
+                    target: 'textarea[data-field=name]'
                 },
                 plugins: [ {
                     type: ValidatorPlugin
@@ -67,7 +65,7 @@ testsToRun.push( {
         },
         
         testInvalidEvent: function() {
-			var target = $( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field=name]' );
 			target.val( '' );
             
 			var field = AFrame.construct( {
@@ -91,7 +89,7 @@ testsToRun.push( {
         },
         
         testManualErrorShowsStandardErrors: function() {
-			var target = $( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field=name]' );
 			target.val( '' );
             
 			var field = AFrame.construct( {
@@ -116,10 +114,10 @@ testsToRun.push( {
         },
 
         testGetCriteria: function() {
-            var target = $( 'input#validationField' );
+            var target = jQuery( 'input#validationField' );
             var field = {
                 getTarget: function() {
-                    return target;
+                    return AFrame.DOM.getElements( 'input#validationField' );
                 },
                 bindEvent: function() {}
             };

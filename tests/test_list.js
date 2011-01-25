@@ -10,7 +10,8 @@ testsToRun.push( {
 					listElementFactory: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
-						var rowElement = $( '<li id="' + ( data.cid ? data.cid : 'inserted' + index ) + '">Inserted Element</li>' );
+						var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
+                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
 						return rowElement;
 					}.bind( this )
 					
@@ -19,7 +20,7 @@ testsToRun.push( {
 		},
 		
 		tearDown : function () {
-			$( '.list' ).html( '' );
+			jQuery( '.list' ).html( '' );
 			
 			this.list.teardown();
 			this.list= null;
@@ -31,18 +32,18 @@ testsToRun.push( {
 			
 			Assert.areEqual( 0, this.insertedIndex, 'create function called for correct index' );
 			Assert.areEqual( 'fieldValue', this.insertedData.field, 'create function called with correct data' );
-			Assert.areEqual( 1, $( 'ul > li#inserted0' ).length, 'list element inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted0' ).length, 'list element inserted' );
 
 			this.list.insert( { field: 'fieldValue' }, 1 );
-			Assert.areEqual( 1, $( 'ul > li#inserted1' ).length, 'second list element inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#inserted1' ).length, 'second list element inserted' );
 
 			this.list.insert( { cid: 'insertedBefore1' }, 1 );
-			Assert.areEqual( 1, $( 'ul > li#insertedBefore1' ).length, 'third list element inserted' );
+			Assert.areEqual( 1, jQuery( 'ul > li#insertedBefore1' ).length, 'third list element inserted' );
 
-			Assert.areEqual( 1, $( 'li#insertedBefore1 + li#inserted1' ).length, 'third inserted in correct order' );
+			Assert.areEqual( 1, jQuery( 'li#insertedBefore1 + li#inserted1' ).length, 'third inserted in correct order' );
 
 			this.list.insert( { cid: 'insertedOutOfOrder' }, 10 );
-			Assert.areEqual( 1, $( 'li#insertedOutOfOrder' ).length, 'out of order insert inserts at end' );
+			Assert.areEqual( 1, jQuery( 'li#insertedOutOfOrder' ).length, 'out of order insert inserts at end' );
 
 			var insertData;
 			this.list.bindEvent( 'onInsert', function( data ) {
@@ -77,8 +78,11 @@ testsToRun.push( {
 		},
 
 		testInsertElement: function() {
-			this.list.insertElement( $( '<li id="insertRowInsert">Insert Row Insert</li>' ) );
-			Assert.areEqual( 1, $( 'li#insertRowInsert' ).length, 'insertRow correctly working' );
+            var element = AFrame.DOM.createElement( 'li', 'Insert Row Insert' );
+            AFrame.DOM.setAttr( element, 'id', 'insertRowInsert' );
+            
+			this.list.insertElement( element );
+			Assert.areEqual( 1, jQuery( 'li#insertRowInsert' ).length, 'insertRow correctly working' );
 		},
 
 		testRemove: function() {
@@ -92,29 +96,29 @@ testsToRun.push( {
 				removeData = data;
 			} );
 			
-			Assert.areEqual( 4, $( '.list > li' ).length, 'correct number of start items' );
-			Assert.areEqual( 1, $( '.list > #li0' ).length, 'check for #li0' );
-			Assert.areEqual( 1, $( '.list > #li1' ).length, 'check for #li1' );
-			Assert.areEqual( 1, $( '.list > #li2' ).length, 'check for #li2' );
-			Assert.areEqual( 1, $( '.list > #li3' ).length, 'check for #li3' );
+			Assert.areEqual( 4, jQuery( '.list > li' ).length, 'correct number of start items' );
+			Assert.areEqual( 1, jQuery( '.list > #li0' ).length, 'check for #li0' );
+			Assert.areEqual( 1, jQuery( '.list > #li1' ).length, 'check for #li1' );
+			Assert.areEqual( 1, jQuery( '.list > #li2' ).length, 'check for #li2' );
+			Assert.areEqual( 1, jQuery( '.list > #li3' ).length, 'check for #li3' );
 			
 			this.list.remove( 0 );
-			Assert.areEqual( 3, $( '.list > li' ).length, 'remove index 0' );
-			Assert.areEqual( 0, $( '.list > #li0' ).length, 'remove index 0' );
+			Assert.areEqual( 3, jQuery( '.list > li' ).length, 'remove index 0' );
+			Assert.areEqual( 0, jQuery( '.list > #li0' ).length, 'remove index 0' );
 
 
 			Assert.areEqual( 0, removeData.index, 'onRemoveElement data index correct' );
 			Assert.isNotUndefined( 0, removeData.rowElement, 'onRemoveElement data rowElement exists' );
 			
 			this.list.remove( 1 );
-			Assert.areEqual( 2, $( '.list > li' ).length, 'remove index 1' );
-			Assert.areEqual( 0, $( '.list > #li2' ).length, 'remove index 1 correctly removes #li2' );
+			Assert.areEqual( 2, jQuery( '.list > li' ).length, 'remove index 1' );
+			Assert.areEqual( 0, jQuery( '.list > #li2' ).length, 'remove index 1 correctly removes #li2' );
 			
 			this.list.remove( -1 );
-			Assert.areEqual( 1, $( '.list > li' ).length, 'remove index -1' );
-			Assert.areEqual( 0, $( '.list > #li3' ).length, 'remove index -1 correctly removes #li3' );
+			Assert.areEqual( 1, jQuery( '.list > li' ).length, 'remove index -1' );
+			Assert.areEqual( 0, jQuery( '.list > #li3' ).length, 'remove index -1 correctly removes #li3' );
 			
-			Assert.areEqual( 1, $( '.list > #li1' ).length, '#li1 still remains' );
+			Assert.areEqual( 1, jQuery( '.list > #li1' ).length, '#li1 still remains' );
 		},
 		
 		testGetCount: function() {
@@ -130,15 +134,15 @@ testsToRun.push( {
 		testClear: function() {
 			this.list.insert( {} );
 			
-			Assert.areNotEqual( '', $( '.list' ).html(), 'list has contents' );
+			Assert.areNotEqual( '', jQuery( '.list' ).html(), 'list has contents' );
 
 			this.list.clear();
 			
-			Assert.areEqual( '', $( '.list' ).html(), 'list has been cleared' );
+			Assert.areEqual( '', jQuery( '.list' ).html(), 'list has been cleared' );
 		},
         
         testInternalListElementFactory: function() {
-            $( '.list' ).empty();
+            jQuery( '.list' ).empty();
             
 			var list = AFrame.construct( {
 				type: AFrame.List,
@@ -150,11 +154,11 @@ testsToRun.push( {
             list.insert( {} );
             list.insert( {} );
         
-            Assert.areEqual( 2, $( '.list li' ).length, 'insert happens with default factory' );
+            Assert.areEqual( 2, jQuery( '.list li' ).length, 'insert happens with default factory' );
         },
         
         testForEach: function() {
-            $( '.list' ).empty();
+            jQuery( '.list' ).empty();
             
 			var list = AFrame.construct( {
 				type: AFrame.List,

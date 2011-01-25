@@ -34,12 +34,12 @@ testsToRun.push( {
 		},
 		
 		testBindToDataSource: function() {
-			Assert.areEqual( 'AFrame', $( '#textFormElement' ).html(), 'field bound to data source' );			
+			Assert.areEqual( 'AFrame', jQuery( '#textFormElement' ).html(), 'field bound to data source' );			
 		},
 		
 		testUpdateDataSource: function() {
 			this.dataSource.set( 'name', 'Shane' );
-			Assert.areEqual( 'Shane', $( '#textFormElement' ).html(), 'field updated when store updated' );
+			Assert.areEqual( 'Shane', jQuery( '#textFormElement' ).html(), 'field updated when store updated' );
 		},
 		
 		testSave: function() {

@@ -9,7 +9,7 @@
             
 		    testPlaceholderTextHTML5Support: function() {
                 if( html5Support ) {
-                    var target = $( '#noValueFormElement' );
+                    var target = jQuery( '#noValueFormElement' );
                     target.val( '' );
                     
                     var textField = AFrame.construct( {
@@ -26,7 +26,7 @@
             
             testPlaceholderTextNoHTML5Support: function() {
                 if( !html5Support ) {
-                    var target = $( '#noValueFormElement' );
+                    var target = jQuery( '#noValueFormElement' );
                     target.val( '' );
                     
                     var textField = AFrame.construct( {
