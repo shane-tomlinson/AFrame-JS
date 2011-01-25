@@ -4,19 +4,21 @@ AFrame JS - The Javascript Application Framework
 [http://www.aframejs.com](http://www.aframejs.com)
 -----------------------
 
-AFrame is being developed out of the frustration of not having a proper application framework at my disposal when I first
-started using Javascript to write web applications.  There are plenty of DOM manipulation libraries (jQuery, Prototype, Dojo, YUI),
-some that provide hundreds of widgets (Dojo, YUI, Sencha Labs) and others that shield you from writing Javascript (Cappachino) but
-at the cost of massive libraries.  There is a need for a light weight APPLICATION framework which provide a clean way to write
-in a traditional MVC style.  Backbone and Knockout-JS are two similar options, and now AFrame addresses this need.
+AFrame is an MVC library that aims to provide a foundation for developing applications in Javascript using the same
+methodologies other languages have been using for years.  This is NOT another DOM manipulation library.  
+There are plenty of DOM manipulation libraries (jQuery, MooTools, Prototype, Dojo, YUI), other libraries that provide 
+hundreds of widgets (Dojo, YUI, Sencha Labs) and others that shield you from writing Javascript (Cappachino).  But why?  
+There is a need for a light weight APPLICATION library which provide a clean way to write apps in a traditional MVC style.  
+Backbone and Knockout-JS are two similar options, and now AFrame addresses this need.
 
-AFrame right now depends on jQuery, in particular the Sizzle engine, this is used to work with displays.  I am hoping to remove this
-dependency to keep things as flexible as possible.
+AFrame has no dependency on any DOM framework in particular, all DOM interaction is done through DOM adapters.  Currently,
+there are adapters for jQuery, MooTools, and Prototype.  Adapters for YUI, Ext, and possibly Dojo are planned as I get time.
+If there is an adapter that you need that is not written, code it up, make sure it passes the unit tests, and I will gladly accept submissions!
 
-To use AFrame without compilation, you can grab the current version in dist/aframe-current.js or dist/aframe-current.min.js
+To use AFrame without compilation, you can grab the current version in dist/aframe-current-XXX.js or dist/aframe-current-XXX.min.js
+where XXX is the adapter of your choice.
 
 Unit tests use the YUI Unit test library.  These can be run by browsing to the tests directory and opening index.html
-
 
 ### To download and build the libraries and docs ###
 
@@ -34,3 +36,5 @@ Unit tests use the YUI Unit test library.  These can be run by browsing to the t
 
 
 
+Shane Tomlinson
+set117 (show me a sign) yahoo.com
