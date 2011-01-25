@@ -121,11 +121,7 @@ AFrame.DOM = ( function() {
 
             if (document.createEvent){
                 e = document.createEvent('HTMLEvents');
-                e.initEvent(
-                    type, //event type
-                    false, //bubbles - set to false because the event should like normal fireEvent
-                    true //cancelable
-                );
+                e.initEvent( type,  false, true );
             }
             e = new Event(e);
             var elements = $$( element );
@@ -291,7 +287,7 @@ AFrame.DOM = ( function() {
         insertAsNthChild: function( elementToInsert, parent, index ) {
             var children = $$( parent ).getChildren().flatten();
             if( index === children.length ) {
-                this.appendTo( elementToInsert, parent )
+                this.appendTo( elementToInsert, parent );
             }
             else {
                 var insertBefore = children[ index ];

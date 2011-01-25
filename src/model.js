@@ -166,6 +166,4 @@ AFrame.Model = ( function() {
     }
     
 
-
-    
 } )();

@@ -14,17 +14,16 @@
 	<property file="per_user.properties" />
 	<property file="yuidoc.properties" />
 	<property file="includes.list" />
+	<property file="adapters.list" />
 	
 	<target name="get_build_number" >
 		<property file="build.number" />
 		<property name="build.version" value="${major}.${minor}.${build.number}" />
-		<property name="js_combined" location="${dist}/aframe-${build.version}.js" />
-		<property name="js_min" location="${dist}/aframe-${build.version}.min.js" />
-		<property name="js_combined_current" location="${dist}/aframe-current.js" />
-		<property name="js_min_current" location="${dist}/aframe-current.min.js" />
+		<property name="js_combined" location="${dist}/aframe-${build.version}" />
+		<property name="js_combined_current" location="${dist}/aframe-current" />
 		<echo level="info" message="AFrame Version: ${build.version}" />
 	</target>
-       
+           
    <target name="init" depends="get_build_number">
 	       <tstamp/>
 	       <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -45,41 +44,64 @@
 		<antcall target="get_build_number" />
 	</target>
 
-       <target name="lintfile">
-	       <exec executable="tools/jsl" failonerror="true">
-		       <arg line="-conf tools/jsl.default.conf -process ${filename}"/>
-	       </exec>
-       </target>
+   <target name="lintfile">
+       <exec executable="tools/jsl" failonerror="true">
+           <arg line="-conf tools/jsl.default.conf -process ${filename}"/>
+       </exec>
+   </target>
        
-       <target name="jslint" depends="init">
+    <target name="lintadapter">
+        <antcall target="lintfile" >
+            <param name="filename" location="${src}/adapters/${filename}.js" />
+        </antcall>
+    </target>
+       
+    <target name="jslint" depends="init">
 
 		<echo level="info" message="JSLint: running..." />
-		<foreach param="filename" target="lintfile">
+		
+		<foreach param="filename" target="lintfile" parallel="true">
 			<path>
 				<filelist dir="${src}" files="${includes.list}">
 				</filelist>
 			</path>
-			
-			
+        </foreach>
+	
+        <foreach param="filename" target="lintadapter" inheritall="true" list="${adapters.list}" parallel="true">
 		</foreach>
+        
 		<echo level="info" message="JSLint: finished running...." />
 	       
-       </target>
+    </target>
 
-	<target name="concat" depends="init"
+    <target name="addadapter">
+			<echo message="Combining js files to ${js_combined}-${adapter}" />
+
+            <concat destfile="${js_combined}-${adapter}.js">
+                <fileset file="${js_combined}">
+                </fileset>
+                <fileset file="${src}/adapters/${adapter}.js">
+                </fileset>
+            </concat>
+    </target>
+    
+    <target name="concat" depends="init"
 		description="concatinate the script">
 			<echo message="Combining js files to ${js_combined}" />
-			<concat destfile="${js_combined}">
+			
+            <concat destfile="${js_combined}">
 				<filelist dir="${src}" files="${includes.list}">
 				</filelist>
 			</concat>
+            
+            <foreach param="adapter" target="addadapter" list="${adapters.list}" inheritall="true">
+            </foreach>
 	</target>
 
-	<target name="compress" depends="concat"
-		description="Compress the script">
-			<echo message="Building ${js_min}" />
+    <target name="compressfile">
+			<echo message="Building ${js_combined}-${adapter}.js" />
 			<apply executable="java" parallel="false" verbose="true" dest="${dist}">
-				<fileset file="${js_combined}">
+				<fileset file="${js_combined}-${adapter}.js">
 				</fileset>
 				<arg line="-jar" />
 				<arg path="${YUI}" />
@@ -89,9 +111,16 @@
 				<mapper type="glob" from="*.js" to="*.min.js" />
 				<targetfile />
 			</apply>
-			<copy file="${js_combined}" tofile="${js_combined_current}" />
-			<copy file="${js_min}" tofile="${js_min_current}" />
-			<echo message="${js_min} built." />
+			<copy file="${js_combined}-${adapter}.js" tofile="${js_combined_current}-${adapter}.js" />
+			<copy file="${js_combined}-${adapter}.min.js" tofile="${js_combined_current}-${adapter}.min.js" />
+			<echo message="${js_combined}-${adapter}.js built." />
+    </target>
+    
+	<target name="compress" depends="concat"
+		description="Compress the script">
+
+        <foreach param="adapter" target="compressfile" list="${adapters.list}" inheritall="true">
+        </foreach>
 			
 	</target>
 
