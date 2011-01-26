@@ -49,13 +49,13 @@
             </p>
 		  
 			<p>
-				Currently AFrame depends on jQuery, this is used to work with displays.  I am hoping to remove this
-				dependency to keep things as flexible as possible.  All of the model related items work without jQuery.
+				AFrame is DOM library agnostic, meaning it can be used with any library!  All library level DOM manipulation
+                is done using DOM adapters, currently there are adapters for jQuery, MooTools and Prototype.                
 			</p>
 
 			<p>
                 To use AFrame without compilation, you can grab the current version from <a href="https://github.com/stomlinson/AFrame-JS">GitHub</a> 
-                in dist/aframe-current.js or dist/aframe-current.min.js
+                in dist/aframe-current-XXX.js or dist/aframe-current-XXX.min.js where XXX is the DOM adapter of your choice.
 			</p>
 
 		</section>
@@ -84,8 +84,7 @@
             <h3>Views</h3>
             <p>
                 MVC Views are called a <a href="docs/AFrame.Display.html">Displays</a>.  There are several types of Displays, but the basic 
-                Display provides very basic DOM and DOM event functionality.  Currently the DOM manipulation functions rely on 
-                <a href="jquery.com">jQuery</a> but the hope is to remove this dependency.  A <a href="docs/AFrame.Field.html">Field</a> 
+                Display provides very basic DOM and DOM event functionality.  A <a href="docs/AFrame.Field.html">Field</a> 
                 provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user, 
                 validate the data, clean up the data, and display helpful hints when there are problems.  A <a href="docs/AFrame.Form.html">Form</a> 
                 is a composite of <a href="docs/AFrame.Field.html">Fields</a>.  A <a href="docs/AFrame.DataForm.html">DataForm</a> takes 
