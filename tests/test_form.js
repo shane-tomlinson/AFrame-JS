@@ -140,5 +140,22 @@ testsToRun.push( {
 			var field = form.bindFormElement( '#formElement' );
             
             Assert.isTrue( field instanceof AFrame.Field, 'default field factory creates a field' );
+        },
+        
+        testOverrideFormFactory: function() {
+            var overriddenFactoryCalled = false;
+            AFrame.Form.setDefaultFieldFactory( function( element ) {
+                overriddenFactoryCalled = true;
+            } );
+            
+			var form = AFrame.construct( {
+				type: AFrame.Form,
+				config: {
+					target: '#AFrame_Form'
+				}
+			} );
+			form.bindFormElement( '#formElement' );
+            
+            Assert.isTrue( overriddenFactoryCalled, 'overridden factory called' );
         }
 } );

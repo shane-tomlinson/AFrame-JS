@@ -151,11 +151,6 @@
 		<copy todir="${site}/tests" >
 			<fileset dir="tests" />
 		</copy>
-
-	<exec executable="${peruser.sass.location}" dir="${site}/stylesheets" failonerror="true"
-            resolveexecutable="true" >
-            <arg line="aframejs.scss:aframejs.css"/>
-        </exec>
         
 		
 	</target>
