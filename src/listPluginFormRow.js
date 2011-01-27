@@ -173,7 +173,7 @@ AFrame.ListPluginFormRow = ( function() {
         },
         
         onInsertRow: function( data, index ) {
-            var form = this.formFactory( data.rowElement, data );
+            var form = this.formFactory( data.rowElement, data.data );
             this.forms.splice( index, 0, form );
         },
         

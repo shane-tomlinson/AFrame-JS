@@ -55,7 +55,7 @@
  *    } );
  *
  *    // the specialized form field factory can be used globally as the default factory
- *    Form.setDefaultFieldFactory( fieldFactory );
+ *    AFrame.Form.setDefaultFieldFactory( fieldFactory );
  *    
  * @class AFrame.Form
  * @extends AFrame.Display
@@ -118,7 +118,7 @@ AFrame.Form = ( function() {
     *
     *
     *     // example of overloaded formFieldFactory
-    *     Form.setDefaultFieldFactory( function( element ) {
+    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
     *       return AFrame.construct( {
     *           type: AFrame.SpecializedField,
     *           config: {

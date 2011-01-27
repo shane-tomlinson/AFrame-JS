@@ -49,6 +49,8 @@ testsToRun.push( {
                                     teardown: function() {}
 								};
 								
+                                this.form.data = data;
+                                
 								return this.form;
 							}.bind( this )
 						}
@@ -72,6 +74,14 @@ testsToRun.push( {
 			Assert.isFunction( this.list.clear, 'Clear added' );
 		},
 		
+        testFormFormFactoryDataCorrect: function() {
+            var data = {
+                cid: 'cid0'
+            };
+            this.list.insert( data );
+            Assert.areSame( data, this.form.data, 'data is good' );
+        },
+        
 		testReset: function() {
 			this.list.insert( {
 				cid: 'cid0'
