@@ -53,6 +53,9 @@
  *           formFieldFactory: fieldFactory
  *       }
  *    } );
+ *
+ *    // the specialized form field factory can be used globally as the default factory
+ *    Form.setDefaultFieldFactory( fieldFactory );
  *    
  * @class AFrame.Form
  * @extends AFrame.Display
@@ -79,44 +82,68 @@
 AFrame.Form = ( function() {
     "use strict";
     
+    /**
+    * The factory used to create fields.
+    *
+    *     // example of overloaded formFieldFactory
+    *     formFieldFactory: function( element ) {
+    *       return AFrame.construct( {
+    *           type: AFrame.SpecializedField,
+    *           config: {
+    *               target: element
+    *           }
+    *       } );
+    *     };
+    *
+    * @method formFieldFactory
+    * @param {Element} element - element where to create field
+    * @return {AFrame.Field} field for element.
+    */
+    var formFieldFactory = function( element ) {
+       return AFrame.construct( {
+            type: AFrame.Field,
+            config: {
+                target: element
+            }
+        } );
+    };
+
     var Form = function() {
         Form.sc.constructor.apply( this, arguments );
     };
+    
+    /**
+    * Set the default field factory.  Overridden factory takes one parameter, element.  
+    * It should return a {Field}(AFrame.Field.html) compatible object.
+    *
+    *
+    *     // example of overloaded formFieldFactory
+    *     Form.setDefaultFieldFactory( function( element ) {
+    *       return AFrame.construct( {
+    *           type: AFrame.SpecializedField,
+    *           config: {
+    *               target: element
+    *           }
+    *       } );
+    *     } );
+    *
+    *
+    * @method Form.setDefaultFieldFactory
+    * @param {function} factory
+    */
+    Form.setDefaultFieldFactory = function( factory ) {
+        formFieldFactory = factory;
+    };
+    
     AFrame.extend( Form, AFrame.Display, AFrame.EnumerableMixin, {
         init: function( config ) {
-            this.formFieldFactory = config.formFieldFactory || this.formFieldFactory;
+            this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
             this.formElements = [];
             this.formFields = [];
             
             Form.sc.init.apply( this, arguments );
 
             this.bindFormElements();
-        },
-
-        /**
-        * The factory used to create fields.
-        *
-        *     // example of overloaded formFieldFactory
-        *     formFieldFactory: function( element ) {
-        *       return AFrame.construct( {
-        *           type: AFrame.SpecializedField,
-        *           config: {
-        *               target: element
-        *           }
-        *       } );
-        *     };
-        *
-        * @method formFieldFactory
-        * @param {Element} element - element where to create field
-        * @return {AFrame.Field} field for element.
-        */
-        formFieldFactory: function( element ) {
-           return AFrame.construct( {
-                type: AFrame.Field,
-                config: {
-                    target: element
-                }
-            } );
         },
 
         bindFormElements: function() {
