@@ -209,6 +209,13 @@
                 
                 Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
                 
+                // make sure the deserializer can take an item that is already a date
+                fixedData = this.schema.getAppData( {
+                    isodatetime: new Date()
+                } );
+                
+                Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
+                
                 var now = new Date();
                 var persistence = this.schema.serializeItems( { 
                     isodatetime: now 

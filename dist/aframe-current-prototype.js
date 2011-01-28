@@ -2298,7 +2298,7 @@ AFrame.List = ( function() {
  *   
  *   
  *    var factory = function( index, data ) {
- *       var listItem = AFrame.DOM.createElement( 'li', 'data.name + ', ' + data.employer );
+ *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
  *
@@ -2916,6 +2916,9 @@ AFrame.CollectionPluginPersistence = ( function() {
  *           formFieldFactory: fieldFactory
  *       }
  *    } );
+ *
+ *    // the specialized form field factory can be used globally as the default factory
+ *    AFrame.Form.setDefaultFieldFactory( fieldFactory );
  *    
  * @class AFrame.Form
  * @extends AFrame.Display
@@ -2978,7 +2981,7 @@ AFrame.Form = ( function() {
     *
     *
     *     // example of overloaded formFieldFactory
-    *     Form.setDefaultFieldFactory( function( element ) {
+    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
     *       return AFrame.construct( {
     *           type: AFrame.SpecializedField,
     *           config: {
@@ -4228,30 +4231,35 @@ AFrame.Schema = (function() {
     } );
 
     Schema.addDeserializer( 'iso8601', function( str ) {
-        // we assume str is a UTC date ending in 'Z'
-        try{
-            var parts = str.split('T'),
-            dateParts = parts[0].split('-'),
-            timeParts = parts[1].split('Z'),
-            timeSubParts = timeParts[0].split(':'),
-            timeSecParts = timeSubParts[2].split('.'),
-            timeHours = Number(timeSubParts[0]),
-            _date = new Date;
-            
-            _date.setUTCFullYear(Number(dateParts[0]));
-            _date.setUTCMonth(Number(dateParts[1])-1);
-            _date.setUTCDate(Number(dateParts[2]));
-            _date.setUTCHours(Number(timeHours));
-            _date.setUTCMinutes(Number(timeSubParts[1]));
-            _date.setUTCSeconds(Number(timeSecParts[0]));
-            if (timeSecParts[1]) {
-                _date.setUTCMilliseconds(Number(timeSecParts[1]));
+        if( 'string' == typeof( str ) ) {
+            // we assume str is a UTC date ending in 'Z'
+            try{
+                var parts = str.split('T'),
+                dateParts = parts[0].split('-'),
+                timeParts = parts[1].split('Z'),
+                timeSubParts = timeParts[0].split(':'),
+                timeSecParts = timeSubParts[2].split('.'),
+                timeHours = Number(timeSubParts[0]),
+                _date = new Date;
+                
+                _date.setUTCFullYear(Number(dateParts[0]));
+                _date.setUTCMonth(Number(dateParts[1])-1);
+                _date.setUTCDate(Number(dateParts[2]));
+                _date.setUTCHours(Number(timeHours));
+                _date.setUTCMinutes(Number(timeSubParts[1]));
+                _date.setUTCSeconds(Number(timeSecParts[0]));
+                if (timeSecParts[1]) {
+                    _date.setUTCMilliseconds(Number(timeSecParts[1]));
+                }
+                
+                // by using setUTC methods the date has already been converted to local time(?)
+                return _date;
             }
-            
-            // by using setUTC methods the date has already been converted to local time(?)
-            return _date;
+            catch(e) {}
         }
-        catch(e) {}
+        else if( str instanceof Date ) {
+            return str;
+        }
     } );
 
     Schema.addSerializer( 'iso8601', function( date ) {
@@ -4436,7 +4444,7 @@ AFrame.ListPluginFormRow = ( function() {
         },
         
         onInsertRow: function( data, index ) {
-            var form = this.formFactory( data.rowElement, data );
+            var form = this.formFactory( data.rowElement, data.data );
             this.forms.splice( index, 0, form );
         },
         

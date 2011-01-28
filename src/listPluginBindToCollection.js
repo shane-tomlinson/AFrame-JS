@@ -19,7 +19,7 @@
  *   
  *   
  *    var factory = function( index, data ) {
- *       var listItem = AFrame.DOM.createElement( 'li', 'data.name + ', ' + data.employer );
+ *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
  *
