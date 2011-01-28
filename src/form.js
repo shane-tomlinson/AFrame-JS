@@ -277,6 +277,12 @@ AFrame.Form = ( function() {
             } );
         },
         
+        /**
+        * Iterate through each form field
+        * @method forEach
+        * @param {function} callback - the callback to call.
+        * @param {object} context (optional) - the context to call the callback in
+        */
         forEach: function( callback, context ) {
             this.formFields && this.formFields.forEach( callback, context );
         }

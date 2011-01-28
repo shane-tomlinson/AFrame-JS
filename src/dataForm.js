@@ -120,8 +120,7 @@ AFrame.DataForm = ( function() {
 
 	    validateFormFieldsWithModels: function() {
 		    var valid = true;
-		    var formFields = this.getFormFields();
-		    formFields.forEach( function( formField, index ) {
+		    this.forEach( function( formField, index ) {
 			    var fieldName = fieldGetName( formField );
 			    var validityState = this.dataContainer.checkValidity( fieldName, formField.get() );
 			
@@ -138,8 +137,7 @@ AFrame.DataForm = ( function() {
 		    var valid = DataForm.sc.save.apply( this, arguments );
 		
 		    if( valid ) {
-			    var formFields = this.getFormFields();
-			    formFields.forEach( function( formField, index ) {
+                this.forEach( function( formField, index ) {
 				    var fieldName = fieldGetName( formField );
 				    this.dataContainer.set( fieldName, formField.get() );
 			    }, this );
