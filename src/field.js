@@ -44,7 +44,7 @@ AFrame.Field = ( function() {
 
             Field.sc.init.apply( this, arguments );
 
-            this.resetVal = this.getDisplayed();
+            this.save();
         },
         
         createValidator: function() {
@@ -89,7 +89,7 @@ AFrame.Field = ( function() {
         */
         display: function( val ) {
             var target = this.getTarget();
-            AFrame.DOM.setInner( target, val );
+            AFrame.DOM.setInner( target, val || '' );
         },
         
         /**
@@ -152,6 +152,10 @@ AFrame.Field = ( function() {
          */
         save: function() {
             var displayed = this.getDisplayed();
+            
+            if( !displayed.length ) {
+                displayed = void( 0 );
+            }
             
             this.resetVal = displayed;
         },

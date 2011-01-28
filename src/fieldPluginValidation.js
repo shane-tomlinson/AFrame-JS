@@ -153,7 +153,6 @@ AFrame.FieldPluginValidation = (function() {
 		    } else {
                 var criteria = this.getCriteria();
                 var val = field.get();
-                val = val.length ? val : undefined;
                 
                 AFrame.DataValidation.validate( {
                     data: val,

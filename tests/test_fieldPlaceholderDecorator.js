@@ -19,7 +19,7 @@
                         }
                     } );
 
-                    Assert.areSame( '', textField.get(), 'correct get' );
+                    Assert.isUndefined( textField.get(), 'correct get' );
                     Assert.areSame( '', textField.getDisplayed(), 'help text not displayed for browsers supporting HTML5 spec' );
                 }
 		    },
@@ -36,7 +36,7 @@
                         }
                     } );
 
-                    Assert.areSame( '', textField.get(), 'correct get' );
+                    Assert.isUndefined( textField.get(), 'correct get' );
                     Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     
@@ -47,7 +47,7 @@
                     Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed on blur' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     textField.save();
-                    Assert.areSame( '', textField.get(), 'help text is not saved for get' );
+                    Assert.isUndefined( textField.get(), 'help text is not saved for get' );
                     
                     textField.display( 'New Value' );
                     Assert.isFalse( target.hasClass( 'empty' ), 'empty class name removed with normal text' );
