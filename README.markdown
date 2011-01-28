@@ -2,6 +2,10 @@ AFrame JS - The Javascript Application Framework
 ================================================
 
 [http://www.aframejs.com](http://www.aframejs.com)
+
+### See a sample app in action ###
+1. Check out [MobileNotes](https://github.com/stomlinson/MobileNotes) 
+
 -----------------------
 
 AFrame is an MVC library that aims to provide a foundation for developing applications in Javascript using the same
@@ -34,7 +38,8 @@ Unit tests use the YUI Unit test library.  These can be run by browsing to the t
 4. "and jslint" runs a javascript linter to check for errors
 5. "ant clean" cleans up any messes
 
-### To see a sample app in action ###
+
+### See a sample app in action ###
 1. Check out [MobileNotes](https://github.com/stomlinson/MobileNotes) 
 
 
