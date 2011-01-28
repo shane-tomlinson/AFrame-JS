@@ -45,6 +45,11 @@ testsToRun.push( {
                 if( this == 'load' ) {
                     callback( [ { item: 'item' } ] );
                 }
+                else if( this == 'add' ) {
+                    callback( {
+                        cid: 'overriddencid'
+                    } );
+                }
                 else {
                     callback();
                 }
@@ -55,7 +60,8 @@ testsToRun.push( {
 				config: {
 					deleteCallback: genericCallback.bind( 'delete' ),
 					saveCallback: genericCallback.bind( 'save' ),
-					loadCallback: genericCallback.bind( 'load' )
+					loadCallback: genericCallback.bind( 'load' ),
+                    addCallback: genericCallback.bind( 'add' )
 				}
 			} );
 
@@ -166,6 +172,19 @@ testsToRun.push( {
             this.mockCollection.unbindEvent( beforeAddCID );
         },
 
+        testAddUsesModelPassedByDBAccess: function() {
+            var insertedModel;
+            
+            this.mockCollection.add( {
+                cid: 'initialcid'
+            }, {
+                onComplete: function( item, options ) {
+                    insertedModel = item;
+                }
+            } );
+            
+            Assert.areSame( "overriddencid", insertedModel.cid, 'item added was overridden by db accessor function, item inserted is item given from db access' );
+        },
         
 
 		testDeleteNoData: function() {

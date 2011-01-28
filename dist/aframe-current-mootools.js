@@ -2439,9 +2439,18 @@ AFrame.ListPluginBindToCollection = ( function() {
  *         },
  *         add: function( item, options ) {
  *              // functionality here to do the add
- *              
+ *
+ *              // Method 1: this does not override the initial item
  *              if( options.onComplete ) {
  *                  options.onComplete();
+ *              }
+ *
+ *              // Method 2: this overrides the initial item to create a model which is inserted
+ *              // into the collection.  Note, getModel is an imaginary function used only for
+ *              // demo purposes.
+ *              if( options.onComplete ) {
+ *                  var model = getModel( item );
+ *                  options.onComplete( model );
  *              }
  *         },
  *         del: function( item, options ) {
@@ -2607,7 +2616,10 @@ AFrame.CollectionPluginPersistence = ( function() {
             var event = plugged.triggerEvent( getEvent( 'onBeforeAdd', item, options ) );
             
             if( plugged.shouldDoAction( options, event ) ) {
-                options.onComplete = function() {
+                options.onComplete = function( overriddenItem ) {
+                    // For the insert item, use the item given by the db access layer, if they pass one back.  If 
+                    //  no override is given, use the original item.
+                    item = overriddenItem || item;
                     var cid = plugged.insert( item, options.insertAt );
                     options.cid = cid;
                     options.onComplete = callback;
