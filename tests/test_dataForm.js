@@ -102,7 +102,7 @@ testsToRun.push( {
 		testCheckValidity: function() {
 			this.field.set( 1 );
 
-			Assert.areEqual( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
+			Assert.areSame( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
 			
 			var valid = this.form.checkValidity();
 			
@@ -117,6 +117,20 @@ testsToRun.push( {
 			
 			Assert.isTrue( valid, 'set text field to text, all valid.' );
 		    
-		}
+		},
+        
+        testValidateFormWithModel: function() {
+            var mockValidityCalled = false;
+            var modelMock = {
+                checkValidity: function() {
+                    mockValidityCalled = true;
+                    return false;
+                }
+            };
+            
+            this.form.validateFormFieldsWithModel( modelMock );
+            
+            Assert.isTrue( mockValidityCalled, 'the mock model\'s checkValidity was called' );
+        }
 		
 } );

@@ -81,32 +81,6 @@
  */
 AFrame.Form = ( function() {
     "use strict";
-    
-    /**
-    * The factory used to create fields.
-    *
-    *     // example of overloaded formFieldFactory
-    *     formFieldFactory: function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
-    *       } );
-    *     };
-    *
-    * @method formFieldFactory
-    * @param {Element} element - element where to create field
-    * @return {AFrame.Field} field for element.
-    */
-    var formFieldFactory = function( element ) {
-       return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
-    };
 
     var Form = function() {
         Form.sc.constructor.apply( this, arguments );
@@ -238,7 +212,7 @@ AFrame.Form = ( function() {
          * @method clear
          */
         clear: function() {
-            this.fieldAction( 'clear' );
+            fieldAction.call( this, 'clear' );
         },
 
         /**
@@ -250,7 +224,7 @@ AFrame.Form = ( function() {
          * @method reset
          */
         reset: function() {
-            this.fieldAction( 'reset' );
+            fieldAction.call( this, 'reset' );
         },
 
         /**
@@ -265,17 +239,12 @@ AFrame.Form = ( function() {
         save: function() {
             var valid = this.checkValidity();
             if( valid ) {
-                this.fieldAction( 'save' );
+                fieldAction.call( this, 'save' );
             }
             
             return valid;
         },
 
-        fieldAction: function( action ) {
-            this.forEach( function( formField, index ) {
-                formField[ action ]();
-            } );
-        },
         
         /**
         * Iterate through each form field
@@ -288,5 +257,43 @@ AFrame.Form = ( function() {
         }
     } );
     
+    /**
+    * Do an action on all fields.
+    * @method fieldAction
+    * @private
+    */
+    function fieldAction( action ) {
+        this.forEach( function( formField, index ) {
+            formField[ action ]();
+        } );
+    }
+    
+    
+    /**
+    * The factory used to create fields.
+    *
+    *     // example of overloaded formFieldFactory
+    *     formFieldFactory: function( element ) {
+    *       return AFrame.construct( {
+    *           type: AFrame.SpecializedField,
+    *           config: {
+    *               target: element
+    *           }
+    *       } );
+    *     };
+    *
+    * @method formFieldFactory
+    * @param {Element} element - element where to create field
+    * @return {AFrame.Field} field for element.
+    */
+    function formFieldFactory( element ) {
+       return AFrame.construct( {
+            type: AFrame.Field,
+            config: {
+                target: element
+            }
+        } );
+    }
+
     return Form;
 }() );

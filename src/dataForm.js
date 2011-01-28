@@ -109,28 +109,10 @@ AFrame.DataForm = ( function() {
 	    },
 
 	    checkValidity: function() {
-		    var valid = DataForm.sc.checkValidity.call( this );
-		    if( valid && this.dataContainer.checkValidity ) {
-    		    // only validate vs the dataContainer if the dataContainer has validation.
-		        valid = this.validateFormFieldsWithModels();
-		    }
+		    var valid = DataForm.sc.checkValidity.call( this )
+                && this.validateFormFieldsWithModel( this.dataContainer );
 		
 		    return valid;
-	    },
-
-	    validateFormFieldsWithModels: function() {
-		    var valid = true;
-		    this.forEach( function( formField, index ) {
-			    var fieldName = fieldGetName( formField );
-			    var validityState = this.dataContainer.checkValidity( fieldName, formField.get() );
-			
-			    if( validityState !== true ) {
-				    valid = false;
-				    fieldUpdateValidityState( formField, validityState );
-			    }
-		    }, this );
-		    	
-		    return valid;	
 	    },
 	
 	    save: function() {
@@ -144,10 +126,43 @@ AFrame.DataForm = ( function() {
 		    }
 		
 		    return valid;
-	    }
+	    },
+        
+        /**
+        * Validate the form against a model.
+        *
+        * @method validateFormFieldsWithModel
+        * @param {AFrame.Model} model - the model to validate against
+        * @return {boolean} - true if form validates, false otw.
+        */
+        validateFormFieldsWithModel: function( model ) {
+            var valid = true;
+
+            // only validate vs the dataContainer if the dataContainer has validation.
+            if( model.checkValidity ) {
+                valid = validateFormFieldsWithModel.call( this, model );
+            }
+
+            return valid;
+        }
     } );
 
     // Some helper functions that should probably be on the Field itself.
+    function validateFormFieldsWithModel( model ) {
+        var valid = true;
+        this.forEach( function( formField, index ) {
+            var fieldName = fieldGetName( formField );
+            var validityState = model.checkValidity( fieldName, formField.get() );
+        
+            if( validityState !== true ) {
+                valid = false;
+                fieldUpdateValidityState( formField, validityState );
+            }
+        }, this );
+            
+        return valid;	
+    }
+
     function fieldUpdateValidityState( formField, validityState ) {
         for( var key in validityState ) {
             if( validityState.hasOwnProperty( key ) ) {
@@ -170,6 +185,6 @@ AFrame.DataForm = ( function() {
         this.set( data.value );
     }
 
-
+    
     return DataForm;
 } )();
