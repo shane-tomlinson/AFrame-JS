@@ -109,8 +109,7 @@ AFrame.DataForm = ( function() {
 	    },
 
 	    checkValidity: function() {
-		    var valid = DataForm.sc.checkValidity.call( this )
-                && this.validateFormFieldsWithModel( this.dataContainer );
+		    var valid = DataForm.sc.checkValidity.call( this ) && this.validateFormFieldsWithModel( this.dataContainer );
 		
 		    return valid;
 	    },

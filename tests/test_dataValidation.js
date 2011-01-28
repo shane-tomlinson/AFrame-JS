@@ -24,6 +24,29 @@ testsToRun.push( {
             
         },
         
+        testRequiredText: function() {
+            var criteria = {
+                required: true,
+                type: 'text'
+            };
+            
+            var fieldValidityState = AFrame.DataValidation.validate( {
+                criteria: criteria,
+                data: ''
+            } );
+            
+            Assert.isFalse( fieldValidityState.valid, 'field is invalid' );
+            Assert.isTrue( fieldValidityState.valueMissing, 'field is invalid' );
+            
+            fieldValidityState = AFrame.DataValidation.validate( {
+                criteria: criteria,
+                data: 'a'
+            } );
+
+            Assert.isTrue( fieldValidityState.valid, 'field is valid' );
+            Assert.isFalse( fieldValidityState.valueMissing, 'field is valid' );
+        },
+        
         testMin: function() {
             var criteria = {
                 min: 10,

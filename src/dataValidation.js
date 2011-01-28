@@ -190,6 +190,12 @@ AFrame.DataValidation = ( function() {
     Validation.setValidator( 'number', 'step', numberStepValidation );
     Validation.setValidator( 'integer', 'step', numberStepValidation );
         
+    Validation.setValidator( 'text', 'required', function( dataToValidate, fieldValidityState ) {
+        if( !dataToValidate ) {
+            fieldValidityState.setError( 'valueMissing' );
+        }
+    } );
+
     Validation.setValidator( 'text', 'maxlength', function( dataToValidate, fieldValidityState, maxLength ) {
         if( defined( dataToValidate ) && dataToValidate.length && dataToValidate.length > maxLength ) {
             fieldValidityState.setError( 'tooLong' );
