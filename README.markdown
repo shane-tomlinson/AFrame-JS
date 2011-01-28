@@ -23,9 +23,9 @@ Unit tests use the YUI Unit test library.  These can be run by browsing to the t
 ### To download and build the libraries and docs ###
 
 1. Apache Ant is required.  Go get it.
-2. The sample per_user.properties.sample must be personalized and copied to per_user.properties
-3. Since I do development both in Linux and Windows, the build script works with both.
-4. run "ant all" to do a full build.
+2. Check out a copy of the code from [GitHub](https://github.com/stomlinson/AFrame-JS).
+3. The sample per_user.properties.sample must be personalized and copied to per_user.properties
+4. run "ant all" to do a full build. Since I do development both in Linux and Windows, the build script works with both.
 
 ### Build options ###
 1. "ant all" does a full build.
@@ -34,6 +34,8 @@ Unit tests use the YUI Unit test library.  These can be run by browsing to the t
 4. "and jslint" runs a javascript linter to check for errors
 5. "ant clean" cleans up any messes
 
+### To see a sample app in action ###
+1. Check out [MobileNotes](https://github.com/stomlinson/MobileNotes) 
 
 
 Shane Tomlinson
