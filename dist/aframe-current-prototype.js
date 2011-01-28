@@ -3218,7 +3218,7 @@ AFrame.Field = ( function() {
 
             Field.sc.init.apply( this, arguments );
 
-            this.resetVal = this.getDisplayed();
+            this.save();
         },
         
         createValidator: function() {
@@ -3232,8 +3232,8 @@ AFrame.Field = ( function() {
 
         bindEvents: function() {
             var target = this.getTarget();
-            this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
-            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
+            this.bindDOMEvent( target, 'keyup', this.onFieldChange );
+            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid );
             
             Field.sc.bindEvents.apply( this, arguments );
         },
@@ -3263,7 +3263,7 @@ AFrame.Field = ( function() {
         */
         display: function( val ) {
             var target = this.getTarget();
-            AFrame.DOM.setInner( target, val );
+            AFrame.DOM.setInner( target, val || '' );
         },
         
         /**
@@ -3326,6 +3326,11 @@ AFrame.Field = ( function() {
          */
         save: function() {
             var displayed = this.getDisplayed();
+            
+            if( !displayed.length ) {
+                var undefined;
+                displayed = undefined;
+            }
             
             this.resetVal = displayed;
         },
@@ -3503,7 +3508,6 @@ AFrame.FieldPluginValidation = (function() {
 		    } else {
                 var criteria = this.getCriteria();
                 var val = field.get();
-                val = val.length ? val : undefined;
                 
                 AFrame.DataValidation.validate( {
                     data: val,
@@ -3738,63 +3742,88 @@ AFrame.FieldValidityState.prototype = {
 *
 *     <input type="text" data-field name="username" placeholder="Log in name" />
 *
-* @class AFrame.FieldPlaceholderDecorator
+* @class Placeholder
 * @static
 */
-AFrame.FieldPlaceholderDecorator = {
-    init: function() {
-        var decorated = AFrame.Field.prototype;
-
-        this.decorators = {};
-        
-        // All functions are called as if they were on the Field.  We are overriding init, bindEvents,
-        // set, display, and save.  These functions pertain to our handling of the placeholder text.
-        this.decorate( 'init', this.decoratorInit );
-        this.decorate( 'bindEvents', this.decoratorBindEvents );
-        this.decorate( 'set', this.decoratorSet );
-        this.decorate( 'save', this.decoratorSave );
-        this.decorate( 'display', this.decoratorDisplay );
-    },
+AFrame.FieldPluginPlaceholder = ( function() {
+    var Placeholder = {
+        init: function() {
+            this.decorators = {};
+            
+            // All functions are called as if they were on the Field.  We are overriding init, bindEvents,
+            // set, display, and save.  These functions pertain to our handling of the placeholder text.
+            decorate( 'init', decoratorInit );
+            decorate( 'bindEvents', decoratorBindEvents );
+            decorate( 'set', decoratorSet );
+            decorate( 'get', decoratorGet );
+            decorate( 'getDisplayed', decoratorGetDisplayed );
+            decorate( 'save', decoratorSave );
+            decorate( 'display', decoratorDisplay );
+        }
+    };
     
-    decorate: function( name, decorator ) {
+    function decorate( name, decorator ) {
         var decorated = AFrame.Field.prototype;
         
-        this[ '_' + name ] = decorated[ name ];
+        Placeholder[ '_' + name ] = decorated[ name ];
         decorated[ name ] = decorator;
-    },
+    }
 
-    decoratorInit: function( config ) {
-        AFrame.FieldPlaceholderDecorator._init.call( this, config );
+    function decoratorInit( config ) {
+        Placeholder._init.call( this, config );
         
         // display the placeholder text until the value is set.
-        this.display( AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) );
-    },
+        this.display( getPlaceholder.call( this ) );
+    }
     
-    decoratorBindEvents: function() {
+    function decoratorBindEvents() {
         var target = this.getTarget();
         
         // we care about the focus and blur evnts.
-        this.bindDOMEvent( target, 'focus', AFrame.FieldPlaceholderDecorator.onFieldFocus, this );
-        this.bindDOMEvent( target, 'blur', AFrame.FieldPlaceholderDecorator.onFieldBlur, this );
+        this.bindDOMEvent( target, 'focus', onFieldFocus );
+        this.bindDOMEvent( target, 'blur', onFieldBlur );
 
-        AFrame.FieldPlaceholderDecorator._bindEvents.call( this );
-    },
+        Placeholder._bindEvents.call( this );
+    }
     
-    decoratorSet: function( val ) {
-        val = val || AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this );
-        AFrame.FieldPlaceholderDecorator._set.call( this, val );
-    },
+    function decoratorSet( val ) {
+        val = val || getPlaceholder.call( this );
+        Placeholder._set.call( this, val );
+    }
 
-    decoratorDisplay: function( val ) {
+    function decoratorGet() {
+        var placeholder = getPlaceholder.call( this );
+        var val = Placeholder._get.call( this );
+
+        if( val === placeholder ) {
+            var undefined;
+            val = undefined;
+        }
+        
+        return val;
+    }
+
+    function decoratorGetDisplayed() {
+        var placeholder = getPlaceholder.call( this );
+        var val = Placeholder._getDisplayed.call( this );
+
+        if( val === placeholder ) {
+            val = '';
+        }
+        
+        return val;
+    }
+
+    function decoratorDisplay( val ) {
         var target = this.getTarget();
-        var func = val == AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) ? 'addClass' : 'removeClass';
-        AFrame.DOM[ func ](target, 'empty' );
+        var func = val == getPlaceholder.call( this ) ? 'addClass' : 'removeClass';
+        AFrame.DOM[ func ]( target, 'empty' );
 
-        AFrame.FieldPlaceholderDecorator._display.call( this, val );
-    },
+        Placeholder._display.call( this, val );
+    }
     
-    decoratorSave: function() {
-        var placeholder = AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this );
+    function decoratorSave() {
+        var placeholder = getPlaceholder.call( this );
         
         var placeHolderDisplayed = this.getDisplayed() == placeholder;
         
@@ -3802,42 +3831,38 @@ AFrame.FieldPlaceholderDecorator = {
             this.display( '' );
         }
         
-        AFrame.FieldPlaceholderDecorator._save.call( this );
+        Placeholder._save.call( this );
 
         if( placeHolderDisplayed ) {
             this.display( placeholder );
         }
-    },
+    }
     
-    onFieldFocus: function() {
-        if( this.getDisplayed() == AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) ) {
+    function onFieldFocus() {
+        if( this.getDisplayed() == getPlaceholder.call( this ) ) {
             this.display( '' );
         }
-    },
+    }
     
-    onFieldBlur: function() {
+    function onFieldBlur() {
         if( '' === this.getDisplayed() ) {
-            this.display( AFrame.FieldPlaceholderDecorator.getPlaceholder.call( this ) );
+            this.display( getPlaceholder.call( this ) );
         }
-    },
+    }
     
-    getPlaceholder: function() {
+    function getPlaceholder() {
         var target = this.getTarget();
         return AFrame.DOM.getAttr( target, 'placeholder' ) || '';
-    }
+    }    
 
-    
-};
-
-
-(function() {
-    // we only want to initialize the FieldPlaceholderDecorator if the browser does not support HTML5
+    // we only want to initialize the Placeholder if the browser does not support HTML5
     var inp = document.createElement( 'input' );
     if( !( 'placeholder' in inp ) ) {
-        AFrame.FieldPlaceholderDecorator.init();
+        Placeholder.init();
     }
-    
-})();
+
+    return Placeholder;
+}() );
 
 /**
  * A basic data schema, useful for defining a data structure, validating data, and preparing data to 
@@ -4716,8 +4741,7 @@ AFrame.DataForm = ( function() {
 	    },
 
 	    checkValidity: function() {
-		    var valid = DataForm.sc.checkValidity.call( this )
-                && this.validateFormFieldsWithModel( this.dataContainer );
+		    var valid = DataForm.sc.checkValidity.call( this ) && this.validateFormFieldsWithModel( this.dataContainer );
 		
 		    return valid;
 	    },
@@ -4737,6 +4761,7 @@ AFrame.DataForm = ( function() {
         
         /**
         * Validate the form against a model.
+        *
         * @method validateFormFieldsWithModel
         * @param {AFrame.Model} model - the model to validate against
         * @return {boolean} - true if form validates, false otw.
@@ -4758,7 +4783,7 @@ AFrame.DataForm = ( function() {
         var valid = true;
         this.forEach( function( formField, index ) {
             var fieldName = fieldGetName( formField );
-            var validityState = model.checkValidity( fieldName, formField.get() );
+            var validityState = model.checkValidity( fieldName, formField.getDisplayed() );
         
             if( validityState !== true ) {
                 valid = false;
@@ -4986,6 +5011,12 @@ AFrame.DataValidation = ( function() {
     Validation.setValidator( 'number', 'step', numberStepValidation );
     Validation.setValidator( 'integer', 'step', numberStepValidation );
         
+    Validation.setValidator( 'text', 'required', function( dataToValidate, fieldValidityState ) {
+        if( !dataToValidate ) {
+            fieldValidityState.setError( 'valueMissing' );
+        }
+    } );
+
     Validation.setValidator( 'text', 'maxlength', function( dataToValidate, fieldValidityState, maxLength ) {
         if( defined( dataToValidate ) && dataToValidate.length && dataToValidate.length > maxLength ) {
             fieldValidityState.setError( 'tooLong' );

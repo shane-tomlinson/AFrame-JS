@@ -37,14 +37,16 @@
                     } );
 
                     Assert.isUndefined( textField.get(), 'correct get' );
-                    Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed' );
+                    Assert.areSame( 'No Value Text', target.val(), 'help text displayed' );
+                    Assert.areSame( '', textField.getDisplayed(), 'getDisplayed returns empty string when help text displayed' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     
                     AFrame.DOM.fireEvent( '#noValueFormElement', 'focus' );
                     Assert.areSame( '', textField.getDisplayed(), 'when a focus happens, help text is cleared' );
                     
                     AFrame.DOM.fireEvent( '#noValueFormElement', 'blur' );
-                    Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed on blur' );
+                    Assert.areSame( 'No Value Text', target.val(), 'help text displayed when setting display to empty' );
+                    Assert.areSame( '', textField.getDisplayed(), 'getDisplayed returns empty when help text displayed' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     textField.save();
                     Assert.isUndefined( textField.get(), 'help text is not saved for get' );
@@ -59,8 +61,12 @@
                     Assert.areSame( 'New Value', textField.getDisplayed(), 'when blur happens, updated text is not reverted to help text' );
                     
                     textField.set( '' );
-                    Assert.areSame( 'No Value Text', textField.getDisplayed(), 'help text displayed when setting display to empty' );
+                    Assert.areSame( 'No Value Text', target.val(), 'help text displayed when setting display to empty' );
+                    Assert.areSame( '', textField.getDisplayed(), 'getDisplayed returns empty string with placeholder' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );			
+                    Assert.isUndefined( textField.get(), 'help text is not used for "get" after a "set(\'\')"' );
+                    
+                    
                 }
             }
 

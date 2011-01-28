@@ -58,8 +58,8 @@ AFrame.Field = ( function() {
 
         bindEvents: function() {
             var target = this.getTarget();
-            this.bindDOMEvent( target, 'keyup', this.onFieldChange, this );
-            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid, this );
+            this.bindDOMEvent( target, 'keyup', this.onFieldChange );
+            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid );
             
             Field.sc.bindEvents.apply( this, arguments );
         },
@@ -154,7 +154,8 @@ AFrame.Field = ( function() {
             var displayed = this.getDisplayed();
             
             if( !displayed.length ) {
-                displayed = void( 0 );
+                var undefined;
+                displayed = undefined;
             }
             
             this.resetVal = displayed;

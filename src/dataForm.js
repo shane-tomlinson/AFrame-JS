@@ -151,7 +151,7 @@ AFrame.DataForm = ( function() {
         var valid = true;
         this.forEach( function( formField, index ) {
             var fieldName = fieldGetName( formField );
-            var validityState = model.checkValidity( fieldName, formField.get() );
+            var validityState = model.checkValidity( fieldName, formField.getDisplayed() );
         
             if( validityState !== true ) {
                 valid = false;

@@ -105,7 +105,6 @@ testsToRun.push( {
 			Assert.areSame( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
 			
 			var valid = this.form.checkValidity();
-			
 			Assert.isFalse( valid, 'trying to set text field to an integer, dies.' );
 
 		    var validityState = this.field.getValidityState();
@@ -118,6 +117,10 @@ testsToRun.push( {
 			Assert.isTrue( valid, 'set text field to text, all valid.' );
 		    
 		},
+        
+        testCheckValiditySimulateTyping: function() {
+            
+        },
         
         testValidateFormWithModel: function() {
             var mockValidityCalled = false;
