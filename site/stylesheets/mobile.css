@@ -1,0 +1,27 @@
+body {
+    font-size: 1em;
+}
+
+.container {
+    margin-top: 10px;
+    padding: 5px;
+}
+
+.container_12 {
+    width: auto;
+}
+
+.container_12 .grid_12, .container_12 .grid_3, .container_12 .grid_9 {
+    width: 100%;
+    margin: 10px 0;
+}
+
+section {
+    margin: 0;
+    font-size: 1em;
+}
+
+.syntaxhighlighter  code {
+    font-size: .8em !important;
+}
+
