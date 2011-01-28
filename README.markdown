@@ -3,8 +3,8 @@ AFrame JS - The Javascript Application Framework
 
 [http://www.aframejs.com](http://www.aframejs.com)
 
-### See a sample app in action ###
-1. Check out [MobileNotes](https://github.com/stomlinson/MobileNotes) 
+### See a sample app in action - [MobileNotes](https://github.com/stomlinson/MobileNotes) ###
+
 
 -----------------------
 
