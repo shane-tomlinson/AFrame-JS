@@ -42,7 +42,7 @@
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     
                     AFrame.DOM.fireEvent( '#noValueFormElement', 'focus' );
-                    Assert.areSame( '', textField.getDisplayed(), 'when a focus happens, help text is cleared' );
+                    Assert.areSame( '', target.val(), 'when a focus happens, help text is cleared' );
                     
                     AFrame.DOM.fireEvent( '#noValueFormElement', 'blur' );
                     Assert.areSame( 'No Value Text', target.val(), 'help text displayed when setting display to empty' );

@@ -3839,13 +3839,15 @@ AFrame.FieldPluginPlaceholder = ( function() {
     }
     
     function onFieldFocus() {
-        if( this.getDisplayed() == getPlaceholder.call( this ) ) {
+        // have to use the overridden _getDisplayed because our decorated item cleans out
+        //  the placeholder.
+        if( Placeholder._getDisplayed.call( this ) == getPlaceholder.call( this ) ) {
             this.display( '' );
         }
     }
     
     function onFieldBlur() {
-        if( '' === this.getDisplayed() ) {
+        if( '' === Placeholder._getDisplayed.call( this ) ) {
             this.display( getPlaceholder.call( this ) );
         }
     }
