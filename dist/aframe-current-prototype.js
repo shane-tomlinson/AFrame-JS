@@ -3282,6 +3282,21 @@ AFrame.Field = ( function() {
         },
 
         /**
+         * Get the value of the field.  This should be overridden by subclasses to convert field string
+         *  values to whatever native value that is expected.  This means, the value returned by get 
+         *  can be different if the visual representation is different from the underlying data.  
+         *  Returns an empty string if no value entered.  
+         *
+         *    var val = nameField.get();
+         *
+         * @method get
+         * @return {variant} the value of the field
+         */
+        get: function() {
+            return this.getDisplayed();
+        },
+        
+        /**
          * Reset the field to its last 'set' value.
          *
          *    nameField.reset();
@@ -3301,20 +3316,6 @@ AFrame.Field = ( function() {
          */
         clear: function() {
             this.set( '' );
-        },
-        
-        /**
-         * Get the value of the field.  The value returned can be different if the visual representation is 
-         *	different from the underlying data.  Returns an empty string if no value entered.  
-         *
-         *    var val = nameField.get();
-         *
-         * @method get
-         * @return {variant} the value of the field
-         */
-         
-        get: function() {
-            return this.resetVal;
         },
         
         /**
@@ -3754,7 +3755,6 @@ AFrame.FieldPluginPlaceholder = ( function() {
             // set, display, and save.  These functions pertain to our handling of the placeholder text.
             decorate( 'init', decoratorInit );
             decorate( 'bindEvents', decoratorBindEvents );
-            decorate( 'set', decoratorSet );
             decorate( 'get', decoratorGet );
             decorate( 'getDisplayed', decoratorGetDisplayed );
             decorate( 'save', decoratorSave );
@@ -3773,7 +3773,7 @@ AFrame.FieldPluginPlaceholder = ( function() {
         Placeholder._init.call( this, config );
         
         // display the placeholder text until the value is set.
-        this.display( getPlaceholder.call( this ) );
+        this.display( this.getDisplayed() );
     }
     
     function decoratorBindEvents() {
@@ -3784,11 +3784,6 @@ AFrame.FieldPluginPlaceholder = ( function() {
         this.bindDOMEvent( target, 'blur', onFieldBlur );
 
         Placeholder._bindEvents.call( this );
-    }
-    
-    function decoratorSet( val ) {
-        val = val || getPlaceholder.call( this );
-        Placeholder._set.call( this, val );
     }
 
     function decoratorGet() {
@@ -3815,11 +3810,8 @@ AFrame.FieldPluginPlaceholder = ( function() {
     }
 
     function decoratorDisplay( val ) {
-        var target = this.getTarget();
-        var func = val == getPlaceholder.call( this ) ? 'addClass' : 'removeClass';
-        AFrame.DOM[ func ]( target, 'empty' );
-
         Placeholder._display.call( this, val );
+        updatePlaceholder.call( this );
     }
     
     function decoratorSave() {
@@ -3839,16 +3831,31 @@ AFrame.FieldPluginPlaceholder = ( function() {
     }
     
     function onFieldFocus() {
-        // have to use the overridden _getDisplayed because our decorated item cleans out
-        //  the placeholder.
-        if( Placeholder._getDisplayed.call( this ) == getPlaceholder.call( this ) ) {
-            this.display( '' );
-        }
+        this.focused = true;
+        updatePlaceholder.call( this );
     }
     
     function onFieldBlur() {
-        if( '' === Placeholder._getDisplayed.call( this ) ) {
-            this.display( getPlaceholder.call( this ) );
+        this.focused = false;
+        updatePlaceholder.call( this );
+    }
+    
+    function updatePlaceholder() {
+        var placeholder = getPlaceholder.call( this );
+        var displayed = Placeholder._getDisplayed.call( this );
+
+        var target = this.getTarget();
+        AFrame.DOM.removeClass( target, 'empty' );
+        
+        if( this.focused ) {
+            if( placeholder == displayed ) {
+                Placeholder._display.call( this, '' );
+            }
+        }
+        else if( '' === Placeholder._getDisplayed.call( this ) ) {
+            AFrame.DOM.addClass( target, 'empty' );
+            
+            Placeholder._display.call( this, getPlaceholder.call( this ) );
         }
     }
     
@@ -4785,7 +4792,7 @@ AFrame.DataForm = ( function() {
         var valid = true;
         this.forEach( function( formField, index ) {
             var fieldName = fieldGetName( formField );
-            var validityState = model.checkValidity( fieldName, formField.getDisplayed() );
+            var validityState = model.checkValidity( fieldName, formField.get() );
         
             if( validityState !== true ) {
                 valid = false;

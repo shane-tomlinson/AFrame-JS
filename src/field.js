@@ -108,6 +108,21 @@ AFrame.Field = ( function() {
         },
 
         /**
+         * Get the value of the field.  This should be overridden by subclasses to convert field string
+         *  values to whatever native value that is expected.  This means, the value returned by get 
+         *  can be different if the visual representation is different from the underlying data.  
+         *  Returns an empty string if no value entered.  
+         *
+         *    var val = nameField.get();
+         *
+         * @method get
+         * @return {variant} the value of the field
+         */
+        get: function() {
+            return this.getDisplayed();
+        },
+        
+        /**
          * Reset the field to its last 'set' value.
          *
          *    nameField.reset();
@@ -127,20 +142,6 @@ AFrame.Field = ( function() {
          */
         clear: function() {
             this.set( '' );
-        },
-        
-        /**
-         * Get the value of the field.  The value returned can be different if the visual representation is 
-         *	different from the underlying data.  Returns an empty string if no value entered.  
-         *
-         *    var val = nameField.get();
-         *
-         * @method get
-         * @return {variant} the value of the field
-         */
-         
-        get: function() {
-            return this.resetVal;
         },
         
         /**

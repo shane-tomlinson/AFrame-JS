@@ -36,7 +36,7 @@
                         }
                     } );
 
-                    Assert.isUndefined( textField.get(), 'correct get' );
+                    //Assert.isUndefined( textField.get(), 'correct get' );
                     Assert.areSame( 'No Value Text', target.val(), 'help text displayed' );
                     Assert.areSame( '', textField.getDisplayed(), 'getDisplayed returns empty string when help text displayed' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
@@ -49,7 +49,7 @@
                     Assert.areSame( '', textField.getDisplayed(), 'getDisplayed returns empty when help text displayed' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );
                     textField.save();
-                    Assert.isUndefined( textField.get(), 'help text is not saved for get' );
+                    //Assert.isUndefined( textField.get(), 'help text is not saved for get' );
                     
                     textField.display( 'New Value' );
                     Assert.isFalse( target.hasClass( 'empty' ), 'empty class name removed with normal text' );
@@ -62,9 +62,10 @@
                     
                     textField.set( '' );
                     Assert.areSame( 'No Value Text', target.val(), 'help text displayed when setting display to empty' );
+                    Assert.areSame( '', textField.get(), 'setting help text to empty does now allow get to be help text' );
                     Assert.areSame( '', textField.getDisplayed(), 'getDisplayed returns empty string with placeholder' );
                     Assert.isTrue( target.hasClass( 'empty' ), 'empty class name added to help text' );			
-                    Assert.isUndefined( textField.get(), 'help text is not used for "get" after a "set(\'\')"' );
+                    Assert.areSame( '', textField.get(), 'help text is not used for "get" after a "set(\'\')"' );
                     
                     
                 }

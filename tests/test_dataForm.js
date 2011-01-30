@@ -100,27 +100,16 @@ testsToRun.push( {
 		},
 		
 		testCheckValidity: function() {
-			this.field.set( 1 );
+			this.field.set( 'asdf' );
 
 			Assert.areSame( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
 			
 			var valid = this.form.checkValidity();
-			Assert.isFalse( valid, 'trying to set text field to an integer, dies.' );
+			Assert.isTrue( valid, 'trying to set text field to an integer, dies.' );
 
 		    var validityState = this.field.getValidityState();
-		    Assert.isFalse( validityState.valid, 'setting text field to integer is invalid' );
-		    Assert.isTrue( validityState.typeMismatch, 'setting text field to integer causes typeMismatch to be set' );
-
-		    this.field.set( 'Charlotte is the best wife in the world' );
-			var valid = this.form.checkValidity();
-			
-			Assert.isTrue( valid, 'set text field to text, all valid.' );
-		    
+		    Assert.isTrue( validityState.valid, 'setting text field to integer is invalid' );
 		},
-        
-        testCheckValiditySimulateTyping: function() {
-            
-        },
         
         testValidateFormWithModel: function() {
             var mockValidityCalled = false;
@@ -134,6 +123,15 @@ testsToRun.push( {
             this.form.validateFormFieldsWithModel( modelMock );
             
             Assert.isTrue( mockValidityCalled, 'the mock model\'s checkValidity was called' );
+        },
+        
+        testSave: function() {
+			this.field.set( 'test value' );
+
+			Assert.areSame( 'Field2', this.dataSource.get( 'field2' ), 'dataSource has not been updated before save' );
+            
+            this.form.save();
+			Assert.areSame( 'test value', this.dataSource.get( 'field2' ), 'dataSource updated after save' );
         }
 		
 } );

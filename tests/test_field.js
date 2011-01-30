@@ -135,6 +135,10 @@ testsToRun.push( {
 			var target = jQuery( 'input[data-field=name]' );
 			this.field.set( 'Shane Tomlinson' );
 			Assert.areEqual( 'Shane Tomlinson', this.field.get(), 'get gets field correctly' );
+
+			target.val( 'Shane' );
+			Assert.areEqual( 'Shane', this.field.get(), 'get gets field correctly whenever setting val outside of set' );
+            
 		},
 		
 		testReset: function() {
@@ -184,8 +188,6 @@ testsToRun.push( {
 			this.field.display( 'Charlotte' );
 			Assert.areEqual( 'Charlotte', target.val(), 'element value correctly displayed' );
 			Assert.areEqual( 'Charlotte', this.field.getDisplayed(), 'getDisplayed returns same data as target.val' );
-			
-			Assert.areEqual( 'Preston the Penguin', this.field.get(), 'display nor getDisplayed affect get' );
 		},
 		
 		testSetError: function() {
