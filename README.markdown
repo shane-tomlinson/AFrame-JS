@@ -28,7 +28,7 @@ where XXX is the adapter of your choice.
 
 2. Create a script tag inside of your HTML document:
 
-    <script type="text/javascript" src="aframe-current-jquery.min.js"></script>
+    &lt;script type="text/javascript" src="aframe-current-jquery.min.js"&gt;&lt;/script&gt;
 
 
 ### To download and build the libraries and docs ###
