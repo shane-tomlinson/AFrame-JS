@@ -8,7 +8,7 @@
 
 -----------------------
 
-AFrame is an MVC library that aims to provide a foundation for developing applications in Javascript using the same
+AFrame is a Javascript MVC library that aims to provide a foundation for developing applications in Javascript using the same
 methodologies other languages have been using for years.  This is NOT another DOM manipulation library. There are
 plenty of DOM manipulation libraries (jQuery, MooTools, Prototype, Dojo, YUI), other libraries that provide 
 hundreds of widgets (Dojo, YUI, Sencha Labs) and others that shield you from writing Javascript (Cappachino).  But why?
@@ -45,10 +45,11 @@ where xxx is the version that you downloaded.
 
 ### To download and build the libraries and docs ###
 
-1. Apache Ant is required.  Go get it.
-2. Check out a copy of the code from [GitHub](https://github.com/stomlinson/AFrame-JS).
-3. The sample per_user.properties.sample must be personalized and copied to per_user.properties
-4. run "ant all" to do a full build. Since I do development both in Linux and Windows, the build script works with both.
+1. [Apache Ant](http://ant.apache.org/) is required.  [Go get it.](http://ant.apache.org/)
+2. [Ant-contrib](http://ant-contrib.sourceforge.net/) is also required.  [Go get it.](http://ant-contrib.sourceforge.net/)
+3. Check out a copy of the code from [GitHub](https://github.com/stomlinson/AFrame-JS).
+4. The sample per_user.properties.sample must be personalized and copied to per_user.properties
+5. run "ant all" to do a full build. Since I do development both in Linux and Windows, the build script works with both.
 
 ### Build options ###
 1. "ant all" does a full build.
@@ -63,6 +64,19 @@ where xxx is the version that you downloaded.
 
 ### Licensing ###
 AFrameJS is released under the [Creative Commons Attribution 3.0 License](http://creativecommons.org/licenses/by/3.0/).
+
+### Contributing ###
+AFrameJS is still in heavy development and has a long way to go to be a polished product.  Any suggestions, any feedback, and any
+contributions will be taken seriously.  
+
+I am especially in need at the moment of more people using AFrameJS to create simple apps
+that help point out where pain points, difficulties and down right strangenesses are.  A clean API makes life so much easier, with
+help, I'd like to make AFrameJS the cleanest Javascript MVC library that exists.
+
+A second area that needs help is to write DOM adapters for various DOM libraries.  Adapters are needed for [YUI](http://developer.yahoo.com/yui/), 
+[Dojo](http://dojotoolkit.org/), [Ext](http://www.sencha.com/products/js/), and any other DOM libraries out there that are used.
+
+### Thanks Go To ###
 
 Shane Tomlinson
 set117 (show me a sign) yahoo.com
