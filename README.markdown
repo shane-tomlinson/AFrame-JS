@@ -39,6 +39,9 @@ Create a script tag inside of your HTML document:
 
 where xxx is the version that you downloaded.
 
+### Tutorials and API Documentation ###
+* [Tutorial](http://www.aframejs.com/tutorial.html)
+* [API Documentation](http://www.aframejs.com/docs/index.html)
 
 ### To download and build the libraries and docs ###
 
