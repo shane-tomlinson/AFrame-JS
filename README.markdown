@@ -23,8 +23,14 @@ Unit tests use the YUI Unit test library.  These can be run by browsing to the t
 
 ### Using AFrameJS without compilation ###
 
-1. Grab the current version in [dist](https://github.com/stomlinson/AFrame-JS/tree/master/dist)/aframe-current-XXX.js or [dist](https://github.com/stomlinson/AFrame-JS/tree/master/dist)/aframe-current-XXX.min.js
-where XXX is the adapter of your choice.
+1. Grab the current version, versions are available both compressed and uncompressed.
+* [jQuery Uncompressed](https://github.com/stomlinson/AFrame-JS/raw/master/dist/aframe-current-jquery.js)
+* [jQuery Compressed](https://github.com/stomlinson/AFrame-JS/raw/master/dist/aframe-current-jquery.min.js)
+* [MooTools Uncompressed](https://github.com/stomlinson/AFrame-JS/raw/master/dist/aframe-current-mootools.js)
+* [MooTools Compressed](https://github.com/stomlinson/AFrame-JS/raw/master/dist/aframe-current-mootools.min.js)
+* [Prototype Uncompressed](https://github.com/stomlinson/AFrame-JS/raw/master/dist/aframe-current-prototype.js)
+* [Prototype Compressed](https://github.com/stomlinson/AFrame-JS/raw/master/dist/aframe-current-prototype.min.js)
+
 
 2. Create a script tag inside of your HTML document:
 
