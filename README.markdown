@@ -1,4 +1,4 @@
-AFrame JS - The Javascript Application Framework
+[AFrameJS](http://www.aframejs.com) - The Javascript Application Framework
 ================================================
 
 [http://www.aframejs.com](http://www.aframejs.com)
