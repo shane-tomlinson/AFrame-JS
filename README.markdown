@@ -19,10 +19,17 @@ AFrame has no dependency on any DOM framework in particular, all DOM interaction
 there are adapters for jQuery, MooTools, and Prototype.  Adapters for YUI, Ext, and possibly Dojo are planned as I get time.
 If there is an adapter that you need that is not written, code it up, make sure it passes the unit tests, and I will gladly accept submissions!
 
-To use AFrame without compilation, you can grab the current version in dist/aframe-current-XXX.js or dist/aframe-current-XXX.min.js
+Unit tests use the YUI Unit test library.  These can be run by browsing to the tests directory and opening index.html
+
+### Using AFrameJS without compilation ###
+
+1. Grab the current version in [dist](https://github.com/stomlinson/AFrame-JS/tree/master/dist)/aframe-current-XXX.js or [dist](https://github.com/stomlinson/AFrame-JS/tree/master/dist)/aframe-current-XXX.min.js
 where XXX is the adapter of your choice.
 
-Unit tests use the YUI Unit test library.  These can be run by browsing to the tests directory and opening index.html
+2. Create a script tag inside of your HTML document:
+
+    <script type="text/javascript" src="aframe-current-jquery.min.js"></script>
+
 
 ### To download and build the libraries and docs ###
 
@@ -42,6 +49,8 @@ Unit tests use the YUI Unit test library.  These can be run by browsing to the t
 ### See a sample app in action ###
 1. Check out [MobileNotes](https://github.com/stomlinson/MobileNotes) 
 
+### Licensing ###
+AFrameJS is released under the [Creative Commons Attribution 3.0 License](http://creativecommons.org/licenses/by/3.0/).
 
 Shane Tomlinson
 set117 (show me a sign) yahoo.com
