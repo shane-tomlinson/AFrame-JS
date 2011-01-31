@@ -81,7 +81,7 @@ A second area that needs help is to write DOM adapters for various DOM libraries
 2. Keep up with the [site.](http://www.aframejs.com)
 3. Check back here.
 
-Shane Tomlinson
-set117 (show me a sign) yahoo.com
-[http://www.shanetomlinson.com](http://www.shanetomlinson.com)
-[@shane_tomlinson](http://twitter.com/#!/shane_tomlinson)
+### About Me: Shane Tomlinson###
+1. set117 (show me a sign) yahoo.com
+2. [http://www.shanetomlinson.com](http://www.shanetomlinson.com)
+3. [@shane_tomlinson](http://twitter.com/#!/shane_tomlinson)
