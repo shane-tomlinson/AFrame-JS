@@ -73,7 +73,10 @@ I am especially in need at the moment of more people using AFrameJS to create si
 that help point out where pain points, difficulties and down right strangenesses are.  A clean API makes life so much easier, with
 help, I'd like to make AFrameJS the cleanest Javascript MVC library that exists.
 
-A second area that needs help is to write DOM adapters for various DOM libraries.  Adapters are needed for [YUI](http://developer.yahoo.com/yui/), 
+A second area that could use attention is in documentation.  I have tried my best to document as I have gone along, but some more 
+detailed documentation as well as some simple HOWTOs are needed.
+
+A third area that needs help is to write DOM adapters for various DOM libraries.  Adapters are needed for [YUI](http://developer.yahoo.com/yui/), 
 [Dojo](http://dojotoolkit.org/), [Ext](http://www.sencha.com/products/js/), and any other DOM libraries out there that are used.
 
 ### Keeping up to date ###
