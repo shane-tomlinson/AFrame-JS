@@ -76,7 +76,12 @@ help, I'd like to make AFrameJS the cleanest Javascript MVC library that exists.
 A second area that needs help is to write DOM adapters for various DOM libraries.  Adapters are needed for [YUI](http://developer.yahoo.com/yui/), 
 [Dojo](http://dojotoolkit.org/), [Ext](http://www.sencha.com/products/js/), and any other DOM libraries out there that are used.
 
-### Thanks Go To ###
+### Keeping up to date ###
+1. Follow [@AFrameJS](http://twitter.com/#!/AFrameJS) on Twitter
+2. Keep up with the [site.](http://www.aframejs.com)
+3. Check back here.
 
 Shane Tomlinson
 set117 (show me a sign) yahoo.com
+[http://www.shanetomlinson.com](http://www.shanetomlinson.com)
+[@shane_tomlinson](http://twitter.com/#!/shane_tomlinson)
