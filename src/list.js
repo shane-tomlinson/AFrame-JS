@@ -15,7 +15,7 @@
  *    ---------
  *    // Set up a factory to create list elements.  This can create the elements 
  *    // directly or use sort of templating system.
- *    var factory = function( index, data ) {
+ *    var factory = function( data, index ) {
  *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
@@ -85,7 +85,7 @@ AFrame.List = ( function() {
         * The factory used to create list elements.
         *
         *    // overriden listElementFactory
-        *    listElementFactory: function( index, data ) {
+        *    listElementFactory: function( data, index ) {
         *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
         *       return listItem;
         *    }
