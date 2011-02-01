@@ -10,10 +10,16 @@ $( function() {
     //  collection, when creating the list, we bind the list to the collection.  
     //  The ListPluginBindToCollection will take care of the updating of the list.
     var friendsCollection = AFrame.construct( {
-        type: AFrame.CollectionArray
+        type: AFrame.CollectionArray,
+        plugins: [ {
+            type: AFrame.CollectionPluginModel,
+            config: {
+                schema: friendSchemaConfig
+            }
+        } ]
     } );
     
-    // This is the friends list.  It ios bound to the friendsCollection, so any time a model
+    // This is the friends list.  It is bound to the friendsCollection, so any time a model
     //  is added or removed from the friends collection, the listElementFactory will update
     //  the list.
     var friendsList = AFrame.construct( {
@@ -36,21 +42,7 @@ $( function() {
     //  automatically updated.
     $( '#add-friend' ).click( function( event ) {
            var friend_name = prompt("Who is your friend?");
-           var friend_model = createFriendModel( friend_name );
-           //Add a new friend model to our friend collection
-           friendsCollection.insert( friend_model );
+           // Add new model will be created when adding to the friend collection.
+           friendsCollection.insert( { name: friend_name } );
     } );
-    
-    function createFriendModel( name ) {
-        // Creating a model using the friendSchemaConfig, setting the data to have the name.
-        return AFrame.construct( {
-            type: AFrame.Model,
-            config: {
-                schema: friendSchemaConfig,
-                data: {
-                    name: name
-                }
-            }
-        } );
-    }
 } );
