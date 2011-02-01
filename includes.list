@@ -13,6 +13,7 @@ display.js,\
 list.js,\
 listPluginBindToCollection.js,\
 collectionPluginPersistence.js,\
+collectionPluginModel.js,\
 form.js,\
 field.js,\
 fieldPluginValidation.js,\

@@ -1,6 +1,6 @@
 /**
  * A generic HTML list class.  A list is any list of data.  A List shares
- *  the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> 
+ *  the majority of its interface with a <a href="AFrame.CollectionArray.html">CollectionArray</a> 
  *  since lists are inherently ordered (even if they are ULs).  There are two methods
  *  for inserting an item into the list, either passing an already created
  *  element to [insertElement](#method_insertElement) or by passing data to [insert](#method_insert). 

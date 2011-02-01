@@ -2035,7 +2035,7 @@ AFrame.Display = (function() {
 } )();
 /**
  * A generic HTML list class.  A list is any list of data.  A List shares
- *  the majority of its interface with a <a href="docs/AFrame.CollectionArray.html">CollectionArray</a> 
+ *  the majority of its interface with a <a href="AFrame.CollectionArray.html">CollectionArray</a> 
  *  since lists are inherently ordered (even if they are ULs).  There are two methods
  *  for inserting an item into the list, either passing an already created
  *  element to [insertElement](#method_insertElement) or by passing data to [insert](#method_insert). 
@@ -2050,7 +2050,7 @@ AFrame.Display = (function() {
  *    ---------
  *    // Set up a factory to create list elements.  This can create the elements 
  *    // directly or use sort of templating system.
- *    var factory = function( index, data ) {
+ *    var factory = function( data, index ) {
  *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
@@ -2120,7 +2120,7 @@ AFrame.List = ( function() {
         * The factory used to create list elements.
         *
         *    // overriden listElementFactory
-        *    listElementFactory: function( index, data ) {
+        *    listElementFactory: function( data, index ) {
         *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
         *       return listItem;
         *    }
@@ -2874,6 +2874,103 @@ AFrame.CollectionPluginPersistence = ( function() {
     
     return Plugin;
 } )();/**
+* A plugin to a Collection that automates the creation of models.  If all items
+*   in a collection share a [Schema](AFrame.Schema.html), instead of creating
+*   a model for each insert, the data can be inserted directly and a model will
+*   automatically be created.  When doing a "get" on the collection, the models
+*   will be returned.
+*
+*
+*    // Define the schema
+*    var schemaConfig = {
+*        name: { type: 'text' },
+*        employer: { type: 'text', 'def': 'AFrame Foundary' }
+*    };
+*    
+*    // create the collection.
+*    this.collection = AFrame.construct( {
+*        type: AFrame.CollectionArray,
+*        plugins: [ {
+*            type: AFrame.CollectionPluginModel,
+*            config: {
+*                schema: schemaConfig
+*            }
+*        } ]
+*    } );
+* 
+* @class AFrame.CollectionPluginModel
+* @extends AFrame.Plugin
+* @constructor
+*/
+/**
+* The schema or schemaConfig to use.
+* @config schema
+* @type {SchemaConfig || Schema}
+*/
+/**
+* The model factory to use.  If not given, a default model factory is used
+*   which creates an AFrame.Model with the data inserted and the schema
+*   given.  The factory will be called with two parameters, the data 
+*   and the schema.
+*
+*    // example of an overridden model factory function.
+*    var modelFactory = function( data, schema ) {
+*       return AFrame.construct( {
+*           type: SpecializedModel,
+*           config: {
+*               data: data,
+*               schema: scheam
+*           } 
+*       } );
+*    };
+*
+* @config modelFactory
+* @type {function}
+* @default modelFactory
+*/
+AFrame.CollectionPluginModel = ( function() {
+    "use strict";
+    
+    var Plugin = function() {
+        Plugin.sc.constructor.call( this );
+    };
+    AFrame.extend( Plugin, AFrame.Plugin, {
+        init: function( config ) {
+            this.schema = config.schema;
+            this.modelFactory = config.modelFactory || createModel;
+            
+            Plugin.sc.init.call( this, config );
+        },
+        
+        setPlugged: function( plugged ) {
+            this.decoratedInsert = plugged.insert;
+            plugged.insert = this.insert.bind( this );
+            
+            Plugin.sc.setPlugged.call( this, plugged );
+        },
+        
+        insert: function( item, insertAt ) {
+            if( !( item instanceof AFrame.Model ) ) {
+                item = this.modelFactory.call( this, item );
+            }
+            
+            this.decoratedInsert.call( this.getPlugged(), item, insertAt );
+        }
+    } );
+    
+    function createModel( data ) {
+        var model = AFrame.construct( {
+            type: AFrame.Model,
+            config: {
+                schema: this.schema,
+                data: data
+            }
+        } );
+        return model;
+    }
+    
+    return Plugin;
+}() );/**
  * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
  * the following functions, clear, save, reset, validate.  A generic Form is not 
  * bound to any data, it is only a collection of form fields.  Note, by default,
