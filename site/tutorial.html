@@ -508,7 +508,7 @@
     
     ---------
 
-    var factory = function( index, data ) {
+    var factory = function( data, index ) {
         var listItem = $( '&lt;li&gt;' + data.name + ', ' + data.employer + '&lt;/li&gt;' );
         return listItem;
     };
@@ -564,7 +564,7 @@
     } );
     
     
-    var factory = function( index, data ) {
+    var factory = function( data, index ) {
         var listItem = $( '&lt;li&gt;' + data.name + ', ' + data.employer + '&lt;/li&gt;' );
         return listItem;
     };
@@ -640,7 +640,7 @@
     
     /* the row element factory, can easily use a templating 
     *   mechanism instead of direct creation */
-    var rowElementFactory = function( index, data ) {
+    var rowElementFactory = function( data, index ) {
         var listItem = $( '&lt;li&gt;&lt;input type="text" data-field="name" /&gt;,' +
             '&lt;input type="text" data-field="employer" /&gt;&lt;/li&gt;' );
         return listItem;
