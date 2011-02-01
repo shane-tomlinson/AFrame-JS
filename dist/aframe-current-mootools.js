@@ -2919,7 +2919,7 @@ AFrame.CollectionPluginPersistence = ( function() {
 *           type: SpecializedModel,
 *           config: {
 *               data: data,
-*               schema: scheam
+*               schema: schema
 *           } 
 *       } );
 *    };
@@ -2951,18 +2951,18 @@ AFrame.CollectionPluginModel = ( function() {
         
         insert: function( item, insertAt ) {
             if( !( item instanceof AFrame.Model ) ) {
-                item = this.modelFactory.call( this, item );
+                item = this.modelFactory( item, this.schema );
             }
             
             this.decoratedInsert.call( this.getPlugged(), item, insertAt );
         }
     } );
     
-    function createModel( data ) {
+    function createModel( data, schema ) {
         var model = AFrame.construct( {
             type: AFrame.Model,
             config: {
-                schema: this.schema,
+                schema: schema,
                 data: data
             }
         } );
