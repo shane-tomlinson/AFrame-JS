@@ -12,6 +12,9 @@
                 this.collection = AFrame.construct( {
                     type: AFrame.CollectionArray,
                     plugins: [ {
+                            type: AFrame.CollectionPluginPersistence
+                        },
+                        {
                         type: AFrame.CollectionPluginModel,
                         config: {
                             schema: schemaConfig
@@ -55,6 +58,57 @@
                 var model = this.collection.get( 0 );
                 
                 Assert.areSame( 'Shane Tomlinson', model.get( 'name' ) );                
+            },
+            
+            testAddData: function() {
+                var beforeAddItem;
+                this.collection.bindEvent( 'onBeforeAdd', function( event ) {
+                    beforeAddItem = event.item;
+                } );
+                
+                this.collection.add( {
+                    name: 'Shane Tomlinson',
+                } );
+                
+                var model = this.collection.get( 0 );
+                Assert.areSame( true, beforeAddItem instanceof AFrame.Model, 'Inserted data creates a model' );
+            },
+            
+            testAddModel: function() {
+                var beforeAddItem;
+                this.collection.bindEvent( 'onBeforeAdd', function( event ) {
+                    beforeAddItem = event.item;
+                } );
+                
+                var model =  AFrame.construct( {
+                    type: AFrame.Model,
+                    config: {
+                        schema: schemaConfig,
+                        data: {
+                            name: 'Shane Tomlinson'
+                        }
+                    }
+                } );
+                
+                this.collection.add( model );
+                
+                var model = this.collection.get( 0 );
+                Assert.areSame( model, beforeAddItem, 'Inserted uses given model' );
+            },
+            
+            testAddNotAddedIfNoPersistencePlugin: function() {
+                var collection = AFrame.construct( {
+                    type: AFrame.CollectionArray,
+                    plugins: [ 
+                        {
+                        type: AFrame.CollectionPluginModel,
+                        config: {
+                            schema: schemaConfig
+                        }
+                    } ]
+                } );
+                
+                Assert.isUndefined( collection.add, 'add not added, no persistence plugin' );
             }
 
 

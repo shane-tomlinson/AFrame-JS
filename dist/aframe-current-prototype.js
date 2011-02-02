@@ -2878,8 +2878,10 @@ AFrame.CollectionPluginPersistence = ( function() {
 *   in a collection share a [Schema](AFrame.Schema.html), instead of creating
 *   a model for each insert, the data can be inserted directly and a model will
 *   automatically be created.  When doing a "get" on the collection, the models
-*   will be returned.
-*
+*   will be returned.  Model creation will occur as soon as data enters the collection,
+*   so it happens on insert always before the onBeforeInsert event is triggered.
+*   If the collection has CollectionPluginPersistence, the model will be created
+*   before the onBeforeAdd event is triggered.
 *
 *    // Define the schema
 *    var schemaConfig = {
@@ -2943,20 +2945,23 @@ AFrame.CollectionPluginModel = ( function() {
         },
         
         setPlugged: function( plugged ) {
-            this.decoratedInsert = plugged.insert;
-            plugged.insert = this.insert.bind( this );
+            plugged.insert = augmentInsert.bind( this, plugged.insert );
             
-            Plugin.sc.setPlugged.call( this, plugged );
-        },
-        
-        insert: function( item, insertAt ) {
-            if( !( item instanceof AFrame.Model ) ) {
-                item = this.modelFactory( item, this.schema );
+            if( plugged.add ) {
+                plugged.add = augmentInsert.bind( this, plugged.add );
             }
             
-            this.decoratedInsert.call( this.getPlugged(), item, insertAt );
+            Plugin.sc.setPlugged.call( this, plugged );
         }
     } );
+    
+    function augmentInsert( decorated, item, insertAt ) {
+        if( !( item instanceof AFrame.Model ) ) {
+            item = this.modelFactory( item, this.schema );
+        }
+        
+        decorated.call( this.getPlugged(), item, insertAt );
+    }
     
     function createModel( data, schema ) {
         var model = AFrame.construct( {
