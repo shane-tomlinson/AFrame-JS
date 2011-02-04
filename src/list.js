@@ -147,7 +147,6 @@ AFrame.List = ( function() {
             /**
             * Triggered whenever a row is inserted into the list
             * @event onInsert
-            * @param {element} rowElement - the row's list element
             * @param {object} options - information about the insert
             * @param {element} options.rowElement - row's element
             * @param {object} options.data - data that was inserted
