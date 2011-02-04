@@ -2182,7 +2182,6 @@ AFrame.List = ( function() {
             /**
             * Triggered whenever a row is inserted into the list
             * @event onInsert
-            * @param {element} rowElement - the row's list element
             * @param {object} options - information about the insert
             * @param {element} options.rowElement - row's element
             * @param {object} options.data - data that was inserted
@@ -4273,6 +4272,16 @@ AFrame.Schema = (function() {
         },
         
         /**
+        * Check to see if a row is labeled with "has many"
+        * @method rowHasMany
+        * @param {string} rowName
+        * @return {boolean} true if row is marked as "has_many", false otw.
+        */
+        rowHasMany: function( rowName ) {
+            return !!( this.schema[ rowName ] && this.schema[ rowName ].has_many );
+        },
+        
+        /**
         * Validate a set of data against the schema
         *
         *    // validate, but ignore fields defined in the schema that are missing from data.
@@ -5217,7 +5226,7 @@ AFrame.Model = ( function() {
         },
         
 	    /**
-	    * Set an item of data.  Model will only be updated if data validates.  If data validates, the previous
+	    * Set an item of data.  Model will only be updated if data validates or force is set to true.  If data validates, the previous
 	    * value will be returned.  If data does not validate, a [FieldValidityState](AFrame.FieldValidityState.html)
 	    * will be returned.
         *
@@ -5229,14 +5238,18 @@ AFrame.Model = ( function() {
 	    * @method set
 	    * @param {string} fieldName name of field
 	    * @param {variant} fieldValue value of field
+	    * @param {boolean} force force update
 	    * @return {variant} previous value of field if correctly set, a 
 	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
 	    */
-        set: function( fieldName, fieldValue ) {
+        set: function( fieldName, fieldValue, force ) {
             var fieldValidity = this.checkValidity( fieldName, fieldValue );
             
-            if( true === fieldValidity ) {
-                fieldValidity = Model.sc.set.call( this, fieldName, fieldValue );
+            if( true === fieldValidity || force ) {
+                var setval = Model.sc.set.call( this, fieldName, fieldValue );
+                if( !force ) {
+                    fieldValidity = setval;
+                }
             }
             
             return fieldValidity;

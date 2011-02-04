@@ -70,7 +70,7 @@ AFrame.Model = ( function() {
         },
         
 	    /**
-	    * Set an item of data.  Model will only be updated if data validates.  If data validates, the previous
+	    * Set an item of data.  Model will only be updated if data validates or force is set to true.  If data validates, the previous
 	    * value will be returned.  If data does not validate, a [FieldValidityState](AFrame.FieldValidityState.html)
 	    * will be returned.
         *
@@ -82,14 +82,18 @@ AFrame.Model = ( function() {
 	    * @method set
 	    * @param {string} fieldName name of field
 	    * @param {variant} fieldValue value of field
+	    * @param {boolean} force force update
 	    * @return {variant} previous value of field if correctly set, a 
 	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
 	    */
-        set: function( fieldName, fieldValue ) {
+        set: function( fieldName, fieldValue, force ) {
             var fieldValidity = this.checkValidity( fieldName, fieldValue );
             
-            if( true === fieldValidity ) {
-                fieldValidity = Model.sc.set.call( this, fieldName, fieldValue );
+            if( true === fieldValidity || force ) {
+                var setval = Model.sc.set.call( this, fieldName, fieldValue );
+                if( !force ) {
+                    fieldValidity = setval;
+                }
             }
             
             return fieldValidity;

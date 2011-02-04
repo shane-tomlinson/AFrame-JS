@@ -48,6 +48,14 @@
             Assert.isFalse( fieldValidityState.valid, 'setting a number field to a string is invalid' );
         },
         
+        testSetInvalidTypeForced: function() {
+            var fieldValidityState = this.model.set( 'numberField', 'error causing string', true );
+
+            Assert.areSame( 'error causing string', this.model.get( 'numberField' ), 'numberField forcing set' );
+            Assert.isTrue( fieldValidityState instanceof AFrame.FieldValidityState, 'numberField still undefined' );
+            Assert.isFalse( fieldValidityState.valid, 'setting a number field to a string is invalid' );
+        },
+        
         testCheckValidity: function() {
             var fieldValidityState = this.model.checkValidity( 'numberField', 'error causing string' );
 
