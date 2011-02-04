@@ -296,6 +296,16 @@ AFrame.Schema = (function() {
         },
         
         /**
+        * Check to see if a row is labeled with "has many"
+        * @method rowHasMany
+        * @param {string} rowName
+        * @return {boolean} true if row is marked as "has_many", false otw.
+        */
+        rowHasMany: function( rowName ) {
+            return !!( this.schema[ rowName ] && this.schema[ rowName ].has_many );
+        },
+        
+        /**
         * Validate a set of data against the schema
         *
         *    // validate, but ignore fields defined in the schema that are missing from data.

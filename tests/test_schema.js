@@ -270,7 +270,8 @@
             testHasMany: function() {
                 var schemaConfig = {
                     arrayField: { type: 'integer', has_many: true },
-                    dateArrayField: { type: 'iso8601', has_many: true }
+                    dateArrayField: { type: 'iso8601', has_many: true },
+                    singleField: { type: 'integer' }
                 }
                 
                 var schema = AFrame.construct( {
@@ -307,6 +308,9 @@
                 Assert.areEqual( 2, data.dateArrayField.length, 'two date items converted' );
                 Assert.isString( data.dateArrayField[ 0 ], 'date item converted to string' );
                 Assert.isString( data.dateArrayField[ 1 ], 'date item converted to string' );
+                
+                Assert.isTrue( schema.rowHasMany( 'arrayField' ), 'arrayField row labeled as having many' );
+                Assert.isFalse( schema.rowHasMany( 'singleField' ), 'singleField row not labeled as having many' );
                 
             },
             
