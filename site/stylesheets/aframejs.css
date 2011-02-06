@@ -780,12 +780,17 @@ header {
     color: #ff8200;
     font-size: 2.2em; 
     text-shadow: 1px 1px 1px rgba(255,130,0,.4);
+    display: inline-block;
+    line-height: 42px;
     }
   header h2 {
     color: #ff8200;
     margin-bottom: 1.1em;
     font-size: 1.1em; 
     text-shadow: 1px 1px 1px rgba(255,130,0,.4);
+    display: inline-block;
+    line-height: 42px;
+    vertical-align: middle;
     }
     header h2 strong {
       font-style: italic; }
