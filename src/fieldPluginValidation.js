@@ -80,10 +80,7 @@
 AFrame.FieldPluginValidation = (function() {
     "use strict";
     
-    var FieldPluginValidation = function() {
-        FieldPluginValidation.sc.constructor.call( this );
-    };
-    AFrame.extend( FieldPluginValidation, AFrame.Plugin, {
+    var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
         setPlugged: function( plugged ) {
             this.calculateValidity = true;
             

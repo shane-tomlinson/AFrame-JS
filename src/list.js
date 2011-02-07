@@ -61,10 +61,7 @@
 AFrame.List = ( function() {
     "use strict";
     
-    var List = function() {
-        List.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
+    var List = AFrame.Class( AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
         init: function( config ) {
             if( config.listElementFactory ) {
                 this.listElementFactory = config.listElementFactory;

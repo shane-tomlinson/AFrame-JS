@@ -10,11 +10,28 @@ var AFrame = ( function() {
     "use strict";
     
     var AFrame = {
+        /**
+        * A shortcut to create a new class with a default constructor.  A default
+        *   constructor does nothing unless it has a superclass, where it calls the
+        *   superclasses constructor.  If the first parameter to Class is a function, 
+        *   the parameter is assumed to be the superclass.  All other parameters 
+        *   should be objects which are mixed in to the new classes prototype.
+        *
+        * If a new class needs a non-standard constructor, the class constructor should 
+        *   be created manually and then any mixins/superclasses set up using the
+        *   [AFrame.extend](#method_extend) function.
+        * @method Class
+        * @param {function} superclass (optional) - superclass to use.  If not given, class has
+        *   no superclass.
+        * @param {object} 
+        * @return {function} - the new class.
+        */
         Class: function() {
             var F;
             
             var args = Array.prototype.slice.call( arguments, 0 );
             
+            // we have a superclass, do everything related to a superclass
             if( AFrame.func( args[ 0 ] ) ) {
                 F = function() { 
                     F.sc.constructor.call( this ); 
@@ -23,12 +40,16 @@ var AFrame = ( function() {
                 args.splice( 0, 1 );
             }
             else {
+                // no superclass.  Create a base class.
                 F = function() {};
             }
             
             for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
                 AFrame.mixin( F.prototype, mixin );
             }
+            
+            // Always set the constructor last in case any mixins overwrote it.
+            F.prototype.constructor = F;
             
             return F;
         },

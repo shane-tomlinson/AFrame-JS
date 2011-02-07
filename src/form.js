@@ -82,34 +82,7 @@
 AFrame.Form = ( function() {
     "use strict";
 
-    var Form = function() {
-        Form.sc.constructor.apply( this, arguments );
-    };
-    
-    /**
-    * Set the default field factory.  Overridden factory takes one parameter, element.  
-    * It should return a {Field}(AFrame.Field.html) compatible object.
-    *
-    *
-    *     // example of overloaded formFieldFactory
-    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
-    *       } );
-    *     } );
-    *
-    *
-    * @method Form.setDefaultFieldFactory
-    * @param {function} factory
-    */
-    Form.setDefaultFieldFactory = function( factory ) {
-        formFieldFactory = factory;
-    };
-    
-    AFrame.extend( Form, AFrame.Display, AFrame.EnumerableMixin, {
+    var Form = AFrame.Class( AFrame.Display, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
             this.formElements = [];
@@ -256,6 +229,29 @@ AFrame.Form = ( function() {
             this.formFields && this.formFields.forEach( callback, context );
         }
     } );
+    
+    /**
+    * Set the default field factory.  Overridden factory takes one parameter, element.  
+    * It should return a {Field}(AFrame.Field.html) compatible object.
+    *
+    *
+    *     // example of overloaded formFieldFactory
+    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
+    *       return AFrame.construct( {
+    *           type: AFrame.SpecializedField,
+    *           config: {
+    *               target: element
+    *           }
+    *       } );
+    *     } );
+    *
+    *
+    * @method Form.setDefaultFieldFactory
+    * @param {function} factory
+    */
+    Form.setDefaultFieldFactory = function( factory ) {
+        formFieldFactory = factory;
+    };
     
     /**
     * Do an action on all fields.

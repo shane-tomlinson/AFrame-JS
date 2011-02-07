@@ -128,7 +128,51 @@ if( !window.console ) {
 var AFrame = ( function() {
     "use strict";
     
-    var AFrame = {	
+    var AFrame = {
+        /**
+        * A shortcut to create a new class with a default constructor.  A default
+        *   constructor does nothing unless it has a superclass, where it calls the
+        *   superclasses constructor.  If the first parameter to Class is a function, 
+        *   the parameter is assumed to be the superclass.  All other parameters 
+        *   should be objects which are mixed in to the new classes prototype.
+        *
+        * If a new class needs a non-standard constructor, the class constructor should 
+        *   be created manually and then any mixins/superclasses set up using the
+        *   [AFrame.extend](#method_extend) function.
+        * @method Class
+        * @param {function} superclass (optional) - superclass to use.  If not given, class has
+        *   no superclass.
+        * @param {object} 
+        * @return {function} - the new class.
+        */
+        Class: function() {
+            var F;
+            
+            var args = Array.prototype.slice.call( arguments, 0 );
+            
+            // we have a superclass, do everything related to a superclass
+            if( AFrame.func( args[ 0 ] ) ) {
+                F = function() { 
+                    F.sc.constructor.call( this ); 
+                };
+                AFrame.extend( F, args[ 0 ] );
+                args.splice( 0, 1 );
+            }
+            else {
+                // no superclass.  Create a base class.
+                F = function() {};
+            }
+            
+            for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
+                AFrame.mixin( F.prototype, mixin );
+            }
+            
+            // Always set the constructor last in case any mixins overwrote it.
+            F.prototype.constructor = F;
+            
+            return F;
+        },
+        
         /**
         * Used to extend a class with another class and optional functions.
         *
@@ -150,7 +194,6 @@ var AFrame = ( function() {
             var F = function() {};
             F.prototype = sc.prototype;
             derived.prototype = new F();
-            derived.prototype.constuctor = derived;
             derived.superclass = sc.prototype;  // superclass and sc are aliases
             derived.sc = sc.prototype;
 
@@ -158,6 +201,7 @@ var AFrame = ( function() {
             for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
                 AFrame.mixin( derived.prototype, mixin );
             }
+            derived.prototype.constructor = derived;
         },
 
         /**
@@ -806,9 +850,7 @@ AFrame.EnumerableMixin = ( function() {
 AFrame.AObject = (function(){ 
     "use strict";
     
-    var AObject = function() {};
-    AFrame.mixin( AObject.prototype, {
-        constructor: AObject,
+    var AObject = AFrame.Class( {
         /**
          * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
          *
@@ -923,10 +965,8 @@ AFrame.AObject = (function(){
         removeChild: function( cid ) {
             AFrame.remove( this.children, cid );
         }
-    } );
+    }, AFrame.ObservablesMixin );
 
-    AFrame.mixin( AObject.prototype, AFrame.ObservablesMixin );
-    
     return AObject;
 }() );
 /**
@@ -1163,10 +1203,7 @@ AFrame.DataContainer = ( function() {
 AFrame.Plugin = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.AObject, {
+    var Plugin = AFrame.Class( AFrame.AObject, {
         /**
         * Set the reference to the plugged object.  Subclasses can override this function to bind event
         *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
@@ -1300,11 +1337,7 @@ AFrame.ArrayCommonFuncsMixin = {
 AFrame.CollectionHash = ( function() {
     "use strict";
     
-    var CollectionHash = function() {
-        CollectionHash.sc.constructor.apply( this, arguments );
-    };
-    CollectionHash.currID = 0;
-    AFrame.extend( CollectionHash, AFrame.AObject, AFrame.EnumerableMixin, {
+    var CollectionHash = AFrame.Class( AFrame.AObject, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.hash = {};
             
@@ -1509,7 +1542,8 @@ AFrame.CollectionHash = ( function() {
             }
         }
     } );
-    
+    CollectionHash.currID = 0;
+
     return CollectionHash;
 } )();
 /**
@@ -1571,10 +1605,7 @@ AFrame.CollectionHash = ( function() {
 AFrame.CollectionArray = ( function() {
     "use strict";
     
-    var CollectionArray = function() {
-        CollectionArray.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
+    var CollectionArray = AFrame.Class( AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
         init: function() {
             this.itemCIDs = [];
 
@@ -1851,10 +1882,7 @@ AFrame.Display = (function() {
     
     var currDOMEventID = 0;
 
-    var Display = function() {
-        Display.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Display, AFrame.AObject, {
+    var Display = AFrame.Class( AFrame.AObject, {
         /**
          * the target
          * @config target
@@ -2096,10 +2124,7 @@ AFrame.Display = (function() {
 AFrame.List = ( function() {
     "use strict";
     
-    var List = function() {
-        List.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
+    var List = AFrame.Class( AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
         init: function( config ) {
             if( config.listElementFactory ) {
                 this.listElementFactory = config.listElementFactory;
@@ -2357,11 +2382,7 @@ AFrame.List = ( function() {
 AFrame.ListPluginBindToCollection = ( function() { 
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * The collection to bind to
@@ -2524,10 +2545,7 @@ AFrame.ListPluginBindToCollection = ( function() {
 AFrame.CollectionPluginPersistence = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * function to call to do add.  Will be called with two parameters, data, and options.
@@ -2932,10 +2950,7 @@ AFrame.CollectionPluginPersistence = ( function() {
 AFrame.CollectionPluginModel = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.call( this );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             this.schema = config.schema;
             this.modelFactory = config.modelFactory || createModel;
@@ -3058,34 +3073,7 @@ AFrame.CollectionPluginModel = ( function() {
 AFrame.Form = ( function() {
     "use strict";
 
-    var Form = function() {
-        Form.sc.constructor.apply( this, arguments );
-    };
-    
-    /**
-    * Set the default field factory.  Overridden factory takes one parameter, element.  
-    * It should return a {Field}(AFrame.Field.html) compatible object.
-    *
-    *
-    *     // example of overloaded formFieldFactory
-    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
-    *       } );
-    *     } );
-    *
-    *
-    * @method Form.setDefaultFieldFactory
-    * @param {function} factory
-    */
-    Form.setDefaultFieldFactory = function( factory ) {
-        formFieldFactory = factory;
-    };
-    
-    AFrame.extend( Form, AFrame.Display, AFrame.EnumerableMixin, {
+    var Form = AFrame.Class( AFrame.Display, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
             this.formElements = [];
@@ -3234,6 +3222,29 @@ AFrame.Form = ( function() {
     } );
     
     /**
+    * Set the default field factory.  Overridden factory takes one parameter, element.  
+    * It should return a {Field}(AFrame.Field.html) compatible object.
+    *
+    *
+    *     // example of overloaded formFieldFactory
+    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
+    *       return AFrame.construct( {
+    *           type: AFrame.SpecializedField,
+    *           config: {
+    *               target: element
+    *           }
+    *       } );
+    *     } );
+    *
+    *
+    * @method Form.setDefaultFieldFactory
+    * @param {function} factory
+    */
+    Form.setDefaultFieldFactory = function( factory ) {
+        formFieldFactory = factory;
+    };
+    
+    /**
     * Do an action on all fields.
     * @method fieldAction
     * @private
@@ -3309,11 +3320,7 @@ AFrame.Form = ( function() {
 AFrame.Field = ( function() {
     "use strict";
     
-    var Field = function() {
-        AFrame.Field.sc.constructor.apply( this, arguments );
-    };
-    Field.cancelInvalid = true;
-    AFrame.extend( Field, AFrame.Display, {
+    var Field = AFrame.Class( AFrame.Display, {
         init: function( config ) {
             this.createValidator();
 
@@ -3452,6 +3459,7 @@ AFrame.Field = ( function() {
             }
         }
     } );
+    Field.cancelInvalid = true;
     
     return Field;
 }() );
@@ -3537,10 +3545,7 @@ AFrame.Field = ( function() {
 AFrame.FieldPluginValidation = (function() {
     "use strict";
     
-    var FieldPluginValidation = function() {
-        FieldPluginValidation.sc.constructor.call( this );
-    };
-    AFrame.extend( FieldPluginValidation, AFrame.Plugin, {
+    var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
         setPlugged: function( plugged ) {
             this.calculateValidity = true;
             
@@ -3844,7 +3849,7 @@ AFrame.FieldValidityState.prototype = {
 *
 *     <input type="text" data-field name="username" placeholder="Log in name" />
 *
-* @class Placeholder
+* @class AFrame.FieldPluginPlaceholder
 * @static
 */
 AFrame.FieldPluginPlaceholder = ( function() {
@@ -4522,10 +4527,7 @@ AFrame.Schema = (function() {
 AFrame.ListPluginFormRow = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * The factory function used to create forms.  formFactory will be called once for each
@@ -4830,11 +4832,7 @@ AFrame.ListPluginFormRow = ( function() {
 AFrame.DataForm = ( function() {
     "use strict";
     
-    var DataForm = function() {
-	    DataForm.sc.constructor.apply( this, arguments );
-    };
-    
-    AFrame.extend( DataForm, AFrame.Form, {
+    var DataForm = AFrame.Class( AFrame.Form, {
 	    init: function( config ) {
 		    /**
 		     * The source of data
@@ -5213,10 +5211,7 @@ AFrame.DataValidation = ( function() {
 AFrame.Model = ( function() {
     "use strict";
     
-    function Model() {
-        Model.sc.constructor.call( this );
-    }
-    AFrame.extend( Model, AFrame.DataContainer, {
+    var Model = AFrame.Class( AFrame.DataContainer, {
         init: function( config ) {
             this.schema = getSchema( config.schema );
             
@@ -5360,9 +5355,7 @@ AFrame.Model = ( function() {
 AFrame.Event = (function() {
     "use strict";
     
-    var Event = function() {};
-    Event.prototype = {
-        constructor: Event,
+    var Event = AFrame.Class( {
         /**
         * initialize the event.  All items in configuration will be added to event.  If timestamp
         *   is specified, it will be ignored.  type must be specified.
@@ -5430,7 +5423,7 @@ AFrame.Event = (function() {
             
             this.target = proxy;
         }
-    };
+    } );
     
     /**
     * A factory method to create an event.

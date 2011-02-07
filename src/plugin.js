@@ -11,10 +11,7 @@
 AFrame.Plugin = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.AObject, {
+    var Plugin = AFrame.Class( AFrame.AObject, {
         /**
         * Set the reference to the plugged object.  Subclasses can override this function to bind event
         *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to

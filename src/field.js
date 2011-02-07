@@ -34,11 +34,7 @@
 AFrame.Field = ( function() {
     "use strict";
     
-    var Field = function() {
-        AFrame.Field.sc.constructor.apply( this, arguments );
-    };
-    Field.cancelInvalid = true;
-    AFrame.extend( Field, AFrame.Display, {
+    var Field = AFrame.Class( AFrame.Display, {
         init: function( config ) {
             this.createValidator();
 
@@ -177,6 +173,7 @@ AFrame.Field = ( function() {
             }
         }
     } );
+    Field.cancelInvalid = true;
     
     return Field;
 }() );

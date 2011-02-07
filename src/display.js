@@ -64,10 +64,7 @@ AFrame.Display = (function() {
     
     var currDOMEventID = 0;
 
-    var Display = function() {
-        Display.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Display, AFrame.AObject, {
+    var Display = AFrame.Class( AFrame.AObject, {
         /**
          * the target
          * @config target

@@ -31,9 +31,7 @@
 AFrame.Event = (function() {
     "use strict";
     
-    var Event = function() {};
-    Event.prototype = {
-        constructor: Event,
+    var Event = AFrame.Class( {
         /**
         * initialize the event.  All items in configuration will be added to event.  If timestamp
         *   is specified, it will be ignored.  type must be specified.
@@ -101,7 +99,7 @@ AFrame.Event = (function() {
             
             this.target = proxy;
         }
-    };
+    } );
     
     /**
     * A factory method to create an event.

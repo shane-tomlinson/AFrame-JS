@@ -57,10 +57,7 @@
 AFrame.CollectionArray = ( function() {
     "use strict";
     
-    var CollectionArray = function() {
-        CollectionArray.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
+    var CollectionArray = AFrame.Class( AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
         init: function() {
             this.itemCIDs = [];
 

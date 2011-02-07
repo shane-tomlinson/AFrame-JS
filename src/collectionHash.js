@@ -40,11 +40,7 @@
 AFrame.CollectionHash = ( function() {
     "use strict";
     
-    var CollectionHash = function() {
-        CollectionHash.sc.constructor.apply( this, arguments );
-    };
-    CollectionHash.currID = 0;
-    AFrame.extend( CollectionHash, AFrame.AObject, AFrame.EnumerableMixin, {
+    var CollectionHash = AFrame.Class( AFrame.AObject, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.hash = {};
             
@@ -249,6 +245,7 @@ AFrame.CollectionHash = ( function() {
             }
         }
     } );
-    
+    CollectionHash.currID = 0;
+
     return CollectionHash;
 } )();

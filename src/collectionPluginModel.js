@@ -58,10 +58,7 @@
 AFrame.CollectionPluginModel = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.call( this );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             this.schema = config.schema;
             this.modelFactory = config.modelFactory || createModel;

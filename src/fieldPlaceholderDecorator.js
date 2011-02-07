@@ -14,7 +14,7 @@
 *
 *     <input type="text" data-field name="username" placeholder="Log in name" />
 *
-* @class Placeholder
+* @class AFrame.FieldPluginPlaceholder
 * @static
 */
 AFrame.FieldPluginPlaceholder = ( function() {

@@ -79,11 +79,7 @@
 AFrame.ListPluginBindToCollection = ( function() { 
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * The collection to bind to

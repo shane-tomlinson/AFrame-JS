@@ -78,11 +78,7 @@
 AFrame.DataForm = ( function() {
     "use strict";
     
-    var DataForm = function() {
-	    DataForm.sc.constructor.apply( this, arguments );
-    };
-    
-    AFrame.extend( DataForm, AFrame.Form, {
+    var DataForm = AFrame.Class( AFrame.Form, {
 	    init: function( config ) {
 		    /**
 		     * The source of data

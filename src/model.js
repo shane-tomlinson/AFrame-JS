@@ -57,10 +57,7 @@
 AFrame.Model = ( function() {
     "use strict";
     
-    function Model() {
-        Model.sc.constructor.call( this );
-    }
-    AFrame.extend( Model, AFrame.DataContainer, {
+    var Model = AFrame.Class( AFrame.DataContainer, {
         init: function( config ) {
             this.schema = getSchema( config.schema );
             
