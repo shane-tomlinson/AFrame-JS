@@ -37,9 +37,7 @@
 AFrame.AObject = (function(){ 
     "use strict";
     
-    var AObject = function() {};
-    AFrame.mixin( AObject.prototype, {
-        constructor: AObject,
+    var AObject = AFrame.Class( {
         /**
          * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
          *
@@ -154,9 +152,7 @@ AFrame.AObject = (function(){
         removeChild: function( cid ) {
             AFrame.remove( this.children, cid );
         }
-    } );
+    }, AFrame.ObservablesMixin );
 
-    AFrame.mixin( AObject.prototype, AFrame.ObservablesMixin );
-    
     return AObject;
 }() );

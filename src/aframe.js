@@ -9,7 +9,30 @@
 var AFrame = ( function() {
     "use strict";
     
-    var AFrame = {	
+    var AFrame = {
+        Class: function() {
+            var F;
+            
+            var args = Array.prototype.slice.call( arguments, 0 );
+            
+            if( AFrame.func( args[ 0 ] ) ) {
+                F = function() { 
+                    F.sc.constructor.call( this ); 
+                };
+                AFrame.extend( F, args[ 0 ] );
+                args.splice( 0, 1 );
+            }
+            else {
+                F = function() {};
+            }
+            
+            for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
+                AFrame.mixin( F.prototype, mixin );
+            }
+            
+            return F;
+        },
+        
         /**
         * Used to extend a class with another class and optional functions.
         *
@@ -31,7 +54,6 @@ var AFrame = ( function() {
             var F = function() {};
             F.prototype = sc.prototype;
             derived.prototype = new F();
-            derived.prototype.constuctor = derived;
             derived.superclass = sc.prototype;  // superclass and sc are aliases
             derived.sc = sc.prototype;
 
@@ -39,6 +61,7 @@ var AFrame = ( function() {
             for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
                 AFrame.mixin( derived.prototype, mixin );
             }
+            derived.prototype.constructor = derived;
         },
 
         /**

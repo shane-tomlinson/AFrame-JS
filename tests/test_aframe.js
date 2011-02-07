@@ -151,7 +151,7 @@ testsToRun.push( {
 } );
 	
 testsToRun.push( {
-    name: 'Test Type Check Functions',
+    name: 'TestCase Type Check Functions',
     
     testDefined: function() {
         Assert.isFalse( AFrame.defined(), 'undefined value' );
@@ -178,4 +178,64 @@ testsToRun.push( {
         Assert.isTrue( AFrame.array( [] ), '[] is not an array' );
         Assert.isTrue( AFrame.array( new Array() ), 'new Array creates an array' );
     }
-} )
+} );
+
+testsToRun.push( {
+    name: 'TestCase AFrame.Class',
+    
+    testNewClassNoBase: function() {
+        var proto = {
+            init: function() {
+            }
+        };
+        var Class = AFrame.Class( proto );
+        
+        Assert.isFunction( Class );
+        Assert.areSame( Class, Class.prototype.constructor, 'prototype constructor is set' );
+        Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
+    },
+    
+    testNewClassBase: function() {
+        var proto = {
+            init: function() {}
+        };
+        
+        var constCalled = false;
+        function MockBase() {
+            constCalled = true;
+        }
+        MockBase.prototype = {
+            constructor: MockBase,
+            init: function() {
+            }
+        };
+        
+        var Class = AFrame.Class( MockBase, proto );
+        Assert.isFunction( Class );
+        Assert.isTrue( Class === Class.prototype.constructor, 'prototype constructor is set' );
+        Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
+        
+        var instance = AFrame.construct( {
+            type: Class
+        } );
+        
+        Assert.isTrue( instance instanceof MockBase, 'new class is instance of AObject' );
+        Assert.isTrue( constCalled, 'base constructor is called' );
+    },
+    
+    testNewClassMultipleMixins: function() {
+        var mixin1 = {
+            init: function() {}
+        };
+        
+        var mixin2 = {
+            func2: function() {}
+        };
+        
+        var Class = AFrame.Class( mixin1, mixin2 );
+        
+        Assert.isFunction( Class.prototype.init, 'init added to Class' );
+        Assert.isFunction( Class.prototype.func2, 'func2 added to Class' );
+        
+    }
+} );
