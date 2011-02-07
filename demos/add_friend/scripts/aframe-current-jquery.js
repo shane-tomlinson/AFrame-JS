@@ -119,7 +119,7 @@ if( !window.console ) {
 }
 
 /**
- * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [extend](#method_extend) and [construct](#method_construct).
+ * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [Class](#method_Class) and [create](#method_create).
  *
  *
  * @class AFrame
@@ -128,7 +128,66 @@ if( !window.console ) {
 var AFrame = ( function() {
     "use strict";
     
-    var AFrame = {	
+    var AFrame = {
+        /**
+        * A shortcut to create a new class with a default constructor.  A default
+        *   constructor does nothing unless it has a superclass, where it calls the
+        *   superclasses constructor.  If the first parameter to Class is a function, 
+        *   the parameter is assumed to be the superclass.  All other parameters 
+        *   should be objects which are mixed in to the new classes prototype.
+        *
+        * If a new class needs a non-standard constructor, the class constructor should 
+        *   be created manually and then any mixins/superclasses set up using the
+        *   [AFrame.extend](#method_extend) function.
+        *
+        *     // Create a class that is not subclassed off of anything
+        *     var Class = AFrame.Class( {
+        *        anOperation: function() {
+        *           // do an operation here
+        *        }
+        *     } );
+        *
+        *     // Create a Subclass of AFrame.AObject
+        *     var SubClass = AFrame.Class( AFrame.AObject, {
+        *        anOperation: function() {
+        *           // do an operation here
+        *        }
+        *     } );
+        *
+        * @method Class
+        * @param {function} superclass (optional) - superclass to use.  If not given, class has
+        *   no superclass.
+        * @param {object} 
+        * @return {function} - the new class.
+        */
+        Class: function() {
+            var F;
+            
+            var args = Array.prototype.slice.call( arguments, 0 );
+            
+            // we have a superclass, do everything related to a superclass
+            if( AFrame.func( args[ 0 ] ) ) {
+                F = function() { 
+                    F.sc.constructor.call( this ); 
+                };
+                AFrame.extend( F, args[ 0 ] );
+                args.splice( 0, 1 );
+            }
+            else {
+                // no superclass.  Create a base class.
+                F = function() {};
+            }
+            
+            for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
+                AFrame.mixin( F.prototype, mixin );
+            }
+            
+            // Always set the constructor last in case any mixins overwrote it.
+            F.prototype.constructor = F;
+            
+            return F;
+        },
+        
         /**
         * Used to extend a class with another class and optional functions.
         *
@@ -150,7 +209,6 @@ var AFrame = ( function() {
             var F = function() {};
             F.prototype = sc.prototype;
             derived.prototype = new F();
-            derived.prototype.constuctor = derived;
             derived.superclass = sc.prototype;  // superclass and sc are aliases
             derived.sc = sc.prototype;
 
@@ -158,6 +216,7 @@ var AFrame = ( function() {
             for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
                 AFrame.mixin( derived.prototype, mixin );
             }
+            derived.prototype.constructor = derived;
         },
 
         /**
@@ -178,10 +237,12 @@ var AFrame = ( function() {
 
 
         /**
-        * Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
-        *   and init is called on the created object.
+        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
+        * When using the construct function,  any Plugins are automatically created 
+        * and bound, and init is called on  the created object.  It is recommended to 
+        * use [create](#method_AFrame.create) instead as it has more concise syntax.
         *
-        *    var newObj = construct( {
+        *    var newObj = AFrame.construct( {
         *       type: AFrame.SomeObject,
         *       config: {
         *           param1: val1
@@ -198,15 +259,20 @@ var AFrame = ( function() {
         * @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
         * @return {object} - created object.
         */
+        
+        /**
+        * Deprecated in favor of [AFrame.create](#method_AFrame.create)
+        * @deprecated
+        */
         construct: function( obj_config ) {
             var constuct = obj_config.type;
-            var config = obj_config.config || {};
-            var plugins = obj_config.plugins || [];
             var retval;
 
             if( constuct ) {
+                var config = obj_config.config || {};
+                var plugins = obj_config.plugins || [];
                 try {
-                    retval = new constuct();
+                    retval = new constuct;
                 } catch ( e ) {
                     console.log( e.toString() );
                 }
@@ -224,6 +290,70 @@ var AFrame = ( function() {
             }
 
             return retval;
+        },
+        
+        /**
+        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
+        * When using the create function, any Plugins are automatically created 
+        * and bound, and init is called on the created object.
+        *
+        *    // create an object with no config, no plugins
+        *    var newObj = AFrame.create( AFrame.SomeObject );
+        *
+        *    // create an object with config, no plugins
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       configItem1: configVal1
+        *    } );
+        *    
+        *    // create an object with a plugin, but no other config
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ AFrame.SomePlugin ]
+        *    } );
+        *
+        *    // create an object with a plugin, and other config
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ AFrame.SomePlugin ],
+        *       configItem1: configVal1
+        *    } );
+        *
+        *    // create an object with a plugin that also has configuration
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ [ AFrame.SomePlugin, {
+        *           pluginConfigItem1: pluginConfigVal1
+        *       } ] ]
+        *    } );
+        *
+        * @method create
+        * @param {function} constructor - constructor to create
+        * @param {object} config (optional) - configuration.
+        * @param {array} config.plugins (optional) - Any plugins to attach
+        */
+        create: function( construct, config ) {
+            var retval;
+            if( construct ) {
+                try {
+                    retval = new construct;
+                } catch ( e ) {
+                    console.log( e.toString() );
+                }
+                
+                config = config || {};
+                var plugins = config.plugins || [];
+                
+                // recursively create and bind any plugins
+                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+                    plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
+                    var pluginObj = AFrame.create( plugin[ 0 ], plugin[ 1 ] );
+                    pluginObj.setPlugged( retval );
+                }
+                
+                retval.init( config );
+            }
+            else {
+                throw 'Class does not exist.';
+            }
+            return retval;
+            
         },
 
         /**
@@ -344,9 +474,7 @@ AFrame.Observable = ( function() {
      * @return {Observable}
      */
     Observable.getInstance = function() {
-        return AFrame.construct( {
-            type: Observable
-        } );
+        return AFrame.create( Observable );
     };
     Observable.prototype = {
         /**
@@ -806,11 +934,9 @@ AFrame.EnumerableMixin = ( function() {
 AFrame.AObject = (function(){ 
     "use strict";
     
-    var AObject = function() {};
-    AFrame.mixin( AObject.prototype, {
-        constructor: AObject,
+    var AObject = AFrame.Class( {
         /**
-         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
+         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) or [AFrame.create](AFrmae.html#method_create)is used, this will be called automatically.
          *
          *    var obj = new AFrame.SomeObject();
          *    obj.init( { name: 'value' } );
@@ -923,10 +1049,8 @@ AFrame.AObject = (function(){
         removeChild: function( cid ) {
             AFrame.remove( this.children, cid );
         }
-    } );
+    }, AFrame.ObservablesMixin );
 
-    AFrame.mixin( AObject.prototype, AFrame.ObservablesMixin );
-    
     return AObject;
 }() );
 /**
@@ -974,11 +1098,8 @@ AFrame.DataContainer = ( function() {
         else if( data ) {
             var dataContainer = data.__dataContainer;
             if( !dataContainer ) {
-                dataContainer = AFrame.construct( {
-                    type: DataContainer,
-                    config: {
-                        data: data
-                    }
+                dataContainer = AFrame.create( DataContainer, {
+                    data: data
                 } );
             }
             return dataContainer;
@@ -1163,10 +1284,7 @@ AFrame.DataContainer = ( function() {
 AFrame.Plugin = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.AObject, {
+    var Plugin = AFrame.Class( AFrame.AObject, {
         /**
         * Set the reference to the plugged object.  Subclasses can override this function to bind event
         *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
@@ -1267,9 +1385,7 @@ AFrame.ArrayCommonFuncsMixin = {
 * by index.
 *
 *    Create the hash
-*    var collection = AFrame.construct( {
-*       type: CollectionHash
-*    } );
+*    var collection = AFrame.create( AFrame.CollectionHash );
 *
 *    // First item is inserted with a cid
 *    var cid = collection.insert( { cid: 'cid1',
@@ -1300,11 +1416,7 @@ AFrame.ArrayCommonFuncsMixin = {
 AFrame.CollectionHash = ( function() {
     "use strict";
     
-    var CollectionHash = function() {
-        CollectionHash.sc.constructor.apply( this, arguments );
-    };
-    CollectionHash.currID = 0;
-    AFrame.extend( CollectionHash, AFrame.AObject, AFrame.EnumerableMixin, {
+    var CollectionHash = AFrame.Class( AFrame.AObject, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.hash = {};
             
@@ -1509,7 +1621,8 @@ AFrame.CollectionHash = ( function() {
             }
         }
     } );
-    
+    CollectionHash.currID = 0;
+
     return CollectionHash;
 } )();
 /**
@@ -1520,9 +1633,7 @@ AFrame.CollectionHash = ( function() {
 * This raises the same events as AFrame.CollectionHash, but every event will have one additional parameter, index.
 *
 *    Create the array
-*    var collection = AFrame.construct( {
-*       type: AFrame.CollectionArray
-*    } );
+*    var collection = AFrame.create( AFrame.CollectionArray );
 *
 *    // First item is inserted with a cid, inserted at the end of the array.
 *    var aframeCID = collection.insert( { cid: 'cid1',
@@ -1571,10 +1682,7 @@ AFrame.CollectionHash = ( function() {
 AFrame.CollectionArray = ( function() {
     "use strict";
     
-    var CollectionArray = function() {
-        CollectionArray.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( CollectionArray, AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
+    var CollectionArray = AFrame.Class( AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
         init: function() {
             this.itemCIDs = [];
 
@@ -1798,11 +1906,8 @@ AFrame.CollectionArray = ( function() {
  *   
  *    // buttonSelector is a selector used to specify the root node of 
  *    //    the target.
- *    var button = AFrame.construct( {
- *       type: AFrame.Display
- *       config: {
- *           target: buttonSelector
- *       }
+ *    var button = AFrame.create( AFrame.Display, {
+ *        target: buttonSelector
  *    } );
  *   
  *    // When binding to a DOM event, must define the target, which 
@@ -1851,10 +1956,7 @@ AFrame.Display = (function() {
     
     var currDOMEventID = 0;
 
-    var Display = function() {
-        Display.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Display, AFrame.AObject, {
+    var Display = AFrame.Class( AFrame.AObject, {
         /**
          * the target
          * @config target
@@ -2055,12 +2157,9 @@ AFrame.Display = (function() {
  *       return listItem;
  *    };
  *   
- *    var list = AFrame.construct( {
- *       type: AFrame.List,
- *       config: {
- *           target: '#clientList',
- *           listElementFactory: factory
- *       }
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '#clientList',
+ *        listElementFactory: factory
  *    } );
  *   
  *    // Creates a list item using the factory function, item is inserted
@@ -2096,10 +2195,7 @@ AFrame.Display = (function() {
 AFrame.List = ( function() {
     "use strict";
     
-    var List = function() {
-        List.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( List, AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
+    var List = AFrame.Class( AFrame.Display, AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
         init: function( config ) {
             if( config.listElementFactory ) {
                 this.listElementFactory = config.listElementFactory;
@@ -2182,7 +2278,6 @@ AFrame.List = ( function() {
             /**
             * Triggered whenever a row is inserted into the list
             * @event onInsert
-            * @param {element} rowElement - the row's list element
             * @param {object} options - information about the insert
             * @param {element} options.rowElement - row's element
             * @param {object} options.data - data that was inserted
@@ -2292,9 +2387,7 @@ AFrame.List = ( function() {
  *    //    the expected result
  *   
  *    // First we need to set up the collection
- *    var collection = AFrame.construct( {
- *       type: AFrame.CollectionArray
- *    } );
+ *    var collection = AFrame.create( AFrame.CollectionArray );
  *   
  *   
  *    var factory = function( index, data ) {
@@ -2304,19 +2397,13 @@ AFrame.List = ( function() {
  *
  *    // Sets up our list with the ListPluginBindToCollection.  Notice the 
  *    //    ListPluginBindToCollection has a collection config parameter.
- *    var list = AFrame.construct( {
- *       type: AFrame.List,
- *       config: {
- *           target: '#clientList',
- *           listElementFactory: factory
- *       },
- *       plugins: [
- *           {
- *               type: AFrame.ListPluginBindToCollection,
- *               config: {
- *                   collection: collection
- *               }
- *           }
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '#clientList',
+ *        listElementFactory: factory,
+ *        plugins: [
+ *        [ AFrame.ListPluginBindToCollection, {
+ *              collection: collection
+ *        } ]
  *       ]
  *    } );
  *   
@@ -2358,11 +2445,7 @@ AFrame.List = ( function() {
 AFrame.ListPluginBindToCollection = ( function() { 
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * The collection to bind to
@@ -2469,18 +2552,15 @@ AFrame.ListPluginBindToCollection = ( function() {
  *         }
  *     };
  *
- *     var collection = AFrame.construct( {
- *          type: AFrame.CollectionArray,
- *          plugins: [ {
- *              type: AFrame.CollectionPluginPersistence,
- *              config: {
+ *     var collection = AFrame.create( AFrame.CollectionArray, {
+ *          plugins: [ [ AFrame.CollectionPluginPersistence, {
  *                  // specify each of the four adapter functions
  *                  loadCallback: dbAdapter.load,
  *                  addCallback: dbAdapter.load,
  *                  deleteCallback: dbAdapter.del,
  *                  saveCallback: dbAdapter.save
  *              }
- *          } ]
+ *          ] ]
  *     } );
  *     
  *     // Loads the initial items
@@ -2525,10 +2605,7 @@ AFrame.ListPluginBindToCollection = ( function() {
 AFrame.CollectionPluginPersistence = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * function to call to do add.  Will be called with two parameters, data, and options.
@@ -2878,8 +2955,10 @@ AFrame.CollectionPluginPersistence = ( function() {
 *   in a collection share a [Schema](AFrame.Schema.html), instead of creating
 *   a model for each insert, the data can be inserted directly and a model will
 *   automatically be created.  When doing a "get" on the collection, the models
-*   will be returned.
-*
+*   will be returned.  Model creation will occur as soon as data enters the collection,
+*   so it happens on insert always before the onBeforeInsert event is triggered.
+*   If the collection has CollectionPluginPersistence, the model will be created
+*   before the onBeforeAdd event is triggered.
 *
 *    // Define the schema
 *    var schemaConfig = {
@@ -2888,14 +2967,10 @@ AFrame.CollectionPluginPersistence = ( function() {
 *    };
 *    
 *    // create the collection.
-*    this.collection = AFrame.construct( {
-*        type: AFrame.CollectionArray,
-*        plugins: [ {
-*            type: AFrame.CollectionPluginModel,
-*            config: {
-*                schema: schemaConfig
-*            }
-*        } ]
+*    this.collection = AFrame.create( AFrame.CollectionArray, {
+*        plugins: [ [ AFrame.CollectionPluginModel, {
+*            schema: schemaConfig
+*        } ] ]
 *    } );
 * 
 * @class AFrame.CollectionPluginModel
@@ -2915,12 +2990,9 @@ AFrame.CollectionPluginPersistence = ( function() {
 *
 *    // example of an overridden model factory function.
 *    var modelFactory = function( data, schema ) {
-*       return AFrame.construct( {
-*           type: SpecializedModel,
-*           config: {
-*               data: data,
-*               schema: scheam
-*           } 
+*       return AFrame.create( SpecializedMode, {
+*           data: data,
+*           schema: schema
 *       } );
 *    };
 *
@@ -2931,10 +3003,7 @@ AFrame.CollectionPluginPersistence = ( function() {
 AFrame.CollectionPluginModel = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.call( this );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             this.schema = config.schema;
             this.modelFactory = config.modelFactory || createModel;
@@ -2943,28 +3012,28 @@ AFrame.CollectionPluginModel = ( function() {
         },
         
         setPlugged: function( plugged ) {
-            this.decoratedInsert = plugged.insert;
-            plugged.insert = this.insert.bind( this );
+            plugged.insert = augmentInsert.bind( this, plugged.insert );
             
-            Plugin.sc.setPlugged.call( this, plugged );
-        },
-        
-        insert: function( item, insertAt ) {
-            if( !( item instanceof AFrame.Model ) ) {
-                item = this.modelFactory.call( this, item );
+            if( plugged.add ) {
+                plugged.add = augmentInsert.bind( this, plugged.add );
             }
             
-            this.decoratedInsert.call( this.getPlugged(), item, insertAt );
+            Plugin.sc.setPlugged.call( this, plugged );
         }
     } );
     
-    function createModel( data ) {
-        var model = AFrame.construct( {
-            type: AFrame.Model,
-            config: {
-                schema: this.schema,
-                data: data
-            }
+    function augmentInsert( decorated, item, insertAt ) {
+        if( !( item instanceof AFrame.Model ) ) {
+            item = this.modelFactory( item, this.schema );
+        }
+        
+        decorated.call( this.getPlugged(), item, insertAt );
+    }
+    
+    function createModel( data, schema ) {
+        var model = AFrame.create( AFrame.Model, {
+            schema: schema,
+            data: data
         } );
         return model;
     }
@@ -2987,11 +3056,8 @@ AFrame.CollectionPluginModel = ( function() {
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.construct( {
- *       type: AFrame.Form,
- *       config: {
- *           target: '#nameForm'
- *       }
+ *    var form = AFrame.create( AFrame.Form, {
+ *        target: '#nameForm'
  *    } );
  *   
  *    // do some stuff, user enters data.
@@ -3007,23 +3073,17 @@ AFrame.CollectionPluginModel = ( function() {
  *   
  *    // Sets up the field constructor, right now there is only one type of field
  *    var fieldFactory = function( element ) {
- *       return AFrame.construct( {
- *           type: AFrame.SpecializedField,
- *           config: {
- *               target: element
- *           }
+ *       return AFrame.create( AFrame.SpecializedField, {
+ *           target: element
  *       } );
  *    };
  *   
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.construct( {
- *       type: AFrame.Form,
- *       config: {
- *           target: '#nameForm',
- *           formFieldFactory: fieldFactory
- *       }
+ *    var form = AFrame.create( AFrame.Form, {
+ *        target: '#nameForm',
+ *        formFieldFactory: fieldFactory
  *    } );
  *
  *    // the specialized form field factory can be used globally as the default factory
@@ -3039,11 +3099,8 @@ AFrame.CollectionPluginModel = ( function() {
  *
  *     // example field factory in a Form's config.
  *     formFieldFactory: function( element ) {
- *       return AFrame.construct( {
- *           type: AFrame.SpecializedField,
- *           config: {
- *               target: element
- *           }
+ *       return AFrame.create( AFrame.SpecializedField, {
+ *           target: element
  *       } );
  *     };
  *
@@ -3054,34 +3111,7 @@ AFrame.CollectionPluginModel = ( function() {
 AFrame.Form = ( function() {
     "use strict";
 
-    var Form = function() {
-        Form.sc.constructor.apply( this, arguments );
-    };
-    
-    /**
-    * Set the default field factory.  Overridden factory takes one parameter, element.  
-    * It should return a {Field}(AFrame.Field.html) compatible object.
-    *
-    *
-    *     // example of overloaded formFieldFactory
-    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
-    *       } );
-    *     } );
-    *
-    *
-    * @method Form.setDefaultFieldFactory
-    * @param {function} factory
-    */
-    Form.setDefaultFieldFactory = function( factory ) {
-        formFieldFactory = factory;
-    };
-    
-    AFrame.extend( Form, AFrame.Display, AFrame.EnumerableMixin, {
+    var Form = AFrame.Class( AFrame.Display, AFrame.EnumerableMixin, {
         init: function( config ) {
             this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
             this.formElements = [];
@@ -3230,6 +3260,26 @@ AFrame.Form = ( function() {
     } );
     
     /**
+    * Set the default field factory.  Overridden factory takes one parameter, element.  
+    * It should return a {Field}(AFrame.Field.html) compatible object.
+    *
+    *
+    *     // example of overloaded formFieldFactory
+    *     AFrame.Form.setDefaultFieldFactory( function( element ) {
+    *       return AFrame.create( AFrame.SpecializedField, {
+    *           target: element
+    *       } );
+    *     } );
+    *
+    *
+    * @method Form.setDefaultFieldFactory
+    * @param {function} factory
+    */
+    Form.setDefaultFieldFactory = function( factory ) {
+        formFieldFactory = factory;
+    };
+    
+    /**
     * Do an action on all fields.
     * @method fieldAction
     * @private
@@ -3246,11 +3296,8 @@ AFrame.Form = ( function() {
     *
     *     // example of overloaded formFieldFactory
     *     formFieldFactory: function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
+    *       return AFrame.create( AFrame.SpecializedField, {
+    *           target: element
     *       } );
     *     };
     *
@@ -3259,12 +3306,9 @@ AFrame.Form = ( function() {
     * @return {AFrame.Field} field for element.
     */
     function formFieldFactory( element ) {
-       return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
+       return AFrame.create( AFrame.Field, {
+            target: element
+       } );
     }
 
     return Form;
@@ -3283,11 +3327,8 @@ AFrame.Form = ( function() {
  *   
  *    ---------
  *
- *    var field = AFrame.construct( {
- *       type: AFrame.Field,
- *       config: {
- *           target: '#numberInput'
- *       }
+ *    var field = AFrame.create( AFrame.Field, {
+ *        target: '#numberInput'
  *    } );
  *   
  *    // Set the value of the field, it is now displaying 3.1415
@@ -3305,11 +3346,7 @@ AFrame.Form = ( function() {
 AFrame.Field = ( function() {
     "use strict";
     
-    var Field = function() {
-        AFrame.Field.sc.constructor.apply( this, arguments );
-    };
-    Field.cancelInvalid = true;
-    AFrame.extend( Field, AFrame.Display, {
+    var Field = AFrame.Class( AFrame.Display, {
         init: function( config ) {
             this.createValidator();
 
@@ -3320,9 +3357,7 @@ AFrame.Field = ( function() {
         
         createValidator: function() {
             if( !this.validate ) {
-                var fieldValidator = AFrame.construct( {
-                    type: AFrame.FieldPluginValidation
-                } );
+                var fieldValidator = AFrame.create( AFrame.FieldPluginValidation );
                 fieldValidator.setPlugged( this );
             }
         },
@@ -3448,6 +3483,7 @@ AFrame.Field = ( function() {
             }
         }
     } );
+    Field.cancelInvalid = true;
     
     return Field;
 }() );
@@ -3473,11 +3509,8 @@ AFrame.Field = ( function() {
 *   
 *    ---------
 *
-*    var field = AFrame.construct( {
-*       type: AFrame.Field,
-*       config: {
-*           target: '#numberInput'
-*       }
+*    var field = AFrame.create( AFrame.Field, {
+*        target: '#numberInput'
 *    } );
 *   
 *    // Set the value of the field, it is now displaying 3.1415
@@ -3513,14 +3546,9 @@ AFrame.Field = ( function() {
 *        }
 *    } );
 *            
-*    var field = AFrame.construct( {
-*        type: AFrame.Field,
-*        config: {
-*            target: '#numberInput'
-*        },
-*        plugins: [ {
-*            type: ValidatorPlugin
-*        } ]
+*    var field = AFrame.create( AFrame.Field, {
+*        target: '#numberInput',
+*        plugins: [ ValidatorPlugin ]
 *    } );
 *           
 *    field.validate();
@@ -3533,10 +3561,7 @@ AFrame.Field = ( function() {
 AFrame.FieldPluginValidation = (function() {
     "use strict";
     
-    var FieldPluginValidation = function() {
-        FieldPluginValidation.sc.constructor.call( this );
-    };
-    AFrame.extend( FieldPluginValidation, AFrame.Plugin, {
+    var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
         setPlugged: function( plugged ) {
             this.calculateValidity = true;
             
@@ -3840,7 +3865,7 @@ AFrame.FieldValidityState.prototype = {
 *
 *     <input type="text" data-field name="username" placeholder="Log in name" />
 *
-* @class Placeholder
+* @class AFrame.FieldPluginPlaceholder
 * @static
 */
 AFrame.FieldPluginPlaceholder = ( function() {
@@ -4268,6 +4293,16 @@ AFrame.Schema = (function() {
         },
         
         /**
+        * Check to see if a row is labeled with "has many"
+        * @method rowHasMany
+        * @param {string} rowName
+        * @return {boolean} true if row is marked as "has_many", false otw.
+        */
+        rowHasMany: function( rowName ) {
+            return !!( this.schema[ rowName ] && this.schema[ rowName ].has_many );
+        },
+        
+        /**
         * Validate a set of data against the schema
         *
         *    // validate, but ignore fields defined in the schema that are missing from data.
@@ -4366,11 +4401,8 @@ AFrame.Schema = (function() {
         */
         getSchema: function( type ) {
             if( !Schema.schemaCache[ type ] && Schema.schemaConfigs[ type ] ) {
-                Schema.schemaCache[ type ] = AFrame.construct( {
-                    type: Schema,
-                    config: {
-                        schema: Schema.schemaConfigs[ type ]
-                    }
+                Schema.schemaCache[ type ] = AFrame.create( Schema, {
+                    schema: Schema.schemaConfigs[ type ]
                 } );
             }
             
@@ -4435,41 +4467,23 @@ AFrame.Schema = (function() {
  *##Setting up a List##
  *
  *    // ListPluginFormRow with default formFactory
- *    var list = AFrame.construct( {
- *        type: AFrame.List,
- *        config: {
- *            target: '.list'
- *        },
- *        plugins: [
- *            {
- *                type: AFrame.ListPluginFormRow
- *            }
- *        ]
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '.list',
+ *        plugins: [ AFrame.ListPluginFormRow ]
  *    } );
  *       
  *    // ListPluginFormRow with formFactory specified
- *    var list = AFrame.construct( {
- *        type: AFrame.List,
- *        config: {
- *            target: '.list'
- *        },
- *        plugins: [
- *            {
- *                type: AFrame.ListPluginFormRow,
- *                config: {
- *                    formFactory: function( rowElement, data )
- *                        var form = AFrame.construct( {
- *                            type: AFrame.SpecializedForm,
- *                            config: {
- *                                target: rowElement,
- *                                dataSource: data
- *                            }
- *                        } );
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '.list',
+ *        plugins: [ [ AFrame.ListPluginFormRow, {
+ *           formFactory: function( rowElement, data )
+ *              var form = AFrame.create( AFrame.SpecializedForm, {
+ *                  target: rowElement,
+ *                  dataSource: data
+ *              } );
  *           
- *                        return form;
- *                  },
- *            }
- *        ]
+ *              return form;
+ *        } ] ]
  *    } );
  *
  *
@@ -4508,10 +4522,7 @@ AFrame.Schema = (function() {
 AFrame.ListPluginFormRow = ( function() {
     "use strict";
     
-    var Plugin = function() {
-        Plugin.sc.constructor.apply( this, arguments );
-    };
-    AFrame.extend( Plugin, AFrame.Plugin, {
+    var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
             /**
              * The factory function used to create forms.  formFactory will be called once for each
@@ -4520,12 +4531,9 @@ AFrame.ListPluginFormRow = ( function() {
              *
              *     ...
              *     formFactory: function( rowElement, data ) {
-             *          var form = AFrame.construct( {
-             *              type: AFrame.SpecializedForm,
-             *              config: {
-             *                  target: rowElement,
-             *                  dataSource: data
-             *              }
+             *          var form = AFrame.create( AFrame.SpecializedForm, {
+             *              target: rowElement,
+             *              dataSource: data
              *          } );
              *           
              *          return form;
@@ -4572,12 +4580,9 @@ AFrame.ListPluginFormRow = ( function() {
          *
          *     ...
          *     formFactory: function( rowElement, data ) {
-         *          var form = AFrame.construct( {
-         *              type: AFrame.SpecializedForm,
-         *              config: {
-         *                  target: rowElement,
-         *                  dataSource: data
-         *              }
+         *          var form = AFrame.create( AFrame.SpecializedForm, {
+         *              target: rowElement,
+         *              dataSource: data
          *          } );
          *           
          *          return form;
@@ -4588,12 +4593,9 @@ AFrame.ListPluginFormRow = ( function() {
          * @type {function}
          */
         formFactory: function( rowElement, data ) {
-            var form = AFrame.construct( {
-                type: AFrame.DataForm,
-                config: {
-                    target: rowElement,
-                    dataSource: data
-                }
+            var form = AFrame.create( AFrame.DataForm, {
+                target: rowElement,
+                dataSource: data
             } );
             
             return form;
@@ -4750,12 +4752,9 @@ AFrame.ListPluginFormRow = ( function() {
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.construct( {
-*        type: DataForm,
-*        config: {
-*            target: '#nameForm',
-*            dataSource: libraryDataContainer
-*        }
+*    var form = AFrame.create( AFrame.DataForm, {
+*       target: '#nameForm',
+*       dataSource: libraryDataContainer
 *    } );
 *    
 *    // do some stuff, user updates the fields with the library name and version 
@@ -4789,22 +4788,16 @@ AFrame.ListPluginFormRow = ( function() {
 *    };
 *
 *    // create the model.
-*    var model = AFrame.construct( {
-*        type: AFrame.Model,
-*        config: {
-*            schema: schemaConfig
-*        }
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: schemaConfig
 *    } );
 *
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.construct( {
-*        type: DataForm,
-*        config: {
-*            target: '#nameForm',
-*            dataSource: model
-*        }
+*    var form = AFrame.create( AFrame.DataForm, {
+*        target: '#nameForm',
+*        dataSource: model
 *    } );
 *    
 *
@@ -4816,11 +4809,7 @@ AFrame.ListPluginFormRow = ( function() {
 AFrame.DataForm = ( function() {
     "use strict";
     
-    var DataForm = function() {
-	    DataForm.sc.constructor.apply( this, arguments );
-    };
-    
-    AFrame.extend( DataForm, AFrame.Form, {
+    var DataForm = AFrame.Class( AFrame.Form, {
 	    init: function( config ) {
 		    /**
 		     * The source of data
@@ -5155,19 +5144,16 @@ AFrame.DataValidation = ( function() {
 *    };
 *
 *    // Create one instance of the model.
-*    var model = AFrame.construct( {
-*        type: AFrame.Model,
-*        config: {
-*            schema: noteSchemaConfig,
-*            data: {
-*                id: '1',
-*                title: 'Get some milk',
-*                contents: 'Go to the supermarket and grab some milk.',
-*                date: '2010-12-10T18:09Z',
-*                edit_date: '2010-12-10T18:23Z'
-*                extra_field: 'this field does not get through'
-*           }
-*       }
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: noteSchemaConfig,
+*        data: {
+*           id: '1',
+*           title: 'Get some milk',
+*           contents: 'Go to the supermarket and grab some milk.',
+*           date: '2010-12-10T18:09Z',
+*           edit_date: '2010-12-10T18:23Z'
+*           extra_field: 'this field does not get through'
+*        }
 *    } );
 *
 *    // update a field.  prevVal will be 'Get some milk'
@@ -5199,10 +5185,7 @@ AFrame.DataValidation = ( function() {
 AFrame.Model = ( function() {
     "use strict";
     
-    function Model() {
-        Model.sc.constructor.call( this );
-    }
-    AFrame.extend( Model, AFrame.DataContainer, {
+    var Model = AFrame.Class( AFrame.DataContainer, {
         init: function( config ) {
             this.schema = getSchema( config.schema );
             
@@ -5212,7 +5195,7 @@ AFrame.Model = ( function() {
         },
         
 	    /**
-	    * Set an item of data.  Model will only be updated if data validates.  If data validates, the previous
+	    * Set an item of data.  Model will only be updated if data validates or force is set to true.  If data validates, the previous
 	    * value will be returned.  If data does not validate, a [FieldValidityState](AFrame.FieldValidityState.html)
 	    * will be returned.
         *
@@ -5224,14 +5207,18 @@ AFrame.Model = ( function() {
 	    * @method set
 	    * @param {string} fieldName name of field
 	    * @param {variant} fieldValue value of field
+	    * @param {boolean} force force update
 	    * @return {variant} previous value of field if correctly set, a 
 	    *   [FieldValidityState](AFrame.FieldValidityState.html) otherwise
 	    */
-        set: function( fieldName, fieldValue ) {
+        set: function( fieldName, fieldValue, force ) {
             var fieldValidity = this.checkValidity( fieldName, fieldValue );
             
-            if( true === fieldValidity ) {
-                fieldValidity = Model.sc.set.call( this, fieldName, fieldValue );
+            if( true === fieldValidity || force ) {
+                var setval = Model.sc.set.call( this, fieldName, fieldValue );
+                if( !force ) {
+                    fieldValidity = setval;
+                }
             }
             
             return fieldValidity;
@@ -5342,9 +5329,7 @@ AFrame.Model = ( function() {
 AFrame.Event = (function() {
     "use strict";
     
-    var Event = function() {};
-    Event.prototype = {
-        constructor: Event,
+    var Event = AFrame.Class( {
         /**
         * initialize the event.  All items in configuration will be added to event.  If timestamp
         *   is specified, it will be ignored.  type must be specified.
@@ -5412,7 +5397,7 @@ AFrame.Event = (function() {
             
             this.target = proxy;
         }
-    };
+    } );
     
     /**
     * A factory method to create an event.
@@ -5432,12 +5417,10 @@ AFrame.Event = (function() {
     * @return {AFrame.Event} event with type
     */
     Event.createEvent = function( config ) {
-        var event = AFrame.construct( {
-            type: AFrame.Event,
-            config: 'string' == typeof( config ) ? {
-                type: config
-            } : config
-        } );
+        if( AFrame.string( config ) ) {
+            config = { type: config };
+        }
+        var event = AFrame.create( AFrame.Event, config );
         return event;
     };
     
