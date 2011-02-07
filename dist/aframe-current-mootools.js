@@ -119,7 +119,7 @@ if( !window.console ) {
 }
 
 /**
- * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [extend](#method_extend) and [construct](#method_construct).
+ * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [Class](#method_Class) and [create](#method_create).
  *
  *
  * @class AFrame
@@ -139,6 +139,21 @@ var AFrame = ( function() {
         * If a new class needs a non-standard constructor, the class constructor should 
         *   be created manually and then any mixins/superclasses set up using the
         *   [AFrame.extend](#method_extend) function.
+        *
+        *     // Create a class that is not subclassed off of anything
+        *     var Class = AFrame.Class( {
+        *        anOperation: function() {
+        *           // do an operation here
+        *        }
+        *     } );
+        *
+        *     // Create a Subclass of AFrame.AObject
+        *     var SubClass = AFrame.Class( AFrame.AObject, {
+        *        anOperation: function() {
+        *           // do an operation here
+        *        }
+        *     } );
+        *
         * @method Class
         * @param {function} superclass (optional) - superclass to use.  If not given, class has
         *   no superclass.
@@ -222,10 +237,10 @@ var AFrame = ( function() {
 
 
         /**
-        * Construct an AObject compatible object.  When using the construct function, 
-        * any Plugins are automatically created and bound, and init is called on 
-        * the created object.  It is recommended to use [create](#method_create) instead 
-        * as it has more concise syntax.
+        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
+        * When using the construct function,  any Plugins are automatically created 
+        * and bound, and init is called on  the created object.  It is recommended to 
+        * use [create](#method_AFrame.create) instead as it has more concise syntax.
         *
         *    var newObj = AFrame.construct( {
         *       type: AFrame.SomeObject,
@@ -246,7 +261,7 @@ var AFrame = ( function() {
         */
         
         /**
-        * Deprecated in favor of [AFrame.create](#method_create)
+        * Deprecated in favor of [AFrame.create](#method_AFrame.create)
         * @deprecated
         */
         construct: function( obj_config ) {
@@ -278,9 +293,9 @@ var AFrame = ( function() {
         },
         
         /**
-        * Construct an AObject compatible object.  When using the create function, 
-        * any Plugins are automatically created and bound, and init is called on 
-        * the created object.
+        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
+        * When using the create function, any Plugins are automatically created 
+        * and bound, and init is called on the created object.
         *
         *    // create an object with no config, no plugins
         *    var newObj = AFrame.create( AFrame.SomeObject );
@@ -308,7 +323,7 @@ var AFrame = ( function() {
         *       } ] ]
         *    } );
         *
-        * @method AFrame.create
+        * @method create
         * @param {function} constructor - constructor to create
         * @param {object} config (optional) - configuration.
         * @param {array} config.plugins (optional) - Any plugins to attach
