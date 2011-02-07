@@ -119,12 +119,10 @@ AFrame.Event = (function() {
     * @return {AFrame.Event} event with type
     */
     Event.createEvent = function( config ) {
-        var event = AFrame.construct( {
-            type: AFrame.Event,
-            config: 'string' == typeof( config ) ? {
-                type: config
-            } : config
-        } );
+        if( AFrame.string( config ) ) {
+            config = { type: config };
+        }
+        var event = AFrame.create( AFrame.Event, config );
         return event;
     };
     

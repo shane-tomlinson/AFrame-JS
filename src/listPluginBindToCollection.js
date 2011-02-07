@@ -13,9 +13,7 @@
  *    //    the expected result
  *   
  *    // First we need to set up the collection
- *    var collection = AFrame.construct( {
- *       type: AFrame.CollectionArray
- *    } );
+ *    var collection = AFrame.create( AFrame.CollectionArray );
  *   
  *   
  *    var factory = function( index, data ) {
@@ -25,19 +23,13 @@
  *
  *    // Sets up our list with the ListPluginBindToCollection.  Notice the 
  *    //    ListPluginBindToCollection has a collection config parameter.
- *    var list = AFrame.construct( {
- *       type: AFrame.List,
- *       config: {
- *           target: '#clientList',
- *           listElementFactory: factory
- *       },
- *       plugins: [
- *           {
- *               type: AFrame.ListPluginBindToCollection,
- *               config: {
- *                   collection: collection
- *               }
- *           }
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '#clientList',
+ *        listElementFactory: factory,
+ *        plugins: [
+ *        [ AFrame.ListPluginBindToCollection, {
+ *              collection: collection
+ *        } ]
  *       ]
  *    } );
  *   

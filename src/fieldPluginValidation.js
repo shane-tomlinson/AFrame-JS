@@ -20,11 +20,8 @@
 *   
 *    ---------
 *
-*    var field = AFrame.construct( {
-*       type: AFrame.Field,
-*       config: {
-*           target: '#numberInput'
-*       }
+*    var field = AFrame.create( AFrame.Field, {
+*        target: '#numberInput'
 *    } );
 *   
 *    // Set the value of the field, it is now displaying 3.1415
@@ -60,14 +57,9 @@
 *        }
 *    } );
 *            
-*    var field = AFrame.construct( {
-*        type: AFrame.Field,
-*        config: {
-*            target: '#numberInput'
-*        },
-*        plugins: [ {
-*            type: ValidatorPlugin
-*        } ]
+*    var field = AFrame.create( AFrame.Field, {
+*        target: '#numberInput',
+*        plugins: [ ValidatorPlugin ]
 *    } );
 *           
 *    field.validate();

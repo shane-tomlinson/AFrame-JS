@@ -13,19 +13,16 @@
 *    };
 *
 *    // Create one instance of the model.
-*    var model = AFrame.construct( {
-*        type: AFrame.Model,
-*        config: {
-*            schema: noteSchemaConfig,
-*            data: {
-*                id: '1',
-*                title: 'Get some milk',
-*                contents: 'Go to the supermarket and grab some milk.',
-*                date: '2010-12-10T18:09Z',
-*                edit_date: '2010-12-10T18:23Z'
-*                extra_field: 'this field does not get through'
-*           }
-*       }
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: noteSchemaConfig,
+*        data: {
+*           id: '1',
+*           title: 'Get some milk',
+*           contents: 'Go to the supermarket and grab some milk.',
+*           date: '2010-12-10T18:09Z',
+*           edit_date: '2010-12-10T18:23Z'
+*           extra_field: 'this field does not get through'
+*        }
 *    } );
 *
 *    // update a field.  prevVal will be 'Get some milk'

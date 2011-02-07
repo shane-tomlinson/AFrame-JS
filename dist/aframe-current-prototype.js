@@ -222,10 +222,12 @@ var AFrame = ( function() {
 
 
         /**
-        * Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
-        *   and init is called on the created object.
+        * Construct an AObject compatible object.  When using the construct function, 
+        * any Plugins are automatically created and bound, and init is called on 
+        * the created object.  It is recommended to use [create](#method_create) instead 
+        * as it has more concise syntax.
         *
-        *    var newObj = construct( {
+        *    var newObj = AFrame.construct( {
         *       type: AFrame.SomeObject,
         *       config: {
         *           param1: val1
@@ -242,15 +244,20 @@ var AFrame = ( function() {
         * @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
         * @return {object} - created object.
         */
+        
+        /**
+        * Deprecated in favor of [AFrame.create](#method_create)
+        * @deprecated
+        */
         construct: function( obj_config ) {
             var constuct = obj_config.type;
-            var config = obj_config.config || {};
-            var plugins = obj_config.plugins || [];
             var retval;
 
             if( constuct ) {
+                var config = obj_config.config || {};
+                var plugins = obj_config.plugins || [];
                 try {
-                    retval = new constuct();
+                    retval = new constuct;
                 } catch ( e ) {
                     console.log( e.toString() );
                 }
@@ -268,6 +275,70 @@ var AFrame = ( function() {
             }
 
             return retval;
+        },
+        
+        /**
+        * Construct an AObject compatible object.  When using the create function, 
+        * any Plugins are automatically created and bound, and init is called on 
+        * the created object.
+        *
+        *    // create an object with no config, no plugins
+        *    var newObj = AFrame.create( AFrame.SomeObject );
+        *
+        *    // create an object with config, no plugins
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       configItem1: configVal1
+        *    } );
+        *    
+        *    // create an object with a plugin, but no other config
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ AFrame.SomePlugin ]
+        *    } );
+        *
+        *    // create an object with a plugin, and other config
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ AFrame.SomePlugin ],
+        *       configItem1: configVal1
+        *    } );
+        *
+        *    // create an object with a plugin that also has configuration
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ [ AFrame.SomePlugin, {
+        *           pluginConfigItem1: pluginConfigVal1
+        *       } ] ]
+        *    } );
+        *
+        * @method AFrame.create
+        * @param {function} constructor - constructor to create
+        * @param {object} config (optional) - configuration.
+        * @param {array} config.plugins (optional) - Any plugins to attach
+        */
+        create: function( construct, config ) {
+            var retval;
+            if( construct ) {
+                try {
+                    retval = new construct;
+                } catch ( e ) {
+                    console.log( e.toString() );
+                }
+                
+                config = config || {};
+                var plugins = config.plugins || [];
+                
+                // recursively create and bind any plugins
+                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+                    plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
+                    var pluginObj = AFrame.create( plugin[ 0 ], plugin[ 1 ] );
+                    pluginObj.setPlugged( retval );
+                }
+                
+                retval.init( config );
+            }
+            else {
+                throw 'Class does not exist.';
+            }
+            return retval;
+            
         },
 
         /**
@@ -388,9 +459,7 @@ AFrame.Observable = ( function() {
      * @return {Observable}
      */
     Observable.getInstance = function() {
-        return AFrame.construct( {
-            type: Observable
-        } );
+        return AFrame.create( Observable );
     };
     Observable.prototype = {
         /**
@@ -852,7 +921,7 @@ AFrame.AObject = (function(){
     
     var AObject = AFrame.Class( {
         /**
-         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
+         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) or [AFrame.create](AFrmae.html#method_create)is used, this will be called automatically.
          *
          *    var obj = new AFrame.SomeObject();
          *    obj.init( { name: 'value' } );
@@ -1014,11 +1083,8 @@ AFrame.DataContainer = ( function() {
         else if( data ) {
             var dataContainer = data.__dataContainer;
             if( !dataContainer ) {
-                dataContainer = AFrame.construct( {
-                    type: DataContainer,
-                    config: {
-                        data: data
-                    }
+                dataContainer = AFrame.create( DataContainer, {
+                    data: data
                 } );
             }
             return dataContainer;
@@ -1304,9 +1370,7 @@ AFrame.ArrayCommonFuncsMixin = {
 * by index.
 *
 *    Create the hash
-*    var collection = AFrame.construct( {
-*       type: CollectionHash
-*    } );
+*    var collection = AFrame.create( AFrame.CollectionHash );
 *
 *    // First item is inserted with a cid
 *    var cid = collection.insert( { cid: 'cid1',
@@ -1554,9 +1618,7 @@ AFrame.CollectionHash = ( function() {
 * This raises the same events as AFrame.CollectionHash, but every event will have one additional parameter, index.
 *
 *    Create the array
-*    var collection = AFrame.construct( {
-*       type: AFrame.CollectionArray
-*    } );
+*    var collection = AFrame.create( AFrame.CollectionArray );
 *
 *    // First item is inserted with a cid, inserted at the end of the array.
 *    var aframeCID = collection.insert( { cid: 'cid1',
@@ -1829,11 +1891,8 @@ AFrame.CollectionArray = ( function() {
  *   
  *    // buttonSelector is a selector used to specify the root node of 
  *    //    the target.
- *    var button = AFrame.construct( {
- *       type: AFrame.Display
- *       config: {
- *           target: buttonSelector
- *       }
+ *    var button = AFrame.create( AFrame.Display, {
+ *        target: buttonSelector
  *    } );
  *   
  *    // When binding to a DOM event, must define the target, which 
@@ -2083,12 +2142,9 @@ AFrame.Display = (function() {
  *       return listItem;
  *    };
  *   
- *    var list = AFrame.construct( {
- *       type: AFrame.List,
- *       config: {
- *           target: '#clientList',
- *           listElementFactory: factory
- *       }
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '#clientList',
+ *        listElementFactory: factory
  *    } );
  *   
  *    // Creates a list item using the factory function, item is inserted
@@ -2316,9 +2372,7 @@ AFrame.List = ( function() {
  *    //    the expected result
  *   
  *    // First we need to set up the collection
- *    var collection = AFrame.construct( {
- *       type: AFrame.CollectionArray
- *    } );
+ *    var collection = AFrame.create( AFrame.CollectionArray );
  *   
  *   
  *    var factory = function( index, data ) {
@@ -2328,19 +2382,13 @@ AFrame.List = ( function() {
  *
  *    // Sets up our list with the ListPluginBindToCollection.  Notice the 
  *    //    ListPluginBindToCollection has a collection config parameter.
- *    var list = AFrame.construct( {
- *       type: AFrame.List,
- *       config: {
- *           target: '#clientList',
- *           listElementFactory: factory
- *       },
- *       plugins: [
- *           {
- *               type: AFrame.ListPluginBindToCollection,
- *               config: {
- *                   collection: collection
- *               }
- *           }
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '#clientList',
+ *        listElementFactory: factory,
+ *        plugins: [
+ *        [ AFrame.ListPluginBindToCollection, {
+ *              collection: collection
+ *        } ]
  *       ]
  *    } );
  *   
@@ -2489,18 +2537,15 @@ AFrame.ListPluginBindToCollection = ( function() {
  *         }
  *     };
  *
- *     var collection = AFrame.construct( {
- *          type: AFrame.CollectionArray,
- *          plugins: [ {
- *              type: AFrame.CollectionPluginPersistence,
- *              config: {
+ *     var collection = AFrame.create( AFrame.CollectionArray, {
+ *          plugins: [ [ AFrame.CollectionPluginPersistence, {
  *                  // specify each of the four adapter functions
  *                  loadCallback: dbAdapter.load,
  *                  addCallback: dbAdapter.load,
  *                  deleteCallback: dbAdapter.del,
  *                  saveCallback: dbAdapter.save
  *              }
- *          } ]
+ *          ] ]
  *     } );
  *     
  *     // Loads the initial items
@@ -2907,14 +2952,10 @@ AFrame.CollectionPluginPersistence = ( function() {
 *    };
 *    
 *    // create the collection.
-*    this.collection = AFrame.construct( {
-*        type: AFrame.CollectionArray,
-*        plugins: [ {
-*            type: AFrame.CollectionPluginModel,
-*            config: {
-*                schema: schemaConfig
-*            }
-*        } ]
+*    this.collection = AFrame.create( AFrame.CollectionArray, {
+*        plugins: [ [ AFrame.CollectionPluginModel, {
+*            schema: schemaConfig
+*        } ] ]
 *    } );
 * 
 * @class AFrame.CollectionPluginModel
@@ -2934,12 +2975,9 @@ AFrame.CollectionPluginPersistence = ( function() {
 *
 *    // example of an overridden model factory function.
 *    var modelFactory = function( data, schema ) {
-*       return AFrame.construct( {
-*           type: SpecializedModel,
-*           config: {
-*               data: data,
-*               schema: schema
-*           } 
+*       return AFrame.create( SpecializedMode, {
+*           data: data,
+*           schema: schema
 *       } );
 *    };
 *
@@ -2978,12 +3016,9 @@ AFrame.CollectionPluginModel = ( function() {
     }
     
     function createModel( data, schema ) {
-        var model = AFrame.construct( {
-            type: AFrame.Model,
-            config: {
-                schema: schema,
-                data: data
-            }
+        var model = AFrame.create( AFrame.Model, {
+            schema: schema,
+            data: data
         } );
         return model;
     }
@@ -3006,11 +3041,8 @@ AFrame.CollectionPluginModel = ( function() {
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.construct( {
- *       type: AFrame.Form,
- *       config: {
- *           target: '#nameForm'
- *       }
+ *    var form = AFrame.create( AFrame.Form, {
+ *        target: '#nameForm'
  *    } );
  *   
  *    // do some stuff, user enters data.
@@ -3026,23 +3058,17 @@ AFrame.CollectionPluginModel = ( function() {
  *   
  *    // Sets up the field constructor, right now there is only one type of field
  *    var fieldFactory = function( element ) {
- *       return AFrame.construct( {
- *           type: AFrame.SpecializedField,
- *           config: {
- *               target: element
- *           }
+ *       return AFrame.create( AFrame.SpecializedField, {
+ *           target: element
  *       } );
  *    };
  *   
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.construct( {
- *       type: AFrame.Form,
- *       config: {
- *           target: '#nameForm',
- *           formFieldFactory: fieldFactory
- *       }
+ *    var form = AFrame.create( AFrame.Form, {
+ *        target: '#nameForm',
+ *        formFieldFactory: fieldFactory
  *    } );
  *
  *    // the specialized form field factory can be used globally as the default factory
@@ -3058,11 +3084,8 @@ AFrame.CollectionPluginModel = ( function() {
  *
  *     // example field factory in a Form's config.
  *     formFieldFactory: function( element ) {
- *       return AFrame.construct( {
- *           type: AFrame.SpecializedField,
- *           config: {
- *               target: element
- *           }
+ *       return AFrame.create( AFrame.SpecializedField, {
+ *           target: element
  *       } );
  *     };
  *
@@ -3228,11 +3251,8 @@ AFrame.Form = ( function() {
     *
     *     // example of overloaded formFieldFactory
     *     AFrame.Form.setDefaultFieldFactory( function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
+    *       return AFrame.create( AFrame.SpecializedField, {
+    *           target: element
     *       } );
     *     } );
     *
@@ -3261,11 +3281,8 @@ AFrame.Form = ( function() {
     *
     *     // example of overloaded formFieldFactory
     *     formFieldFactory: function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
+    *       return AFrame.create( AFrame.SpecializedField, {
+    *           target: element
     *       } );
     *     };
     *
@@ -3274,12 +3291,9 @@ AFrame.Form = ( function() {
     * @return {AFrame.Field} field for element.
     */
     function formFieldFactory( element ) {
-       return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
+       return AFrame.create( AFrame.Field, {
+            target: element
+       } );
     }
 
     return Form;
@@ -3298,11 +3312,8 @@ AFrame.Form = ( function() {
  *   
  *    ---------
  *
- *    var field = AFrame.construct( {
- *       type: AFrame.Field,
- *       config: {
- *           target: '#numberInput'
- *       }
+ *    var field = AFrame.create( AFrame.Field, {
+ *        target: '#numberInput'
  *    } );
  *   
  *    // Set the value of the field, it is now displaying 3.1415
@@ -3331,9 +3342,7 @@ AFrame.Field = ( function() {
         
         createValidator: function() {
             if( !this.validate ) {
-                var fieldValidator = AFrame.construct( {
-                    type: AFrame.FieldPluginValidation
-                } );
+                var fieldValidator = AFrame.create( AFrame.FieldPluginValidation );
                 fieldValidator.setPlugged( this );
             }
         },
@@ -3485,11 +3494,8 @@ AFrame.Field = ( function() {
 *   
 *    ---------
 *
-*    var field = AFrame.construct( {
-*       type: AFrame.Field,
-*       config: {
-*           target: '#numberInput'
-*       }
+*    var field = AFrame.create( AFrame.Field, {
+*        target: '#numberInput'
 *    } );
 *   
 *    // Set the value of the field, it is now displaying 3.1415
@@ -3525,14 +3531,9 @@ AFrame.Field = ( function() {
 *        }
 *    } );
 *            
-*    var field = AFrame.construct( {
-*        type: AFrame.Field,
-*        config: {
-*            target: '#numberInput'
-*        },
-*        plugins: [ {
-*            type: ValidatorPlugin
-*        } ]
+*    var field = AFrame.create( AFrame.Field, {
+*        target: '#numberInput',
+*        plugins: [ ValidatorPlugin ]
 *    } );
 *           
 *    field.validate();
@@ -4385,11 +4386,8 @@ AFrame.Schema = (function() {
         */
         getSchema: function( type ) {
             if( !Schema.schemaCache[ type ] && Schema.schemaConfigs[ type ] ) {
-                Schema.schemaCache[ type ] = AFrame.construct( {
-                    type: Schema,
-                    config: {
-                        schema: Schema.schemaConfigs[ type ]
-                    }
+                Schema.schemaCache[ type ] = AFrame.create( Schema, {
+                    schema: Schema.schemaConfigs[ type ]
                 } );
             }
             
@@ -4454,41 +4452,23 @@ AFrame.Schema = (function() {
  *##Setting up a List##
  *
  *    // ListPluginFormRow with default formFactory
- *    var list = AFrame.construct( {
- *        type: AFrame.List,
- *        config: {
- *            target: '.list'
- *        },
- *        plugins: [
- *            {
- *                type: AFrame.ListPluginFormRow
- *            }
- *        ]
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '.list',
+ *        plugins: [ AFrame.ListPluginFormRow ]
  *    } );
  *       
  *    // ListPluginFormRow with formFactory specified
- *    var list = AFrame.construct( {
- *        type: AFrame.List,
- *        config: {
- *            target: '.list'
- *        },
- *        plugins: [
- *            {
- *                type: AFrame.ListPluginFormRow,
- *                config: {
- *                    formFactory: function( rowElement, data )
- *                        var form = AFrame.construct( {
- *                            type: AFrame.SpecializedForm,
- *                            config: {
- *                                target: rowElement,
- *                                dataSource: data
- *                            }
- *                        } );
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '.list',
+ *        plugins: [ [ AFrame.ListPluginFormRow, {
+ *           formFactory: function( rowElement, data )
+ *              var form = AFrame.create( AFrame.SpecializedForm, {
+ *                  target: rowElement,
+ *                  dataSource: data
+ *              } );
  *           
- *                        return form;
- *                  },
- *            }
- *        ]
+ *              return form;
+ *        } ] ]
  *    } );
  *
  *
@@ -4536,12 +4516,9 @@ AFrame.ListPluginFormRow = ( function() {
              *
              *     ...
              *     formFactory: function( rowElement, data ) {
-             *          var form = AFrame.construct( {
-             *              type: AFrame.SpecializedForm,
-             *              config: {
-             *                  target: rowElement,
-             *                  dataSource: data
-             *              }
+             *          var form = AFrame.create( AFrame.SpecializedForm, {
+             *              target: rowElement,
+             *              dataSource: data
              *          } );
              *           
              *          return form;
@@ -4588,12 +4565,9 @@ AFrame.ListPluginFormRow = ( function() {
          *
          *     ...
          *     formFactory: function( rowElement, data ) {
-         *          var form = AFrame.construct( {
-         *              type: AFrame.SpecializedForm,
-         *              config: {
-         *                  target: rowElement,
-         *                  dataSource: data
-         *              }
+         *          var form = AFrame.create( AFrame.SpecializedForm, {
+         *              target: rowElement,
+         *              dataSource: data
          *          } );
          *           
          *          return form;
@@ -4604,12 +4578,9 @@ AFrame.ListPluginFormRow = ( function() {
          * @type {function}
          */
         formFactory: function( rowElement, data ) {
-            var form = AFrame.construct( {
-                type: AFrame.DataForm,
-                config: {
-                    target: rowElement,
-                    dataSource: data
-                }
+            var form = AFrame.create( AFrame.DataForm, {
+                target: rowElement,
+                dataSource: data
             } );
             
             return form;
@@ -4766,12 +4737,9 @@ AFrame.ListPluginFormRow = ( function() {
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.construct( {
-*        type: DataForm,
-*        config: {
-*            target: '#nameForm',
-*            dataSource: libraryDataContainer
-*        }
+*    var form = AFrame.create( AFrame.DataForm, {
+*       target: '#nameForm',
+*       dataSource: libraryDataContainer
 *    } );
 *    
 *    // do some stuff, user updates the fields with the library name and version 
@@ -4805,22 +4773,16 @@ AFrame.ListPluginFormRow = ( function() {
 *    };
 *
 *    // create the model.
-*    var model = AFrame.construct( {
-*        type: AFrame.Model,
-*        config: {
-*            schema: schemaConfig
-*        }
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: schemaConfig
 *    } );
 *
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.construct( {
-*        type: DataForm,
-*        config: {
-*            target: '#nameForm',
-*            dataSource: model
-*        }
+*    var form = AFrame.create( AFrame.DataForm, {
+*        target: '#nameForm',
+*        dataSource: model
 *    } );
 *    
 *
@@ -5167,19 +5129,16 @@ AFrame.DataValidation = ( function() {
 *    };
 *
 *    // Create one instance of the model.
-*    var model = AFrame.construct( {
-*        type: AFrame.Model,
-*        config: {
-*            schema: noteSchemaConfig,
-*            data: {
-*                id: '1',
-*                title: 'Get some milk',
-*                contents: 'Go to the supermarket and grab some milk.',
-*                date: '2010-12-10T18:09Z',
-*                edit_date: '2010-12-10T18:23Z'
-*                extra_field: 'this field does not get through'
-*           }
-*       }
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: noteSchemaConfig,
+*        data: {
+*           id: '1',
+*           title: 'Get some milk',
+*           contents: 'Go to the supermarket and grab some milk.',
+*           date: '2010-12-10T18:09Z',
+*           edit_date: '2010-12-10T18:23Z'
+*           extra_field: 'this field does not get through'
+*        }
 *    } );
 *
 *    // update a field.  prevVal will be 'Get some milk'
@@ -5443,12 +5402,10 @@ AFrame.Event = (function() {
     * @return {AFrame.Event} event with type
     */
     Event.createEvent = function( config ) {
-        var event = AFrame.construct( {
-            type: AFrame.Event,
-            config: 'string' == typeof( config ) ? {
-                type: config
-            } : config
-        } );
+        if( AFrame.string( config ) ) {
+            config = { type: config };
+        }
+        var event = AFrame.create( AFrame.Event, config );
         return event;
     };
     

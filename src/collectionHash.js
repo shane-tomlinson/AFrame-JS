@@ -7,9 +7,7 @@
 * by index.
 *
 *    Create the hash
-*    var collection = AFrame.construct( {
-*       type: CollectionHash
-*    } );
+*    var collection = AFrame.create( AFrame.CollectionHash );
 *
 *    // First item is inserted with a cid
 *    var cid = collection.insert( { cid: 'cid1',

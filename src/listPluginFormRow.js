@@ -8,41 +8,23 @@
  *##Setting up a List##
  *
  *    // ListPluginFormRow with default formFactory
- *    var list = AFrame.construct( {
- *        type: AFrame.List,
- *        config: {
- *            target: '.list'
- *        },
- *        plugins: [
- *            {
- *                type: AFrame.ListPluginFormRow
- *            }
- *        ]
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '.list',
+ *        plugins: [ AFrame.ListPluginFormRow ]
  *    } );
  *       
  *    // ListPluginFormRow with formFactory specified
- *    var list = AFrame.construct( {
- *        type: AFrame.List,
- *        config: {
- *            target: '.list'
- *        },
- *        plugins: [
- *            {
- *                type: AFrame.ListPluginFormRow,
- *                config: {
- *                    formFactory: function( rowElement, data )
- *                        var form = AFrame.construct( {
- *                            type: AFrame.SpecializedForm,
- *                            config: {
- *                                target: rowElement,
- *                                dataSource: data
- *                            }
- *                        } );
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '.list',
+ *        plugins: [ [ AFrame.ListPluginFormRow, {
+ *           formFactory: function( rowElement, data )
+ *              var form = AFrame.create( AFrame.SpecializedForm, {
+ *                  target: rowElement,
+ *                  dataSource: data
+ *              } );
  *           
- *                        return form;
- *                  },
- *            }
- *        ]
+ *              return form;
+ *        } ] ]
  *    } );
  *
  *
@@ -90,12 +72,9 @@ AFrame.ListPluginFormRow = ( function() {
              *
              *     ...
              *     formFactory: function( rowElement, data ) {
-             *          var form = AFrame.construct( {
-             *              type: AFrame.SpecializedForm,
-             *              config: {
-             *                  target: rowElement,
-             *                  dataSource: data
-             *              }
+             *          var form = AFrame.create( AFrame.SpecializedForm, {
+             *              target: rowElement,
+             *              dataSource: data
              *          } );
              *           
              *          return form;
@@ -142,12 +121,9 @@ AFrame.ListPluginFormRow = ( function() {
          *
          *     ...
          *     formFactory: function( rowElement, data ) {
-         *          var form = AFrame.construct( {
-         *              type: AFrame.SpecializedForm,
-         *              config: {
-         *                  target: rowElement,
-         *                  dataSource: data
-         *              }
+         *          var form = AFrame.create( AFrame.SpecializedForm, {
+         *              target: rowElement,
+         *              dataSource: data
          *          } );
          *           
          *          return form;
@@ -158,12 +134,9 @@ AFrame.ListPluginFormRow = ( function() {
          * @type {function}
          */
         formFactory: function( rowElement, data ) {
-            var form = AFrame.construct( {
-                type: AFrame.DataForm,
-                config: {
-                    target: rowElement,
-                    dataSource: data
-                }
+            var form = AFrame.create( AFrame.DataForm, {
+                target: rowElement,
+                dataSource: data
             } );
             
             return form;

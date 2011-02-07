@@ -39,7 +39,7 @@ AFrame.AObject = (function(){
     
     var AObject = AFrame.Class( {
         /**
-         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) is used, this will be called automatically.
+         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) or [AFrame.create](AFrmae.html#method_create)is used, this will be called automatically.
          *
          *    var obj = new AFrame.SomeObject();
          *    obj.init( { name: 'value' } );

@@ -51,18 +51,15 @@
  *         }
  *     };
  *
- *     var collection = AFrame.construct( {
- *          type: AFrame.CollectionArray,
- *          plugins: [ {
- *              type: AFrame.CollectionPluginPersistence,
- *              config: {
+ *     var collection = AFrame.create( AFrame.CollectionArray, {
+ *          plugins: [ [ AFrame.CollectionPluginPersistence, {
  *                  // specify each of the four adapter functions
  *                  loadCallback: dbAdapter.load,
  *                  addCallback: dbAdapter.load,
  *                  deleteCallback: dbAdapter.del,
  *                  saveCallback: dbAdapter.save
  *              }
- *          } ]
+ *          ] ]
  *     } );
  *     
  *     // Loads the initial items

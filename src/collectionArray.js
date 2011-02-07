@@ -6,9 +6,7 @@
 * This raises the same events as AFrame.CollectionHash, but every event will have one additional parameter, index.
 *
 *    Create the array
-*    var collection = AFrame.construct( {
-*       type: AFrame.CollectionArray
-*    } );
+*    var collection = AFrame.create( AFrame.CollectionArray );
 *
 *    // First item is inserted with a cid, inserted at the end of the array.
 *    var aframeCID = collection.insert( { cid: 'cid1',

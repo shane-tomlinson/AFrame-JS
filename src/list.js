@@ -20,12 +20,9 @@
  *       return listItem;
  *    };
  *   
- *    var list = AFrame.construct( {
- *       type: AFrame.List,
- *       config: {
- *           target: '#clientList',
- *           listElementFactory: factory
- *       }
+ *    var list = AFrame.create( AFrame.List, {
+ *        target: '#clientList',
+ *        listElementFactory: factory
  *    } );
  *   
  *    // Creates a list item using the factory function, item is inserted

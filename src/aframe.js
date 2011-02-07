@@ -103,10 +103,12 @@ var AFrame = ( function() {
 
 
         /**
-        * Construct an AObject based object.  When using the construct function, any Plugins are automatically created and bound,
-        *   and init is called on the created object.
+        * Construct an AObject compatible object.  When using the construct function, 
+        * any Plugins are automatically created and bound, and init is called on 
+        * the created object.  It is recommended to use [create](#method_create) instead 
+        * as it has more concise syntax.
         *
-        *    var newObj = construct( {
+        *    var newObj = AFrame.construct( {
         *       type: AFrame.SomeObject,
         *       config: {
         *           param1: val1
@@ -123,15 +125,20 @@ var AFrame = ( function() {
         * @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
         * @return {object} - created object.
         */
+        
+        /**
+        * Deprecated in favor of [AFrame.create](#method_create)
+        * @deprecated
+        */
         construct: function( obj_config ) {
             var constuct = obj_config.type;
-            var config = obj_config.config || {};
-            var plugins = obj_config.plugins || [];
             var retval;
 
             if( constuct ) {
+                var config = obj_config.config || {};
+                var plugins = obj_config.plugins || [];
                 try {
-                    retval = new constuct();
+                    retval = new constuct;
                 } catch ( e ) {
                     console.log( e.toString() );
                 }
@@ -149,6 +156,70 @@ var AFrame = ( function() {
             }
 
             return retval;
+        },
+        
+        /**
+        * Construct an AObject compatible object.  When using the create function, 
+        * any Plugins are automatically created and bound, and init is called on 
+        * the created object.
+        *
+        *    // create an object with no config, no plugins
+        *    var newObj = AFrame.create( AFrame.SomeObject );
+        *
+        *    // create an object with config, no plugins
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       configItem1: configVal1
+        *    } );
+        *    
+        *    // create an object with a plugin, but no other config
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ AFrame.SomePlugin ]
+        *    } );
+        *
+        *    // create an object with a plugin, and other config
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ AFrame.SomePlugin ],
+        *       configItem1: configVal1
+        *    } );
+        *
+        *    // create an object with a plugin that also has configuration
+        *    var newObj = AFrame.create( AFrame.SomeObject, {
+        *       plugins: [ [ AFrame.SomePlugin, {
+        *           pluginConfigItem1: pluginConfigVal1
+        *       } ] ]
+        *    } );
+        *
+        * @method AFrame.create
+        * @param {function} constructor - constructor to create
+        * @param {object} config (optional) - configuration.
+        * @param {array} config.plugins (optional) - Any plugins to attach
+        */
+        create: function( construct, config ) {
+            var retval;
+            if( construct ) {
+                try {
+                    retval = new construct;
+                } catch ( e ) {
+                    console.log( e.toString() );
+                }
+                
+                config = config || {};
+                var plugins = config.plugins || [];
+                
+                // recursively create and bind any plugins
+                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+                    plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
+                    var pluginObj = AFrame.create( plugin[ 0 ], plugin[ 1 ] );
+                    pluginObj.setPlugged( retval );
+                }
+                
+                retval.init( config );
+            }
+            else {
+                throw 'Class does not exist.';
+            }
+            return retval;
+            
         },
 
         /**

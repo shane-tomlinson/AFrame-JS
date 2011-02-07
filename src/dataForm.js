@@ -12,12 +12,9 @@
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.construct( {
-*        type: DataForm,
-*        config: {
-*            target: '#nameForm',
-*            dataSource: libraryDataContainer
-*        }
+*    var form = AFrame.create( AFrame.DataForm, {
+*       target: '#nameForm',
+*       dataSource: libraryDataContainer
 *    } );
 *    
 *    // do some stuff, user updates the fields with the library name and version 
@@ -51,22 +48,16 @@
 *    };
 *
 *    // create the model.
-*    var model = AFrame.construct( {
-*        type: AFrame.Model,
-*        config: {
-*            schema: schemaConfig
-*        }
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: schemaConfig
 *    } );
 *
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
 *    //    attribute.  This will find two fields, each field will be tied to the 
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.construct( {
-*        type: DataForm,
-*        config: {
-*            target: '#nameForm',
-*            dataSource: model
-*        }
+*    var form = AFrame.create( AFrame.DataForm, {
+*        target: '#nameForm',
+*        dataSource: model
 *    } );
 *    
 *

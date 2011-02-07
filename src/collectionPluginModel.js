@@ -15,14 +15,10 @@
 *    };
 *    
 *    // create the collection.
-*    this.collection = AFrame.construct( {
-*        type: AFrame.CollectionArray,
-*        plugins: [ {
-*            type: AFrame.CollectionPluginModel,
-*            config: {
-*                schema: schemaConfig
-*            }
-*        } ]
+*    this.collection = AFrame.create( AFrame.CollectionArray, {
+*        plugins: [ [ AFrame.CollectionPluginModel, {
+*            schema: schemaConfig
+*        } ] ]
 *    } );
 * 
 * @class AFrame.CollectionPluginModel
@@ -42,12 +38,9 @@
 *
 *    // example of an overridden model factory function.
 *    var modelFactory = function( data, schema ) {
-*       return AFrame.construct( {
-*           type: SpecializedModel,
-*           config: {
-*               data: data,
-*               schema: schema
-*           } 
+*       return AFrame.create( SpecializedMode, {
+*           data: data,
+*           schema: schema
 *       } );
 *    };
 *
@@ -86,12 +79,9 @@ AFrame.CollectionPluginModel = ( function() {
     }
     
     function createModel( data, schema ) {
-        var model = AFrame.construct( {
-            type: AFrame.Model,
-            config: {
-                schema: schema,
-                data: data
-            }
+        var model = AFrame.create( AFrame.Model, {
+            schema: schema,
+            data: data
         } );
         return model;
     }

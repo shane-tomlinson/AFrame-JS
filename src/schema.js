@@ -404,11 +404,8 @@ AFrame.Schema = (function() {
         */
         getSchema: function( type ) {
             if( !Schema.schemaCache[ type ] && Schema.schemaConfigs[ type ] ) {
-                Schema.schemaCache[ type ] = AFrame.construct( {
-                    type: Schema,
-                    config: {
-                        schema: Schema.schemaConfigs[ type ]
-                    }
+                Schema.schemaCache[ type ] = AFrame.create( Schema, {
+                    schema: Schema.schemaConfigs[ type ]
                 } );
             }
             

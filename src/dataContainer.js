@@ -43,11 +43,8 @@ AFrame.DataContainer = ( function() {
         else if( data ) {
             var dataContainer = data.__dataContainer;
             if( !dataContainer ) {
-                dataContainer = AFrame.construct( {
-                    type: DataContainer,
-                    config: {
-                        data: data
-                    }
+                dataContainer = AFrame.create( DataContainer, {
+                    data: data
                 } );
             }
             return dataContainer;

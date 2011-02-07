@@ -11,11 +11,8 @@
  *   
  *    // buttonSelector is a selector used to specify the root node of 
  *    //    the target.
- *    var button = AFrame.construct( {
- *       type: AFrame.Display
- *       config: {
- *           target: buttonSelector
- *       }
+ *    var button = AFrame.create( AFrame.Display, {
+ *        target: buttonSelector
  *    } );
  *   
  *    // When binding to a DOM event, must define the target, which 

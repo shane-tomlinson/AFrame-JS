@@ -21,9 +21,7 @@ AFrame.Observable = ( function() {
      * @return {Observable}
      */
     Observable.getInstance = function() {
-        return AFrame.construct( {
-            type: Observable
-        } );
+        return AFrame.create( Observable );
     };
     Observable.prototype = {
         /**

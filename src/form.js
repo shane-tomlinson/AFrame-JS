@@ -15,11 +15,8 @@
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.construct( {
- *       type: AFrame.Form,
- *       config: {
- *           target: '#nameForm'
- *       }
+ *    var form = AFrame.create( AFrame.Form, {
+ *        target: '#nameForm'
  *    } );
  *   
  *    // do some stuff, user enters data.
@@ -35,23 +32,17 @@
  *   
  *    // Sets up the field constructor, right now there is only one type of field
  *    var fieldFactory = function( element ) {
- *       return AFrame.construct( {
- *           type: AFrame.SpecializedField,
- *           config: {
- *               target: element
- *           }
+ *       return AFrame.create( AFrame.SpecializedField, {
+ *           target: element
  *       } );
  *    };
  *   
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.construct( {
- *       type: AFrame.Form,
- *       config: {
- *           target: '#nameForm',
- *           formFieldFactory: fieldFactory
- *       }
+ *    var form = AFrame.create( AFrame.Form, {
+ *        target: '#nameForm',
+ *        formFieldFactory: fieldFactory
  *    } );
  *
  *    // the specialized form field factory can be used globally as the default factory
@@ -67,11 +58,8 @@
  *
  *     // example field factory in a Form's config.
  *     formFieldFactory: function( element ) {
- *       return AFrame.construct( {
- *           type: AFrame.SpecializedField,
- *           config: {
- *               target: element
- *           }
+ *       return AFrame.create( AFrame.SpecializedField, {
+ *           target: element
  *       } );
  *     };
  *
@@ -237,11 +225,8 @@ AFrame.Form = ( function() {
     *
     *     // example of overloaded formFieldFactory
     *     AFrame.Form.setDefaultFieldFactory( function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
+    *       return AFrame.create( AFrame.SpecializedField, {
+    *           target: element
     *       } );
     *     } );
     *
@@ -270,11 +255,8 @@ AFrame.Form = ( function() {
     *
     *     // example of overloaded formFieldFactory
     *     formFieldFactory: function( element ) {
-    *       return AFrame.construct( {
-    *           type: AFrame.SpecializedField,
-    *           config: {
-    *               target: element
-    *           }
+    *       return AFrame.create( AFrame.SpecializedField, {
+    *           target: element
     *       } );
     *     };
     *
@@ -283,12 +265,9 @@ AFrame.Form = ( function() {
     * @return {AFrame.Field} field for element.
     */
     function formFieldFactory( element ) {
-       return AFrame.construct( {
-            type: AFrame.Field,
-            config: {
-                target: element
-            }
-        } );
+       return AFrame.create( AFrame.Field, {
+            target: element
+       } );
     }
 
     return Form;
