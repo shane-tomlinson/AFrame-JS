@@ -69,39 +69,30 @@ var friendSchemaConfig = {
 // Use a collection to keep track of the friend models.  When data items are
 // inserted into collection, models will be created automatically using the
 // layout defined in the friendSchemaConfig
-var friendsCollection = AFrame.construct( {
-    type: AFrame.CollectionArray,
-    plugins: [ {
-        // Whenever data is inserted into the collection, create a model for the
-        //  data using the layout defined in friendSchemaConfig.
-        type: AFrame.CollectionPluginModel,
-        config: {
-            schema: friendSchemaConfig
-        }
-    } ]
+var friendsCollection = AFrame.create( AFrame.CollectionArray, {
+    // Whenever data is inserted into the collection, create a model for the
+    //  data using the layout defined in friendSchemaConfig.
+    plugins: [ [ AFrame.CollectionPluginModel, {
+        schema: friendSchemaConfig
+    } ] ]
 } );
 
 // This is a list of friends.  It will display the data held by each of Friend models.
 // The list is bound to the friendsCollection, any time a friend is added or removed 
 // from the collection, the list will be automatically updated.
-var friendsList = AFrame.construct( {
-    type: AFrame.List,
-    config: {
-        target: '#friendList',
-        listElementFactory: function( model, index ) {
-            // whenever a model is inserted into the collection, create a list item
-            //  using the data from the model.
-            return AFrame.DOM.createElement( 'li', model.get( 'name' ) );
-        }
+var friendsList = AFrame.create( AFrame.List, {
+    target: '#friendList',
+    listElementFactory: function( model, index ) {
+        // whenever a model is inserted into the collection, create a list item
+        //  using the data from the model.
+        return AFrame.DOM.createElement( 'li', model.get( 'name' ) );
     },
-    plugins: [ {
-        // Bind the list to the collection, causing the list to update automatically
-        //  whenever friends are added or removed from the collection.
-        type: AFrame.ListPluginBindToCollection,
-        config: {
+    // Bind the list to the collection, causing the list to update automatically
+    //  whenever friends are added or removed from the collection.
+    plugins: [ [ AFrame.ListPluginBindToCollection, {
             collection: friendsCollection
         }
-    } ]
+    ] ]
 } );
 
 // Once the user enters a name, insert the new "friend" data into the friendsCollection.
