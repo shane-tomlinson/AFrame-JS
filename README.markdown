@@ -16,7 +16,7 @@ AFrameJS is DOM library agnostic, meaning it can be used with any DOM library.  
 ### Quick AFrameJS Example ###
 Presented below is a simple MVC application that combines many of AFrameJS' concepts.  Models are created and contained in a Collection and then a List of Views presents the data contained in the models.  AFrameJS's special object construct mechanism is used, allowing the developer to use object Plugins.
 
-    &lt;script type="text/javascript&gt;
+    <script type="text/javascript>
     // The "main" Controller.
                 
     // Define the "layout" of model using a SchemaConfig.
@@ -59,7 +59,7 @@ Presented below is a simple MVC application that combines many of AFrameJS' conc
            var friend_name = prompt( "Who is your friend?" );
            friendsCollection.insert( { name: friend_name } );
     } );            
-    &lt;/script&gt;
+    </script>
 
 ### Using AFrameJS without compilation ###
 
