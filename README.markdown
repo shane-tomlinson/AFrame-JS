@@ -7,19 +7,59 @@
 
 
 -----------------------
+AFrameJS is a Javascript MVC application development library, not a DOM manipulation library!  AFrameJS leaves the DOM manipulation to jQuery, MooTools, or Prototype, instead providing the parts necessary to create MVC applications.
 
-AFrame is a Javascript MVC library that aims to provide a foundation for developing applications in Javascript using the same
-methodologies other languages have been using for years.  This is NOT another DOM manipulation library. There are
-plenty of DOM manipulation libraries (jQuery, MooTools, Prototype, Dojo, YUI), other libraries that provide 
-hundreds of widgets (Dojo, YUI, Sencha Labs) and others that shield you from writing Javascript (Cappachino).  But why?
-There is a need for a light weight APPLICATION library which provide a clean way to write apps in a traditional MVC style.
-Backbone and Knockout-JS are two similar options, and now AFrame addresses this need.
+Web development is maturing, MVC based applications are becoming increasingly common.  AFrameJS is being developed to fill the need of having a true MVC framework to develop applications with.  [Backbone](http://documentcloud.github.com/backbone/) and [Knockout-JS](http://knockoutjs.com/) are two similar libraries that address this need, now AFrameJS does too.
 
-AFrame has no dependency on any DOM framework in particular, all DOM interaction is done through DOM adapters.  Currently,
-there are adapters for jQuery, MooTools, and Prototype.  Adapters for YUI, Ext, and possibly Dojo are planned as I get time.
-If there is an adapter that you need that is not written, code it up, make sure it passes the unit tests, and I will gladly accept submissions!
+AFrameJS is DOM library agnostic, meaning it can be used with any DOM library.  All DOM manipulation within the library is done using DOM adapters, currently there are adapters for jQuery, MooTools and Prototype. Adapters for YUI, Ext, and possibly Dojo are planned as I get time. If there is an adapter that you need that is not written, code it up, make sure it passes the unit tests, and I will gladly accept submissions!
 
-Unit tests use the YUI Unit test library.  These can be run by browsing to the tests directory and opening index.html
+### Quick AFrameJS Example ###
+Presented below is a simple MVC application that combines many of AFrameJS' concepts.  Models are created and contained in a Collection and then a List of Views presents the data contained in the models.  AFrameJS's special object construct mechanism is used, allowing the developer to use object Plugins.
+
+    &lt;script type="text/javascript&gt;
+    // The "main" Controller.
+                
+    // Define the "layout" of model using a SchemaConfig.
+    var friendSchemaConfig = {
+        name: { type: 'text' }
+    };
+
+    // Use a collection to keep track of the friend models.  When data items are
+    // inserted into collection, models will be created automatically using the
+    // layout defined in the friendSchemaConfig
+    var friendsCollection = AFrame.create( AFrame.CollectionArray, {
+        // Whenever data is inserted into the collection, create a model for the
+        //  data using the layout defined in friendSchemaConfig.
+        plugins: [ [ AFrame.CollectionPluginModel, {
+            schema: friendSchemaConfig
+        } ] ]
+    } );
+
+    // This is a list of friends.  It will display the data held by each of Friend models.
+    // The list is bound to the friendsCollection, any time a friend is added or removed 
+    // from the collection, the list will be automatically updated.
+    var friendsList = AFrame.create( AFrame.List, {
+        target: '#friendList',
+        listElementFactory: function( model, index ) {
+            // whenever a model is inserted into the collection, create a list item
+            //  using the data from the model.
+            return AFrame.DOM.createElement( 'li', model.get( 'name' ) );
+        },
+        // Bind the list to the collection, causing the list to update automatically
+        //  whenever friends are added or removed from the collection.
+        plugins: [ [ AFrame.ListPluginBindToCollection, {
+                collection: friendsCollection
+            }
+        ] ]
+    } );
+
+    // Once the user enters a name, insert the new "friend" data into the friendsCollection.
+    // A friend Model will be created, and the list will be updated - all automatically.
+    $( '#add-friend' ).click( function( event ) {
+           var friend_name = prompt( "Who is your friend?" );
+           friendsCollection.insert( { name: friend_name } );
+    } );            
+    &lt;/script&gt;
 
 ### Using AFrameJS without compilation ###
 
@@ -58,9 +98,6 @@ where xxx is the version that you downloaded.
 4. "and jslint" runs a javascript linter to check for errors
 5. "ant clean" cleans up any messes
 
-
-### See a sample app in action ###
-1. Check out [MobileNotes](https://github.com/stomlinson/MobileNotes) 
 
 ### Licensing ###
 AFrameJS is released under the [Creative Commons Attribution 3.0 License](http://creativecommons.org/licenses/by/3.0/).
