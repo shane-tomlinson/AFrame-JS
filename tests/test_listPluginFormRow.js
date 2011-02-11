@@ -10,7 +10,7 @@ testsToRun.push( {
 					listElementFactory: function( data, index ) {
 						this.insertedIndex = index;
 						this.insertedData = data;
-						var rowElement = AFrame.DOM.createElement( 'li', '<span data-field="fieldName"></span>' );
+						var rowElement = AFrame.DOM.createElement( 'li', '<span data-field name="fieldName"></span>' );
                         AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
 						return rowElement;
 					}.bind( this )

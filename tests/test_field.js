@@ -3,11 +3,8 @@ testsToRun.push( {
 		name: "TestCase AFrame.Field",
 		
 		setUp: function() {
-			this.field = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'input[data-field=name]'
-				}
+			this.field = AFrame.create( AFrame.Field, {
+                target: 'input[data-field][name=name]'
 			} );
 		},
 
@@ -18,7 +15,7 @@ testsToRun.push( {
 		},
 
 		testInput: function() {
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', target.val(), 'element value correctly set' );
@@ -31,12 +28,9 @@ testsToRun.push( {
 		},
 
 		testText: function() {
-			var target = jQuery( 'span[data-field=name]' );
-			var textField = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'span[data-field=name]'
-				}
+			var target = jQuery( 'span[data-field][name=name]' );
+			var textField = AFrame.create( AFrame.Field, {
+                target: 'span[data-field][name=name]'
 			} );
 			
 			textField.set( 'Shane Tomlinson' );
@@ -55,12 +49,9 @@ testsToRun.push( {
 		},
 
 		testTextArea: function() {
-			var target = jQuery( 'textarea[data-field=name]' );
-			var textAreaField = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field=name]'
-				}
+			var target = jQuery( 'textarea[data-field][name=name]' );
+			var textAreaField = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]'
 			} );
 			textAreaField.set( 'Charlotte Tomlinson' );
 			Assert.areEqual( 'Charlotte Tomlinson', target.val(), 'element value correctly set when field updated' );
@@ -76,12 +67,9 @@ testsToRun.push( {
 		},
 
 		testCheckValidity: function() {
-			var target = jQuery( 'span[data-field=name]' );
-			var textField = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'span[data-field=name]'
-				}
+			var target = jQuery( 'span[data-field][name=name]' );
+			var textField = AFrame.create( AFrame.Field, {
+                target: 'span[data-field][name=name]'
 			} );
 
 			var isValid = textField.checkValidity();
@@ -93,12 +81,9 @@ testsToRun.push( {
 			textField.teardown();
 			textField = null;
 			
-			target = jQuery( 'textarea[data-field=name]' );
-			var fieldValueRequired = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field=name]'
-				}
+			target = jQuery( 'textarea[data-field][name=name]' );
+			var fieldValueRequired = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]'
 			} );
 
 			fieldValueRequired.clear();
@@ -117,7 +102,7 @@ testsToRun.push( {
 		},
 
 		testClear: function() {
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			target.val( 'Charlotte Tomlinson' );
 
 			this.field.clear();
@@ -126,13 +111,13 @@ testsToRun.push( {
 		},
 
 		testSet: function() {
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			this.field.set( 'AFrame' );
 			Assert.areEqual( 'AFrame', target.val(), 'set sets the field correctly' );
 		},
 		
 		testGet: function() {	
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			this.field.set( 'Shane Tomlinson' );
 			Assert.areEqual( 'Shane Tomlinson', this.field.get(), 'get gets field correctly' );
 
@@ -142,7 +127,7 @@ testsToRun.push( {
 		},
 		
 		testReset: function() {
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			
 			this.field.set( 'Charlotte' );
 			target.val( 'Shane' );
@@ -151,7 +136,7 @@ testsToRun.push( {
 		},
 		
 		testSave: function() {
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			
 			target.val( 'Shane' );
 			this.field.save();
@@ -161,14 +146,11 @@ testsToRun.push( {
 		},
 		
 		testFieldWithInitialValue: function() {
-			var target = jQuery( 'span[data-field=name]' );
+			var target = jQuery( 'span[data-field][name=name]' );
 			target.html( 'Charlotte Tomlinson' );
 			
-			var textField = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'span[data-field=name]'
-				}
+			var textField = AFrame.create( AFrame.Field, {
+                target: 'span[data-field][name=name]'
 			} );
 
 			Assert.areSame( 'Charlotte Tomlinson', textField.get(), 'field with initial value does correct get' );
@@ -180,7 +162,7 @@ testsToRun.push( {
 		},
 		
 		testGetDisplayed: function() {
-			var target = jQuery( 'input[data-field=name]' );
+			var target = jQuery( 'input[data-field][name=name]' );
 			
 			this.field.set( 'Preston the Penguin' );
 			Assert.areEqual( 'Preston the Penguin', this.field.getDisplayed(), 'getDisplayed works' );
@@ -230,30 +212,27 @@ testsToRun.push( {
 		},
 		
 		testInvalidCancellable: function() {
-			var target = jQuery( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field][name=name]' );
 			
-			var fieldValueRequired = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field=name]'
-				}
+			var fieldValueRequired = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]'
 			} );
 
 			
 			var defaultPrevented = false;
-			AFrame.DOM.bindEvent( 'textarea[data-field=name]', 'invalid', function( event ) {
+			AFrame.DOM.bindEvent( 'textarea[data-field][name=name]', 'invalid', function( event ) {
 				defaultPrevented = event.isDefaultPrevented && event.isDefaultPrevented();
 			} );
 			
 			// We cancel the browser handle the invalid event, no browser will show the error message
             // default is the to cancel the event.
-            AFrame.DOM.fireEvent( 'textarea[data-field=name]', 'invalid' );
+            AFrame.DOM.fireEvent( 'textarea[data-field][name=name]', 'invalid' );
 			
 			Assert.isTrue( defaultPrevented, 'with AFrame.Field.cancelInvalid = true, invalid\'s default is prevented' );
 
 			// We let the browser handle the invalid event, some browsers show an error message.
 			AFrame.Field.cancelInvalid = false;
-			AFrame.DOM.fireEvent( 'textarea[data-field=name]', 'invalid' );
+			AFrame.DOM.fireEvent( 'textarea[data-field][name=name]', 'invalid' );
 			
 			Assert.isFalse( defaultPrevented, 'with AFrame.Field.cancelInvalid = false, invalid occurs normally' );
             AFrame.Field.cancelInvalid = true;
@@ -261,13 +240,10 @@ testsToRun.push( {
 		},
         
         testSetCausesInvalid: function() {
-			var target = jQuery( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field][name=name]' );
 			
-			var field = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field=name]'
-				}
+			var field = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]'
 			} );
             
             field.set( 'value' );

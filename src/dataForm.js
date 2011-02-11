@@ -164,7 +164,7 @@ AFrame.DataForm = ( function() {
     }
 
     function fieldGetName( formField ) {
-        return AFrame.DOM.getAttr( formField.getTarget(), 'data-field' );
+        return AFrame.DOM.getAttr( formField.getTarget(), 'name' );
     }
 
     function fieldSetValue( data ) {

@@ -6,7 +6,7 @@ testsToRun.push( {
 			this.field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: 'textarea[data-field=name]',
+					target: 'textarea[data-field][name=name]',
 				}
 			} );
             
@@ -52,7 +52,7 @@ testsToRun.push( {
             var field = AFrame.construct( {
                 type: AFrame.Field,
                 config: {
-                    target: 'textarea[data-field=name]'
+                    target: 'textarea[data-field][name=name]'
                 },
                 plugins: [ {
                     type: ValidatorPlugin
@@ -65,18 +65,18 @@ testsToRun.push( {
         },
         
         testInvalidEvent: function() {
-			var target = jQuery( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field][name=name]' );
 			target.val( '' );
             
 			var field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: 'textarea[data-field=name]'
+					target: 'textarea[data-field][name=name]'
 				}
 			} );
             
             var invalidTriggered = false;
-            AFrame.DOM.bindEvent( 'textarea[data-field=name]', 'invalid', function( event ) {
+            AFrame.DOM.bindEvent( 'textarea[data-field][name=name]', 'invalid', function( event ) {
                 invalidTriggered = true;
             } );
             
@@ -89,13 +89,13 @@ testsToRun.push( {
         },
         
         testManualErrorShowsStandardErrors: function() {
-			var target = jQuery( 'textarea[data-field=name]' );
+			var target = jQuery( 'textarea[data-field][name=name]' );
 			target.val( '' );
             
 			var field = AFrame.construct( {
 				type: AFrame.Field,
 				config: {
-					target: 'textarea[data-field=name]'
+					target: 'textarea[data-field][name=name]'
 				}
 			} );
             
