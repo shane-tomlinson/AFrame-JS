@@ -12,14 +12,11 @@
                     var target = jQuery( '#noValueFormElement' );
                     target.val( '' );
                     
-                    var textField = AFrame.construct( {
-                        type: AFrame.Field,
-                        config: {
-                            target: target
-                        }
+                    var textField = AFrame.create( AFrame.Field, {
+                        target: target
                     } );
 
-                    Assert.isUndefined( textField.get(), 'correct get' );
+                    Assert.areSame( '', textField.get(), 'correct get' );
                     Assert.areSame( '', textField.getDisplayed(), 'help text not displayed for browsers supporting HTML5 spec' );
                 }
 		    },
@@ -29,11 +26,8 @@
                     var target = jQuery( '#noValueFormElement' );
                     target.val( '' );
                     
-                    var textField = AFrame.construct( {
-                        type: AFrame.Field,
-                        config: {
-                            target: '#noValueFormElement'
-                        }
+                    var textField = AFrame.create( AFrame.Field, {
+                        target: '#noValueFormElement'
                     } );
 
                     //Assert.isUndefined( textField.get(), 'correct get' );
