@@ -84,9 +84,7 @@ AFrame.Form = ( function() {
         bindFormElements: function() {
             var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
             
-            AFrame.DOM.forEach( formElements, function( formElement, index ) {
-                this.bindFormElement( formElement );
-            }, this );
+            AFrame.DOM.forEach( formElements, this.bindFormElement, this );
         },
 
         teardown: function() {
