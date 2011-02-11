@@ -3125,9 +3125,7 @@ AFrame.Form = ( function() {
         bindFormElements: function() {
             var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
             
-            AFrame.DOM.forEach( formElements, function( formElement, index ) {
-                this.bindFormElement( formElement );
-            }, this );
+            AFrame.DOM.forEach( formElements, this.bindFormElement, this );
         },
 
         teardown: function() {
@@ -4793,8 +4791,8 @@ AFrame.ListPluginFormRow = ( function() {
 *    } );
 *
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
-*    //    attribute.  This will find two fields, each field will be tied to the 
-*    //    appropriate field in the libraryDataContainer
+*    //    attribute.  The name of each field will be that specified in the element's "name"
+*    //    attribute.  This will try and tie fields to name and version, as specified in the schemaConfig.
 *    var form = AFrame.create( AFrame.DataForm, {
 *        target: '#nameForm',
 *        dataSource: model
@@ -4904,7 +4902,7 @@ AFrame.DataForm = ( function() {
     }
 
     function fieldGetName( formField ) {
-        return AFrame.DOM.getAttr( formField.getTarget(), 'data-field' );
+        return AFrame.DOM.getAttr( formField.getTarget(), 'name' );
     }
 
     function fieldSetValue( data ) {

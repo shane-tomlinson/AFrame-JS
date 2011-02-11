@@ -402,7 +402,7 @@
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form Using the Default fieldFactory</h4>
 <pre>
     &lt;div id="nameForm"&gt;
-        &lt;input type="text" data-field="name" /&gt;
+        &lt;input type="text" data-field name="name" /&gt;
     &lt;/div&gt;
     
     ---------
@@ -451,8 +451,8 @@
             <p>
 <pre>
     &lt;div id="nameForm"&gt;
-        &lt;input type="text" data-field="name" /&gt;
-        &lt;input type="text" data-field="version" /&gt;
+        &lt;input type="text" data-field name="name" /&gt;
+        &lt;input type="text" data-field name="version" /&gt;
     &lt;/div&gt;
     
     ---------
@@ -629,8 +629,8 @@
     /* the row element factory, can easily use a templating 
     *   mechanism instead of direct creation */
     var rowElementFactory = function( data, index ) {
-        var listItem = $( '&lt;li&gt;&lt;input type="text" data-field="name" /&gt;,' +
-            '&lt;input type="text" data-field="employer" /&gt;&lt;/li&gt;' );
+        var listItem = $( '&lt;li&gt;&lt;input type="text" data-field name="name" /&gt;,' +
+            '&lt;input type="text" data-field name="employer" /&gt;&lt;/li&gt;' );
         return listItem;
     };
     
@@ -659,7 +659,7 @@
     /* At this point, the list contains one row with two form elements 
         that can be edited */
     &lt;ul id="clientList"&gt;
-            &lt;li&gt;&lt;input type="text" data-field="name" value="Shane Tomlinson" /&gt;,&lt;input type="text" data-field="employer" value="AFrame Foundary" /&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;input type="text" data-field name="name" value="Shane Tomlinson" /&gt;,&lt;input type="text" data-field name="employer" value="AFrame Foundary" /&gt;&lt;/li&gt;
     &lt;/ul&gt;
     
     --------------
