@@ -18,6 +18,10 @@
 </head>
 
 <body>
+    <a href="https://github.com/stomlinson/AFrame-JS">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"/>
+    </a>
+
 	<div class="container container_12">
 		<header class="clearfix">
 			<h1>AFrameJS</h1> <h2>- Javascript MVC Library</h2>
@@ -41,7 +45,8 @@
             <div class="module">
                 <h4>Basics</h4>
                 <ul>
-                    <li><a href="#objectConstruction">Object Construction</a></li>
+                    <li><a href="#objectInstantiation">Object Instantiation</a></li>
+                    <li><a href="#classDefinition">Class Definition</a></li>
                     <li><a href="#observables">Observables</a></li>
                 </ul>
                 <h4>Model Related</h4>
@@ -74,55 +79,76 @@
     <div class="grid_9">
     
         <section>
-            
-            <p id="objectConstruction">
-                <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Constructing an object</h3>
-                Since AFrame tries to be somewhat AOP with its use of Plugins, and often times those Plugins depend on knowing 
-                when the plugged object is initialized, it is recommended to use <a href="docs/AFrame.html#method_construct">AFrame.construct</a> instead
-                of the 'new' operator to do object construction.  All <a href="docs/AFrame.AObject.html">AFrame.AObject</a> based classes do very little in
-                their constructors, and do their initialization in the 'init' function.  This allows us to create an object and all of its plugins, then
-                have the plugins take action whenever their plugged object is initialized.  
-            </p>
-            <p>
-                All AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within 
-                the system.  CIDs can be assigned on object creation, if a CID is not given, one is assigned automatically.
-            </p>
-            <p>
-                <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of object creation</h4>
+            <article id="objectInstantiation">
+                <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Instantiating an object</h3>
+                <p >
+                    Since AFrame tries to be somewhat AOP with its use of Plugins, and often times those Plugins depend on knowing 
+                    when the plugged object is initialized, it is recommended to use <a href="docs/AFrame.html#method_create">AFrame.create</a> instead
+                    of the 'new' operator to do object instantiation.  Most <a href="docs/AFrame.AObject.html">AFrame.AObject</a> based classes do very little in
+                    their constructors, and do their initialization in the 'init' function.  This allows us to create an object and all of its plugins, then
+                    have the plugins take action whenever their plugged object is initialized.  
+                </p>
+                <p>
+                    All AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within 
+                    the system.  CIDs can be assigned on object creation, if a CID is not given, one is assigned automatically.
+                </p>
+                <p>
+                    <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of object creation</h4>
 <pre>
 
-    var object = AFrame.construct( {
-        type: AFrame.SomeAObject,
-        config: {
-            configConfig1: val1,
-            configConfig2: val2
-        },
-        plugins: [
-           {
-                type: AFrame.SomePlugin,
-                config: {
-                    pluginConfig1: val1,
-                    pluginConfig2: val2
-                }
-           }
+    // Simple example, simply create an object, no configuration given to the object
+    var object = AFrame.create( AFrame.SomeAObject );
+    
+    // Complex example, configuration, plugins, plugins with configuration
+    var object = AFrame.create( AFrame.SomeAObject, {
+        configConfig1: val1,
+        configConfig2: val2,
+        plugins: [ [ AFrame.SomePlugin, {
+                pluginConfig1: val1,
+                pluginConfig2: val2
+        } ] ]
     } );
     
     object.someOperation();
 </pre>
 
-                What this does under the hood is create an instance of AFrame.SomeAObject and an instance of AFrame.SomePlugin.  AFrame.SomePlugin is bound to AFrame.SomeObject.  
-                AFrame.SomePlugin finally has its init function called.
-            </p>
+                    What this does under the hood is create an instance of AFrame.SomeAObject and an instance of AFrame.SomePlugin.  AFrame.SomePlugin is bound to AFrame.SomeObject.  
+                    AFrame.SomePlugin finally has its init function called.  More information on object creation is found at <a href="docs/AFrame.html#method_create">AFrame.create</a>.
+                </p>
+            </article>
             
-            <p id="observables">
+            <article id="classDefinition">
+                <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Defining a Class</h3>
+                Defining a class in AFrame is a very straight forward process.
+                
+<pre>
+                // Define a class that has no superclass
+                var Class = AFrame.Class( {
+                    someFunctionality: function() {
+                        // do something
+                    }
+                } );
+
+                // Define a class that uses AFrame.AObject as a superclass.
+                var Class = AFrame.Class( AFrame.AObject, {
+                    someFunctionality: function() {
+                        // do something
+                    }
+                } );
+</pre>                
+            </article>
+            
+            
+            <article id="observables">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Observables within AFrame.AObjects</h3>
                 An <a href="docs/AFrame.Observable.html">Observable</a> is the way events are done.  Observables are very similar to DOM Events in that 
                 each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
                 called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
                 to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
                 objects that care about it.
-            </p>
-            <p>
+            </article>
+            
+            <article>
             <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of Binding to an AObject's Observable</h4>
 <pre>
 
@@ -138,7 +164,7 @@
     anObject.bindEvent( 'onInit', onObjectInit );
     anObject.init();    // calls onObjectInit function
 </pre>
-            </p>
+            </article>
             
         </section>
         
@@ -198,11 +224,8 @@
         edit_date: { type: 'iso8601' }
     };
 
-    var noteSchema = AFrame.construct( {
-        type: AFrame.Schema,
-        config: {
-            schema: noteSchemaConfig
-        }
+    var noteSchema = AFrame.create( AFrame.Schema, {
+        schema: noteSchemaConfig
     } );
 </pre>            </p>
             
@@ -220,18 +243,15 @@
     // When creating a model, an explicit Schema does not need made, one will
     //  automatically be created from the schema configuration object (using 
     //  noteSchemaConfig from above).
-    var model = AFrame.construct( {
-        type: AFrame.Model,
-        config: {
-            schema: noteSchemaConfig,
-            data: {
-                id: '1',
-                title: 'Get some milk',
-                contents: 'Go to the supermarket and grab some milk.',
-                date: '2010-12-10T18:09Z',
-                edit_date: '2010-12-10T18:23Z'
-                extra_field: 'this field does not get through'
-           }
+    var model = AFrame.create( AFrame.Model, {
+        schema: noteSchemaConfig,
+        data: {
+            id: '1',
+            title: 'Get some milk',
+            contents: 'Go to the supermarket and grab some milk.',
+            date: '2010-12-10T18:09Z',
+            edit_date: '2010-12-10T18:23Z'
+            extra_field: 'this field does not get through'
        }
     } );
     
@@ -307,11 +327,8 @@
     
     /* buttonSelector is a selector used to specify the root node of 
         the target. */
-    var button = AFrame.construct( {
-        type: AFrame.Display
-        config: {
-            target: buttonSelector
-        }
+    var button = AFrame.create( AFrame.Display, {
+        target: buttonSelector
     } );
     
     /* When binding to a DOM event, must define the target, which 
@@ -345,11 +362,8 @@
     
     ---------
 
-    var field = AFrame.construct( {
-        type: AFrame.Field,
-        config: {
-            target: $( '#numberInput' )
-        }
+    var field = AFrame.create( AFrame.Field, {
+        target: $( '#numberInput' )
     } );
     
     /* Set the value of the field, it is now displaying 3.1415 */
@@ -397,11 +411,8 @@
     * for elements with the "data-field" attribute.  This will find one field 
     * in the above HTML.
     */
-    var form = AFrame.construct( {
-        type: AFrame.Form,
-        config: {
-            target: $( '#nameForm' )
-        }
+    var form = AFrame.create( AFrame.Form, {
+        target: $( '#nameForm' )
     } );
 
     // do some stuff, user enters data.
@@ -417,21 +428,14 @@
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form Using a Specialized fieldFactory</h4>
 <pre>
     /* Sets up a form with a specialty field factory */
-    var formWithSpecialtyField = AFrame.construct( {
-        type: AFrame.Form,
-        config: {
-            target: $( '#nameForm' ),
-            formFieldFactory: function( element ) {
-                return AFrame.construct( {
-                    type: AFrame.SpecializedField,
-                    config: {
-                        target: element
-                    }
-                } );
-            }
+    var formWithSpecialtyField = AFrame.create( AFrame.Form, {
+        target: $( '#nameForm' ),
+        formFieldFactory: function( element ) {
+            return AFrame.create( AFrame.SpecializedField, {
+                target: element
+            } );
         }
     } );
-    
 </pre>
             </p>
 
@@ -465,12 +469,9 @@
     /* Set up the form to look under #nameForm for elements with the "data-field" 
         attribute.  This will find two fields, each field will be tied to the 
         appropriate field in the libraryDataContainer */
-    var form = AFrame.construct( {
-        type: AFrame.DataForm,
-        config: {
-            target: $( '#nameForm' ),
-            dataSource: libraryDataContainer
-        }
+    var form = AFrame.create( AFrame.DataForm, {
+        target: $( '#nameForm' ),
+        dataSource: libraryDataContainer
     } );
     
     /* do some stuff, user updates the fields with the library name and version 
@@ -512,12 +513,9 @@
         return listItem;
     };
     
-    var list = AFrame.construct( {
-        type: AFrame.List,
-        config: {
-            target: '#clientList',
-            listElementFactory: factory
-        }
+    var list = AFrame.create( AFrame.List, {
+        target: '#clientList',
+        listElementFactory: factory
     } );
     
     /* Creates a list item using the factory function at the end of the list */
@@ -558,9 +556,7 @@
         the expected result */
     
     /* First we need to set up the collection */
-    var collection = AFrame.construct( {
-        type: AFrame.CollectionArray
-    } );
+    var collection = AFrame.create( AFrame.CollectionArray );
     
     
     var factory = function( data, index ) {
@@ -571,20 +567,13 @@
     /* Sets up our list with the ListPluginBindToCollection.  Notice the 
         ListPluginBindToCollection has a collection config parameter.
     */
-    var list = AFrame.construct( {
-        type: AFrame.List,
-        config: {
-            target: '#clientList',
-            listElementFactory: factory
-        },
-        plugins: [
-            {
-                type: AFrame.ListPluginBindToCollection,
-                config: {
-                    collection: collection
-                }
-            }
-        ]
+    var list = AFrame.create( AFrame.List, {
+        target: '#clientList',
+        listElementFactory: factory,
+        plugins: [ [
+            AFrame.ListPluginBindToCollection, {
+                collection: collection
+        } ] ]
     } );
     
     collection.insert( {
@@ -646,31 +635,17 @@
     };
     
     /* Set up a collection to add data to */
-    var collection = AFrame.construct( {
-        type: AFrame.CollectionArray
-    } );
+    var collection = AFrame.create( AFrame.CollectionArray );
 
     /* Sets up our list with the ListPluginBindToCollection.  Notice the 
         ListPluginBindToCollection has a collection config parameter.
     */
-    var list = AFrame.construct( {
-        type: AFrame.List,
-        config: {
-            target: '#clientList',
-            listElementFactory: rowElementFactory
-        },
-        plugins: [
-            {
-                type: AFrame.ListPluginBindToCollection,
-                config: {
-                    collection: collection
-                }
-            },
-            
-            {
-                type: AFrame.ListPluginFormRow
-            }
-        ]
+    var list = AFrame.create( AFrame.List, {
+        target: '#clientList',
+        listElementFactory: rowElementFactory,
+        plugins: [ [ AFrame.ListPluginBindToCollection, {
+            collection: collection
+        } ], AFrame.ListPluginFormRow ]
     } );
 
     
