@@ -178,6 +178,21 @@ AFrame.AObject = (function(){
             else {
                 AFrame.mixin( this, importFrom );
             }
+        },
+        
+        /**
+        * Create a trigger event proxy function.  Useful to re-broadcast an event or when a DOM 
+        *   event should trigger a normal AObject based event.
+        *
+        *    // use triggerProxy to rebroadcast an event from a child
+        *    child.bindEvent( 'eventToProxy', this.triggerProxy( 'eventToProxy' ) );
+        *    
+        *
+        * @method triggerProxy
+        * @param {string} eventName - name of event to trigger
+        */
+        triggerProxy: function( eventName ) {
+            return this.triggerEvent.bind( this, eventName );
         }
     }, AFrame.ObservablesMixin );
 

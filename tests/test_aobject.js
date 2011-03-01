@@ -77,6 +77,20 @@ testsToRun.push( {
             Assert.areEqual( 'blue', extraParam, 'extraParam is set to blue' );
         },
         
+        testTriggerProxy: function() {
+            var proxy = this.aobject.triggerProxy( 'proxiedEvent' );
+            
+            var eventTriggered = false;
+            this.aobject.bindEvent( 'proxiedEvent', function() { 
+                eventTriggered = true;
+            } );
+            
+            // call the proxied function
+            proxy();
+            
+            Assert.isTrue( eventTriggered, 'triggerProxy works' );
+        },
+        
 		testAddChild: function() {
 			var tornDown = false;
 			var objectToTeardown = {

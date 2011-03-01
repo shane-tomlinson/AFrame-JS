@@ -53,7 +53,8 @@ AFrame.CollectionPluginModel = ( function() {
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
-            this.schema = config.schema;
+            this.import( config, 'schema' );
+            
             this.modelFactory = config.modelFactory || createModel;
             
             Plugin.sc.init.call( this, config );
