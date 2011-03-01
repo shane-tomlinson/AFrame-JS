@@ -151,6 +151,33 @@ AFrame.AObject = (function(){
          */
         removeChild: function( cid ) {
             AFrame.remove( this.children, cid );
+        },
+        
+        /**
+        * Import fields from an object into "this"
+        *
+        *    // import specified fields from an object into "this".
+        *    this.import( { field1: 'field1value', field2: 'field2value' }, 'field1', 'field2' );
+        *
+        *    // import all fields from an object into "this".
+        *    this.import( { field3: 'field3value', field4: 'field4value' } );
+        *
+        * @method import
+        * @param {object} importFrom
+        * @param {string} fieldName (optional) - all parameters after importFrom should be strings.  
+        *   If not given, import all fields
+        */
+        'import': function( importFrom ) {
+            var fieldNames = Array.prototype.slice.call( arguments, 1 );
+            
+            if( fieldNames.length ) {
+                fieldNames.forEach( function( name, index ) {
+                    this[ name ] = importFrom[ name ];
+                }, this );
+            }
+            else {
+                AFrame.mixin( this, importFrom );
+            }
         }
     }, AFrame.ObservablesMixin );
 

@@ -110,7 +110,17 @@ testsToRun.push( {
 			this.aobject.removeChild( 1 );
 			this.aobject.teardown();
 			Assert.isFalse( tornDown, 'child\'s teardown not called since it was already removed' );
-		}
+		},
+        
+        testImport: function() {
+            this.aobject.import( { field1: 'field1value', field2: 'field2value' }, 'field1', 'field2' );
+            
+            Assert.areEqual( 'field1value', this.aobject.field1, 'field1 imported' );
+            Assert.areEqual( 'field2value', this.aobject.field2, 'field2 imported' );
+
+            this.aobject.import( { field3: 'field3value' } );
+            Assert.areEqual( 'field3value', this.aobject.field3, 'field3 imported' );
+        }
 } );
 	
 	
