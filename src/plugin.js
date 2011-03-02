@@ -23,7 +23,8 @@ AFrame.Plugin = ( function() {
         setPlugged: function( plugged ) {
             this.plugged = plugged;
             
-            this.plugged.bindEvent( 'onTeardown', this.teardown, this );
+            plugged.bindEvent( 'onTeardown', this.teardown, this );
+            plugged.bindEvent( 'onInit', this.onPluggedInit, this );
         },
         
         /**
@@ -37,7 +38,15 @@ AFrame.Plugin = ( function() {
         
         teardown: function() {
             AFrame.remove( this, 'plugged' );
-            Plugin.sc.teardown.apply( this, arguments );
+            Plugin.sc.teardown.call( this );
+        },
+        
+        /**
+        * Override to do some specialized handling when a plugged object is initialized.
+        * @method onPluggedInit
+        */
+        onPluggedInit: function() {
+            // do nothing
         }
     } );
 

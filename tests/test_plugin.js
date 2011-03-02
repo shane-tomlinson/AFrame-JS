@@ -4,17 +4,10 @@ testsToRun.push( {
 		
 		setUp: function() {
 			
-			this.pluggedObject = AFrame.construct( {
-				type: AFrame.AObject,
-				plugins: [
-					{
-						type: AFrame.Plugin
-					}
-				]
+			this.pluggedObject = AFrame.create( AFrame.AObject, {
+				plugins: [ AFrame.Plugin ]
 			} );
-			this.plugin = AFrame.construct( {
-				type: AFrame.Plugin
-			} );
+			this.plugin = AFrame.create( AFrame.Plugin );
 		},
 		
 		tearDown : function () {
@@ -47,5 +40,20 @@ testsToRun.push( {
 			this.pluggedObject.teardown();
 			
 			Assert.isTrue( pluginTeardown, 'plugin was torn down' );
-		}
+		},
+        
+        testOnPluggedInit: function() {
+            var onPluggedInitCalled = false;
+            var Plugin = AFrame.Class( AFrame.Plugin, {
+                onPluggedInit: function() {
+                    onPluggedInitCalled = true;
+                }
+            } );
+            
+            var item = AFrame.create( AFrame.AObject, {
+                plugins: [ Plugin ]
+            } );
+            
+            Assert.isTrue( onPluggedInitCalled, 'onPluggedInit automatically called' );
+        }
 } );
