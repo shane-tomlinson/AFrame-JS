@@ -10,20 +10,7 @@
 AFrame.Observable = ( function() {
     "use strict";
     
-    var Observable = function() {};
-    /**
-     * Get an instance of the observable
-     *
-     *    var observable = Observable.getInstance();
-     *    var id = observable.bind( this.onInit, this );
-     
-     * @method Observable.getInstance
-     * @return {Observable}
-     */
-    Observable.getInstance = function() {
-        return AFrame.create( Observable );
-    };
-    Observable.prototype = {
+    var Observable = AFrame.Class( {
         /**
          * Initialize the observable
          * @method init
@@ -94,6 +81,19 @@ AFrame.Observable = ( function() {
         isTriggered: function() {
             return !!this.triggered;
         }
+    } );
+
+    /**
+     * Get an instance of the observable
+     *
+     *    var observable = Observable.getInstance();
+     *    var id = observable.bind( this.onInit, this );
+     
+     * @method Observable.getInstance
+     * @return {Observable}
+     */
+    Observable.getInstance = function() {
+        return AFrame.create( Observable );
     };
     
     return Observable;
