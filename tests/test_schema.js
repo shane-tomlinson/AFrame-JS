@@ -208,6 +208,7 @@
                 } );
                 
                 Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
+                Assert.areEqual( 1275838200000, fixedData.isodatetime.getTime(), 'correct conversion' );
                 
                 // make sure the deserializer can take an item that is already a date
                 fixedData = this.schema.getAppData( {
@@ -224,6 +225,14 @@
                 Assert.isString( persistence.isodatetime, 'isodatetime converted to string' );
             },
             
+            testISO8601WithTimezone: function() {
+                fixedData = this.schema.getAppData( {
+                    isodatetime: '2011-03-04T19:15:53.123-05:00'
+                } );
+                
+                Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
+                Assert.areEqual( 1299284153123, fixedData.isodatetime.getTime(), 'correct date' );
+            },
             
             testNestedSchema: function() {
                 var innerSchemaConfig = {

@@ -463,20 +463,7 @@ var AFrame = ( function() {
 AFrame.Observable = ( function() {
     "use strict";
     
-    var Observable = function() {};
-    /**
-     * Get an instance of the observable
-     *
-     *    var observable = Observable.getInstance();
-     *    var id = observable.bind( this.onInit, this );
-     
-     * @method Observable.getInstance
-     * @return {Observable}
-     */
-    Observable.getInstance = function() {
-        return AFrame.create( Observable );
-    };
-    Observable.prototype = {
+    var Observable = AFrame.Class( {
         /**
          * Initialize the observable
          * @method init
@@ -547,6 +534,19 @@ AFrame.Observable = ( function() {
         isTriggered: function() {
             return !!this.triggered;
         }
+    } );
+
+    /**
+     * Get an instance of the observable
+     *
+     *    var observable = Observable.getInstance();
+     *    var id = observable.bind( this.onInit, this );
+     
+     * @method Observable.getInstance
+     * @return {Observable}
+     */
+    Observable.getInstance = function() {
+        return AFrame.create( Observable );
     };
     
     return Observable;
@@ -1338,7 +1338,8 @@ AFrame.Plugin = ( function() {
         setPlugged: function( plugged ) {
             this.plugged = plugged;
             
-            this.plugged.bindEvent( 'onTeardown', this.teardown, this );
+            plugged.bindEvent( 'onTeardown', this.teardown, this );
+            plugged.bindEvent( 'onInit', this.onPluggedInit, this );
         },
         
         /**
@@ -1352,7 +1353,15 @@ AFrame.Plugin = ( function() {
         
         teardown: function() {
             AFrame.remove( this, 'plugged' );
-            Plugin.sc.teardown.apply( this, arguments );
+            Plugin.sc.teardown.call( this );
+        },
+        
+        /**
+        * Override to do some specialized handling when a plugged object is initialized.
+        * @method onPluggedInit
+        */
+        onPluggedInit: function() {
+            // do nothing
         }
     } );
 
@@ -3047,7 +3056,8 @@ AFrame.CollectionPluginModel = ( function() {
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
         init: function( config ) {
-            this.schema = config.schema;
+            this[ 'import' ]( config, 'schema' );
+            
             this.modelFactory = config.modelFactory || createModel;
             
             Plugin.sc.init.call( this, config );
@@ -4460,30 +4470,33 @@ AFrame.Schema = (function() {
 
     Schema.addDeserializer( 'iso8601', function( str ) {
         if( 'string' == typeof( str ) ) {
-            // we assume str is a UTC date ending in 'Z'
-            try{
-                var parts = str.split('T'),
-                dateParts = parts[0].split('-'),
-                timeParts = parts[1].split('Z'),
-                timeSubParts = timeParts[0].split(':'),
-                timeSecParts = timeSubParts[2].split('.'),
-                timeHours = Number(timeSubParts[0]),
-                _date = new Date;
-                
-                _date.setUTCFullYear(Number(dateParts[0]));
-                _date.setUTCMonth(Number(dateParts[1])-1);
-                _date.setUTCDate(Number(dateParts[2]));
-                _date.setUTCHours(Number(timeHours));
-                _date.setUTCMinutes(Number(timeSubParts[1]));
-                _date.setUTCSeconds(Number(timeSecParts[0]));
-                if (timeSecParts[1]) {
-                    _date.setUTCMilliseconds(Number(timeSecParts[1]));
+            try {
+                // modified from http://delete.me.uk/2005/03/iso8601.html
+                var regexp = "([0-9]{4})(-([0-9]{2})(-([0-9]{2})" +
+                    "(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?" +
+                    "(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?";
+                var d = str.match( new RegExp( regexp ) );
+
+                var offset = 0;
+                var date = new Date( d[1], 0, 1 );
+
+                if (d[3]) { date.setMonth( d[3] - 1 ); }
+                if (d[5]) { date.setDate( d[5] ); }
+                if (d[7]) { date.setHours( d[7] ); }
+                if (d[8]) { date.setMinutes( d[8] ); }
+                if (d[10]) { date.setSeconds( d[10] ); }
+                if (d[12]) { date.setMilliseconds( Number( "0." + d[12] ) * 1000 ); }
+                if (d[14]) {
+                    offset = (Number( d[16]) * 60 ) + Number( d[17] );
+                    offset *= ( ( d[15] == '-' ) ? 1 : -1 );
                 }
-                
-                // by using setUTC methods the date has already been converted to local time(?)
-                return _date;
+
+                offset -= date.getTimezoneOffset();
+                time = ( Number( date ) + ( offset * 60 * 1000 ) );
+                date.setTime( Number( time ) );
+                return date;
             }
-            catch(e) {}
+            catch( e ) {}
         }
         else if( str instanceof Date ) {
             return str;
