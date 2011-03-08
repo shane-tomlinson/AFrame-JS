@@ -54,6 +54,7 @@ AFrame.AObject = (function(){
             this.cid = config.cid || AFrame.getUniqueID();
             this.children = {};
             
+            importConfig.call( this );
             this.bindEvents();
             
             /**
@@ -195,6 +196,17 @@ AFrame.AObject = (function(){
             return this.triggerEvent.bind( this, eventName );
         }
     }, AFrame.ObservablesMixin );
+    
+    function importConfig() {
+        AFrame.walkClassChain( this, function( currClass, obj ) {
+            var classImports = currClass.prototype.importconfig || [];
+            classImports.forEach( function( importName ) {
+                if( AFrame.defined( obj.config[ importName ] ) ) {
+                    obj[ importName ] = obj.config[ importName ];
+                }
+            } );
+        } );
+    }
 
     return AObject;
 }() );

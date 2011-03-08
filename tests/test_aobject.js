@@ -134,6 +134,28 @@ testsToRun.push( {
 
             this.aobject.import( { field3: 'field3value' } );
             Assert.areEqual( 'field3value', this.aobject.field3, 'field3 imported' );
+        },
+        
+        testDeclareImportConfig: function() {
+            var Class = AFrame.Class( AFrame.AObject, {
+                importconfig: [ 'blue' ]
+            } );
+            
+            var SubClass = AFrame.Class( Class, {
+                importconfig: [ 'green', 'indigo' ]
+            } );
+            
+            var instance = AFrame.create( SubClass, {
+                blue: 'blueish',
+                green: 'greenish',
+                indigo: 'indigoish',
+                yellow: 'yellowish'
+            } );
+            
+            Assert.areEqual( 'blueish', instance.blue, 'blue imported correctly' );
+            Assert.areEqual( 'greenish', instance.green, 'green imported correctly' );
+            Assert.areEqual( 'indigoish', instance.indigo, 'indigo imported correctly' );
+            Assert.isUndefined( instance.yellow, 'yellow not imported' );
         }
 } );
 	
