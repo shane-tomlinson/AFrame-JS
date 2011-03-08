@@ -90,7 +90,7 @@ var AFrame = ( function() {
             var F = function() {};
             F.prototype = sc.prototype;
             derived.prototype = new F();
-            derived.superclass = sc.prototype;  // superclass and sc are aliases
+            derived.superclass = sc;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
             derived.sc = sc.prototype;
 
             var mixins = Array.prototype.slice.call( arguments, 2 );
