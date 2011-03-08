@@ -1,6 +1,4 @@
-function SuperClass() {
-}
-SuperClass.prototype = {
+var SuperClass = AFrame.Class( {
 	hasFunc: function() {
 		return true;
 	},
@@ -9,11 +7,9 @@ SuperClass.prototype = {
 	    this.sharedFuncCalled = true;
 	    return true;
 	}
-};
+} );
 
-function SubClass() {
-}
-AFrame.extend( SubClass, SuperClass, { 
+var SubClass = AFrame.Class( SuperClass, { 
     superExtendedFunc: function() {
 	return true;
     },
@@ -30,7 +26,7 @@ AFrame.extend( SubClass, SuperClass, {
 }, {
 	funcsFromSecondMixin: function() {
 	}
-}  );
+} );
 
 var A = {
     SubClass: function() {
@@ -277,9 +273,7 @@ testsToRun.push( {
         Assert.isTrue( Class === Class.prototype.constructor, 'prototype constructor is set' );
         Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
         
-        var instance = AFrame.construct( {
-            type: Class
-        } );
+        var instance = AFrame.create( Class );
         
         Assert.isTrue( instance instanceof MockBase, 'new class is instance of AObject' );
         Assert.isTrue( constCalled, 'base constructor is called' );
@@ -300,4 +294,21 @@ testsToRun.push( {
         Assert.isFunction( Class.prototype.func2, 'func2 added to Class' );
         
     }
+} );
+
+testsToRun.push( {
+		name: 'TestCase AFrame.walkClassChain',
+        
+        setUp: function() {
+            this.instance = AFrame.create( SubClass );
+        },
+        
+        testWalkClassChain: function() {
+            var depth = 0;
+            AFrame.walkClassChain( this.instance, function( constructor, obj ) {
+                depth++;
+            } );
+            
+            Assert.areEqual( 2, depth, 'SubClass has a class depth of 2' );
+        }
 } );

@@ -99,6 +99,29 @@ var AFrame = ( function() {
             }
             derived.prototype.constructor = derived;
         },
+        
+        /**
+        * Walk the class chain of an object.  The object must be an AFrame.Class/AFrame.extend based.
+        *
+        *    // Walk the object's class chain
+        *    // SubClass is an AFrame.Class based class
+        *    var obj = AFrame.create( SubClass );
+        *    AFrame.walkClassChain( obj, function( currClass, obj ) {
+        *        // do something
+        *    } );
+        *
+        * @method walkClassChain
+        * @param {AFrame.Class} obj - object to walk.
+        * @param {function} callback - callback to call.  Called with two parameters, currClass and
+        *   obj.
+        */
+        walkClassChain: function( obj, callback ) {
+            var currClass = obj.constructor;
+            do {
+                callback( currClass, obj );
+                currClass = currClass.superclass;
+            } while( currClass );
+        },
 
         /**
         * extend an object with the members of another object.
