@@ -135,6 +135,56 @@ testsToRun.push( {
             
             Assert.areEqual( 'rendered inside of target', jQuery( '.target' ).html(), 'target was rendered' );
             Assert.isTrue( renderEvent, 'onRender was called' );
-        }
+        },
+        
+        testDeclareDOMEventsNoSelector: function() {
+            var inlineEvent, outlineEvent, onMouseOverCalled;
+            var Display = AFrame.Class( AFrame.Display, {
+                domevents: {
+                    click: [ function( event ) {
+                        inlineEvent = event.type;
+                    }, 'onClick' ],
+                    mouseover: 'onMouseOver'
+                },
+                
+                onClick: function( event ) {
+                    outlineEvent = event.type;
+                },
+                
+                onMouseOver: function( event ) {
+                    onMouseOverCalled = true;
+                }
+            } );
+            
+            var instance = AFrame.create( Display, {
+                target: '.target'
+            } );
+            $( '.target' ).trigger( 'click' );
+            
+            Assert.areEqual( 'click', inlineEvent, 'inline click handler called' );
+            Assert.areEqual( 'click', outlineEvent, 'outline click handler called' );
+            
+            $( '.target' ).trigger( 'mouseover' );
+            Assert.isTrue( onMouseOverCalled, 'onMouseOver called' );
+        },
 
+        testDeclareDOMEventsWithSelector: function() {
+            var onClickCalled;
+            var Display = AFrame.Class( AFrame.Display, {
+                domevents: {
+                    'click .buttonContainer #externalButton': 'onClick'
+                },
+                
+                onClick: function( event ) {
+                    onClickCalled = true;
+                }
+            } );
+            
+            var instance = AFrame.create( Display, {
+                target: '#AFrame_Display'
+            } );
+            $( '#externalButton' ).trigger( 'click' );
+            
+            Assert.isTrue( onClickCalled, 'onClickCalled called' );
+        }
 } );

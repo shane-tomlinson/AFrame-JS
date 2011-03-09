@@ -76,13 +76,15 @@ AFrame.Display = (function() {
 
             this.render();
             
-            this.domEvents = {};
+            this.domEventHandlers = {};
             
             Display.sc.init.call( this, config );
+            
+            bindDOMEvents.call( this );
         },
 
         teardown: function() {
-            for( var key in this.domEvents ) {
+            for( var key in this.domEventHandlers ) {
                 this.unbindDOMEvent( key );
             }
 
@@ -166,12 +168,12 @@ AFrame.Display = (function() {
          */
         bindDOMEvent: function( target, eventName, callback, context ) {
             var eventCallback = callback.bind( context || this );
-            var eventTarget = this.getEventTarget( target );
+            var eventTarget = getEventTarget.call( this, target );
             AFrame.DOM.bindEvent( eventTarget, eventName, eventCallback );
 
             currDOMEventID++;
             var id = currDOMEventID;
-            this.domEvents[ id ] = {
+            this.domEventHandlers[ id ] = {
                 target: eventTarget,
                 eventName: eventName,
                 callback: eventCallback
@@ -214,29 +216,61 @@ AFrame.Display = (function() {
          * @param {id} id - id of event to unbind
          */
         unbindDOMEvent: function( id ) {
-            var event = this.domEvents[ id ];
+            var event = this.domEventHandlers[ id ];
             if( event ) {
                 AFrame.DOM.unbindEvent( event.target, event.eventName, event.callback );
                 event.target = null;
                 event.eventName = null;
                 event.callback = null;
-                AFrame.remove( this.domEvents, id );
+                AFrame.remove( this.domEventHandlers, id );
             }
-        },
-
-        getEventTarget: function( target ) {
-            var eventTarget;
-
-            if( 'string' == typeof( target ) ) {
-                eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
-            }
-            else {
-                eventTarget = AFrame.DOM.getElements( target );
-            }
-            
-            return eventTarget;
         }
     } );
+    
+    function getEventTarget( target ) {
+        var eventTarget;
+
+        if( 'string' == typeof( target ) ) {
+            eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
+        }
+        else {
+            eventTarget = AFrame.DOM.getElements( target );
+        }
+        
+        return eventTarget;
+    }
+    
+    function bindDOMEvents() {
+        var me = this, target = me.getTarget();
+        
+        AFrame.Class.walkChain( me, function( currClass ) {
+            var domEvents = currClass.prototype.domevents || {};
+            
+            for( var eventName in domEvents ) {
+                var nameTarget = getNameAndTarget.call( me, eventName );
+                bindHandlers.call( me, nameTarget.name, nameTarget.target, domEvents[ eventName ] );
+            }
+        } );
+        
+        function getNameAndTarget( eventName ) {
+            var parts = eventName.split( ' ' );
+            var target = parts.length == 1 ? me.getTarget() : parts.slice( 1 ).join( ' ' );
+            
+            return {
+                name: parts[ 0 ],
+                target: target
+            };
+        }
+        
+        function bindHandlers( name, target, handlers ) {
+            handlers = AFrame.array( handlers ) ? handlers : [ handlers ];
+            
+            handlers.forEach( function( handler ) {
+                handler = AFrame.func( handler ) ? handler : me[ handler ];
+                me.bindDOMEvent( target, name, handler );
+            } );
+        }
+    }
     
     return Display;
 } )();

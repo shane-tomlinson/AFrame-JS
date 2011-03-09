@@ -130,65 +130,6 @@ var AFrame = ( function() {
     
     var AFrame = {
         /**
-        * A shortcut to create a new class with a default constructor.  A default
-        *   constructor does nothing unless it has a superclass, where it calls the
-        *   superclasses constructor.  If the first parameter to Class is a function, 
-        *   the parameter is assumed to be the superclass.  All other parameters 
-        *   should be objects which are mixed in to the new classes prototype.
-        *
-        * If a new class needs a non-standard constructor, the class constructor should 
-        *   be created manually and then any mixins/superclasses set up using the
-        *   [AFrame.extend](#method_extend) function.
-        *
-        *     // Create a class that is not subclassed off of anything
-        *     var Class = AFrame.Class( {
-        *        anOperation: function() {
-        *           // do an operation here
-        *        }
-        *     } );
-        *
-        *     // Create a Subclass of AFrame.AObject
-        *     var SubClass = AFrame.Class( AFrame.AObject, {
-        *        anOperation: function() {
-        *           // do an operation here
-        *        }
-        *     } );
-        *
-        * @method Class
-        * @param {function} superclass (optional) - superclass to use.  If not given, class has
-        *   no superclass.
-        * @param {object} 
-        * @return {function} - the new class.
-        */
-        Class: function() {
-            var F;
-            
-            var args = Array.prototype.slice.call( arguments, 0 );
-            
-            // we have a superclass, do everything related to a superclass
-            if( AFrame.func( args[ 0 ] ) ) {
-                F = function() { 
-                    F.sc.constructor.call( this ); 
-                };
-                AFrame.extend( F, args[ 0 ] );
-                args.splice( 0, 1 );
-            }
-            else {
-                // no superclass.  Create a base class.
-                F = function() {};
-            }
-            
-            for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
-                AFrame.mixin( F.prototype, mixin );
-            }
-            
-            // Always set the constructor last in case any mixins overwrote it.
-            F.prototype.constructor = F;
-            
-            return F;
-        },
-        
-        /**
         * Used to extend a class with another class and optional functions.
         *
         *    AFrame.NewClass = function() {
@@ -209,7 +150,7 @@ var AFrame = ( function() {
             var F = function() {};
             F.prototype = sc.prototype;
             derived.prototype = new F();
-            derived.superclass = sc.prototype;  // superclass and sc are aliases
+            derived.superclass = sc;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
             derived.sc = sc.prototype;
 
             var mixins = Array.prototype.slice.call( arguments, 2 );
@@ -451,7 +392,93 @@ var AFrame = ( function() {
     return AFrame;
 
 }() );
-/**
+AFrame.Class = ( function() {
+    "use strict";
+
+    /**
+    * A shortcut to create a new class with a default constructor.  A default
+    *   constructor does nothing unless it has a superclass, where it calls the
+    *   superclasses constructor.  If the first parameter to Class is a function, 
+    *   the parameter is assumed to be the superclass.  All other parameters 
+    *   should be objects which are mixed in to the new classes prototype.
+    *
+    * If a new class needs a non-standard constructor, the class constructor should 
+    *   be created manually and then any mixins/superclasses set up using the
+    *   [AFrame.extend](#method_extend) function.
+    *
+    *     // Create a class that is not subclassed off of anything
+    *     var Class = AFrame.Class( {
+    *        anOperation: function() {
+    *           // do an operation here
+    *        }
+    *     } );
+    *
+    *     // Create a Subclass of AFrame.AObject
+    *     var SubClass = AFrame.Class( AFrame.AObject, {
+    *        anOperation: function() {
+    *           // do an operation here
+    *        }
+    *     } );
+    *
+    * @method AFrame.Class
+    * @param {function} superclass (optional) - superclass to use.  If not given, class has
+    *   no superclass.
+    * @param {object} 
+    * @return {function} - the new class.
+    */
+    var Class = function() {
+        var F;
+        
+        var args = Array.prototype.slice.call( arguments, 0 );
+        
+        // we have a superclass, do everything related to a superclass
+        if( AFrame.func( args[ 0 ] ) ) {
+            F = function() { 
+                F.sc.constructor.call( this ); 
+            };
+            AFrame.extend( F, args[ 0 ] );
+            args.splice( 0, 1 );
+        }
+        else {
+            // no superclass.  Create a base class.
+            F = function() {};
+        }
+        
+        for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
+            AFrame.mixin( F.prototype, mixin );
+        }
+        
+        // Always set the constructor last in case any mixins overwrote it.
+        F.prototype.constructor = F;
+        
+        return F;
+    };
+        
+    /**
+    * Walk the class chain of an object.  The object must be an AFrame.Class/AFrame.extend based.
+    *
+    *    // Walk the object's class chain
+    *    // SubClass is an AFrame.Class based class
+    *    var obj = AFrame.create( SubClass );
+    *    AFrame.Class.walkChain( obj, function( currClass, obj ) {
+    *        // do something
+    *    } );
+    *
+    * @method AFrame.Class.walkChain
+    * @param {AFrame.Class} obj - object to walk.
+    * @param {function} callback - callback to call.  Called with two parameters, currClass and
+    *   obj.
+    */
+    Class.walkChain = function( obj, callback ) {
+        var currClass = obj.constructor;
+        do {
+            callback( currClass, obj );
+            currClass = currClass.superclass;
+        } while( currClass );
+    };
+        
+    return Class;
+}() );/**
  * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
  * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
  * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
@@ -951,6 +978,7 @@ AFrame.AObject = (function(){
             this.cid = config.cid || AFrame.getUniqueID();
             this.children = {};
             
+            importConfig.call( this );
             this.bindEvents();
             
             /**
@@ -1092,6 +1120,17 @@ AFrame.AObject = (function(){
             return this.triggerEvent.bind( this, eventName );
         }
     }, AFrame.ObservablesMixin );
+    
+    function importConfig() {
+        AFrame.Class.walkChain( this, function( currClass, obj ) {
+            var classImports = currClass.prototype.importconfig || [];
+            classImports.forEach( function( importName ) {
+                if( AFrame.defined( obj.config[ importName ] ) ) {
+                    obj[ importName ] = obj.config[ importName ];
+                }
+            } );
+        } );
+    }
 
     return AObject;
 }() );
@@ -2022,13 +2061,15 @@ AFrame.Display = (function() {
 
             this.render();
             
-            this.domEvents = {};
+            this.domEventHandlers = {};
             
             Display.sc.init.call( this, config );
+            
+            bindDOMEvents.call( this );
         },
 
         teardown: function() {
-            for( var key in this.domEvents ) {
+            for( var key in this.domEventHandlers ) {
                 this.unbindDOMEvent( key );
             }
 
@@ -2112,12 +2153,12 @@ AFrame.Display = (function() {
          */
         bindDOMEvent: function( target, eventName, callback, context ) {
             var eventCallback = callback.bind( context || this );
-            var eventTarget = this.getEventTarget( target );
+            var eventTarget = getEventTarget.call( this, target );
             AFrame.DOM.bindEvent( eventTarget, eventName, eventCallback );
 
             currDOMEventID++;
             var id = currDOMEventID;
-            this.domEvents[ id ] = {
+            this.domEventHandlers[ id ] = {
                 target: eventTarget,
                 eventName: eventName,
                 callback: eventCallback
@@ -2160,29 +2201,61 @@ AFrame.Display = (function() {
          * @param {id} id - id of event to unbind
          */
         unbindDOMEvent: function( id ) {
-            var event = this.domEvents[ id ];
+            var event = this.domEventHandlers[ id ];
             if( event ) {
                 AFrame.DOM.unbindEvent( event.target, event.eventName, event.callback );
                 event.target = null;
                 event.eventName = null;
                 event.callback = null;
-                AFrame.remove( this.domEvents, id );
+                AFrame.remove( this.domEventHandlers, id );
             }
-        },
-
-        getEventTarget: function( target ) {
-            var eventTarget;
-
-            if( 'string' == typeof( target ) ) {
-                eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
-            }
-            else {
-                eventTarget = AFrame.DOM.getElements( target );
-            }
-            
-            return eventTarget;
         }
     } );
+    
+    function getEventTarget( target ) {
+        var eventTarget;
+
+        if( 'string' == typeof( target ) ) {
+            eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
+        }
+        else {
+            eventTarget = AFrame.DOM.getElements( target );
+        }
+        
+        return eventTarget;
+    }
+    
+    function bindDOMEvents() {
+        var me = this, target = me.getTarget();
+        
+        AFrame.Class.walkChain( me, function( currClass ) {
+            var domEvents = currClass.prototype.domevents || {};
+            
+            for( var eventName in domEvents ) {
+                var nameTarget = getNameAndTarget.call( me, eventName );
+                bindHandlers.call( me, nameTarget.name, nameTarget.target, domEvents[ eventName ] );
+            }
+        } );
+        
+        function getNameAndTarget( eventName ) {
+            var parts = eventName.split( ' ' );
+            var target = parts.length == 1 ? me.getTarget() : parts.slice( 1 ).join( ' ' );
+            
+            return {
+                name: parts[ 0 ],
+                target: target
+            };
+        }
+        
+        function bindHandlers( name, target, handlers ) {
+            handlers = AFrame.array( handlers ) ? handlers : [ handlers ];
+            
+            handlers.forEach( function( handler ) {
+                handler = AFrame.func( handler ) ? handler : me[ handler ];
+                me.bindDOMEvent( target, name, handler );
+            } );
+        }
+    }
     
     return Display;
 } )();

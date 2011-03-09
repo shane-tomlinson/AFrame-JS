@@ -198,7 +198,7 @@ AFrame.AObject = (function(){
     }, AFrame.ObservablesMixin );
     
     function importConfig() {
-        AFrame.walkClassChain( this, function( currClass, obj ) {
+        AFrame.Class.walkChain( this, function( currClass, obj ) {
             var classImports = currClass.prototype.importconfig || [];
             classImports.forEach( function( importName ) {
                 if( AFrame.defined( obj.config[ importName ] ) ) {
