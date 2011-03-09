@@ -58,9 +58,9 @@ testsToRun.push( {
     
     testWalkChain: function() {
         var instance = AFrame.create( SubClass ), depth = 0;
-        AFrame.Class.walkChain( instance, function( constructor, obj ) {
+        AFrame.Class.walkChain( function( currClass ) {
             depth++;
-        } );
+        }, instance );
         
         Assert.areEqual( 2, depth, 'SubClass has a class depth of 2' );
     }

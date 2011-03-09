@@ -156,6 +156,27 @@ testsToRun.push( {
             Assert.areEqual( 'greenish', instance.green, 'green imported correctly' );
             Assert.areEqual( 'indigoish', instance.indigo, 'indigo imported correctly' );
             Assert.isUndefined( instance.yellow, 'yellow not imported' );
+        },
+        
+        testDeclareBindings: function() {
+            var event1HandlerCalled = false;
+            var Class = AFrame.Class( AFrame.AObject, {
+                importconfig: [ 'insertedObj' ],
+                events: {
+                    'event1 insertedObj': function() {
+                        event1HandlerCalled = true;
+                    }
+                }
+            } );
+            
+            
+            var inserted = AFrame.create( AFrame.AObject );
+            var instance = AFrame.create( Class, {
+                insertedObj: inserted
+            } );
+            
+            inserted.triggerEvent( 'event1' );
+            Assert.isTrue( event1HandlerCalled, 'the handler on inserted\'s event is called' )
         }
 } );
 	

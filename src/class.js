@@ -66,19 +66,19 @@ AFrame.Class = ( function() {
     *    // Walk the object's class chain
     *    // SubClass is an AFrame.Class based class
     *    var obj = AFrame.create( SubClass );
-    *    AFrame.Class.walkChain( obj, function( currClass, obj ) {
-    *        // do something
-    *    } );
+    *    AFrame.Class.walkChain( function( currClass ) {
+    *        // do something.  Context of function is the obj
+    *    }, obj );
     *
     * @method AFrame.Class.walkChain
-    * @param {AFrame.Class} obj - object to walk.
     * @param {function} callback - callback to call.  Called with two parameters, currClass and
     *   obj.
+    * @param {AFrame.Class} obj - object to walk.
     */
-    Class.walkChain = function( obj, callback ) {
+    Class.walkChain = function( callback, obj ) {
         var currClass = obj.constructor;
         do {
-            callback( currClass, obj );
+            callback.call( obj, currClass );
             currClass = currClass.superclass;
         } while( currClass );
     };

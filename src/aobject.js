@@ -82,7 +82,7 @@ AFrame.AObject = (function(){
          * @method bindEvents
          */
         bindEvents: function() {
-            
+            bindEvents.call( this );
         },
         
         /**
@@ -198,15 +198,49 @@ AFrame.AObject = (function(){
     }, AFrame.ObservablesMixin );
     
     function importConfig() {
-        AFrame.Class.walkChain( this, function( currClass, obj ) {
+        var me = this;
+        AFrame.Class.walkChain( function( currClass ) {
             var classImports = currClass.prototype.importconfig || [];
             classImports.forEach( function( importName ) {
-                if( AFrame.defined( obj.config[ importName ] ) ) {
-                    obj[ importName ] = obj.config[ importName ];
+                if( AFrame.defined( me.config[ importName ] ) ) {
+                    me[ importName ] = me.config[ importName ];
                 }
             } );
-        } );
+        }, me );
     }
+    
+    function bindEvents() {
+        var me = this;
+        
+        AFrame.Class.walkChain( function( currClass ) {
+            var events = currClass.prototype.events || {};
+            
+            for( var eventName in events ) {
+                var nameTarget = getNameAndTarget.call( me, eventName );
+                bindHandlers.call( me, nameTarget.name, nameTarget.target, events[ eventName ] );
+            }
+        }, me );
+        
+        function getNameAndTarget( eventName ) {
+            var parts = eventName.split( ' ' );
+            var target = me[ parts[ 1 ] ] || me;
+            
+            return {
+                name: parts[ 0 ],
+                target: target
+            };
+        }
+        
+        function bindHandlers( name, target, handlers ) {
+            handlers = AFrame.array( handlers ) ? handlers : [ handlers ];
+            
+            handlers.forEach( function( handler ) {
+                handler = AFrame.func( handler ) ? handler : me[ handler ];
+                target.bindEvent( name, handler, me );
+            } );
+        }
+    }
+    
 
     return AObject;
 }() );

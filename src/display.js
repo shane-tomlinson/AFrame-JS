@@ -243,14 +243,14 @@ AFrame.Display = (function() {
     function bindDOMEvents() {
         var me = this, target = me.getTarget();
         
-        AFrame.Class.walkChain( me, function( currClass ) {
+        AFrame.Class.walkChain( function( currClass ) {
             var domEvents = currClass.prototype.domevents || {};
             
             for( var eventName in domEvents ) {
                 var nameTarget = getNameAndTarget.call( me, eventName );
                 bindHandlers.call( me, nameTarget.name, nameTarget.target, domEvents[ eventName ] );
             }
-        } );
+        }, me );
         
         function getNameAndTarget( eventName ) {
             var parts = eventName.split( ' ' );
