@@ -76,7 +76,7 @@ AFrame.FieldPluginValidation = (function() {
         setPlugged: function( plugged ) {
             this.calculateValidity = true;
             
-            plugged.bindEvent( 'onChange', this.onChange, this );
+            plugged.bindEvent( 'onChange', onChange, this );
             
             plugged.getValidityState = this.getValidityState.bind( this );
             plugged.validate = this.validate.bind( this );
@@ -85,10 +85,6 @@ AFrame.FieldPluginValidation = (function() {
             plugged.checkValidity = this.checkValidity.bind( this );
             
             FieldPluginValidation.sc.setPlugged.call( this, plugged );
-        },
-        
-        onChange: function() {
-            this.calculateValidity = true;
         },
         
         /**
@@ -251,6 +247,11 @@ AFrame.FieldPluginValidation = (function() {
             return criteria;
         }
     } );
+    
+    function onChange() {
+        this.calculateValidity = true;
+    }
+    
 
     return FieldPluginValidation;
 } )();

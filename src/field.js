@@ -32,29 +32,19 @@ AFrame.Field = ( function() {
     "use strict";
     
     var Field = AFrame.Class( AFrame.Display, {
+        domevents: {
+            keyup: 'onFieldChange',
+            invalid: 'onFieldInvalid'
+        },
+       
         init: function( config ) {
-            this.createValidator();
+            createValidator.call( this );
 
             Field.sc.init.apply( this, arguments );
 
             this.save();
         },
         
-        createValidator: function() {
-            if( !this.validate ) {
-                var fieldValidator = AFrame.create( AFrame.FieldPluginValidation );
-                fieldValidator.setPlugged( this );
-            }
-        },
-
-        bindEvents: function() {
-            var target = this.getTarget();
-            this.bindDOMEvent( target, 'keyup', this.onFieldChange );
-            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid );
-            
-            Field.sc.bindEvents.apply( this, arguments );
-        },
-
         /**
          * Set the value of the field and display the value.  Sets the rest value to the value entered.
          * 
@@ -169,6 +159,15 @@ AFrame.Field = ( function() {
         }
     } );
     Field.cancelInvalid = true;
+    
+    function createValidator() {
+        if( !this.validate ) {
+            var fieldValidator = AFrame.create( AFrame.FieldPluginValidation );
+            fieldValidator.setPlugged( this );
+        }
+    }
+
+    
     
     return Field;
 }() );

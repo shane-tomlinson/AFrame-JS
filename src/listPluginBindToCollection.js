@@ -68,20 +68,22 @@
  * @extends AFrame.Plugin
  * @constructor
  */
+/**
+ * The collection to bind to
+ * @config collection
+ * @type {Collection}
+ */
 AFrame.ListPluginBindToCollection = ( function() { 
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
-        init: function( config ) {
-            /**
-             * The collection to bind to
-             * @config collection
-             * @type {Collection}
-             */
-            this.collection = config.collection;
-            this.collection.bindEvent( 'onInsert', this.onInsert, this );
-            this.collection.bindEvent( 'onRemove', this.onRemove, this );
+        importconfig: [ 'collection' ],
+        events: {
+            'onInsert collection': 'onInsert',
+            'onRemove collection': 'onRemove'
+        },
 
+        init: function( config ) {
             this.cids = [];
             
             Plugin.sc.init.apply( this, arguments );

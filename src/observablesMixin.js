@@ -41,7 +41,7 @@ AFrame.ObservablesMixin = {
         var isDataObj = !AFrame.string( eventData );
         var eventName = isDataObj ? eventData.type : eventData;
         
-		var observable = this.events && this.events[ eventName ];
+		var observable = this.handlers && this.handlers[ eventName ];
 		if( observable ) {
             eventData = isDataObj ? eventData : {
                 type: eventData
@@ -111,7 +111,7 @@ AFrame.ObservablesMixin = {
 	 */
 	isEventTriggered: function( eventName ) {
 		var retval = false;
-		var observable = this.events && this.events[ eventName ];
+		var observable = this.handlers && this.handlers[ eventName ];
 		
 		if( observable ) {
 			retval = observable.isTriggered();
@@ -142,10 +142,10 @@ AFrame.ObservablesMixin = {
 	 * @return {id} id that can be used to unbind the callback.
 	 */
 	bindEvent: function( eventName, callback, context ) {
-		this.events = this.events || {};
+		this.handlers = this.handlers || {};
 		
-		var observable = this.events[ eventName ] || AFrame.Observable.getInstance();
-		this.events[ eventName ] = observable;
+		var observable = this.handlers[ eventName ] || AFrame.Observable.getInstance();
+		this.handlers[ eventName ] = observable;
 		
 		var eid = observable.bind( callback.bind( context || this ) );
 
@@ -186,9 +186,9 @@ AFrame.ObservablesMixin = {
 	 * @method unbindAll
 	 */
 	unbindAll: function() {
-		for( var key in this.events ) {
-			this.events[ key ].unbindAll();
-			AFrame.remove( this.events, key );
+		for( var key in this.handlers ) {
+			this.handlers[ key ].unbindAll();
+			AFrame.remove( this.handlers, key );
 		}
 
 		for( var id in this.bindings ) {
