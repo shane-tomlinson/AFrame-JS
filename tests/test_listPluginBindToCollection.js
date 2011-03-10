@@ -3,31 +3,23 @@ testsToRun.push( {
 		name: "TestCase AFrame.ListPluginBindToCollection with CollectionArray",
 		
 		setUp: function() {
-			this.store = AFrame.construct( {
-				type: AFrame.CollectionArray
-			} );
+			this.store = AFrame.create( AFrame.CollectionArray );
 			
-			this.list = AFrame.construct( {
-				type: AFrame.List,
-				config: {
-					target: '.list',
-					listElementFactory: function( data, index ) {
-						this.insertedIndex = index;
-						this.insertedData = data;
-                        
-						var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
-                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
-						return rowElement;
-					}.bind( this )
-					
-				},
+			this.list = AFrame.create( AFrame.List, {
+                target: '.list',
+                listElementFactory: function( data, index ) {
+                    this.insertedIndex = index;
+                    this.insertedData = data;
+                    
+                    var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
+                    AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
+                    return rowElement;
+                }.bind( this ),
 				plugins: [
-					{
-						type: AFrame.ListPluginBindToCollection,
-						config: {
-							collection: this.store
-						}
-					}
+					[ AFrame.ListPluginBindToCollection, {
+                        collection: this.store
+                      } 
+                    ]
 				]
 			} );		
 		},
@@ -81,31 +73,21 @@ testsToRun.push( {
 		name: "TestCase AFrame.ListPluginBindToCollection with CollectionHash",
 		
 		setUp: function() {
-			this.store = AFrame.construct( {
-				type: AFrame.CollectionHash
-			} );
+			this.store = AFrame.create( AFrame.CollectionHash );
 			
-			this.list = AFrame.construct( {
-				type: AFrame.List,
-				config: {
-					target: '.list',
-					listElementFactory: function( data, index ) {
-						this.insertedIndex = index;
-						this.insertedData = data;
-						var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
-                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
-						return rowElement;
-					}.bind( this )
-					
-				},
-				plugins: [
-				{
-					type: AFrame.ListPluginBindToCollection,
-					config: {
+			this.list = AFrame.create( AFrame.List, {
+                target: '.list',
+                listElementFactory: function( data, index ) {
+                    this.insertedIndex = index;
+                    this.insertedData = data;
+                    var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
+                    AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
+                    return rowElement;
+                }.bind( this ),
+				plugins: [ [ AFrame.ListPluginBindToCollection, {
 						collection: this.store
 					}
-				}
-				]
+				] ]
 			} );
 		},
 		

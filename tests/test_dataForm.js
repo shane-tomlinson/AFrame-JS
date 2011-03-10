@@ -8,23 +8,17 @@ testsToRun.push( {
 				field2: 'Field2'
 			} );
 			
-			this.form = AFrame.construct( {
-				type: AFrame.DataForm,
-				config: {
-					target: '#AFrame_Form',
-					formFieldFactory: function( formElement ) {
-						this.factoryFormElement = formElement;
-						this.field = AFrame.construct( {
-							type: AFrame.Field,
-							config: {
-								target: formElement
-							}
-						} );
-						
-						return this.field;
-					}.bind( this ),
-					dataSource: this.dataSource
-				}
+			this.form = AFrame.create( AFrame.DataForm, {
+                target: '#AFrame_Form',
+                formFieldFactory: function( formElement ) {
+                    this.factoryFormElement = formElement;
+                    this.field = AFrame.create( AFrame.Field, {
+                        target: formElement
+                    } );
+                    
+                    return this.field;
+                }.bind( this ),
+                dataSource: this.dataSource
 			} );
 		},
 		
@@ -60,37 +54,28 @@ testsToRun.push( {
 		name: "TestCase AFrame.DataForm with Model",
 		
 		setUp: function() {
-			this.dataSource = AFrame.construct( {
-				type: AFrame.Model,
-				config: {
-					schema: {
-						name: { type: 'text' },
-						field2: { type: 'text' } 
-					},
-					data: {
-			   		    name: 'AFrame',
-						field2: 'Field2'
-				 	}
-				}
+			this.dataSource = AFrame.create( AFrame.Model, {
+                schema: {
+                    name: { type: 'text' },
+                    field2: { type: 'text' } 
+                },
+                data: {
+                    name: 'AFrame',
+                    field2: 'Field2'
+                }
 			} );
 			
-			this.form = AFrame.construct( {
-				type: AFrame.DataForm,
-				config: {
-					target: '#AFrame_Form',
-					formFieldFactory: function( formElement ) {
-						this.factoryFormElement = formElement;
-						this.field = AFrame.construct( {
-							type: AFrame.Field,
-							config: {
-								target: formElement
-							}
-						} );
-						
-						return this.field;
-					}.bind( this ),
-					dataSource: this.dataSource
-				}
+			this.form = AFrame.create( AFrame.DataForm, {
+                target: '#AFrame_Form',
+                formFieldFactory: function( formElement ) {
+                    this.factoryFormElement = formElement;
+                    this.field = AFrame.create( AFrame.Field, {
+                        target: formElement
+                    } );
+                    
+                    return this.field;
+                }.bind( this ),
+                dataSource: this.dataSource
 			} );
 		},
 		

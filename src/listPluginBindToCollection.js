@@ -87,12 +87,8 @@ AFrame.ListPluginBindToCollection = ( function() {
             this.cids = [];
             
             Plugin.sc.init.apply( this, arguments );
-        },
-        
-        setPlugged: function( plugged ) {
-            plugged.getIndex = this.getIndex.bind( this );
             
-            Plugin.sc.setPlugged.apply( this, arguments );
+            this.getPlugged().getIndex = this.getIndex.bind( this );
         },
         
         onInsert: function( event ) {

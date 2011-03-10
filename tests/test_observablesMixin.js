@@ -67,9 +67,7 @@ testsToRun.push( {
 		},
 		
 		testProxyEvents: function() {
-			this.proxy = AFrame.construct( {
-				type: AFrame.AObject
-			} );
+			this.proxy = AFrame.create( AFrame.AObject );
 			
 			this.proxy.proxyEvents( this.eventSource, [ 'proxiedEvent' ] );
 			
@@ -89,9 +87,7 @@ testsToRun.push( {
 
 		testBindToUnbindToAll: function() {
 			
-			var bindToObject = AFrame.construct( {
-				type: AFrame.AObject
-			} );
+			var bindToObject = AFrame.create( AFrame.AObject );
 			
 			var listenerCalls = 0;
 			this.eventSource.listener = function() {
@@ -110,9 +106,7 @@ testsToRun.push( {
 		
 		testBindToUnbindTo: function() {
 			
-			var bindToObject = AFrame.construct( {
-				type: AFrame.AObject
-			} );
+			var bindToObject = AFrame.create( AFrame.AObject );
 			
 			var listenerCalls = 0;
 			this.eventSource.listener = function() {

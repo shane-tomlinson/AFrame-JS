@@ -12,21 +12,12 @@ AFrame.Plugin = ( function() {
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.AObject, {
-        /**
-        * Set the reference to the plugged object.  Subclasses can override this function to bind event
-        *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
-        *	do setup as soon as the plugged object is ready.  If a subclass overrides this function,
-        *	the base setPlugged must still be called.
-        * @method setPlugged
-        * @param {AFrame.AObject} plugged - the plugged object
-        */
-        setPlugged: function( plugged ) {
-            this.plugged = plugged;
-            
-            plugged.bindEvent( 'onTeardown', this.teardown, this );
-            plugged.bindEvent( 'onInit', this.onPluggedInit, this );
+        importconfig: [ 'plugged' ],
+        events: {
+            'onTeardown plugged': 'teardown',
+            'onInit plugged': 'onPluggedInit'
         },
-        
+
         /**
         * Get a reference to the plugged object.
         * @method getPlugged

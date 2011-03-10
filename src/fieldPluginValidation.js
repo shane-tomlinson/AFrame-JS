@@ -73,18 +73,21 @@ AFrame.FieldPluginValidation = (function() {
     "use strict";
     
     var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
-        setPlugged: function( plugged ) {
+        events: {
+            'onChange plugged': onChange
+        },
+        
+        init: function( config ) {
             this.calculateValidity = true;
+
+            FieldPluginValidation.sc.init.call( this, config );
             
-            plugged.bindEvent( 'onChange', onChange, this );
-            
+            var plugged = this.getPlugged();
             plugged.getValidityState = this.getValidityState.bind( this );
             plugged.validate = this.validate.bind( this );
             plugged.setError = this.setError.bind( this );
             plugged.setCustomValidity = this.setCustomValidity.bind( this );
             plugged.checkValidity = this.checkValidity.bind( this );
-            
-            FieldPluginValidation.sc.setPlugged.call( this, plugged );
         },
         
         /**

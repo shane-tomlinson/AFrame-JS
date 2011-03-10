@@ -3,11 +3,8 @@ testsToRun.push( {
 		name: "TestCase AFrame.FieldPluginValidation",
 		
 		setUp: function() {
-			this.field = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field][name=name]',
-				}
+			this.field = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]',
 			} );
             
             
@@ -49,14 +46,9 @@ testsToRun.push( {
                 }
             } );
             
-            var field = AFrame.construct( {
-                type: AFrame.Field,
-                config: {
-                    target: 'textarea[data-field][name=name]'
-                },
-                plugins: [ {
-                    type: ValidatorPlugin
-                } ]
+            var field = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]',
+                plugins: [ ValidatorPlugin ]
             } );
             
             field.validate();
@@ -68,11 +60,8 @@ testsToRun.push( {
 			var target = jQuery( 'textarea[data-field][name=name]' );
 			target.val( '' );
             
-			var field = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field][name=name]'
-				}
+			var field = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]'
 			} );
             
             var invalidTriggered = false;
@@ -92,11 +81,8 @@ testsToRun.push( {
 			var target = jQuery( 'textarea[data-field][name=name]' );
 			target.val( '' );
             
-			var field = AFrame.construct( {
-				type: AFrame.Field,
-				config: {
-					target: 'textarea[data-field][name=name]'
-				}
+			var field = AFrame.create( AFrame.Field, {
+                target: 'textarea[data-field][name=name]'
 			} );
             
             field.setError( 'fakeError' );
@@ -122,10 +108,9 @@ testsToRun.push( {
                 bindEvent: function() {}
             };
 
-            var validation = AFrame.construct( {
-                type: AFrame.FieldPluginValidation
+            var validation = AFrame.create( AFrame.FieldPluginValidation, {
+                plugged: field
             } );
-            validation.setPlugged( field );
             
             var criteria = validation.getCriteria();
             Assert.areSame( 'text', criteria.type, 'input with no type sets type to text' );

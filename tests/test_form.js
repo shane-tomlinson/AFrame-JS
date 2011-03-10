@@ -31,22 +31,19 @@ testsToRun.push( {
 				this.teardownCount++;
 			}.bind( this );
 			
-			this.form = AFrame.construct( {
-				type: AFrame.Form,
-				config: {
-					target: '#AFrame_Form',
-					formFieldFactory: function( formElement ) {
-						this.factoryFormElement = formElement;
-						
-						return {
-							checkValidity: validate,
-							save: save,
-							reset: reset,
-							clear: clear,
-							teardown: teardown
-						};
-					}.bind( this )
-				}
+			this.form = AFrame.create( AFrame.Form, {
+                target: '#AFrame_Form',
+                formFieldFactory: function( formElement ) {
+                    this.factoryFormElement = formElement;
+                    
+                    return {
+                        checkValidity: validate,
+                        save: save,
+                        reset: reset,
+                        clear: clear,
+                        teardown: teardown
+                    };
+                }.bind( this )
 			} );
 		},
 		
@@ -131,11 +128,8 @@ testsToRun.push( {
 		},
         
         testDefaultFieldFactory: function() {
-			var form = AFrame.construct( {
-				type: AFrame.Form,
-				config: {
-					target: '#AFrame_Form'
-				}
+			var form = AFrame.create( AFrame.Form, {
+                target: '#AFrame_Form'
 			} );
 			var field = form.bindFormElement( '#formElement' );
             
@@ -148,11 +142,8 @@ testsToRun.push( {
                 overriddenFactoryCalled = true;
             } );
             
-			var form = AFrame.construct( {
-				type: AFrame.Form,
-				config: {
-					target: '#AFrame_Form'
-				}
+			var form = AFrame.create( AFrame.Form, {
+                target: '#AFrame_Form'
 			} );
 			form.bindFormElement( '#formElement' );
             

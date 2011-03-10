@@ -283,11 +283,8 @@
                     singleField: { type: 'integer' }
                 }
                 
-                var schema = AFrame.construct( {
-                    type: AFrame.Schema,
-                    config: {
-                        schema: schemaConfig
-                    }
+                var schema = AFrame.create( AFrame.Schema, {
+                    schema: schemaConfig
                 } );
                 
                 var data = schema.getAppData( {} );
@@ -333,11 +330,8 @@
                         maxlength: 100
                     } }
                 };
-                var schema = AFrame.construct( {
-                    type: AFrame.Schema,
-                    config: {
-                        schema: schemaConfig
-                    }
+                var schema = AFrame.create( AFrame.Schema, {
+                    schema: schemaConfig
                 } );
                 
                 var validityState = schema.validate( {
@@ -455,9 +449,7 @@
             testSchemaNoConfigError: function() {
                 var errorThrown;
                 try {
-                    var schema = AFrame.construct( {
-                        type: AFrame.Schema
-                    } );
+                    var schema = AFrame.create( AFrame.Schema );
                 }
                 catch( e ) {
                     errorThrown = e;

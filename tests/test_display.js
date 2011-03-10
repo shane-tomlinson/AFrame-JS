@@ -3,11 +3,8 @@ testsToRun.push( {
 		name: "TestCase AFrame.Display",
 		
 		setUp: function() {
-			this.display = AFrame.construct( {
-				type: AFrame.Display,
-				config: {
-					target: '.target'
-				}
+			this.display = AFrame.create( AFrame.Display, {
+                target: '.target'
 			} );
 		},
 		
@@ -20,9 +17,7 @@ testsToRun.push( {
 		testInitNoTarget: function() {
 			var except;
 			try {
-				var display = AFrame.construct( {
-					type: AFrame.Display
-				} );
+				var display = AFrame.create( AFrame.Display );
 			} catch ( e ) {
 				except = e;
 			}

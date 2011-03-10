@@ -9,17 +9,12 @@
             name: "TestCase AFrame.CollectionPluginModel",
             
             setUp: function() {
-                this.collection = AFrame.construct( {
-                    type: AFrame.CollectionArray,
-                    plugins: [ {
-                            type: AFrame.CollectionPluginPersistence
-                        },
-                        {
-                        type: AFrame.CollectionPluginModel,
-                        config: {
+                this.collection = AFrame.create( AFrame.CollectionArray, {
+                    plugins: [ AFrame.CollectionPluginPersistence, 
+                        [ AFrame.CollectionPluginModel, {
                             schema: schemaConfig
-                        }
-                    } ]
+                        } ]
+                    ]
                 } );
             },
 
@@ -43,13 +38,10 @@
             },
             
             testInsertModel: function() {
-                var model =  AFrame.construct( {
-                    type: AFrame.Model,
-                    config: {
-                        schema: schemaConfig,
-                        data: {
-                            name: 'Shane Tomlinson'
-                        }
+                var model =  AFrame.create( AFrame.Model, {
+                    schema: schemaConfig,
+                    data: {
+                        name: 'Shane Tomlinson'
                     }
                 } );
                 
@@ -80,13 +72,10 @@
                     beforeAddItem = event.item;
                 } );
                 
-                var model =  AFrame.construct( {
-                    type: AFrame.Model,
-                    config: {
-                        schema: schemaConfig,
-                        data: {
-                            name: 'Shane Tomlinson'
-                        }
+                var model =  AFrame.create( AFrame.Model, {
+                    schema: schemaConfig,
+                    data: {
+                        name: 'Shane Tomlinson'
                     }
                 } );
                 
@@ -97,15 +86,12 @@
             },
             
             testAddNotAddedIfNoPersistencePlugin: function() {
-                var collection = AFrame.construct( {
-                    type: AFrame.CollectionArray,
+                var collection = AFrame.create( AFrame.CollectionArray, {
                     plugins: [ 
-                        {
-                        type: AFrame.CollectionPluginModel,
-                        config: {
+                        [ AFrame.CollectionPluginModel, {
                             schema: schemaConfig
-                        }
-                    } ]
+                        } ]
+                    ]
                 } );
                 
                 Assert.isUndefined( collection.add, 'add not added, no persistence plugin' );
@@ -130,15 +116,11 @@
             name: "TestCase AFrame.CollectionPluginModel with overridden modelFactory",
             
             setUp: function() {
-                this.collection = AFrame.construct( {
-                    type: AFrame.CollectionArray,
-                    plugins: [ {
-                        type: AFrame.CollectionPluginModel,
-                        config: {
-                            schema: schemaConfig,
-                            modelFactory: modelFactory
-                        }
-                    } ]
+                this.collection = AFrame.create( AFrame.CollectionArray, {
+                    plugins: [ [ AFrame.CollectionPluginModel, {
+                        schema: schemaConfig,
+                        modelFactory: modelFactory
+                    } ] ]
                 } );
             },
 

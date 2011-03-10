@@ -162,8 +162,9 @@ AFrame.Field = ( function() {
     
     function createValidator() {
         if( !this.validate ) {
-            var fieldValidator = AFrame.create( AFrame.FieldPluginValidation );
-            fieldValidator.setPlugged( this );
+            var fieldValidator = AFrame.create( AFrame.FieldPluginValidation, {
+                plugged: this
+            } );
         }
     }
 

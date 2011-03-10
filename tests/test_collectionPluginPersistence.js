@@ -55,17 +55,14 @@ testsToRun.push( {
                 }
             };
             
-			this.mixin = AFrame.construct( {
-				type: AFrame.CollectionPluginPersistence,
-				config: {
-					deleteCallback: genericCallback.bind( 'delete' ),
-					saveCallback: genericCallback.bind( 'save' ),
-					loadCallback: genericCallback.bind( 'load' ),
-                    addCallback: genericCallback.bind( 'add' )
-				}
+			this.mixin = AFrame.create( AFrame.CollectionPluginPersistence, {
+                deleteCallback: genericCallback.bind( 'delete' ),
+                saveCallback: genericCallback.bind( 'save' ),
+                loadCallback: genericCallback.bind( 'load' ),
+                addCallback: genericCallback.bind( 'add' ),
+                plugged: this.mockCollection
 			} );
 
-			this.mixin.setPlugged( this.mockCollection );
 			this.mockCollection.triggerEvent( 'onInit' );
             
             /*

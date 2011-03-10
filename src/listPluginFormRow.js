@@ -64,6 +64,11 @@ AFrame.ListPluginFormRow = ( function() {
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
+        events: {
+            'onInsert plugged': 'onInsertRow',
+            'onRemove plugged': 'onRemoveRow'
+        },
+
         init: function( config ) {
             /**
              * The factory function used to create forms.  formFactory will be called once for each
@@ -89,20 +94,14 @@ AFrame.ListPluginFormRow = ( function() {
             
             this.forms = [];
             
-            Plugin.sc.init.apply( this, arguments );
-        },
-        
-        setPlugged: function( plugged ) {
-            plugged.bindEvent( 'onInsert', this.onInsertRow, this );
-            plugged.bindEvent( 'onRemove', this.onRemoveRow, this );
+            Plugin.sc.init.call( this, config );
             
+            var plugged = this.getPlugged();
             plugged.validate = this.validate.bind( this );
             plugged.save = this.save.bind( this );
             plugged.reset = this.reset.bind( this );
             plugged.clear = this.clear.bind( this );
             plugged.getForm = this.getForm.bind( this );
-            
-            Plugin.sc.setPlugged.apply( this, arguments );		
         },
         
         teardown: function() {

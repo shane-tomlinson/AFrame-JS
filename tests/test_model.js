@@ -11,11 +11,8 @@
 		name: "TestCase AFrame.Model",
 
 		setUp: function() {
-		    this.model = AFrame.construct( {
-                type: AFrame.Model,
-                config: {
-                    schema: schemaConfig
-                }
+		    this.model = AFrame.create( AFrame.Model, {
+                schema: schemaConfig
             } );
 		},
 
@@ -94,12 +91,9 @@
                 isodatetime: '2011-01-16T11:47:04Z'
             };
                     
-		    var model = AFrame.construct( {
-                type: AFrame.Model,
-                config: {
-                    schema: schemaConfig,
-                    data: initialData
-                }
+		    var model = AFrame.create( AFrame.Model, {
+                schema: schemaConfig,
+                data: initialData
             } );
             
             Assert.areSame( 'string value', model.get( 'stringField' ), 'stringField deserialize OK' );

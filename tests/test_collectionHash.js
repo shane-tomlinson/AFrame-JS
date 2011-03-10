@@ -3,9 +3,7 @@ testsToRun.push( {
 		name: "TestCase AFrame.CollectionHash",
 
 		setUp: function() {
-		    this.hash = AFrame.construct( {
-                type: AFrame.CollectionHash
-		    } );
+		    this.hash = AFrame.create( AFrame.CollectionHash );
 		},
 		
 		tearDown : function () {

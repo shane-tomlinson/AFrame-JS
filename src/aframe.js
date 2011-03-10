@@ -54,66 +54,9 @@ var AFrame = ( function() {
         * @param {object} mixin (optional) - object with optional functions to extend bc with
         */
         mixin: function( toExtend, mixin ) {
-            toExtend = jQuery.extend( toExtend, mixin );
+            return jQuery.extend( toExtend, mixin );
         },
 
-
-        /**
-        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
-        * When using the construct function,  any Plugins are automatically created 
-        * and bound, and init is called on  the created object.  It is recommended to 
-        * use [create](#method_AFrame.create) instead as it has more concise syntax.
-        *
-        *    var newObj = AFrame.construct( {
-        *       type: AFrame.SomeObject,
-        *       config: {
-        *           param1: val1
-        *       },
-        *       plugins: [ {
-        *         type: AFrame.SomePlugin
-        *       } ]
-        *    } );
-        *
-        * @method construct
-        * @param {object} obj_config - configuration.
-        * @param {function} obj_config.type - Function to use as the constructor
-        * @param {object} obj_config.config - configuration to pass to object's init function
-        * @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
-        * @return {object} - created object.
-        */
-        
-        /**
-        * Deprecated in favor of [AFrame.create](#method_AFrame.create)
-        * @deprecated
-        */
-        construct: function( obj_config ) {
-            var constuct = obj_config.type;
-            var retval;
-
-            if( constuct ) {
-                var config = obj_config.config || {};
-                var plugins = obj_config.plugins || [];
-                try {
-                    retval = new constuct;
-                } catch ( e ) {
-                    console.log( e.toString() );
-                }
-
-                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-                    var pluginObj = AFrame.construct( plugin );
-
-                    pluginObj.setPlugged( retval );
-                }
-
-                retval.init( config );
-            }
-            else {
-                throw 'Class does not exist.';
-            }
-
-            return retval;
-        },
-        
         /**
         * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
         * When using the create function, any Plugins are automatically created 
@@ -165,8 +108,8 @@ var AFrame = ( function() {
                 // recursively create and bind any plugins
                 for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
                     plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
-                    var pluginObj = AFrame.create( plugin[ 0 ], plugin[ 1 ] );
-                    pluginObj.setPlugged( retval );
+                    var pluginConfig = AFrame.mixin( { plugged: retval }, plugin[ 1 ] || {} );
+                    AFrame.create( plugin[ 0 ], pluginConfig );
                 }
                 
                 retval.init( config );

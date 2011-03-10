@@ -4,10 +4,10 @@ testsToRun.push( {
 		
 		setUp: function() {
 			
-			this.pluggedObject = AFrame.create( AFrame.AObject, {
-				plugins: [ AFrame.Plugin ]
+			this.pluggedObject = AFrame.create( AFrame.AObject );
+			this.plugin = AFrame.create( AFrame.Plugin, {
+                plugged: this.pluggedObject
 			} );
-			this.plugin = AFrame.create( AFrame.Plugin );
 		},
 		
 		tearDown : function () {
@@ -22,7 +22,6 @@ testsToRun.push( {
 		},
 		
 		testPlugged: function() {
-			this.plugin.setPlugged( this.pluggedObject );
 			var plugged = this.plugin.getPlugged();
 
 			Assert.isObject( plugged, 'plugged is an object' );
@@ -30,8 +29,6 @@ testsToRun.push( {
 		},
 		
 		testTeardownOnPluggedTeardown: function() {
-			this.plugin.setPlugged( this.pluggedObject );
-
 			var pluginTeardown = false;
 			this.plugin.bindEvent( 'onTeardown', function() {
 				pluginTeardown = true;

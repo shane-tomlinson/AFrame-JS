@@ -3,9 +3,7 @@ testsToRun.push( {
 		name: "TestCase AFrame.CollectionArray",
 
 		setUp: function() {
-		    this.array = AFrame.construct( {
-				type: AFrame.CollectionArray
-		    } );
+		    this.array = AFrame.create( AFrame.CollectionArray );
 			
 			this.item = {
 				fieldName: 'fieldValue'

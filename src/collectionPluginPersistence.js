@@ -135,17 +135,14 @@ AFrame.CollectionPluginPersistence = ( function() {
             this.deleteCallback = config.deleteCallback || noPersistenceOp;
             
             Plugin.sc.init.apply( this, arguments );
-        },
-
-
-        setPlugged: function( plugged ) {
+            
+            var plugged = this.getPlugged();
             plugged.add = this.add.bind( this );
             plugged.load = this.load.bind( this );
             plugged.del = this.del.bind( this );
             plugged.save = this.save.bind( this );
-            
-            Plugin.sc.setPlugged.apply( this, arguments );
         },
+
 
         /**
          * Add an item to the collection.  The item will be inserted into the collection once the addCallback

@@ -73,7 +73,7 @@ testsToRun.push( {
 	 
 		setUp : function () {		
 			this.subInstance = new SubClass();
-			AFrame.mixin( this.subInstance, {
+			this.mixed = AFrame.mixin( this.subInstance, {
 			    mixedFunction: function() {
 				return true;
 			    }
@@ -88,6 +88,7 @@ testsToRun.push( {
 		testMixin: function() {
 		    Assert.isFunction( this.subInstance.mixedFunction, 'mixedFunction added' );
 		    Assert.isTrue( this.subInstance.mixedFunction(), 'mixedFunction can be called' );
+            Assert.areSame( this.subInstance, this.mixed, 'AFrame.mixin returns object mixed into' )
 		}
 } );
 
@@ -110,27 +111,6 @@ testsToRun.push( {
 		}
 } );
 
-
-testsToRun.push( {
-		name: "TestCase AFrame.construct",
-	 
-		testConstructOneLevel: function() {
-		    var instance = AFrame.construct( {
-				type: SubClass
-		    } );
-		    
-		    Assert.isTrue( instance.initCalled, 'init called' );
-		},
-		
-		testTypeWithDot: function() {
-		    var instance = AFrame.construct( {
-				type: A.SubClass
-		    } );
-		    
-		    Assert.isObject( instance, 'object with dot created' );
-		}
-
-} );
 
 testsToRun.push( {
     name: 'TestCase AFrame.create',
@@ -156,9 +136,7 @@ testsToRun.push( {
         PluginMock.prototype = {
             init: function( config ) {
                 initPluginConfig = config;
-            },
-            setPlugged: function( plugged ) {
-                setPluggedPlugged = plugged;
+                setPluggedPlugged = config.plugged;
             }
         }
         
@@ -169,7 +147,6 @@ testsToRun.push( {
         
         var instance = AFrame.create( AFrame.AObject, config );
         
-        Assert.areSame( pluginConfig, initPluginConfig, 'plugin created' );
         Assert.areSame( instance, setPluggedPlugged, 'setPlugged called with new object' );
     },
     
@@ -181,9 +158,7 @@ testsToRun.push( {
         PluginMock.prototype = {
             init: function( config ) {
                 pluginInitCalled = true;
-            },
-            setPlugged: function( plugged ) {
-                setPluggedPlugged = plugged;
+                setPluggedPlugged = config.plugged;
             }
         }
         

@@ -52,23 +52,21 @@ AFrame.CollectionPluginModel = ( function() {
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
+        importconfig: [ 'schema' ],
+
         init: function( config ) {
-            this[ 'import' ]( config, 'schema' );
-            
             this.modelFactory = config.modelFactory || createModel;
             
             Plugin.sc.init.call( this, config );
-        },
-        
-        setPlugged: function( plugged ) {
+            
+            var plugged = this.getPlugged();
             plugged.insert = augmentInsert.bind( this, plugged.insert );
             
             if( plugged.add ) {
                 plugged.add = augmentInsert.bind( this, plugged.add );
             }
-            
-            Plugin.sc.setPlugged.call( this, plugged );
         }
+        
     } );
     
     function augmentInsert( decorated, item, insertAt ) {

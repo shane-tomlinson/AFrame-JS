@@ -3,23 +3,17 @@ testsToRun.push( {
 		name: "TestCase AFrame.ListPluginFormRow",
 		
 		setUp: function() {
-			this.list = AFrame.construct( {
-				type: AFrame.List,
-				config: {
-					target: '.list',
-					listElementFactory: function( data, index ) {
-						this.insertedIndex = index;
-						this.insertedData = data;
-						var rowElement = AFrame.DOM.createElement( 'li', '<span data-field name="fieldName"></span>' );
-                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
-						return rowElement;
-					}.bind( this )
+			this.list = AFrame.create( AFrame.List, {
+                target: '.list',
+                listElementFactory: function( data, index ) {
+                    this.insertedIndex = index;
+                    this.insertedData = data;
+                    var rowElement = AFrame.DOM.createElement( 'li', '<span data-field name="fieldName"></span>' );
+                    AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
+                    return rowElement;
+                }.bind( this ),
 					
-				},
-				plugins: [
-					{
-						type: AFrame.ListPluginFormRow,
-						config: {
+				plugins: [ [ AFrame.ListPluginFormRow, {
 							formFactory: function( rowElement, data ) {
 								this.form = {
 									reset: function() {
@@ -54,8 +48,7 @@ testsToRun.push( {
 								return this.form;
 							}.bind( this )
 						}
-					}
-				]
+					] ]
 			} );		
 		},
 		
@@ -139,16 +132,9 @@ testsToRun.push( {
 		},
         
         testDefaultFormFactory: function() {
-            var list = AFrame.construct( {
-                type: AFrame.List,
-                config: {
-                    target: '.list'
-                },
-                plugins: [
-                    {
-                        type: AFrame.ListPluginFormRow,
-                    }
-                ]
+            var list = AFrame.create( AFrame.List, {
+                target: '.list',
+                plugins: [ AFrame.ListPluginFormRow ]
             } );
             
             // Just make sure we don't blow our tops.

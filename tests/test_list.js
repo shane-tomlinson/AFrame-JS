@@ -3,19 +3,15 @@ testsToRun.push( {
 		name: "TestCase AFrame.List",
 		
 		setUp: function() {
-			this.list = AFrame.construct( {
-				type: AFrame.List,
-				config: {
-					target: '.list',
-					listElementFactory: function( data, index ) {
-						this.insertedIndex = index;
-						this.insertedData = data;
-						var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
-                        AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
-						return rowElement;
-					}.bind( this )
-					
-				}
+			this.list = AFrame.create( AFrame.List, {
+                target: '.list',
+                listElementFactory: function( data, index ) {
+                    this.insertedIndex = index;
+                    this.insertedData = data;
+                    var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );
+                    AFrame.DOM.setAttr( rowElement, 'id', ( data.cid ? data.cid : 'inserted' + index ) );
+                    return rowElement;
+                }.bind( this )
 			} );
 		},
 		
@@ -144,11 +140,8 @@ testsToRun.push( {
         testInternalListElementFactory: function() {
             jQuery( '.list' ).empty();
             
-			var list = AFrame.construct( {
-				type: AFrame.List,
-				config: {
-					target: '.list'
-				}
+			var list = AFrame.create( AFrame.List, {
+                target: '.list'
 			} );
             
             list.insert( {} );
@@ -160,11 +153,8 @@ testsToRun.push( {
         testForEach: function() {
             jQuery( '.list' ).empty();
             
-			var list = AFrame.construct( {
-				type: AFrame.List,
-				config: {
-					target: '.list'
-				}
+			var list = AFrame.create( AFrame.List, {
+                target: '.list'
 			} );
             
             list.insert( {} );
