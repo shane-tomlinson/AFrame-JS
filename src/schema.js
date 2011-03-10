@@ -445,7 +445,7 @@ AFrame.Schema = (function() {
                 }
 
                 offset -= date.getTimezoneOffset();
-                time = ( Number( date ) + ( offset * 60 * 1000 ) );
+                var time = ( Number( date ) + ( offset * 60 * 1000 ) );
                 date.setTime( Number( time ) );
                 return date;
             }
