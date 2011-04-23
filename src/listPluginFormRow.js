@@ -110,7 +110,7 @@ AFrame.ListPluginFormRow = ( function() {
                 this.forms[ index ] = null;
             }, this );
             
-            Plugin.sc.teardown.apply( this, arguments );		
+            Plugin.sc.teardown.call( this );		
         },
         
         /**

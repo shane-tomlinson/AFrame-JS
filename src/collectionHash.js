@@ -42,7 +42,7 @@ AFrame.CollectionHash = ( function() {
         init: function( config ) {
             this.hash = {};
             
-            CollectionHash.sc.init.apply( this, arguments );
+            CollectionHash.sc.init.call( this, config );
         },
         
         teardown: function() {
@@ -51,7 +51,7 @@ AFrame.CollectionHash = ( function() {
             }
             AFrame.remove( this, 'hash' );
             
-            CollectionHash.sc.teardown.apply( this, arguments );
+            CollectionHash.sc.teardown.call( this );
         },
         
         /**

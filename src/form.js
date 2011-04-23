@@ -76,7 +76,7 @@ AFrame.Form = ( function() {
             this.formElements = [];
             this.formFields = [];
             
-            Form.sc.init.apply( this, arguments );
+            Form.sc.init.call( this, config );
 
             this.bindFormElements();
         },
@@ -94,7 +94,7 @@ AFrame.Form = ( function() {
             }, this );
             this.formFields = null;
             this.formElements = null;
-            Form.sc.teardown.apply( this, arguments );
+            Form.sc.teardown.call( this );
         },
         
         /**

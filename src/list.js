@@ -64,7 +64,7 @@ AFrame.List = ( function() {
                 this.listElementFactory = config.listElementFactory;
             }
             
-            List.sc.init.apply( this, arguments );
+            List.sc.init.call( this, config );
         },
 
         /**

@@ -49,7 +49,7 @@ AFrame.DataContainer = ( function() {
             }
             return dataContainer;
         }
-        DataContainer.sc.constructor.apply( this, arguments );
+        DataContainer.sc.constructor.call( this, data );
 
     };
 
@@ -75,7 +75,7 @@ AFrame.DataContainer = ( function() {
             this.data.__dataContainer = this;
             this.fieldBindings = {};
             
-            DataContainer.sc.init.apply( this, arguments );
+            DataContainer.sc.init.call( this, config );
         },
         
         /**

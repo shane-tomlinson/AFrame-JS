@@ -56,10 +56,10 @@ AFrame.CollectionArray = ( function() {
     "use strict";
     
     var CollectionArray = AFrame.Class( AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
-        init: function() {
+        init: function( config ) {
             this.itemCIDs = [];
 
-            CollectionArray.sc.init.apply( this, arguments );
+            CollectionArray.sc.init.call( this, config );
         },
         
         teardown: function() {
@@ -68,7 +68,7 @@ AFrame.CollectionArray = ( function() {
             }, this );
             AFrame.remove( this, 'itemCIDs' );
             
-            CollectionArray.sc.teardown.apply( this, arguments );
+            CollectionArray.sc.teardown.apply( this );
         },
         
         /**

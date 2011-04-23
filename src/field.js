@@ -40,7 +40,7 @@ AFrame.Field = ( function() {
         init: function( config ) {
             createValidator.call( this );
 
-            Field.sc.init.apply( this, arguments );
+            Field.sc.init.call( this, config );
 
             this.save();
         },

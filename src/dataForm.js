@@ -78,16 +78,16 @@ AFrame.DataForm = ( function() {
 		     */
 		    this.dataContainer = AFrame.DataContainer( config.dataSource );
 		
-		    DataForm.sc.init.apply( this, arguments );
+		    DataForm.sc.init.call( this, config );
 	    },
 	
 	    teardown: function() {
 		    this.dataContainer = null;
-		    DataForm.sc.teardown.apply( this, arguments );
+		    DataForm.sc.teardown.call( this );
 	    },
 	
 	    bindFormElement: function( formElement ) {
-		    var formField = DataForm.sc.bindFormElement.apply( this, arguments );
+		    var formField = DataForm.sc.bindFormElement.call( this, formElement );
 		    var fieldName = fieldGetName( formField );
 		
 		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );

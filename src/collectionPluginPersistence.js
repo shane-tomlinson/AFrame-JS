@@ -134,7 +134,7 @@ AFrame.CollectionPluginPersistence = ( function() {
              */
             this.deleteCallback = config.deleteCallback || noPersistenceOp;
             
-            Plugin.sc.init.apply( this, arguments );
+            Plugin.sc.init.call( this, config );
             
             var plugged = this.getPlugged();
             plugged.add = this.add.bind( this );

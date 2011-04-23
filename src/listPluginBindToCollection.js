@@ -86,7 +86,7 @@ AFrame.ListPluginBindToCollection = ( function() {
         init: function( config ) {
             this.cids = [];
             
-            Plugin.sc.init.apply( this, arguments );
+            Plugin.sc.init.call( this, config );
             
             this.getPlugged().getIndex = this.getIndex.bind( this );
         },
