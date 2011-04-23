@@ -173,66 +173,9 @@ var AFrame = ( function() {
         * @param {object} mixin (optional) - object with optional functions to extend bc with
         */
         mixin: function( toExtend, mixin ) {
-            toExtend = jQuery.extend( toExtend, mixin );
+            return jQuery.extend( toExtend, mixin );
         },
 
-
-        /**
-        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
-        * When using the construct function,  any Plugins are automatically created 
-        * and bound, and init is called on  the created object.  It is recommended to 
-        * use [create](#method_AFrame.create) instead as it has more concise syntax.
-        *
-        *    var newObj = AFrame.construct( {
-        *       type: AFrame.SomeObject,
-        *       config: {
-        *           param1: val1
-        *       },
-        *       plugins: [ {
-        *         type: AFrame.SomePlugin
-        *       } ]
-        *    } );
-        *
-        * @method construct
-        * @param {object} obj_config - configuration.
-        * @param {function} obj_config.type - Function to use as the constructor
-        * @param {object} obj_config.config - configuration to pass to object's init function
-        * @param {array} obj_config.plugins - Array of AFrame.Plugin to attach to object.
-        * @return {object} - created object.
-        */
-        
-        /**
-        * Deprecated in favor of [AFrame.create](#method_AFrame.create)
-        * @deprecated
-        */
-        construct: function( obj_config ) {
-            var constuct = obj_config.type;
-            var retval;
-
-            if( constuct ) {
-                var config = obj_config.config || {};
-                var plugins = obj_config.plugins || [];
-                try {
-                    retval = new constuct;
-                } catch ( e ) {
-                    console.log( e.toString() );
-                }
-
-                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-                    var pluginObj = AFrame.construct( plugin );
-
-                    pluginObj.setPlugged( retval );
-                }
-
-                retval.init( config );
-            }
-            else {
-                throw 'Class does not exist.';
-            }
-
-            return retval;
-        },
-        
         /**
         * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
         * When using the create function, any Plugins are automatically created 
@@ -284,8 +227,8 @@ var AFrame = ( function() {
                 // recursively create and bind any plugins
                 for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
                     plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
-                    var pluginObj = AFrame.create( plugin[ 0 ], plugin[ 1 ] );
-                    pluginObj.setPlugged( retval );
+                    var pluginConfig = AFrame.mixin( { plugged: retval }, plugin[ 1 ] || {} );
+                    AFrame.create( plugin[ 0 ], pluginConfig );
                 }
                 
                 retval.init( config );
@@ -621,7 +564,7 @@ AFrame.ObservablesMixin = {
         var isDataObj = !AFrame.string( eventData );
         var eventName = isDataObj ? eventData.type : eventData;
         
-		var observable = this.events && this.events[ eventName ];
+		var observable = this.handlers && this.handlers[ eventName ];
 		if( observable ) {
             eventData = isDataObj ? eventData : {
                 type: eventData
@@ -691,7 +634,7 @@ AFrame.ObservablesMixin = {
 	 */
 	isEventTriggered: function( eventName ) {
 		var retval = false;
-		var observable = this.events && this.events[ eventName ];
+		var observable = this.handlers && this.handlers[ eventName ];
 		
 		if( observable ) {
 			retval = observable.isTriggered();
@@ -722,10 +665,10 @@ AFrame.ObservablesMixin = {
 	 * @return {id} id that can be used to unbind the callback.
 	 */
 	bindEvent: function( eventName, callback, context ) {
-		this.events = this.events || {};
+		this.handlers = this.handlers || {};
 		
-		var observable = this.events[ eventName ] || AFrame.Observable.getInstance();
-		this.events[ eventName ] = observable;
+		var observable = this.handlers[ eventName ] || AFrame.Observable.getInstance();
+		this.handlers[ eventName ] = observable;
 		
 		var eid = observable.bind( callback.bind( context || this ) );
 
@@ -766,9 +709,9 @@ AFrame.ObservablesMixin = {
 	 * @method unbindAll
 	 */
 	unbindAll: function() {
-		for( var key in this.events ) {
-			this.events[ key ].unbindAll();
-			AFrame.remove( this.events, key );
+		for( var key in this.handlers ) {
+			this.handlers[ key ].unbindAll();
+			AFrame.remove( this.handlers, key );
 		}
 
 		for( var id in this.bindings ) {
@@ -1078,32 +1021,6 @@ AFrame.AObject = (function(){
             AFrame.remove( this.children, cid );
         },
         
-        /**
-        * Import fields from an object into "this"
-        *
-        *    // import specified fields from an object into "this".
-        *    this.import( { field1: 'field1value', field2: 'field2value' }, 'field1', 'field2' );
-        *
-        *    // import all fields from an object into "this".
-        *    this.import( { field3: 'field3value', field4: 'field4value' } );
-        *
-        * @method import
-        * @param {object} importFrom
-        * @param {string} fieldName (optional) - all parameters after importFrom should be strings.  
-        *   If not given, import all fields
-        */
-        'import': function( importFrom ) {
-            var fieldNames = Array.prototype.slice.call( arguments, 1 );
-            
-            if( fieldNames.length ) {
-                fieldNames.forEach( function( name, index ) {
-                    this[ name ] = importFrom[ name ];
-                }, this );
-            }
-            else {
-                AFrame.mixin( this, importFrom );
-            }
-        },
         
         /**
         * Create a trigger event proxy function.  Useful to re-broadcast an event or when a DOM 
@@ -1219,7 +1136,7 @@ AFrame.DataContainer = ( function() {
             }
             return dataContainer;
         }
-        DataContainer.sc.constructor.apply( this, arguments );
+        DataContainer.sc.constructor.call( this, data );
 
     };
 
@@ -1245,7 +1162,7 @@ AFrame.DataContainer = ( function() {
             this.data.__dataContainer = this;
             this.fieldBindings = {};
             
-            DataContainer.sc.init.apply( this, arguments );
+            DataContainer.sc.init.call( this, config );
         },
         
         /**
@@ -1400,21 +1317,12 @@ AFrame.Plugin = ( function() {
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.AObject, {
-        /**
-        * Set the reference to the plugged object.  Subclasses can override this function to bind event
-        *	listeners to the plugged object, especially onInit.  Binding to onInit allows the plugin to
-        *	do setup as soon as the plugged object is ready.  If a subclass overrides this function,
-        *	the base setPlugged must still be called.
-        * @method setPlugged
-        * @param {AFrame.AObject} plugged - the plugged object
-        */
-        setPlugged: function( plugged ) {
-            this.plugged = plugged;
-            
-            plugged.bindEvent( 'onTeardown', this.teardown, this );
-            plugged.bindEvent( 'onInit', this.onPluggedInit, this );
+        importconfig: [ 'plugged' ],
+        events: {
+            'onTeardown plugged': 'teardown',
+            'onInit plugged': 'onPluggedInit'
         },
-        
+
         /**
         * Get a reference to the plugged object.
         * @method getPlugged
@@ -1544,7 +1452,7 @@ AFrame.CollectionHash = ( function() {
         init: function( config ) {
             this.hash = {};
             
-            CollectionHash.sc.init.apply( this, arguments );
+            CollectionHash.sc.init.call( this, config );
         },
         
         teardown: function() {
@@ -1553,7 +1461,7 @@ AFrame.CollectionHash = ( function() {
             }
             AFrame.remove( this, 'hash' );
             
-            CollectionHash.sc.teardown.apply( this, arguments );
+            CollectionHash.sc.teardown.call( this );
         },
         
         /**
@@ -1807,10 +1715,10 @@ AFrame.CollectionArray = ( function() {
     "use strict";
     
     var CollectionArray = AFrame.Class( AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
-        init: function() {
+        init: function( config ) {
             this.itemCIDs = [];
 
-            CollectionArray.sc.init.apply( this, arguments );
+            CollectionArray.sc.init.call( this, config );
         },
         
         teardown: function() {
@@ -1819,7 +1727,7 @@ AFrame.CollectionArray = ( function() {
             }, this );
             AFrame.remove( this, 'itemCIDs' );
             
-            CollectionArray.sc.teardown.apply( this, arguments );
+            CollectionArray.sc.teardown.apply( this );
         },
         
         /**
@@ -2359,7 +2267,7 @@ AFrame.List = ( function() {
                 this.listElementFactory = config.listElementFactory;
             }
             
-            List.sc.init.apply( this, arguments );
+            List.sc.init.call( this, config );
         },
 
         /**
@@ -2600,29 +2508,27 @@ AFrame.List = ( function() {
  * @extends AFrame.Plugin
  * @constructor
  */
+/**
+ * The collection to bind to
+ * @config collection
+ * @type {Collection}
+ */
 AFrame.ListPluginBindToCollection = ( function() { 
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
-        init: function( config ) {
-            /**
-             * The collection to bind to
-             * @config collection
-             * @type {Collection}
-             */
-            this.collection = config.collection;
-            this.collection.bindEvent( 'onInsert', this.onInsert, this );
-            this.collection.bindEvent( 'onRemove', this.onRemove, this );
+        importconfig: [ 'collection' ],
+        events: {
+            'onInsert collection': 'onInsert',
+            'onRemove collection': 'onRemove'
+        },
 
+        init: function( config ) {
             this.cids = [];
             
-            Plugin.sc.init.apply( this, arguments );
-        },
-        
-        setPlugged: function( plugged ) {
-            plugged.getIndex = this.getIndex.bind( this );
+            Plugin.sc.init.call( this, config );
             
-            Plugin.sc.setPlugged.apply( this, arguments );
+            this.getPlugged().getIndex = this.getIndex.bind( this );
         },
         
         onInsert: function( event ) {
@@ -2793,18 +2699,15 @@ AFrame.CollectionPluginPersistence = ( function() {
              */
             this.deleteCallback = config.deleteCallback || noPersistenceOp;
             
-            Plugin.sc.init.apply( this, arguments );
-        },
-
-
-        setPlugged: function( plugged ) {
+            Plugin.sc.init.call( this, config );
+            
+            var plugged = this.getPlugged();
             plugged.add = this.add.bind( this );
             plugged.load = this.load.bind( this );
             plugged.del = this.del.bind( this );
             plugged.save = this.save.bind( this );
-            
-            Plugin.sc.setPlugged.apply( this, arguments );
         },
+
 
         /**
          * Add an item to the collection.  The item will be inserted into the collection once the addCallback
@@ -3162,23 +3065,21 @@ AFrame.CollectionPluginModel = ( function() {
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
+        importconfig: [ 'schema' ],
+
         init: function( config ) {
-            this[ 'import' ]( config, 'schema' );
-            
             this.modelFactory = config.modelFactory || createModel;
             
             Plugin.sc.init.call( this, config );
-        },
-        
-        setPlugged: function( plugged ) {
+            
+            var plugged = this.getPlugged();
             plugged.insert = augmentInsert.bind( this, plugged.insert );
             
             if( plugged.add ) {
                 plugged.add = augmentInsert.bind( this, plugged.add );
             }
-            
-            Plugin.sc.setPlugged.call( this, plugged );
         }
+        
     } );
     
     function augmentInsert( decorated, item, insertAt ) {
@@ -3276,7 +3177,7 @@ AFrame.Form = ( function() {
             this.formElements = [];
             this.formFields = [];
             
-            Form.sc.init.apply( this, arguments );
+            Form.sc.init.call( this, config );
 
             this.bindFormElements();
         },
@@ -3294,7 +3195,7 @@ AFrame.Form = ( function() {
             }, this );
             this.formFields = null;
             this.formElements = null;
-            Form.sc.teardown.apply( this, arguments );
+            Form.sc.teardown.call( this );
         },
         
         /**
@@ -3504,29 +3405,19 @@ AFrame.Field = ( function() {
     "use strict";
     
     var Field = AFrame.Class( AFrame.Display, {
+        domevents: {
+            keyup: 'onFieldChange',
+            invalid: 'onFieldInvalid'
+        },
+       
         init: function( config ) {
-            this.createValidator();
+            createValidator.call( this );
 
-            Field.sc.init.apply( this, arguments );
+            Field.sc.init.call( this, config );
 
             this.save();
         },
         
-        createValidator: function() {
-            if( !this.validate ) {
-                var fieldValidator = AFrame.create( AFrame.FieldPluginValidation );
-                fieldValidator.setPlugged( this );
-            }
-        },
-
-        bindEvents: function() {
-            var target = this.getTarget();
-            this.bindDOMEvent( target, 'keyup', this.onFieldChange );
-            this.bindDOMEvent( target, 'invalid', this.onFieldInvalid );
-            
-            Field.sc.bindEvents.apply( this, arguments );
-        },
-
         /**
          * Set the value of the field and display the value.  Sets the rest value to the value entered.
          * 
@@ -3642,6 +3533,16 @@ AFrame.Field = ( function() {
     } );
     Field.cancelInvalid = true;
     
+    function createValidator() {
+        if( !this.validate ) {
+            var fieldValidator = AFrame.create( AFrame.FieldPluginValidation, {
+                plugged: this
+            } );
+        }
+    }
+
+    
+    
     return Field;
 }() );
 
@@ -3719,22 +3620,21 @@ AFrame.FieldPluginValidation = (function() {
     "use strict";
     
     var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
-        setPlugged: function( plugged ) {
+        events: {
+            'onChange plugged': onChange
+        },
+        
+        init: function( config ) {
             this.calculateValidity = true;
+
+            FieldPluginValidation.sc.init.call( this, config );
             
-            plugged.bindEvent( 'onChange', this.onChange, this );
-            
+            var plugged = this.getPlugged();
             plugged.getValidityState = this.getValidityState.bind( this );
             plugged.validate = this.validate.bind( this );
             plugged.setError = this.setError.bind( this );
             plugged.setCustomValidity = this.setCustomValidity.bind( this );
             plugged.checkValidity = this.checkValidity.bind( this );
-            
-            FieldPluginValidation.sc.setPlugged.call( this, plugged );
-        },
-        
-        onChange: function() {
-            this.calculateValidity = true;
         },
         
         /**
@@ -3897,6 +3797,11 @@ AFrame.FieldPluginValidation = (function() {
             return criteria;
         }
     } );
+    
+    function onChange() {
+        this.calculateValidity = true;
+    }
+    
 
     return FieldPluginValidation;
 } )();
@@ -4599,7 +4504,7 @@ AFrame.Schema = (function() {
                 }
 
                 offset -= date.getTimezoneOffset();
-                time = ( Number( date ) + ( offset * 60 * 1000 ) );
+                var time = ( Number( date ) + ( offset * 60 * 1000 ) );
                 date.setTime( Number( time ) );
                 return date;
             }
@@ -4683,6 +4588,11 @@ AFrame.ListPluginFormRow = ( function() {
     "use strict";
     
     var Plugin = AFrame.Class( AFrame.Plugin, {
+        events: {
+            'onInsert plugged': 'onInsertRow',
+            'onRemove plugged': 'onRemoveRow'
+        },
+
         init: function( config ) {
             /**
              * The factory function used to create forms.  formFactory will be called once for each
@@ -4708,20 +4618,14 @@ AFrame.ListPluginFormRow = ( function() {
             
             this.forms = [];
             
-            Plugin.sc.init.apply( this, arguments );
-        },
-        
-        setPlugged: function( plugged ) {
-            plugged.bindEvent( 'onInsert', this.onInsertRow, this );
-            plugged.bindEvent( 'onRemove', this.onRemoveRow, this );
+            Plugin.sc.init.call( this, config );
             
+            var plugged = this.getPlugged();
             plugged.validate = this.validate.bind( this );
             plugged.save = this.save.bind( this );
             plugged.reset = this.reset.bind( this );
             plugged.clear = this.clear.bind( this );
             plugged.getForm = this.getForm.bind( this );
-            
-            Plugin.sc.setPlugged.apply( this, arguments );		
         },
         
         teardown: function() {
@@ -4730,7 +4634,7 @@ AFrame.ListPluginFormRow = ( function() {
                 this.forms[ index ] = null;
             }, this );
             
-            Plugin.sc.teardown.apply( this, arguments );		
+            Plugin.sc.teardown.call( this );		
         },
         
         /**
@@ -4978,16 +4882,16 @@ AFrame.DataForm = ( function() {
 		     */
 		    this.dataContainer = AFrame.DataContainer( config.dataSource );
 		
-		    DataForm.sc.init.apply( this, arguments );
+		    DataForm.sc.init.call( this, config );
 	    },
 	
 	    teardown: function() {
 		    this.dataContainer = null;
-		    DataForm.sc.teardown.apply( this, arguments );
+		    DataForm.sc.teardown.call( this );
 	    },
 	
 	    bindFormElement: function( formElement ) {
-		    var formField = DataForm.sc.bindFormElement.apply( this, arguments );
+		    var formField = DataForm.sc.bindFormElement.call( this, formElement );
 		    var fieldName = fieldGetName( formField );
 		
 		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );
