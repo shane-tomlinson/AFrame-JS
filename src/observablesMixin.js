@@ -78,10 +78,7 @@ AFrame.ObservablesMixin = {
             this.eventData = data;
         }
         else {
-            for( var key in data ) {
-                // do this loop manually, jQuery.extend does not copy undefined values
-                this.eventData[ key ] = data[ key ];
-            }
+            AFrame.mixin( this.eventData, data );
         }
     },
     

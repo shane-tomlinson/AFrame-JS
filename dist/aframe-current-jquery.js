@@ -113,11 +113,6 @@ if(!Date.prototype.toISOString) {
 	};
 }
 
-if( !window.console ) {
-	window.console = function() {	// do a whole lotta nothin 
-	};
-}
-
 /**
  * The AFrame base namespace.  Provides some useful utility functions.  The most commonly used functions are [Class](#method_Class) and [create](#method_create).
  *
@@ -173,7 +168,10 @@ var AFrame = ( function() {
         * @param {object} mixin (optional) - object with optional functions to extend bc with
         */
         mixin: function( toExtend, mixin ) {
-            return jQuery.extend( toExtend, mixin );
+            for( var key in mixin ) {
+                toExtend[ key ] = mixin[ key ];
+            }
+            return toExtend;
         },
 
         /**
@@ -218,7 +216,7 @@ var AFrame = ( function() {
                 try {
                     retval = new construct;
                 } catch ( e ) {
-                    console.log( e.toString() );
+                    AFrame.log( e.toString() );
                 }
                 
                 config = config || {};
@@ -283,6 +281,20 @@ var AFrame = ( function() {
          */
         defined: function( itemToCheck ) {
             return 'undefined' != typeof( itemToCheck );
+        },
+        
+        /**
+        * If the console is available, log a message.
+        *
+        *    AFrame.log( 'message to log' );
+        *
+        * @method log
+        * @param {string} message - message to display
+        */
+        log: function( message ) {
+            if( window && window.console ) {
+                console.log( message );
+            }
         },
         
         /**
@@ -601,10 +613,7 @@ AFrame.ObservablesMixin = {
             this.eventData = data;
         }
         else {
-            for( var key in data ) {
-                // do this loop manually, jQuery.extend does not copy undefined values
-                this.eventData[ key ] = data[ key ];
-            }
+            AFrame.mixin( this.eventData, data );
         }
     },
     
@@ -4387,7 +4396,7 @@ AFrame.Schema = (function() {
             
             this.forEach( function( row, key ) {
                 var rowCriteria = row.validate || {};
-                var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
+                var criteriaCopy = AFrame.mixin( { type: row.type }, rowCriteria );
                 var field = data[ key ];
                 
                 // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,

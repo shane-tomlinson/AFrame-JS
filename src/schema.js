@@ -328,7 +328,7 @@ AFrame.Schema = (function() {
             
             this.forEach( function( row, key ) {
                 var rowCriteria = row.validate || {};
-                var criteriaCopy = jQuery.extend( { type: row.type }, rowCriteria );
+                var criteriaCopy = AFrame.mixin( { type: row.type }, rowCriteria );
                 var field = data[ key ];
                 
                 // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,

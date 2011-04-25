@@ -173,14 +173,38 @@ testsToRun.push( {
 } );
 
 testsToRun.push( {
-		name: 'TestCase AFrame.getUniqueID',
+		name: 'TestCase AFrame general functions',
 
 		testGetUniqueID: function() {
 			var id1 = AFrame.getUniqueID();
 			var id2 = AFrame.getUniqueID();
 
 			Assert.areNotEqual( id1, id2, 'ids are unique' );
-		}
+		},
+        
+        testLog: function() {
+            if( window.console ) {
+                var logMessage;
+                window.console.log = function( message ) {
+                    logMessage = message;
+                };
+                
+                AFrame.log( 'message to log' );
+                
+                Assert.areEqual( 'message to log', logMessage, 'window.console called with right message' );
+            }
+            else {
+                var except;
+                try {
+                    AFrame.log( 'message to log' );
+                }
+                catch( e ) {
+                    except = e;
+                }
+                
+                Assert.isUndefined( except, 'safe even if window.console does not exist' );
+            }
+        }
 } );
 	
 testsToRun.push( {

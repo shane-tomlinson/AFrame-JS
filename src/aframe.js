@@ -54,7 +54,10 @@ var AFrame = ( function() {
         * @param {object} mixin (optional) - object with optional functions to extend bc with
         */
         mixin: function( toExtend, mixin ) {
-            return jQuery.extend( toExtend, mixin );
+            for( var key in mixin ) {
+                toExtend[ key ] = mixin[ key ];
+            }
+            return toExtend;
         },
 
         /**
@@ -99,7 +102,7 @@ var AFrame = ( function() {
                 try {
                     retval = new construct;
                 } catch ( e ) {
-                    console.log( e.toString() );
+                    AFrame.log( e.toString() );
                 }
                 
                 config = config || {};
@@ -164,6 +167,20 @@ var AFrame = ( function() {
          */
         defined: function( itemToCheck ) {
             return 'undefined' != typeof( itemToCheck );
+        },
+        
+        /**
+        * If the console is available, log a message.
+        *
+        *    AFrame.log( 'message to log' );
+        *
+        * @method log
+        * @param {string} message - message to display
+        */
+        log: function( message ) {
+            if( window && window.console ) {
+                console.log( message );
+            }
         },
         
         /**

@@ -112,8 +112,3 @@ if(!Date.prototype.toISOString) {
 		].join('');
 	};
 }
-
-if( !window.console ) {
-	window.console = function() {	// do a whole lotta nothin 
-	};
-}
