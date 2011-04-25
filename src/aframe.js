@@ -178,7 +178,7 @@ var AFrame = ( function() {
         * @param {string} message - message to display
         */
         log: function( message ) {
-            if( window && window.console ) {
+            if( typeof( console ) !== 'undefined' ) {
                 console.log( message );
             }
         },
@@ -230,8 +230,8 @@ var AFrame = ( function() {
         }
     };
 
-    if( typeof( exports ) != 'undefined' ) {
-        exports.AFrame = AFrame;
+    if( typeof( module ) != 'undefined' ) {
+        module.exports = AFrame;
     }
     
     return AFrame;

@@ -292,7 +292,7 @@ var AFrame = ( function() {
         * @param {string} message - message to display
         */
         log: function( message ) {
-            if( window && window.console ) {
+            if( typeof( console ) !== 'undefined' ) {
                 console.log( message );
             }
         },
@@ -344,8 +344,8 @@ var AFrame = ( function() {
         }
     };
 
-    if( typeof( exports ) != 'undefined' ) {
-        exports.AFrame = AFrame;
+    if( typeof( module ) != 'undefined' ) {
+        module.exports = AFrame;
     }
     
     return AFrame;
@@ -4062,7 +4062,7 @@ AFrame.FieldPluginPlaceholder = ( function() {
     }    
 
     // we only want to initialize the Placeholder if the browser does not support HTML5
-    var inp = document.createElement( 'input' );
+    var inp = ( typeof( document ) !== 'undefined' && document.createElement( 'input' ) );
     if( !( 'placeholder' in inp ) ) {
         Placeholder.init();
     }
