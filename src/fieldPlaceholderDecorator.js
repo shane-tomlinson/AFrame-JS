@@ -135,10 +135,12 @@ AFrame.FieldPluginPlaceholder = ( function() {
         return AFrame.DOM.getAttr( target, 'placeholder' ) || '';
     }    
 
-    // we only want to initialize the Placeholder if the browser does not support HTML5
-    var inp = ( typeof( document ) !== 'undefined' && document.createElement( 'input' ) );
-    if( !( 'placeholder' in inp ) ) {
-        Placeholder.init();
+    if( typeof( document ) !== 'undefined' ) {
+        // we only want to initialize the Placeholder if the browser does not support HTML5
+        var inp = document.createElement( 'input' );
+        if( !( 'placeholder' in inp ) ) {
+            Placeholder.init();
+        }
     }
 
     return Placeholder;

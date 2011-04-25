@@ -4,7 +4,7 @@
 * @static
 */
 AFrame.DOM = ( function() {
-    var jQuery = window.jQuery;
+    var jQuery = typeof( window ) !== 'undefined' && window.jQuery;
     var DOM = {
         /**
         * Get a set of elements that match the selector
