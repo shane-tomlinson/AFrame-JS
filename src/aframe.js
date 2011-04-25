@@ -229,6 +229,10 @@ var AFrame = ( function() {
             return '[object Array]' === Object.prototype.toString.apply( itemToCheck );
         }
     };
+
+    if( typeof( exports ) != 'undefined' ) {
+        exports.AFrame = AFrame;
+    }
     
     return AFrame;
 
