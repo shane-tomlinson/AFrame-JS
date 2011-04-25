@@ -14,6 +14,7 @@
 	<property file="per_user.properties" />
 	<property file="yuidoc.properties" />
 	<property file="includes.list" />
+	<property file="includes.node.list" />
 	<property file="adapters.list" />
 	
 	<target name="get_build_number" >
@@ -97,7 +98,17 @@
             <foreach param="adapter" target="addadapter" list="${adapters.list}" inheritall="true">
             </foreach>
 	</target>
-
+    
+    <target name="concat_node" depends="init"
+		description="concatinate the script for node">
+			<echo message="Combining js files to ${js_combined}.node" />
+			
+            <concat destfile="${js_combined}-node.js">
+				<filelist dir="${src}" files="${includes.node.list}">
+				</filelist>
+			</concat>
+	</target>
+    
     <target name="compressfile">
 			<echo message="Building ${js_combined}-${adapter}.js" />
 			<apply executable="java" parallel="false" verbose="true" dest="${dist}">
@@ -116,10 +127,13 @@
 			<echo message="${js_combined}-${adapter}.js built." />
     </target>
     
-	<target name="compress" depends="concat"
+	<target name="compress" depends="concat,concat_node"
 		description="Compress the script">
 
         <foreach param="adapter" target="compressfile" list="${adapters.list}" inheritall="true">
+        </foreach>
+
+        <foreach param="adapter" target="compressfile" list="node" inheritall="true">
         </foreach>
 			
 	</target>
