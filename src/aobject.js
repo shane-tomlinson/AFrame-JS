@@ -7,12 +7,34 @@
  * have its teardown function called as well.  This can ensure that all memory is freed and that
  * no references are kept when the object's lifespan has ended.
  *
- * Events
+ *
+ * Declaring Configuration Items to Import
  *=========
  *
- * All AFrame.AObject based classes have a built in event mechanism.  Events are dynamically created, there is
- *  no need to explicitly create an event, all that is needed is to call either
- *  triggerEvent or bindEvent.
+ * A very common pattern used in AFrame derived objects is to save off a list of
+ *	configuration options that an object is created with.  Each class can define
+ *	a list of configuration options that should automatically be imported on
+ *  object creation.
+ *
+ * Example Auto-Import of Configuration Items
+ *
+ *    // Define a class with items to import
+ *    var SomeClass = AFrame.Class( {
+ *        importconfig: [ 'firstImportedParam', 'secondImportedParam' ]
+ *    } );
+ *
+ *    var someClassInst = AFrame.create( SomeClass, {
+ *        firstImportedParam: "This is imported",
+ *        secondImportedParam: "So is this",
+ *        thirdParam: "But this is not"
+ *    } );
+ * 
+ * Event Usage
+ *=========
+ *
+ * All AFrame.AObject based classes have a built in event mechanism.  Events are 
+ *  dynamically created, there is no need to explicitly create an event, all that is 
+ *  needed is to call the object's triggerEvent or bindEvent.
  *
  * Event Example Usage:
  *
@@ -26,7 +48,34 @@
  *    anObject.bindEvent( 'onInit', onObjectInit );
  *    anObject.init();    // calls onObjectInit function
  *
-
+ *
+ * Declaring Event Bindings
+ *========
+ *
+ * Binding to dependent object's events is another common pattern used in AFrame.
+ *  To make this process simpler, it is possible to declare event bindings.  When
+ *  declaring event bindings, three pieces of information are needed, the event name,
+ *  the name of the object that is triggering the event, and the function (or name of
+ *  the member function to bind as a handler.
+ *
+ * Example Usage:
+ *
+ *    // bind to two events on insertedObj, event1, and event2.
+ *    // event1 has an inline handler.
+ *    // event2 uses a class member as a handler.
+ *    var Class = AFrame.Class( AFrame.AObject, {
+ *        importconfig: [ 'insertedObj' ],
+ *        events: {
+ *            'event1 insertedObj': function() {
+ *                // Handle event here
+ *            },
+ *            'event2 insertedObj': 'event2Handler'
+ *        },
+ *        event2Handler: function() {
+ *             // handle event here
+ *        }
+ *    } );		
+ *  
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
