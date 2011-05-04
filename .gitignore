@@ -1,0 +1,21 @@
+# the distribution directory
+dist/
+
+# parts of the site directory that are built
+site/docs/
+site/src/
+site/tests/
+
+# pyc files built by python for document generation
+*.pyc
+
+# temp directories for document generation
+docparse/
+
+# generated documents
+docs
+
+# per_user.properties copied from sample
+per_user.properties
+
+
