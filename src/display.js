@@ -42,16 +42,79 @@
  *     
  *     // Example of render which directly inserts HTML
  *     render: function() {
- *         AFrame.DOM.setInner( this.getTarget(), '<div>This is rendered inside of ' +
- *              'the Dislay\'s target</div>' );
+ *         AFrame.DOM.setInner( this.getTarget(), '<div>This is rendered ' +
+ *              'inside of the Dislay\'s target</div>' );
  *     },
  *
  *     // Example of using jTemplate to render a template
  *     render: function() {
- *         this.getTarget().setTemplate( $( '#template' ).html() ).processTemplate( {} );
+ *         this.getTarget().setTemplate( $( '#template' ).html() )
+ *             .processTemplate( {} );
  *     },
  * 
- * 
+ *
+ * Declaring DOM Event Bindings
+ *========
+ *
+ * Binding to a DOM event is a particularly common pattern in AFrame, so common
+ *  that a shortcut way to declare these bindings is implemented.  DOM Events
+ *  are declared in the "domevents" array on the Class' prototype.
+ *
+ * Example Usage:
+ *
+ *    // First is a simple click event with an inline handler.  The
+ *	  // click event is attached to the Display's target node.
+ *    var Display = AFrame.Class( AFrame.Display, {
+ *        domevents: {
+ *            click: function( event ) {
+ *                	// Handle event here
+ *            }
+ *        }
+ *    } );
+ *
+ *    // Second, a mouseover event is attached to the Display's target.
+ *    // The handler is a class function, whose name is given as the
+ *    // event handler.  All strings are assumed to be class functions.
+ *    var Display = AFrame.Class( AFrame.Display, {
+ *        domevents: {
+ *            mouseover: 'onMouseOver'
+ *        },			
+ *        onMouseOver: function( event ) {
+ *            // Handle Event
+ *        }
+ *    } );
+ *
+ *    // Since attaching multiple event handlers can help reduce
+ *    // event handler complexity, multiple handlers are possible.
+ *    // Instead of specifying one handler, specify an array of handlers.
+ *    var Display = AFrame.Class( AFrame.Display, {
+ *        domevents: {
+ *            click: [ function( event ) {
+ *            // Handle Event
+ *            }, 'onClick' ],
+ *        },			
+ *        onClick: function( event ) {
+ *            // Handle Event
+ *        }
+ *    } );
+ *
+ *    // All together now - Multiple events, using a combination
+ *	  // of inline and class handlers
+ *    var Display = AFrame.Class( AFrame.Display, {
+ *        domevents: {
+ *            click: [ function( event ) {
+ *                // Handle Event
+ *            }, 'onClick' ],
+ *            mouseover: 'onMouseOver'
+ *        },			
+ *        onClick: function( event ) {
+ *            // Handle Event
+ *        },			
+ *        onMouseOver: function( event ) {
+ *            // Handle Event
+ *        }
+ *    } );
+ *
  * @class AFrame.Display
  * @extends AFrame.AObject
  * @constructor
