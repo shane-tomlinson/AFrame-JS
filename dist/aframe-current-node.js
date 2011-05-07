@@ -887,12 +887,34 @@ AFrame.EnumerableMixin = ( function() {
  * have its teardown function called as well.  This can ensure that all memory is freed and that
  * no references are kept when the object's lifespan has ended.
  *
- * Events
+ *
+ * Declaring Configuration Items to Import
  *=========
  *
- * All AFrame.AObject based classes have a built in event mechanism.  Events are dynamically created, there is
- *  no need to explicitly create an event, all that is needed is to call either
- *  triggerEvent or bindEvent.
+ * A very common pattern used in AFrame derived objects is to save off a list of
+ *	configuration options that an object is created with.  Each class can define
+ *	a list of configuration options that should automatically be imported on
+ *  object creation.
+ *
+ * Example Auto-Import of Configuration Items
+ *
+ *    // Define a class with items to import
+ *    var SomeClass = AFrame.Class( {
+ *        importconfig: [ 'firstImportedParam', 'secondImportedParam' ]
+ *    } );
+ *
+ *    var someClassInst = AFrame.create( SomeClass, {
+ *        firstImportedParam: "This is imported",
+ *        secondImportedParam: "So is this",
+ *        thirdParam: "But this is not"
+ *    } );
+ * 
+ * Event Usage
+ *=========
+ *
+ * All AFrame.AObject based classes have a built in event mechanism.  Events are 
+ *  dynamically created, there is no need to explicitly create an event, all that is 
+ *  needed is to call the object's triggerEvent or bindEvent.
  *
  * Event Example Usage:
  *
@@ -906,7 +928,34 @@ AFrame.EnumerableMixin = ( function() {
  *    anObject.bindEvent( 'onInit', onObjectInit );
  *    anObject.init();    // calls onObjectInit function
  *
-
+ *
+ * Declaring Event Bindings
+ *========
+ *
+ * Binding to dependent object's events is another common pattern used in AFrame.
+ *  To make this process simpler, it is possible to declare event bindings.  When
+ *  declaring event bindings, three pieces of information are needed, the event name,
+ *  the name of the object that is triggering the event, and the function (or name of
+ *  the member function to bind as a handler.
+ *
+ * Example Usage:
+ *
+ *    // bind to two events on insertedObj, event1, and event2.
+ *    // event1 has an inline handler.
+ *    // event2 uses a class member as a handler.
+ *    var Class = AFrame.Class( AFrame.AObject, {
+ *        importconfig: [ 'insertedObj' ],
+ *        events: {
+ *            'event1 insertedObj': function() {
+ *                // Handle event here
+ *            },
+ *            'event2 insertedObj': 'event2Handler'
+ *        },
+ *        event2Handler: function() {
+ *             // handle event here
+ *        }
+ *    } );		
+ *  
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
@@ -3168,9 +3217,13 @@ AFrame.DataValidation = ( function() {
 *        edit_date: { type: 'iso8601' }
 *    };
 *
-*    // Create one instance of the model.
-*    var model = AFrame.create( AFrame.Model, {
-*        schema: noteSchemaConfig,
+*    // Create A Model Class
+*    var ModelClass = AFrame.Class( AFrame.Model, {
+*        schema: noteSchemaConfig
+*    } );
+*
+*    // Create an instance of ModelClass
+*    var model = AFrame.create( ModelClass, {
 *        data: {
 *           id: '1',
 *           title: 'Get some milk',
@@ -3184,13 +3237,28 @@ AFrame.DataValidation = ( function() {
 *    // update a field.  prevVal will be 'Get some milk'
 *    var prevVal = model.set( 'title', 'Get some milk and eggs' );
 *
-*    // This is setting the date in error, the prevVal will have a FieldValidityState
-*    // with its typeMismatch field set to true.  This will NOT actually set the value.
+*    // This is setting the date in error, the prevVal will have a 
+*    // FieldValidityState with its typeMismatch field set to true.
+*    // This will NOT actually set the value.
 *    prevVal = model.set( 'edit_date', '1' );
 *
-*    // Check the overall model for validity.  Returns true if all valid, an object of
-*    // of FieldValidityStates otherwise
+*    // Check the overall model for validity.  Returns true if all valid, an 
+*    // object of FieldValidityStates otherwise
 *    var isValid = model.checkValidity();
+*
+* Manual creation of a Model
+*========
+*
+* It is also possible to create a model instance by creating an instance of
+* AFrame.Model and associating it with a schemaConfig.
+*
+*    // Manually create a model
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: noteSchemaConfig,
+*        data: { 
+*            // data here
+*        }
+*    } );
 *
 * @class AFrame.Model
 * @extends AFrame.DataContainer
@@ -3212,7 +3280,7 @@ AFrame.Model = ( function() {
     
     var Model = AFrame.Class( AFrame.DataContainer, {
         init: function( config ) {
-            this.schema = getSchema( config.schema );
+            this.schema = getSchema( this.schema || config.schema );
             
             config.data = getInitialData( this.schema, config.data );
             

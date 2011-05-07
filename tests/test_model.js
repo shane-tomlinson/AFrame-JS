@@ -5,15 +5,18 @@
         integerField: { type: 'integer' },
         isodatetime: { type: 'iso8601' }
     };
+    
+	var ModelClass = AFrame.Class( AFrame.Model, {
+		schema: schemaConfig
+	} );
+	
 
     testsToRun.push( {
 		
 		name: "TestCase AFrame.Model",
 
 		setUp: function() {
-		    this.model = AFrame.create( AFrame.Model, {
-                schema: schemaConfig
-            } );
+		    this.model = AFrame.create( ModelClass );
 		},
 
 		tearDown: function() {
@@ -68,6 +71,10 @@
             
         },
         
+        testInitialData: function() {
+        
+        },
+        
         testSerializeItems: function() {
             this.model.set( 'stringField', 'a field' );
             this.model.set( 'numberField', 1.25 );
@@ -91,8 +98,7 @@
                 isodatetime: '2011-01-16T11:47:04Z'
             };
                     
-		    var model = AFrame.create( AFrame.Model, {
-                schema: schemaConfig,
+		    var model = AFrame.create( ModelClass, {
                 data: initialData
             } );
             
@@ -103,6 +109,19 @@
             Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'isodatetime deserialized' );
             
             Assert.areSame( initialData, model.getDataObject(), 'deserialization deserializes in same data object' );
+        },
+        
+        testCreateModelManually: function() {
+            var initialData = {
+                stringField: 'string value'
+            };
+                    
+        	var model = AFrame.create( AFrame.Model, {
+        		schema: schemaConfig,
+        		data: initialData
+        	} );
+
+            Assert.areSame( 'string value', model.get( 'stringField' ), 'Using manually created model to get stringField' );
         }
 		
 	

@@ -12,9 +12,13 @@
 *        edit_date: { type: 'iso8601' }
 *    };
 *
-*    // Create one instance of the model.
-*    var model = AFrame.create( AFrame.Model, {
-*        schema: noteSchemaConfig,
+*    // Create A Model Class
+*    var ModelClass = AFrame.Class( AFrame.Model, {
+*        schema: noteSchemaConfig
+*    } );
+*
+*    // Create an instance of ModelClass
+*    var model = AFrame.create( ModelClass, {
 *        data: {
 *           id: '1',
 *           title: 'Get some milk',
@@ -28,13 +32,28 @@
 *    // update a field.  prevVal will be 'Get some milk'
 *    var prevVal = model.set( 'title', 'Get some milk and eggs' );
 *
-*    // This is setting the date in error, the prevVal will have a FieldValidityState
-*    // with its typeMismatch field set to true.  This will NOT actually set the value.
+*    // This is setting the date in error, the prevVal will have a 
+*    // FieldValidityState with its typeMismatch field set to true.
+*    // This will NOT actually set the value.
 *    prevVal = model.set( 'edit_date', '1' );
 *
-*    // Check the overall model for validity.  Returns true if all valid, an object of
-*    // of FieldValidityStates otherwise
+*    // Check the overall model for validity.  Returns true if all valid, an 
+*    // object of FieldValidityStates otherwise
 *    var isValid = model.checkValidity();
+*
+* Manual creation of a Model
+*========
+*
+* It is also possible to create a model instance by creating an instance of
+* AFrame.Model and associating it with a schemaConfig.
+*
+*    // Manually create a model
+*    var model = AFrame.create( AFrame.Model, {
+*        schema: noteSchemaConfig,
+*        data: { 
+*            // data here
+*        }
+*    } );
 *
 * @class AFrame.Model
 * @extends AFrame.DataContainer
@@ -56,7 +75,7 @@ AFrame.Model = ( function() {
     
     var Model = AFrame.Class( AFrame.DataContainer, {
         init: function( config ) {
-            this.schema = getSchema( config.schema );
+            this.schema = getSchema( this.schema || config.schema );
             
             config.data = getInitialData( this.schema, config.data );
             
