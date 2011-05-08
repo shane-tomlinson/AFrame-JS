@@ -3232,11 +3232,16 @@ AFrame.CollectionPluginModel = ( function() {
  * creation is needed, fieldFactory can be overridden through either subclassing
  * or passing in a fieldFactory function to configuration.
  *
- *    <div id="nameForm">
- *       <input type="text" data-field="name" />
- *    </div>
- *   
- *    ---------
+ *##Setting up the HTML##
+ *
+ * Use the "data-field" attribute on an element to specify that an element is a form field
+ *
+ *    <formset id="nameForm">
+ *        <input type="string" name="name" data-field />
+ *    </formset>
+ *
+ *##Working in Javascript##
+ *
  *   
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
@@ -3271,7 +3276,8 @@ AFrame.CollectionPluginModel = ( function() {
  *        formFieldFactory: fieldFactory
  *    } );
  *
- *    // the specialized form field factory can be used globally as the default factory
+ *    // the specialized form field factory can be used globally as 
+ *    // the default factory
  *    AFrame.Form.setDefaultFieldFactory( fieldFactory );
  *    
  * @class AFrame.Form
@@ -4935,6 +4941,20 @@ AFrame.ListPluginFormRow = ( function() {
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
 *
+*##Setting up the HTML##
+*
+* Use the "data-field" attribute on an element to specify that an element is a form field
+* The "name" attribute is the name of the field to bind to.
+*
+*    <formset id="nameForm">
+*        <input type="string" name="name" data-field />
+*        <input type="string" name="version" data-field />
+*    </formset>
+*
+*
+*##Working in Javascript##
+*
+*
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
 *        version: '0.0.20'
@@ -4984,8 +5004,9 @@ AFrame.ListPluginFormRow = ( function() {
 *    } );
 *
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
-*    //    attribute.  The name of each field will be that specified in the element's "name"
-*    //    attribute.  This will try and tie fields to name and version, as specified in the schemaConfig.
+*    //    attribute.  The name of each field will be that specified in the 
+*    //    element's "name" attribute.  This will try and tie fields to name 
+*    //    and version, as specified in the schemaConfig.
 *    var form = AFrame.create( AFrame.DataForm, {
 *        target: '#nameForm',
 *        dataSource: model
