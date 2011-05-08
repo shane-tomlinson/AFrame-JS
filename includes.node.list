@@ -15,4 +15,5 @@ collectionPluginModel.js,\
 schema.js,\
 dataValidation.js,\
 model.js,\
-event.js
+event.js,\
+fieldValidityState.js
