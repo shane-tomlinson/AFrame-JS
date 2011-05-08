@@ -4,6 +4,20 @@
 *	has its value set to be that of the corresponding field in the DataContainer.  When Fields
 *	are updated, the DataContainer is not updated until the form's save function is called.
 *
+*##Setting up the HTML##
+*
+* Use the "data-field" attribute on an element to specify that an element is a form field
+* The "name" attribute is the name of the field to bind to.
+*
+*    <formset id="nameForm">
+*        <input type="string" name="name" data-field />
+*        <input type="string" name="version" data-field />
+*    </formset>
+*
+*
+*##Working in Javascript##
+*
+*
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
 *        version: '0.0.20'
@@ -53,8 +67,9 @@
 *    } );
 *
 *    // Set up the form to look under #nameForm for elements with the "data-field" 
-*    //    attribute.  The name of each field will be that specified in the element's "name"
-*    //    attribute.  This will try and tie fields to name and version, as specified in the schemaConfig.
+*    //    attribute.  The name of each field will be that specified in the 
+*    //    element's "name" attribute.  This will try and tie fields to name 
+*    //    and version, as specified in the schemaConfig.
 *    var form = AFrame.create( AFrame.DataForm, {
 *        target: '#nameForm',
 *        dataSource: model

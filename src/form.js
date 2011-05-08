@@ -6,11 +6,16 @@
  * creation is needed, fieldFactory can be overridden through either subclassing
  * or passing in a fieldFactory function to configuration.
  *
- *    <div id="nameForm">
- *       <input type="text" data-field="name" />
- *    </div>
- *   
- *    ---------
+ *##Setting up the HTML##
+ *
+ * Use the "data-field" attribute on an element to specify that an element is a form field
+ *
+ *    <formset id="nameForm">
+ *        <input type="string" name="name" data-field />
+ *    </formset>
+ *
+ *##Working in Javascript##
+ *
  *   
  *    // Set up the form to look under #nameForm for elements with the "data-field" 
  *    //   attribute.  This will find one field in the above HTML
@@ -45,7 +50,8 @@
  *        formFieldFactory: fieldFactory
  *    } );
  *
- *    // the specialized form field factory can be used globally as the default factory
+ *    // the specialized form field factory can be used globally as 
+ *    // the default factory
  *    AFrame.Form.setDefaultFieldFactory( fieldFactory );
  *    
  * @class AFrame.Form
