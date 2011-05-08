@@ -35,7 +35,8 @@
  *                    required: true
  *               } },
  *        create_date: { type: 'iso8601' },
- *        downloads: { type: 'integer', fixup: downloadsFixup, cleanup: downloadsCleanup }
+ *        downloads: { type: 'integer', fixup: downloadsFixup, 
+ *                         cleanup: downloadsCleanup }
  *    };
  *
  *    function downloadsFixup( options ) {
