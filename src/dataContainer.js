@@ -1,7 +1,7 @@
 /**
 * A basic data container. Used like a hash. Provides functionality that allows the binding of callbacks
 * to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
-* do 
+* do
 *
 *    dataContainer = AFrame.DataContainer( data );
 * This ensures that only one DataContainer is ever created for a given object.
@@ -17,25 +17,25 @@
 *        firstName: 'Shane',
 *        lastName: 'Tomlinson'
 *    };
-*    
+*
 *    var dataContainer = AFrame.DataContainer( dataObject );
 *    dataContainer.bindField( 'firstName', function( notification ) {
 *        alert( 'new name: ' + notification.value );
 *    } );
-*    
+*
 *    dataContainer.set( 'firstName', 'Charlotte' );
-*    
+*
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @uses AFrame.EnumerableMixin
 * @constructor
-* @param {object || AFrame.DataContainer} data (optional) If given, creates a new AFrame.DataContainer for the data.  
-*   If already an AFrame.DataContainer, returns self, if the data already has an AFrame.DataContainer associated with 
+* @param {object || AFrame.DataContainer} data (optional) If given, creates a new AFrame.DataContainer for the data.
+*   If already an AFrame.DataContainer, returns self, if the data already has an AFrame.DataContainer associated with
 *	it, then the original AFrame.DataContainer is used.
 */
 AFrame.DataContainer = ( function() {
     "use strict";
-    
+
     var DataContainer = function( data ) {
         if( data instanceof DataContainer ) {
             return data;
@@ -67,21 +67,32 @@ AFrame.DataContainer = ( function() {
             * @default {}
             */
             this.data = config.data || {};
-            
+
             if( this.data.__dataContainer ) {
                 throw Error( 'Cannot create a second DataContainer for an object' );
             }
-            
+
             this.data.__dataContainer = this;
             this.fieldBindings = {};
-            
+
             DataContainer.sc.init.call( this, config );
         },
-        
+
         /**
-        * Set an item of data.  
+        * Update a field.
         *
-        *    dataContainer.set( 'name', 'Shane Tomlinson' );
+        *    // If passing two arguments, the first argument is
+        *	 // the name of the field, the second is the value
+        *    var prevVal = dataContainer.set( 'name', 'Shane Tomlinson' );
+        *
+        *    // If passing a single argument, it must be an
+        *	 // object with key/value pairs.  prevVals will
+        *    // be an object with the previous value of each
+        *    // field that is updated.
+        *    var prevVals = dataContainer.set( {
+        *        name: 'Shane Tomlinson',
+        *        employer: 'AFrame Foundary'
+        *    } );
         *
         * @method set
         * @param {string} fieldName name of field
@@ -89,9 +100,17 @@ AFrame.DataContainer = ( function() {
         * @return {variant} previous value of field
         */
         set: function( fieldName, fieldValue ) {
+        	if( 'object' === typeof( fieldName ) ) {
+				var prevVals = {};
+        		for( var key in fieldName ) {
+					prevVals[ key ] = this.set( key, fieldName[ key ] );
+        		}
+        		return prevVals;
+        	}
+
             var oldValue = this.data[ fieldName ];
             this.data[ fieldName ] = fieldValue;
-            
+
             /**
             * Triggered whenever any item on the object is set.
             * @event onSet
@@ -121,10 +140,10 @@ AFrame.DataContainer = ( function() {
                 value: fieldValue,
                 type: 'onSet-' + fieldName
             } );
-            
+
             return oldValue;
         },
-        
+
         /**
         * Get the value of a field
         *
@@ -137,7 +156,7 @@ AFrame.DataContainer = ( function() {
         get: function( fieldName ) {
             return this.data[ fieldName ];
         },
-        
+
         /**
         * Get an object with all fields contained in the DataContainer.
         *
@@ -150,9 +169,9 @@ AFrame.DataContainer = ( function() {
         getDataObject: function() {
             return this.data;
         },
-        
+
         /**
-        * Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.  
+        * Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.
         *   When function is called, it is called with an event.
         *
         *    var onChange = function( event ) {
@@ -177,10 +196,10 @@ AFrame.DataContainer = ( function() {
             } );
             var event = this.getEventObject();
             callback.call( context, event );
-            
+
             return this.bindEvent( 'onSet-' + fieldName, callback, context );
         },
-        
+
         /**
         * Unbind a field.
         *
@@ -193,7 +212,7 @@ AFrame.DataContainer = ( function() {
         unbindField: function( id ) {
             return this.unbindEvent( id );
         },
-        
+
         /**
         * Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
         *
@@ -213,6 +232,6 @@ AFrame.DataContainer = ( function() {
             }
         }
     } );
-    
+
     return DataContainer;
 }() );
