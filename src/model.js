@@ -87,10 +87,18 @@ AFrame.Model = ( function() {
 	    * value will be returned.  If data does not validate, a [FieldValidityState](AFrame.FieldValidityState.html)
 	    * will be returned.
         *
+        *    // update single item
         *    var retval = model.set( 'name', 'Shane Tomlinson' );
         *    if( retval !== true ) {
         *        // something went wrong
         *    }
+        *
+        *    // bulk update.  retVals will have a true/FieldValidityState for
+        *    // each item being set.
+        *    var retVals = model.set( {
+        *        name: 'Shane Tomlinson',
+        *        employer: 'AFrame Foundary'
+        *    } );
         *
 	    * @method set
 	    * @param {string} fieldName name of field
