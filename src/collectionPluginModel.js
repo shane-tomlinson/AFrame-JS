@@ -60,7 +60,7 @@ AFrame.CollectionPluginModel = ( function() {
 
             Plugin.sc.init.call( me, config );
 
-			me.defaultModelConstructor = inheritsFrom( me.schema, AFrame.Model ) ? me.schema : AFrame.Model;
+			me.defaultModelConstructor = AFrame.extendsFrom( me.schema, AFrame.Model ) ? me.schema : AFrame.Model;
 
             var plugged = me.getPlugged();
             plugged.insert = augmentInsert.bind( me, plugged.insert );
@@ -86,18 +86,6 @@ AFrame.CollectionPluginModel = ( function() {
 			data: data
 		} );
         return model;
-    }
-
-    function inheritsFrom( itemToCheck, constructorToCheck ) {
-		var same = false;
-		if( AFrame.func( itemToCheck ) ) {
-			do {
-				same = itemToCheck === constructorToCheck;
-				itemToCheck = itemToCheck.superclass;
-			} while( itemToCheck && !same );
-		}
-
-		return same;
     }
 
     return Plugin;
