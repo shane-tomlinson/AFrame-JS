@@ -9,21 +9,21 @@
 *    var fieldValidityState = AFrame.DataValidation.validate( {
 *        data: 1,
 *        criteria: criteria
-*    } );  
+*    } );
 *    // fieldValidityState.valid is false
 *    // fieldValidityState.rangeUnderflow is true
 *
 *    fieldValidityState = AFrame.DataValidation.validate( {
 *        data: 10,
 *        criteria: criteria
-*    } );  
+*    } );
 *    // fieldValidityState.valid is true
 *    // fieldValidityState.rangeUnderflow is false
 *
 *
 *    // Add a custom validator
 *
-*    AFrame.DataValidation.setValidator( 'specializednumber', 'min', function( dataToValidate, 
+*    AFrame.DataValidation.setValidator( 'specializednumber', 'min', function( dataToValidate,
 *           fieldValidityState, thisCriteria, allCriteria ) {
 *       // Do validation here.  If there is a problem, set the error on fieldValidityState
 *       var valid = // code to do validation
@@ -36,19 +36,19 @@
 *         min: 1234
 *         type: 'specializednumber'
 *    };
-*            
+*
 *    var fieldValidityState = AFrame.DataValidation.validate( {
 *        data: 1,
 *        criteria: criteria
-*    } );  
-*                
+*    } );
+*
 *
 * @class AFrame.DataValidation
 * @static
 */
 AFrame.DataValidation = ( function() {
     "use strict";
-    
+
     var defined = AFrame.defined;
     var validationFuncs = {};
     var jsTypes = {
@@ -56,9 +56,9 @@ AFrame.DataValidation = ( function() {
         number: 'number',
         integer: 'number'
     };
-    
+
     var Validation = {
-        
+
         /**
         * validate the dataToValidate using the given criteria.
         *
@@ -77,14 +77,14 @@ AFrame.DataValidation = ( function() {
         *    fieldValidityState = AFrame.DataValidation.validate( {
         *        data: 10,
         *        criteria: criteria
-        *    } ); 
+        *    } );
         *    // fieldValidityState.valid is true
         *    // fieldValidityState.rangeUnderflow is false
         *
         * @method validate
         * @param {variant} options.data - dataToValidate to validate
         * @param {object} options.criteria - the criteria to validate against
-        * @param {FieldValidityState} options.fieldValidityState (optional) - 
+        * @param {FieldValidityState} options.fieldValidityState (optional) -
         *  field validity state to use, one is created if not given
         * @return {FieldValidityState} [FieldValidityState](AFrame.FieldValidityState.html) for the dataToValidate.
         */
@@ -93,15 +93,15 @@ AFrame.DataValidation = ( function() {
             var allCriteria = options.criteria;
             var fieldValidityState = options.fieldValidityState || AFrame.FieldValidityState.getInstance();
             var type = allCriteria.type || 'text';
-            
+
             for( var key in allCriteria ) {
                 this.validateDataForTypeCriteria( dataToValidate, type, key, fieldValidityState, allCriteria );
                 this.validateDataForTypeCriteria( dataToValidate, 'all', key, fieldValidityState, allCriteria );
             }
-            
+
             return fieldValidityState;
         },
-        
+
         validateDataForTypeCriteria: function( dataToValidate, type, currCriteriaName, fieldValidityState, allCriteria ) {
             var validators = validationFuncs[ type ] || {};
             var validator = validators[ currCriteriaName ];
@@ -109,11 +109,11 @@ AFrame.DataValidation = ( function() {
                 validator( dataToValidate, fieldValidityState, allCriteria[ currCriteriaName ], allCriteria );
             }
         },
-        
+
         /**
         * Set a validator to be used for a certain type
         *
-        *    AFrame.DataValidation.setValidator( 'specializednumber', 'min', function( dataToValidate, 
+        *    AFrame.DataValidation.setValidator( 'specializednumber', 'min', function( dataToValidate,
         *           fieldValidityState, thisCriteria, allCriteria ) {
         *       // Do validation here.  If there is a problem, set the error on fieldValidityState
         *       var valid = // code to do validation
@@ -126,12 +126,12 @@ AFrame.DataValidation = ( function() {
         *         min: 'criteria',
         *         type: 'specializednumber'
         *    };
-        *            
+        *
         *    var fieldValidityState = AFrame.DataValidation.validate( {
         *        data: 1,
         *        criteria: criteria
         *    } );
-        *                  
+        *
         * @method setValidator
         * @param {string} type - type of data to set validator for
         * @param {string} criteria - name of criteria to set validator for
@@ -148,24 +148,31 @@ AFrame.DataValidation = ( function() {
             fieldValidityState.setError( 'valueMissing' );
         }
     } );
-        
+
     Validation.setValidator( 'all', 'type', function( dataToValidate, fieldValidityState, type ) {
-        if( defined( dataToValidate ) ) {            
+        if( defined( dataToValidate ) ) {
             var jsType = jsTypes[ type ];
-            
+
             if( jsType && jsType != typeof( dataToValidate ) ) {
                 fieldValidityState.setError( 'typeMismatch' );
             }
         }
-    
     } );
-    
+
+    Validation.setValidator( 'integer', 'type', function( dataToValidate, fieldValidityState, type ) {
+		if( defined( dataToValidate ) ) {
+			if( parseInt( dataToValidate, 10 ) !== dataToValidate ) {
+				fieldValidityState.setError( 'typeMismatch' );
+			}
+		}
+    } );
+
     var numberMinValidation = function( dataToValidate, fieldValidityState, min ) {
         if( defined( dataToValidate ) && ( dataToValidate < min ) ) {
             fieldValidityState.setError( 'rangeUnderflow' );
         }
     };
-    
+
     Validation.setValidator( 'number', 'min', numberMinValidation );
     Validation.setValidator( 'integer', 'min', numberMinValidation );
 
@@ -173,10 +180,10 @@ AFrame.DataValidation = ( function() {
         if( defined( dataToValidate ) && ( dataToValidate > max ) ) {
             fieldValidityState.setError( 'rangeOverflow' );
         }
-    };    
+    };
     Validation.setValidator( 'number', 'max', numberMaxValidation );
     Validation.setValidator( 'integer', 'max', numberMaxValidation );
-        
+
     var numberStepValidation = function( dataToValidate, fieldValidityState, step, allCriteria ) {
         if( defined( dataToValidate ) ) {
             var min = allCriteria.min || 0;
@@ -186,10 +193,10 @@ AFrame.DataValidation = ( function() {
             }
         }
     };
-    
+
     Validation.setValidator( 'number', 'step', numberStepValidation );
     Validation.setValidator( 'integer', 'step', numberStepValidation );
-        
+
     Validation.setValidator( 'text', 'required', function( dataToValidate, fieldValidityState ) {
         if( !dataToValidate ) {
             fieldValidityState.setError( 'valueMissing' );
@@ -201,15 +208,15 @@ AFrame.DataValidation = ( function() {
             fieldValidityState.setError( 'tooLong' );
         }
     } );
-        
+
     Validation.setValidator( 'text', 'pattern', function( dataToValidate, fieldValidityState, pattern ) {
         var regexp = new RegExp( pattern );
         if( defined( dataToValidate ) && !regexp.test( dataToValidate ) ) {
             fieldValidityState.setError( 'patternMismatch' );
         }
     } );
-    
-    
+
+
     return Validation;
 
 })();
