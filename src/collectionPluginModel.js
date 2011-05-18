@@ -13,14 +13,14 @@
 *        name: { type: 'text' },
 *        employer: { type: 'text', 'def': 'AFrame Foundary' }
 *    };
-*    
+*
 *    // create the collection.
 *    this.collection = AFrame.create( AFrame.CollectionArray, {
 *        plugins: [ [ AFrame.CollectionPluginModel, {
 *            schema: schemaConfig
 *        } ] ]
 *    } );
-* 
+*
 * @class AFrame.CollectionPluginModel
 * @extends AFrame.Plugin
 * @constructor
@@ -28,12 +28,12 @@
 /**
 * The schema or schemaConfig to use.
 * @config schema
-* @type {SchemaConfig || Schema}
+* @type {SchemaConfig || Schema || Model}
 */
 /**
 * The model factory to use.  If not given, a default model factory is used
 *   which creates an AFrame.Model with the data inserted and the schema
-*   given.  The factory will be called with two parameters, the data 
+*   given.  The factory will be called with two parameters, the data
 *   and the schema.
 *
 *    // example of an overridden model factory function.
@@ -50,40 +50,55 @@
 */
 AFrame.CollectionPluginModel = ( function() {
     "use strict";
-    
+
     var Plugin = AFrame.Class( AFrame.Plugin, {
         importconfig: [ 'schema' ],
 
         init: function( config ) {
-            this.modelFactory = config.modelFactory || createModel;
-            
-            Plugin.sc.init.call( this, config );
-            
-            var plugged = this.getPlugged();
-            plugged.insert = augmentInsert.bind( this, plugged.insert );
-            
+        	var me=this;
+            me.modelFactory = config.modelFactory || createModel;
+
+            Plugin.sc.init.call( me, config );
+
+			me.defaultModelConstructor = inheritsFrom( me.schema, AFrame.Model ) ? me.schema : AFrame.Model;
+
+            var plugged = me.getPlugged();
+            plugged.insert = augmentInsert.bind( me, plugged.insert );
+
             if( plugged.add ) {
-                plugged.add = augmentInsert.bind( this, plugged.add );
+                plugged.add = augmentInsert.bind( me, plugged.add );
             }
         }
-        
+
     } );
-    
+
     function augmentInsert( decorated, item, insertAt ) {
         if( !( item instanceof AFrame.Model ) ) {
-            item = this.modelFactory( item, this.schema );
+            item = this.modelFactory( item );
         }
-        
+
         decorated.call( this.getPlugged(), item, insertAt );
     }
-    
-    function createModel( data, schema ) {
-        var model = AFrame.create( AFrame.Model, {
-            schema: schema,
-            data: data
-        } );
+
+    function createModel( data ) {
+		var model = AFrame.create( this.defaultModelConstructor, {
+			schema: this.schema,
+			data: data
+		} );
         return model;
     }
-    
+
+    function inheritsFrom( itemToCheck, constructorToCheck ) {
+		var same = false;
+		if( AFrame.func( itemToCheck ) ) {
+			do {
+				same = itemToCheck === constructorToCheck;
+				itemToCheck = itemToCheck.superclass;
+			} while( itemToCheck && !same );
+		}
+
+		return same;
+    }
+
     return Plugin;
 }() );
