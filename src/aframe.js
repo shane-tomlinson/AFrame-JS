@@ -8,7 +8,7 @@
 */
 var AFrame = ( function() {
     "use strict";
-    
+
     var AFrame = {
         /**
         * Used to extend a class with another class and optional functions.
@@ -17,29 +17,55 @@ var AFrame = ( function() {
         *        AFrame.NewClass.sc.constructor.apply( this, arguments );
         *    }
         *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
-        *        someFunc: function() { 
+        *        someFunc: function() {
         *            // do something here
         *        }
         *    } );
         *
         * @method extend
-        * @param {function} derived - class to extend
-        * @param {function} sc - class to extend with.
+        * @param {function} subClass - the class to extend
+        * @param {function} superClass - The super class.
         * @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
         */
-        extend: function( derived, sc ) {
+        extend: function( subClass, superClass ) {
             var F = function() {};
-            F.prototype = sc.prototype;
-            derived.prototype = new F();
-            derived.superclass = sc;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
-            derived.sc = sc.prototype;
+            F.prototype = superClass.prototype;
+            subClass.prototype = new F;
+            subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
+            subClass.sc = superClass.prototype;
 
             var mixins = Array.prototype.slice.call( arguments, 2 );
             for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
-                AFrame.mixin( derived.prototype, mixin );
+                AFrame.mixin( subClass.prototype, mixin );
             }
-            derived.prototype.constructor = derived;
+            subClass.prototype.constructor = subClass;
         },
+
+		/**
+		* Checks whether the subClass is a sub-class of superClass, as is
+		*  done using AFrame.extend or AFrame.Class.
+		*
+		*    var SubClass = AFrame.Class( AFrame.AObject );
+		*
+		*    // extendsFrom will be true;
+		*    var extendsFrom = AFrame.extendsFrom( SubClass, AFrame.AObject );
+		*
+		* @method extendsFrom
+		* @param {function} subClass - the potential subclass
+		* @param {function} superClass - the potential superclass
+		* @return {boolean} true if subClass is a subclass of superClass, false otw.
+		*/
+		extendsFrom: function( subClass, superClass ) {
+			var same = false;
+			if( AFrame.func( subClass ) ) {
+				do {
+					same = subClass === superClass;
+					subClass = subClass.superclass;
+				} while( subClass && !same );
+			}
+
+			return same;
+		},
 
         /**
         * extend an object with the members of another object.
@@ -61,8 +87,8 @@ var AFrame = ( function() {
         },
 
         /**
-        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
-        * When using the create function, any Plugins are automatically created 
+        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.
+        * When using the create function, any Plugins are automatically created
         * and bound, and init is called on the created object.
         *
         *    // create an object with no config, no plugins
@@ -72,7 +98,7 @@ var AFrame = ( function() {
         *    var newObj = AFrame.create( AFrame.SomeObject, {
         *       configItem1: configVal1
         *    } );
-        *    
+        *
         *    // create an object with a plugin, but no other config
         *    var newObj = AFrame.create( AFrame.SomeObject, {
         *       plugins: [ AFrame.SomePlugin ]
@@ -104,24 +130,24 @@ var AFrame = ( function() {
                 } catch ( e ) {
                     AFrame.log( e.toString() );
                 }
-                
+
                 config = config || {};
                 var plugins = config.plugins || [];
-                
+
                 // recursively create and bind any plugins
                 for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
                     plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
                     var pluginConfig = AFrame.mixin( { plugged: retval }, plugin[ 1 ] || {} );
                     AFrame.create( plugin[ 0 ], pluginConfig );
                 }
-                
+
                 retval.init( config );
             }
             else {
                 throw 'Class does not exist.';
             }
             return retval;
-            
+
         },
 
         /**
@@ -131,7 +157,7 @@ var AFrame = ( function() {
          *        name: 'AFrame'
          *     };
          *     AFrame.remove( obj, 'name' );
-         *     
+         *
          * @method remove
          * @param {object} object to remove item from.
          * @param {string} key of item to remove
@@ -142,12 +168,12 @@ var AFrame = ( function() {
         },
 
         currentID: 0,
-        
+
         /**
          * Get a unique ID
          *
          *     var uniqueID = AFrame.getUniqueID();
-         *     
+         *
          * @method getUniqueID
          * @return {id} a unique id
          */
@@ -160,7 +186,7 @@ var AFrame = ( function() {
          * Check whether an item is defined
          *
          *     var isDefined = AFrame.func( valueToCheck );
-         *     
+         *
          * @method defined
          * @param {variant} itemToCheck
          * @return {boolean} true if item is defined, false otw.
@@ -168,7 +194,7 @@ var AFrame = ( function() {
         defined: function( itemToCheck ) {
             return 'undefined' != typeof( itemToCheck );
         },
-        
+
         /**
         * If the console is available, log a message.
         *
@@ -182,12 +208,12 @@ var AFrame = ( function() {
                 console.log( message );
             }
         },
-        
+
         /**
         * Check whether an item is a function
          *
          *     var isFunc = AFrame.func( valueToCheck );
-         *     
+         *
         * @method func
         * @param {variant} itemToCheck
         * @return {boolean} true if item is a function, false otw.
@@ -195,7 +221,7 @@ var AFrame = ( function() {
         func: function( itemToCheck ) {
             return 'function' == typeof( itemToCheck );
         },
-        
+
         /**
         * Check whether an item is a string
         *
@@ -208,7 +234,7 @@ var AFrame = ( function() {
         string: function( itemToCheck ) {
             return '[object String]' === Object.prototype.toString.apply( itemToCheck );
         },
-        
+
         /**
         * Check whether an item is an array
         *
@@ -233,7 +259,7 @@ var AFrame = ( function() {
     if( typeof( module ) != 'undefined' ) {
         module.exports = AFrame;
     }
-    
+
     return AFrame;
 
 }() );
