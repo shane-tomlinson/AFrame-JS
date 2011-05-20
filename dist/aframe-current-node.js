@@ -122,7 +122,7 @@ if(!Date.prototype.toISOString) {
 */
 var AFrame = ( function() {
     "use strict";
-    
+
     var AFrame = {
         /**
         * Used to extend a class with another class and optional functions.
@@ -131,29 +131,55 @@ var AFrame = ( function() {
         *        AFrame.NewClass.sc.constructor.apply( this, arguments );
         *    }
         *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
-        *        someFunc: function() { 
+        *        someFunc: function() {
         *            // do something here
         *        }
         *    } );
         *
         * @method extend
-        * @param {function} derived - class to extend
-        * @param {function} sc - class to extend with.
+        * @param {function} subClass - the class to extend
+        * @param {function} superClass - The super class.
         * @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
         */
-        extend: function( derived, sc ) {
+        extend: function( subClass, superClass ) {
             var F = function() {};
-            F.prototype = sc.prototype;
-            derived.prototype = new F();
-            derived.superclass = sc;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
-            derived.sc = sc.prototype;
+            F.prototype = superClass.prototype;
+            subClass.prototype = new F;
+            subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
+            subClass.sc = superClass.prototype;
 
             var mixins = Array.prototype.slice.call( arguments, 2 );
             for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
-                AFrame.mixin( derived.prototype, mixin );
+                AFrame.mixin( subClass.prototype, mixin );
             }
-            derived.prototype.constructor = derived;
+            subClass.prototype.constructor = subClass;
         },
+
+		/**
+		* Checks whether the subClass is a sub-class of superClass, as is
+		*  done using AFrame.extend or AFrame.Class.
+		*
+		*    var SubClass = AFrame.Class( AFrame.AObject );
+		*
+		*    // extendsFrom will be true;
+		*    var extendsFrom = AFrame.extendsFrom( SubClass, AFrame.AObject );
+		*
+		* @method extendsFrom
+		* @param {function} subClass - the potential subclass
+		* @param {function} superClass - the potential superclass
+		* @return {boolean} true if subClass is a subclass of superClass, false otw.
+		*/
+		extendsFrom: function( subClass, superClass ) {
+			var same = false;
+			if( AFrame.func( subClass ) ) {
+				do {
+					same = subClass === superClass;
+					subClass = subClass.superclass;
+				} while( subClass && !same );
+			}
+
+			return same;
+		},
 
         /**
         * extend an object with the members of another object.
@@ -175,8 +201,8 @@ var AFrame = ( function() {
         },
 
         /**
-        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.  
-        * When using the create function, any Plugins are automatically created 
+        * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.
+        * When using the create function, any Plugins are automatically created
         * and bound, and init is called on the created object.
         *
         *    // create an object with no config, no plugins
@@ -186,7 +212,7 @@ var AFrame = ( function() {
         *    var newObj = AFrame.create( AFrame.SomeObject, {
         *       configItem1: configVal1
         *    } );
-        *    
+        *
         *    // create an object with a plugin, but no other config
         *    var newObj = AFrame.create( AFrame.SomeObject, {
         *       plugins: [ AFrame.SomePlugin ]
@@ -218,24 +244,24 @@ var AFrame = ( function() {
                 } catch ( e ) {
                     AFrame.log( e.toString() );
                 }
-                
+
                 config = config || {};
                 var plugins = config.plugins || [];
-                
+
                 // recursively create and bind any plugins
                 for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
                     plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
                     var pluginConfig = AFrame.mixin( { plugged: retval }, plugin[ 1 ] || {} );
                     AFrame.create( plugin[ 0 ], pluginConfig );
                 }
-                
+
                 retval.init( config );
             }
             else {
                 throw 'Class does not exist.';
             }
             return retval;
-            
+
         },
 
         /**
@@ -245,7 +271,7 @@ var AFrame = ( function() {
          *        name: 'AFrame'
          *     };
          *     AFrame.remove( obj, 'name' );
-         *     
+         *
          * @method remove
          * @param {object} object to remove item from.
          * @param {string} key of item to remove
@@ -256,12 +282,12 @@ var AFrame = ( function() {
         },
 
         currentID: 0,
-        
+
         /**
          * Get a unique ID
          *
          *     var uniqueID = AFrame.getUniqueID();
-         *     
+         *
          * @method getUniqueID
          * @return {id} a unique id
          */
@@ -274,7 +300,7 @@ var AFrame = ( function() {
          * Check whether an item is defined
          *
          *     var isDefined = AFrame.func( valueToCheck );
-         *     
+         *
          * @method defined
          * @param {variant} itemToCheck
          * @return {boolean} true if item is defined, false otw.
@@ -282,7 +308,7 @@ var AFrame = ( function() {
         defined: function( itemToCheck ) {
             return 'undefined' != typeof( itemToCheck );
         },
-        
+
         /**
         * If the console is available, log a message.
         *
@@ -296,12 +322,12 @@ var AFrame = ( function() {
                 console.log( message );
             }
         },
-        
+
         /**
         * Check whether an item is a function
          *
          *     var isFunc = AFrame.func( valueToCheck );
-         *     
+         *
         * @method func
         * @param {variant} itemToCheck
         * @return {boolean} true if item is a function, false otw.
@@ -309,7 +335,7 @@ var AFrame = ( function() {
         func: function( itemToCheck ) {
             return 'function' == typeof( itemToCheck );
         },
-        
+
         /**
         * Check whether an item is a string
         *
@@ -322,7 +348,7 @@ var AFrame = ( function() {
         string: function( itemToCheck ) {
             return '[object String]' === Object.prototype.toString.apply( itemToCheck );
         },
-        
+
         /**
         * Check whether an item is an array
         *
@@ -347,7 +373,7 @@ var AFrame = ( function() {
     if( typeof( module ) != 'undefined' ) {
         module.exports = AFrame;
     }
-    
+
     return AFrame;
 
 }() );
@@ -357,11 +383,11 @@ AFrame.Class = ( function() {
     /**
     * A shortcut to create a new class with a default constructor.  A default
     *   constructor does nothing unless it has a superclass, where it calls the
-    *   superclasses constructor.  If the first parameter to Class is a function, 
-    *   the parameter is assumed to be the superclass.  All other parameters 
+    *   superclasses constructor.  If the first parameter to Class is a function,
+    *   the parameter is assumed to be the superclass.  All other parameters
     *   should be objects which are mixed in to the new classes prototype.
     *
-    * If a new class needs a non-standard constructor, the class constructor should 
+    * If a new class needs a non-standard constructor, the class constructor should
     *   be created manually and then any mixins/superclasses set up using the
     *   [AFrame.extend](#method_extend) function.
     *
@@ -382,18 +408,18 @@ AFrame.Class = ( function() {
     * @method AFrame.Class
     * @param {function} superclass (optional) - superclass to use.  If not given, class has
     *   no superclass.
-    * @param {object} 
+    * @param {object}
     * @return {function} - the new class.
     */
     var Class = function() {
         var F;
-        
+
         var args = Array.prototype.slice.call( arguments, 0 );
-        
+
         // we have a superclass, do everything related to a superclass
         if( AFrame.func( args[ 0 ] ) ) {
-            F = function() { 
-                F.sc.constructor.call( this ); 
+            F = function() {
+                F.sc.constructor.call( this );
             };
             AFrame.extend( F, args[ 0 ] );
             args.splice( 0, 1 );
@@ -402,17 +428,17 @@ AFrame.Class = ( function() {
             // no superclass.  Create a base class.
             F = function() {};
         }
-        
+
         for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
             AFrame.mixin( F.prototype, mixin );
         }
-        
+
         // Always set the constructor last in case any mixins overwrote it.
         F.prototype.constructor = F;
-        
+
         return F;
     };
-        
+
     /**
     * Walk the class chain of an object.  The object must be an AFrame.Class/AFrame.extend based.
     *
@@ -435,9 +461,10 @@ AFrame.Class = ( function() {
             currClass = currClass.superclass;
         } while( currClass );
     };
-        
+
     return Class;
-}() );/**
+}() );
+/**
  * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
  * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
  * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
@@ -881,9 +908,9 @@ AFrame.EnumerableMixin = ( function() {
 }() );/**
  * The base object of nearly everything.  It is recommended to create all new classes as a subclass
  * of AObject since it provides general functionality such as event binding and teardown housekeeping.
- * All AObjects in the system have a cid, a cid is a unique identifier within the application.  
- * If an AObject creates and is responsible for maintaining other AObjects, [addChild](#method_addChild) 
- * should be called with the created children.  When this object is torn down, the child object added via addChild will 
+ * All AObjects in the system have a cid, a cid is a unique identifier within the application.
+ * If an AObject creates and is responsible for maintaining other AObjects, [addChild](#method_addChild)
+ * should be called with the created children.  When this object is torn down, the child object added via addChild will
  * have its teardown function called as well.  This can ensure that all memory is freed and that
  * no references are kept when the object's lifespan has ended.
  *
@@ -908,23 +935,23 @@ AFrame.EnumerableMixin = ( function() {
  *        secondImportedParam: "So is this",
  *        thirdParam: "But this is not"
  *    } );
- * 
+ *
  * Event Usage
  *=========
  *
- * All AFrame.AObject based classes have a built in event mechanism.  Events are 
- *  dynamically created, there is no need to explicitly create an event, all that is 
+ * All AFrame.AObject based classes have a built in event mechanism.  Events are
+ *  dynamically created, there is no need to explicitly create an event, all that is
  *  needed is to call the object's triggerEvent or bindEvent.
  *
  * Event Example Usage:
  *
  *    // Assume anObject is an AFrame.AObject based object.
- *    // Every AFrame.AObject based object triggers an onInit event 
+ *    // Every AFrame.AObject based object triggers an onInit event
  *    // when its init function is called.
  *    var onObjectInit = function() {
  *       // called whenever anObject.init is called.
  *    };
- *   
+ *
  *    anObject.bindEvent( 'onInit', onObjectInit );
  *    anObject.init();    // calls onObjectInit function
  *
@@ -954,8 +981,8 @@ AFrame.EnumerableMixin = ( function() {
  *        event2Handler: function() {
  *             // handle event here
  *        }
- *    } );		
- *  
+ *    } );
+ *
  * @class AFrame.AObject
  * @uses AFrame.ObservablesMixin
  */
@@ -963,9 +990,9 @@ AFrame.EnumerableMixin = ( function() {
  * cid for the object, if not given, a unique id is assigned
  * @config {cid} cid
  */
-AFrame.AObject = (function(){ 
+AFrame.AObject = (function(){
     "use strict";
-    
+
     var AObject = AFrame.Class( {
         /**
          * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) or [AFrame.create](AFrmae.html#method_create)is used, this will be called automatically.
@@ -973,7 +1000,7 @@ AFrame.AObject = (function(){
          *    var obj = new AFrame.SomeObject();
          *    obj.init( { name: 'value' } );
          *
-         * 
+         *
          * @method init
          * @param config {object} - configuration
          * @param config.cid {id} - cid to give to the object, if not given, one is generated.
@@ -982,10 +1009,10 @@ AFrame.AObject = (function(){
             this.config = config;
             this.cid = config.cid || AFrame.getUniqueID();
             this.children = {};
-            
+
             importConfig.call( this );
             this.bindEvents();
-            
+
             /**
              * Triggered when the object is initialized
              * @event onInit
@@ -993,7 +1020,7 @@ AFrame.AObject = (function(){
              */
              this.triggerEvent( 'onInit' );
         },
-        
+
         /**
          * Return the configuration object given in init.
          *
@@ -1005,7 +1032,7 @@ AFrame.AObject = (function(){
         getConfig: function() {
             return this.config;
         },
-        
+
         /**
          * Override to do any event binding
          * @method bindEvents
@@ -1013,7 +1040,7 @@ AFrame.AObject = (function(){
         bindEvents: function() {
             bindEvents.call( this );
         },
-        
+
         /**
          * Tear the object down, free any references
          *
@@ -1034,7 +1061,7 @@ AFrame.AObject = (function(){
             this.teardownChildren();
             this.config = this.cid = this.children = null;
         },
-        
+
         teardownChildren: function() {
             for( var cid in this.children ) {
                 var child = this.children[ cid ];
@@ -1042,7 +1069,7 @@ AFrame.AObject = (function(){
                 AFrame.remove( this.children, cid );
             }
         },
-        
+
         /**
          * Get the CID of the object
          *
@@ -1054,7 +1081,7 @@ AFrame.AObject = (function(){
         getCID: function() {
             return this.cid;
         },
-        
+
         /**
          * Add a child.  All children are torn down on this object's teardown
          *
@@ -1068,11 +1095,11 @@ AFrame.AObject = (function(){
         addChild: function( child ) {
             this.children[ child.getCID() ] = child;
         },
-        
+
         /**
          * Remove a child.
          *
-         *    // childToRemove is a child that this object has already 
+         *    // childToRemove is a child that this object has already
          *    // created and no longer needs.
          *    this.removeChild( childToRemove.getCID() );
          *
@@ -1082,15 +1109,15 @@ AFrame.AObject = (function(){
         removeChild: function( cid ) {
             AFrame.remove( this.children, cid );
         },
-        
-        
+
+
         /**
-        * Create a trigger event proxy function.  Useful to re-broadcast an event or when a DOM 
+        * Create a trigger event proxy function.  Useful to re-broadcast an event or when a DOM
         *   event should trigger a normal AObject based event.
         *
         *    // use triggerProxy to rebroadcast an event from a child
         *    child.bindEvent( 'eventToProxy', this.triggerProxy( 'eventToProxy' ) );
-        *    
+        *
         *
         * @method triggerProxy
         * @param {string} eventName - name of event to trigger
@@ -1099,51 +1126,55 @@ AFrame.AObject = (function(){
             return this.triggerEvent.bind( this, eventName );
         }
     }, AFrame.ObservablesMixin );
-    
+
     function importConfig() {
         var me = this;
         AFrame.Class.walkChain( function( currClass ) {
-            var classImports = currClass.prototype.importconfig || [];
-            classImports.forEach( function( importName ) {
-                if( AFrame.defined( me.config[ importName ] ) ) {
-                    me[ importName ] = me.config[ importName ];
-                }
-            } );
-        }, me );
-    }
-    
-    function bindEvents() {
-        var me = this;
-        
-        AFrame.Class.walkChain( function( currClass ) {
-            var events = currClass.prototype.events || {};
-            
-            for( var eventName in events ) {
-                var nameTarget = getNameAndTarget.call( me, eventName );
-                bindHandlers.call( me, nameTarget.name, nameTarget.target, events[ eventName ] );
+        	if( currClass.prototype.hasOwnProperty( 'importconfig' ) ) {
+				var classImports = currClass.prototype.importconfig;
+				classImports.forEach( function( importName ) {
+					if( AFrame.defined( me.config[ importName ] ) ) {
+						me[ importName ] = me.config[ importName ];
+					}
+				} );
             }
         }, me );
-        
+    }
+
+    function bindEvents() {
+        var me = this;
+
+        AFrame.Class.walkChain( function( currClass ) {
+        	if( currClass.prototype.hasOwnProperty( 'events' ) ) {
+				var events = currClass.prototype.events;
+
+				for( var eventName in events ) {
+					var nameTarget = getNameAndTarget.call( me, eventName );
+					bindHandlers.call( me, nameTarget.name, nameTarget.target, events[ eventName ] );
+				}
+            }
+        }, me );
+
         function getNameAndTarget( eventName ) {
             var parts = eventName.split( ' ' );
             var target = me[ parts[ 1 ] ] || me;
-            
+
             return {
                 name: parts[ 0 ],
                 target: target
             };
         }
-        
+
         function bindHandlers( name, target, handlers ) {
             handlers = AFrame.array( handlers ) ? handlers : [ handlers ];
-            
+
             handlers.forEach( function( handler ) {
                 handler = AFrame.func( handler ) ? handler : me[ handler ];
                 target.bindEvent( name, handler, me );
             } );
         }
     }
-    
+
 
     return AObject;
 }() );
@@ -2469,14 +2500,14 @@ AFrame.CollectionPluginPersistence = ( function() {
 *        name: { type: 'text' },
 *        employer: { type: 'text', 'def': 'AFrame Foundary' }
 *    };
-*    
+*
 *    // create the collection.
 *    this.collection = AFrame.create( AFrame.CollectionArray, {
 *        plugins: [ [ AFrame.CollectionPluginModel, {
 *            schema: schemaConfig
 *        } ] ]
 *    } );
-* 
+*
 * @class AFrame.CollectionPluginModel
 * @extends AFrame.Plugin
 * @constructor
@@ -2484,12 +2515,12 @@ AFrame.CollectionPluginPersistence = ( function() {
 /**
 * The schema or schemaConfig to use.
 * @config schema
-* @type {SchemaConfig || Schema}
+* @type {SchemaConfig || Schema || Model}
 */
 /**
 * The model factory to use.  If not given, a default model factory is used
 *   which creates an AFrame.Model with the data inserted and the schema
-*   given.  The factory will be called with two parameters, the data 
+*   given.  The factory will be called with two parameters, the data
 *   and the schema.
 *
 *    // example of an overridden model factory function.
@@ -2506,43 +2537,47 @@ AFrame.CollectionPluginPersistence = ( function() {
 */
 AFrame.CollectionPluginModel = ( function() {
     "use strict";
-    
+
     var Plugin = AFrame.Class( AFrame.Plugin, {
         importconfig: [ 'schema' ],
 
         init: function( config ) {
-            this.modelFactory = config.modelFactory || createModel;
-            
-            Plugin.sc.init.call( this, config );
-            
-            var plugged = this.getPlugged();
-            plugged.insert = augmentInsert.bind( this, plugged.insert );
-            
+        	var me=this;
+            me.modelFactory = config.modelFactory || createModel;
+
+            Plugin.sc.init.call( me, config );
+
+			me.defaultModelConstructor = AFrame.extendsFrom( me.schema, AFrame.Model ) ? me.schema : AFrame.Model;
+
+            var plugged = me.getPlugged();
+            plugged.insert = augmentInsert.bind( me, plugged.insert );
+
             if( plugged.add ) {
-                plugged.add = augmentInsert.bind( this, plugged.add );
+                plugged.add = augmentInsert.bind( me, plugged.add );
             }
         }
-        
+
     } );
-    
+
     function augmentInsert( decorated, item, insertAt ) {
         if( !( item instanceof AFrame.Model ) ) {
-            item = this.modelFactory( item, this.schema );
+            item = this.modelFactory( item );
         }
-        
+
         decorated.call( this.getPlugged(), item, insertAt );
     }
-    
-    function createModel( data, schema ) {
-        var model = AFrame.create( AFrame.Model, {
-            schema: schema,
-            data: data
-        } );
+
+    function createModel( data ) {
+		var model = AFrame.create( this.defaultModelConstructor, {
+			schema: this.schema,
+			data: data
+		} );
         return model;
     }
-    
+
     return Plugin;
-}() );/**
+}() );
+/**
  * A basic data schema, useful for defining a data structure, validating data, and preparing data to 
  * be loaded from or saved to a persistence store.  Schema's define the data structure and can
  * be nested to create complex data structures.  Schemas perform serialization duties in getAppData and
@@ -3319,10 +3354,18 @@ AFrame.Model = ( function() {
 	    * value will be returned.  If data does not validate, a [FieldValidityState](AFrame.FieldValidityState.html)
 	    * will be returned.
         *
+        *    // update single item
         *    var retval = model.set( 'name', 'Shane Tomlinson' );
         *    if( retval !== true ) {
         *        // something went wrong
         *    }
+        *
+        *    // bulk update.  retVals will have a true/FieldValidityState for
+        *    // each item being set.
+        *    var retVals = model.set( {
+        *        name: 'Shane Tomlinson',
+        *        employer: 'AFrame Foundary'
+        *    } );
         *
 	    * @method set
 	    * @param {string} fieldName name of field

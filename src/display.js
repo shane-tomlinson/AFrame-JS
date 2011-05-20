@@ -316,11 +316,13 @@ AFrame.Display = (function() {
         var me = this, target = me.getTarget();
 
         AFrame.Class.walkChain( function( currClass ) {
-            var domEvents = currClass.prototype.domevents || {};
+        	if( currClass.prototype.hasOwnProperty( 'domevents' ) ) {
+				var domEvents = currClass.prototype.domevents;
 
-            for( var eventName in domEvents ) {
-                var nameTarget = getNameAndTarget.call( me, eventName );
-                bindHandlers.call( me, nameTarget.name, nameTarget.target, domEvents[ eventName ] );
+				for( var eventName in domEvents ) {
+					var nameTarget = getNameAndTarget.call( me, eventName );
+					bindHandlers.call( me, nameTarget.name, nameTarget.target, domEvents[ eventName ] );
+				}
             }
         }, me );
 
