@@ -19,7 +19,7 @@ Presented below is a simple MVC application that combines many of AFrameJS' conc
 A working version of this demo can be found at the [AFrameJS site](http://www.aframejs.com/)
 
     // The "main" Controller.
-                
+
     // Define the "layout" of model using a SchemaConfig.
     var friendSchemaConfig = {
         name: { type: 'text' }
@@ -28,7 +28,7 @@ A working version of this demo can be found at the [AFrameJS site](http://www.af
     // Use a collection to keep track of the friend models.  When data items are
     // inserted into collection, models will be created automatically using the
     // layout defined in the friendSchemaConfig
-    var friendsCollection = AFrame.create( AFrame.CollectionArray, {
+    var friendsCollection = AFrame.CollectionArray.create( {
         // Whenever data is inserted into the collection, create a model for the
         //  data using the layout defined in friendSchemaConfig.
         plugins: [ [ AFrame.CollectionPluginModel, {
@@ -37,9 +37,9 @@ A working version of this demo can be found at the [AFrameJS site](http://www.af
     } );
 
     // This is a list of friends.  It will display the data held by each of Friend models.
-    // The list is bound to the friendsCollection, any time a friend is added or removed 
+    // The list is bound to the friendsCollection, any time a friend is added or removed
     // from the collection, the list will be automatically updated.
-    var friendsList = AFrame.create( AFrame.List, {
+    var friendsList = AFrame.List.create( {
         target: '#friendList',
         listElementFactory: function( model, index ) {
             // whenever a model is inserted into the collection, create a list item
@@ -59,7 +59,7 @@ A working version of this demo can be found at the [AFrameJS site](http://www.af
     $( '#add-friend' ).click( function( event ) {
            var friend_name = prompt( "Who is your friend?" );
            friendsCollection.insert( { name: friend_name } );
-    } );            
+    } );
 
 ### Using AFrameJS without compilation ###
 
@@ -104,16 +104,16 @@ AFrameJS is released under the [Creative Commons Attribution 3.0 License](http:/
 
 ### Contributing ###
 AFrameJS is still in heavy development and has a long way to go to be a polished product.  Any suggestions, any feedback, and any
-contributions will be taken seriously.  
+contributions will be taken seriously.
 
 I am especially in need at the moment of more people using AFrameJS to create simple apps
 that help point out where pain points, difficulties and down right strangenesses are.  A clean API makes life so much easier, with
 help, I'd like to make AFrameJS the cleanest Javascript MVC library that exists.
 
-A second area that could use attention is in documentation.  I have tried my best to document as I have gone along, but some more 
+A second area that could use attention is in documentation.  I have tried my best to document as I have gone along, but some more
 detailed documentation as well as some simple HOWTOs are needed.
 
-A third area that needs help is to write DOM adapters for various DOM libraries.  Adapters are needed for [YUI](http://developer.yahoo.com/yui/), 
+A third area that needs help is to write DOM adapters for various DOM libraries.  Adapters are needed for [YUI](http://developer.yahoo.com/yui/),
 [Dojo](http://dojotoolkit.org/), [Ext](http://www.sencha.com/products/js/), and any other DOM libraries out there that are used.
 
 ### Keeping up to date ###
