@@ -266,15 +266,14 @@ var AFrame = ( function() {
                     AFrame.log( e.toString() );
                 }
 
-                config = config || {};
-                var plugins = config.plugins || [];
+                AFrame.Class.walkChain( function( currClass ) {
+					if( currClass.prototype && currClass.prototype.hasOwnProperty( 'plugins' ) ) {
+						addPlugins( retval, currClass.prototype.plugins );
+					}
+                }, retval );
 
-                // recursively create and bind any plugins
-                for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-                    plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
-                    var pluginConfig = AFrame.mixin( { plugged: retval }, plugin[ 1 ] || {} );
-                    AFrame.create( plugin[ 0 ], pluginConfig );
-                }
+                config = config || {};
+				addPlugins( retval, config.plugins || [] );
 
                 retval.init( config );
             }
@@ -390,6 +389,15 @@ var AFrame = ( function() {
             return '[object Array]' === Object.prototype.toString.apply( itemToCheck );
         }
     };
+
+	function addPlugins( plugged, plugins ) {
+		// recursively create and bind any plugins
+		for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+			plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
+			var pluginConfig = AFrame.mixin( { plugged: plugged }, plugin[ 1 ] || {} );
+			AFrame.create( plugin[ 0 ], pluginConfig );
+		}
+	}
 
     if( typeof( module ) != 'undefined' ) {
         module.exports = AFrame;

@@ -199,7 +199,28 @@ testsToRun.push( {
             plugins: [ PluginMock ]
         };
 
-        var instance = AFrame.create( AFrame.AObject, config );
+        var instance = AFrame.AObject.create( config );
+
+        Assert.isTrue( pluginInitCalled, 'plugin\'s init is called' );
+    },
+
+    testCreateWithClassPlugins: function() {
+        var pluginInitCalled;
+        var setPluggedPlugged;
+
+        var PluginMock = function() {};
+        PluginMock.prototype = {
+            init: function( config ) {
+                pluginInitCalled = true;
+                setPluggedPlugged = config.plugged;
+            }
+        }
+
+        var Class = AFrame.Class( AFrame.AObject, {
+        	plugins: [ PluginMock ]
+        } );
+
+        var instance = Class.create();
 
         Assert.isTrue( pluginInitCalled, 'plugin\'s init is called' );
     }
