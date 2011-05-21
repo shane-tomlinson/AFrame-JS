@@ -57,6 +57,8 @@ AFrame.Class = ( function() {
         // Always set the constructor last in case any mixins overwrote it.
         F.prototype.constructor = F;
 
+		AFrame.addCreate( F );
+
         return F;
     };
 

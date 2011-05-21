@@ -39,6 +39,27 @@ var AFrame = ( function() {
                 AFrame.mixin( subClass.prototype, mixin );
             }
             subClass.prototype.constructor = subClass;
+
+			AFrame.addCreate( subClass );
+        },
+
+		/**
+		* Add a create function to a Class if the Class has an init function.
+		*  The create function is an alias to call AFrame.create with this
+		*  class.
+		*
+		* @method addCreate
+		* @param {function} Class
+		*/
+        addCreate: function( Class ) {
+			if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
+				// Add a create function so that every class with init has one.
+				Class.create = function() {
+					var args = [].slice.call( arguments, 0 );
+					args.splice( 0, 0, this );
+					return AFrame.create.apply( null, args );
+				}.bind( Class );
+			}
         },
 
 		/**

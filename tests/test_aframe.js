@@ -73,8 +73,32 @@ testsToRun.push( {
 
 			doesExtend = AFrame.extendsFrom( SuperClass, SubClass );
 			Assert.isFalse( doesExtend, 'SuperClass does not extend from SubClass' );
+		},
 
+		testCreateWithInit: function() {
+			var Class = function() {};
+			AFrame.extend( Class, AFrame.AObject );
+
+			Assert.isFunction( Class.create, 'create added to classes with init' );
+		},
+
+		testCreateWithoutInit: function() {
+			var Class = function() {};
+			AFrame.extend( Class, {} );
+
+			Assert.isUndefined( Class.create, 'create not added to classes without init' );
+		},
+
+		testCreateOnClassWithCreate: function() {
+			var initialCreate = function(){};
+
+			var Class = function() {};
+			Class.create = initialCreate;
+			AFrame.extend( Class, AFrame.AObject );
+
+			Assert.areSame( initialCreate, Class.create, 'create is not overwritten' );
 		}
+
 } );
 
 testsToRun.push( {
