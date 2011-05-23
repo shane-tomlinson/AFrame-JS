@@ -56,7 +56,7 @@ AFrame.Class = ( function() {
 
 		AFrame.addCreate( F );
 
-//		F.extend = F.extend ||
+		F.extend = Class.bind( null, F );
         return F;
     };
 
@@ -92,10 +92,6 @@ AFrame.Class = ( function() {
 			F = alternate;
 		}
 		return F;
-	}
-
-	function extend() {
-		return AFrame.Class.apply( this, arguments );
 	}
 
     return Class;

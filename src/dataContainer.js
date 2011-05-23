@@ -36,25 +36,23 @@
 AFrame.DataContainer = ( function() {
     "use strict";
 
-    var DataContainer = function( data ) {
-        if( data instanceof DataContainer ) {
-            return data;
-        }
-        else if( data ) {
-            var dataContainer = data.__dataContainer;
-            if( !dataContainer ) {
-                dataContainer = AFrame.create( DataContainer, {
-                    data: data
-                } );
-            }
-            return dataContainer;
-        }
-        DataContainer.sc.constructor.call( this, data );
+    var DataContainer = AFrame.AObject.extend( {
+		constructor:function( data ) {
+			if( data instanceof DataContainer ) {
+				return data;
+			}
+			else if( data ) {
+				var dataContainer = data.__dataContainer;
+				if( !dataContainer ) {
+					dataContainer = AFrame.create( DataContainer, {
+						data: data
+					} );
+				}
+				return dataContainer;
+			}
+			DataContainer.sc.constructor.call( this, data );
 
-    };
-
-
-    AFrame.extend( DataContainer, AFrame.AObject, AFrame.EnumerableMixin, {
+		},
         /**
         * Initialize the data container.
         * @method init
@@ -231,7 +229,8 @@ AFrame.DataContainer = ( function() {
                 }
             }
         }
-    } );
+    },
+ 	AFrame.EnumerableMixin );
 
     return DataContainer;
 }() );

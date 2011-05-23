@@ -117,6 +117,17 @@ testsToRun.push( {
 		var inst = Class.create();
 
 		Assert.isTrue( constCalled, 'The constructor was specified and called' );
+	},
+
+	testExtend: function() {
+		Assert.isFunction( AFrame.AObject.extend, 'extend added to AObject' );
+
+		var Class = AFrame.AObject.extend( {} );
+
+		Assert.isTrue( AFrame.extendsFrom( Class, AFrame.AObject ), 'Class extends from AFrame.AObject' );
+
+		var inst = Class.create();
+		Assert.isTrue( inst instanceof AFrame.AObject, 'subclass is instanceof superclass' );
 	}
 } );
 
