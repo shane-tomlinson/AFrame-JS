@@ -124,58 +124,6 @@ var AFrame = ( function() {
     "use strict";
 
     var AFrame = {
-        /**
-        * Used to extend a class with another class and optional functions.
-        *
-        *    AFrame.NewClass = function() {
-        *        AFrame.NewClass.sc.constructor.apply( this, arguments );
-        *    }
-        *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
-        *        someFunc: function() {
-        *            // do something here
-        *        }
-        *    } );
-        *
-        * @method extend
-        * @param {function} subClass - the class to extend
-        * @param {function} superClass - The super class.
-        * @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
-        */
-        extend: function( subClass, superClass ) {
-            var F = function() {};
-            F.prototype = superClass.prototype;
-            subClass.prototype = new F;
-            subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
-            subClass.sc = superClass.prototype;
-
-            var mixins = Array.prototype.slice.call( arguments, 2 );
-            for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
-                AFrame.mixin( subClass.prototype, mixin );
-            }
-            subClass.prototype.constructor = subClass;
-
-			AFrame.addCreate( subClass );
-        },
-
-		/**
-		* Add a create function to a Class if the Class has an init function.
-		*  The create function is an alias to call AFrame.create with this
-		*  class.
-		*
-		* @method addCreate
-		* @param {function} Class
-		*/
-        addCreate: function( Class ) {
-			if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
-				// Add a create function so that every class with init has one.
-				Class.create = function() {
-					var args = [].slice.call( arguments, 0 );
-					args.splice( 0, 0, this );
-					return AFrame.create.apply( null, args );
-				}.bind( Class );
-			}
-        },
-
 		/**
 		* Checks whether the subClass is a sub-class of superClass, as is
 		*  done using AFrame.extend or AFrame.Class.
@@ -434,28 +382,25 @@ AFrame.Class = ( function() {
     *        }
     *     } );
     *
-    * @method AFrame.Class
+    * @method Class
     * @param {function} superclass (optional) - superclass to use.  If not given, class has
     *   no superclass.
     * @param {object}
     * @return {function} - the new class.
     */
     var Class = function() {
-        var F;
+        var args = Array.prototype.slice.call( arguments, 0 ), F;
 
-        var args = Array.prototype.slice.call( arguments, 0 );
-
-        // we have a superclass, do everything related to a superclass
         if( AFrame.func( args[ 0 ] ) ) {
-            F = function() {
-                F.sc.constructor.call( this );
-            };
-            AFrame.extend( F, args[ 0 ] );
+	        // we have a superclass, do everything related to a superclass
+        	F = chooseConstructor( args[ 1 ], function() {
+				F.sc.constructor.call( this );
+			} );
+			doExtension( F, args[ 0 ] );
             args.splice( 0, 1 );
         }
         else {
-            // no superclass.  Create a base class.
-            F = function() {};
+        	F = chooseConstructor( args[ 0 ], function() {} );
         }
 
         for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
@@ -465,8 +410,9 @@ AFrame.Class = ( function() {
         // Always set the constructor last in case any mixins overwrote it.
         F.prototype.constructor = F;
 
-		AFrame.addCreate( F );
+		addCreate( F );
 
+		F.extend = Class.bind( null, F );
         return F;
     };
 
@@ -492,6 +438,50 @@ AFrame.Class = ( function() {
             currClass = currClass.superclass;
         } while( currClass );
     };
+
+	function chooseConstructor( checkForConst, alternate ) {
+		var F;
+		if( checkForConst && checkForConst.hasOwnProperty( 'constructor' ) ) {
+			F = checkForConst.constructor;
+		}
+		else {
+			F = alternate;
+		}
+		return F;
+	}
+
+	function doExtension( subClass, superClass ) {
+		var F = function() {};
+		F.prototype = superClass.prototype;
+		subClass.prototype = new F;
+		subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
+		subClass.sc = superClass.prototype;
+
+		var mixins = Array.prototype.slice.call( arguments, 2 );
+		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
+			AFrame.mixin( subClass.prototype, mixin );
+		}
+		subClass.prototype.constructor = subClass;
+
+		addCreate( subClass );
+	}
+
+	/**
+	* @private
+	* Add a create function to a Class if the Class has an init function.
+	*  The create function is an alias to call AFrame.create with this
+	*  class.
+	*
+	* @method addCreate
+	* @param {function} Class
+	*/
+	function addCreate( Class ) {
+		if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
+			// Add a create function so that every class with init has one.
+			Class.create = AFrame.create.bind( null, Class );
+		}
+	}
+
 
     return Class;
 }() );
@@ -1247,25 +1237,23 @@ AFrame.AObject = (function(){
 AFrame.DataContainer = ( function() {
     "use strict";
 
-    var DataContainer = function( data ) {
-        if( data instanceof DataContainer ) {
-            return data;
-        }
-        else if( data ) {
-            var dataContainer = data.__dataContainer;
-            if( !dataContainer ) {
-                dataContainer = AFrame.create( DataContainer, {
-                    data: data
-                } );
-            }
-            return dataContainer;
-        }
-        DataContainer.sc.constructor.call( this, data );
+    var DataContainer = AFrame.AObject.extend( {
+		constructor:function( data ) {
+			if( data instanceof DataContainer ) {
+				return data;
+			}
+			else if( data ) {
+				var dataContainer = data.__dataContainer;
+				if( !dataContainer ) {
+					dataContainer = AFrame.create( DataContainer, {
+						data: data
+					} );
+				}
+				return dataContainer;
+			}
+			DataContainer.sc.constructor.call( this, data );
 
-    };
-
-
-    AFrame.extend( DataContainer, AFrame.AObject, AFrame.EnumerableMixin, {
+		},
         /**
         * Initialize the data container.
         * @method init
@@ -1442,7 +1430,8 @@ AFrame.DataContainer = ( function() {
                 }
             }
         }
-    } );
+    },
+ 	AFrame.EnumerableMixin );
 
     return DataContainer;
 }() );
@@ -3774,8 +3763,8 @@ AFrame.Field = ( function() {
 }() );
 
 /**
-* Takes care of validation for a [Field](AFrame.Field.html), using an HTML5 based 
-* [FieldValidityState](AFrame.FieldValidityState.html).   
+* Takes care of validation for a [Field](AFrame.Field.html), using an HTML5 based
+* [FieldValidityState](AFrame.FieldValidityState.html).
 * By default, a FieldPluginValidation is created for each Field.  This class
 * can be subclassed and added as a plugin to a [Field](AFrame.Field.html) when
 * specialized field validation is needed.  The following functions are added to
@@ -3787,41 +3776,38 @@ AFrame.Field = ( function() {
 * -   [setCustomValidity](#method_setCustomValidity)
 * -   [checkValidity](#method_checkValidity)
 *
-* Unlike the HTML5 spec, Field validation does not occur in real time, 
+* Unlike the HTML5 spec, Field validation does not occur in real time,
 * for validation to occur, the checkValidity function must be called.
 *
 *    <input type="number" id="numberInput" />
-*   
+*
 *    ---------
 *
 *    var field = AFrame.create( AFrame.Field, {
 *        target: '#numberInput'
 *    } );
-*   
+*
 *    // Set the value of the field, it is now displaying 3.1415
 *    field.set(3.1415);
-*   
+*
 *    // Check the validity of the field
 *    var isValid = field.checkValidity();
-*   
+*
 *    // The field is cleared, displays nothing
 *    field.clear();
-*   
+*
 *    field.set('invalid set');
-*   
+*
 *    // This will return false
 *    isValid = field.checkValidity();
-*   
+*
 *    // Get the validity state, as per the HTML5 spec
 *    var validityState = field.getValidityState();
 *
 *
 *##Example of using a custom validator##
 *
-*    function ValidatorPlugin() {
-*        ValidatorPlugin.sc.constructor.call( this );
-*    }
-*    AFrame.extend( ValidatorPlugin, AFrame.FieldPluginValidation, {
+*    var ValidatorPlugin = AFrame.FieldPluginValidation.extend( {
 *        validate: function() {
 *            var valid = ValidatorPlugin.sc.validate.call( this );
 *            if( valid ) {
@@ -3830,12 +3816,12 @@ AFrame.Field = ( function() {
 *            return valid;
 *        }
 *    } );
-*            
-*    var field = AFrame.create( AFrame.Field, {
+*
+*    var field = AFrame.Field.create( {
 *        target: '#numberInput',
 *        plugins: [ ValidatorPlugin ]
 *    } );
-*           
+*
 *    field.validate();
 *
 *
@@ -3845,17 +3831,17 @@ AFrame.Field = ( function() {
 */
 AFrame.FieldPluginValidation = (function() {
     "use strict";
-    
+
     var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
         events: {
             'onChange plugged': onChange
         },
-        
+
         init: function( config ) {
             this.calculateValidity = true;
 
             FieldPluginValidation.sc.init.call( this, config );
-            
+
             var plugged = this.getPlugged();
             plugged.getValidityState = this.getValidityState.bind( this );
             plugged.validate = this.validate.bind( this );
@@ -3863,7 +3849,7 @@ AFrame.FieldPluginValidation = (function() {
             plugged.setCustomValidity = this.setCustomValidity.bind( this );
             plugged.checkValidity = this.checkValidity.bind( this );
         },
-        
+
         /**
         * Get the current validity state for a field.
         *
@@ -3876,12 +3862,12 @@ AFrame.FieldPluginValidation = (function() {
             this.updateValidityState( true );
             return this.validityState;
         },
-        
+
 	    /**
-	     * Validate the field.  A field will validate if 1) Its form element does not have the required 
-         * attribute, or 2) the field has a length.  Sub classes can override this to perform more 
-         * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use 
-         * to check the validity of a form field.  Calling this will reset any validation errors 
+	     * Validate the field.  A field will validate if 1) Its form element does not have the required
+         * attribute, or 2) the field has a length.  Sub classes can override this to perform more
+         * specific validation schemes.  The HTML5 spec specifies checkValidity as the method to use
+         * to check the validity of a form field.  Calling this will reset any validation errors
          * previously set and start with a new state.
          *
          *    var isValid = field.checkValidity();
@@ -3892,7 +3878,7 @@ AFrame.FieldPluginValidation = (function() {
         checkValidity: function() {
             return this.validate();
         },
-        
+
 	    /**
 	    * This should not be called directly, instead [checkValidity](#method_checkValidity) should be.
         * Do the actual validation on the field.  Should be overridden to do validations.
@@ -3904,29 +3890,29 @@ AFrame.FieldPluginValidation = (function() {
 	    */
         validate: function() {
             this.updateValidityState();
-            
+
             var field = this.getPlugged();
             var valid = true;
             var target = field.getTarget();
-            
+
 		    if( target[ 0 ].checkValidity ) {
 			    // browser supports native validation
 			    valid = target[ 0 ].checkValidity();
 		    } else {
                 var criteria = this.getCriteria();
                 var val = field.get();
-                
+
                 AFrame.DataValidation.validate( {
                     data: val,
                     criteria: criteria,
                     fieldValidityState: this.validityState
                 } );
                 valid = this.validityState.valid;
-		    }    
-            
+		    }
+
             return valid;
         },
-        
+
         /**
         * Update the field's validity state.
         * @private
@@ -3940,11 +3926,11 @@ AFrame.FieldPluginValidation = (function() {
                 if( validate ) {
                     this.validate();
                 }
-                
+
                 this.calculateValidity = false;
             }
         },
-        
+
 	    /**
 	    * Set an error.  See [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
         *
@@ -3956,13 +3942,13 @@ AFrame.FieldPluginValidation = (function() {
         setError: function( error ) {
             this.updateValidityState( true );
             AFrame.DOM.fireEvent( this.getPlugged().getTarget(), 'invalid' );
-            
+
             return this.validityState.setError( error );
         },
-        
+
 	    /**
 	    * Set a custom error.  In the AFrame.FieldValidityState object returned
-	    *	by getValidityState, a custom error will have the customError field set to this 
+	    *	by getValidityState, a custom error will have the customError field set to this
 	    *	message
         *
         *    field.setCustomValidity( 'Names must start with a letter' );
@@ -3976,7 +3962,7 @@ AFrame.FieldPluginValidation = (function() {
 
             return this.validityState.setCustomValidity( customValidity );
         },
-        
+
         /**
         * Get the field's validation criteria
         * @method getCriteria
@@ -3987,12 +3973,12 @@ AFrame.FieldPluginValidation = (function() {
             var target = this.getPlugged().getTarget();
             var hasAttr = AFrame.DOM.hasAttr;
             var getAttr = AFrame.DOM.getAttr;
-            
+
             var type = getAttr( target, 'type' );
             if( !type || type == 'textarea' ) {
                 type = 'text';
             }
-            
+
             var criteria = {
                 type: type
             };
@@ -4008,7 +3994,7 @@ AFrame.FieldPluginValidation = (function() {
             if( hasAttr( target, 'max' ) ) {
                 criteria.max = parseFloat( getAttr( target, 'max' ) );
             }
-            
+
             if( hasAttr( target, 'step' ) ) {
                 criteria.step = parseFloat( getAttr( target, 'step' ) );
             }
@@ -4024,11 +4010,11 @@ AFrame.FieldPluginValidation = (function() {
             return criteria;
         }
     } );
-    
+
     function onChange() {
         this.calculateValidity = true;
     }
-    
+
 
     return FieldPluginValidation;
 } )();
@@ -4287,20 +4273,20 @@ AFrame.FieldPluginPlaceholder = ( function() {
 }() );
 
 /**
- * A basic data schema, useful for defining a data structure, validating data, and preparing data to 
+ * A basic data schema, useful for defining a data structure, validating data, and preparing data to
  * be loaded from or saved to a persistence store.  Schema's define the data structure and can
  * be nested to create complex data structures.  Schemas perform serialization duties in getAppData and
  * serializeItems.  Finally, Schemas define ways to perform data validation.
- * 
- * When loading data from persistence, if the data is run through the getAppData function, 
+ *
+ * When loading data from persistence, if the data is run through the getAppData function,
  * it will make an object with only the fields
  * defined in the schema, and any missing fields will get default values.  If a fixup function is defined
  * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
  * running data through the serializeItems will create an object with only the fields specified in the schema.  If
- * a row has 'save: false' defined, the row will not be added to the form data object. If a row has a cleanup 
+ * a row has 'save: false' defined, the row will not be added to the form data object. If a row has a cleanup
  * function defined, the corresponding data value will be run through the cleanup function.
  *
- * Generic serialization functions can be set for a type using the AFrame.Schema.addDeserializer and 
+ * Generic serialization functions can be set for a type using the AFrame.Schema.addDeserializer and
  * AFrame.Schema.addSerializer.  These are useful for doing conversions where the data persistence
  * layer saves data in a different format than the internal application representation.  A useful
  * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
@@ -4323,7 +4309,7 @@ AFrame.FieldPluginPlaceholder = ( function() {
  *                    required: true
  *               } },
  *        create_date: { type: 'iso8601' },
- *        downloads: { type: 'integer', fixup: downloadsFixup, 
+ *        downloads: { type: 'integer', fixup: downloadsFixup,
  *                         cleanup: downloadsCleanup }
  *    };
  *
@@ -4359,30 +4345,31 @@ AFrame.FieldPluginPlaceholder = ( function() {
  */
 AFrame.Schema = (function() {
     "use strict";
-    
+
     var SCHEMA_ID_KEY = '__SchemaID';
-    
-    var Schema = function( config ) {
-        if( config ) {
-            if( !config[ SCHEMA_ID_KEY ] ) {
-                config[ SCHEMA_ID_KEY ] = AFrame.getUniqueID();
-                Schema.addSchemaConfig( config[ SCHEMA_ID_KEY ], config );
-            }
-            
-            return Schema.getSchema( config[ SCHEMA_ID_KEY ] );
-        }
-        else {
-            Schema.sc.constructor.call( this );
-        }
-    };
-    AFrame.extend( Schema, AFrame.AObject, {
+
+    var Schema = AFrame.AObject.extend( {
+    	constructor: function( config ) {
+			if( config ) {
+				if( !config[ SCHEMA_ID_KEY ] ) {
+					config[ SCHEMA_ID_KEY ] = AFrame.getUniqueID();
+					Schema.addSchemaConfig( config[ SCHEMA_ID_KEY ], config );
+				}
+
+				return Schema.getSchema( config[ SCHEMA_ID_KEY ] );
+			}
+			else {
+				Schema.sc.constructor.call( this );
+			}
+		},
+
         init: function( config ) {
             this.schema = config.schema;
-            
+
             if( !config.schema ) {
                 throw 'Schema.js: Schema requires a schema configuration object';
             }
-            
+
             Schema.sc.init.call( this, config );
         },
 
@@ -4402,7 +4389,7 @@ AFrame.Schema = (function() {
             this.forEach( function( schemaRow, key ) {
                 defaultObject[ key ] = this.getDefaultValue( key );
             }, this );
-            
+
             return defaultObject;
         },
 
@@ -4429,10 +4416,10 @@ AFrame.Schema = (function() {
             }
             return defValue;
         },
-        
+
         /**
-         * Fix a data object for use in the application.  Creates a new object using the specified data 
-         * as a template for values.  If a value is not specified but a default value is specified in the 
+         * Fix a data object for use in the application.  Creates a new object using the specified data
+         * as a template for values.  If a value is not specified but a default value is specified in the
          * schema, the default value is used for that item.  Items are finally run through an optionally defined
          * fixup function.  If defined, the fixup function should return cleaned data.  If the fixup function
          * does not return data, the field will be undefined.
@@ -4449,12 +4436,12 @@ AFrame.Schema = (function() {
 
             this.forEach( function( schemaRow, key ) {
                 var value = dataToFix[ key ];
-                
+
                 // no value, use default
                 if( !AFrame.defined( value ) ) {
                     value = this.getDefaultValue( key );
                 }
-                
+
                 if( schemaRow.has_many ) {
                     value && value.forEach && value.forEach( function( current, index ) {
                         value[ index ] = this.getAppDataValue( current, schemaRow, dataToFix, fixedData );
@@ -4463,10 +4450,10 @@ AFrame.Schema = (function() {
                 else {
                     value = this.getAppDataValue( value, schemaRow, dataToFix, fixedData );
                 }
-                
+
                 fixedData[ key ] = value;
             }, this );
-            
+
             return fixedData;
         },
 
@@ -4485,7 +4472,7 @@ AFrame.Schema = (function() {
                     value = convert( value );
                 }
             }
-            
+
             // apply the fixup function if defined.
             var fixup = schemaRow.fixup;
             if( AFrame.func( fixup ) ) {
@@ -4495,14 +4482,14 @@ AFrame.Schema = (function() {
                     fixed: fixedData
                 } );
             }
-            
+
             return value;
         },
-        
+
         /**
          * Get an object suitable to send to persistence.  This is based roughly on converting
          *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
-         *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize 
+         *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize
          *	will have values returned.
          *
          *     // appData is data from the application ready to send to the DB, needs serialized.
@@ -4514,7 +4501,7 @@ AFrame.Schema = (function() {
          */
         serializeItems: function( dataToSerialize ) {
             var cleanedData = {};
-            
+
             this.forEach( function( schemaRow, key ) {
                 if( schemaRow.save !== false ) {
                     var value = dataToSerialize[ key ];
@@ -4527,14 +4514,14 @@ AFrame.Schema = (function() {
                     else {
                         value = this.getSerializedValue( value, schemaRow, dataToSerialize, cleanedData );
                     }
-                    
+
                     cleanedData[ key ] = value;
                 }
             }, this );
-            
+
             return cleanedData;
         },
-        
+
         getSerializedValue: function( value, schemaRow, dataToSerialize, cleanedData ) {
             // apply the cleanup function if defined.
             var cleanup = schemaRow.cleanup;
@@ -4563,10 +4550,10 @@ AFrame.Schema = (function() {
                     }
                 }
             }
-            
+
             return value;
         },
-        
+
 
         /**
          * An iterator.  Iterates over every row in the schema.
@@ -4583,7 +4570,7 @@ AFrame.Schema = (function() {
                 }
             }
         },
-        
+
         /**
         * Check to see if a row is labeled with "has many"
         * @method rowHasMany
@@ -4593,14 +4580,14 @@ AFrame.Schema = (function() {
         rowHasMany: function( rowName ) {
             return !!( this.schema[ rowName ] && this.schema[ rowName ].has_many );
         },
-        
+
         /**
         * Validate a set of data against the schema
         *
         *    // validate, but ignore fields defined in the schema that are missing from data.
         *    var validity = schema.validate( data, true );
         *    // validity is true if all data is valid
-        *    // validity is an an object with each field in data, 
+        *    // validity is an an object with each field in data,
         *    // for each field there is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
         *
         * @method validate
@@ -4608,18 +4595,18 @@ AFrame.Schema = (function() {
         * @param {boolean} ignoreMissing (optional) - if set to true, fields missing from data are not validated.  Defaults to false.
         *   Note, even if set to true, and a field in data has an undefined value, the field will be validated against the
         *   the undefined value.
-        * @return {variant} true if all fields are valid, an object with each field in data, for each field there 
+        * @return {variant} true if all fields are valid, an object with each field in data, for each field there
         *   is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
         */
         validate: function( data, ignoreMissing ) {
             var statii = {};
             var areErrors = false;
-            
+
             this.forEach( function( row, key ) {
                 var rowCriteria = row.validate || {};
                 var criteriaCopy = AFrame.mixin( { type: row.type }, rowCriteria );
                 var field = data[ key ];
-                
+
                 // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,
                 //  even if ignoreMissing is set to true, we validate against it.
                 if( !ignoreMissing || data.hasOwnProperty( key ) ) {
@@ -4635,14 +4622,14 @@ AFrame.Schema = (function() {
                     }
                 }
             }, this );
-            
+
             return areErrors ? statii : true;
         },
-        
+
         validateData: function( data, criteria ) {
             return AFrame.DataValidation.validate( {
                 data: data,
-                criteria: criteria 
+                criteria: criteria
             } );
         }
     } );
@@ -4651,7 +4638,7 @@ AFrame.Schema = (function() {
         serializers: {},
         schemaConfigs: {},
         schemaCache: {},
-        
+
         /**
          * Add a universal function that fixes data in [getAppData](#method_getAppData). This is used to convert
          * data from a version the backend sends to one that is used internally.
@@ -4662,10 +4649,10 @@ AFrame.Schema = (function() {
         addDeserializer: function( type, callback ) {
             Schema.deserializers[ type ] = callback;
         },
-        
+
         /**
          * Add a universal function that gets data ready to save to persistence.  This is used
-         * to convert data from an internal representation of a piece of data to a 
+         * to convert data from an internal representation of a piece of data to a
          * representation the backend is expecting.
          * @method Schema.addSerializer
          * @param {string} type - type of field.
@@ -4674,7 +4661,7 @@ AFrame.Schema = (function() {
         addSerializer: function( type, callback ) {
             Schema.serializers[ type ] = callback;
         },
-        
+
         /**
         * Add a schema config
         * @method Schema.addSchemaConfig
@@ -4684,7 +4671,7 @@ AFrame.Schema = (function() {
         addSchemaConfig: function( type, config ) {
             Schema.schemaConfigs[ type ] = config;
         },
-        
+
         /**
         * Get a schema
         * @method Schema.getSchema
@@ -4697,7 +4684,7 @@ AFrame.Schema = (function() {
                     schema: Schema.schemaConfigs[ type ]
                 } );
             }
-            
+
             return Schema.schemaCache[ type ];
         }
     } );
@@ -4748,9 +4735,9 @@ AFrame.Schema = (function() {
     Schema.addSerializer( 'iso8601', function( date ) {
         return date.toISOString();
     } );
-    
+
     return Schema;
-    
+
 }() );
 /**
  * Create an AFrame.Form based object for each item in the list.  Adds the functions [validate](#method_validate), 
