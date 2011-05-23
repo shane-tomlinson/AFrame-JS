@@ -1,196 +1,199 @@
-testsToRun.push( {
+(function() {
+	var aobject;
 
-		name: "TestCase AFrame.AObject",
+	testsToRun.push( {
 
-		setUp: function() {
-		    this.aobject = new AFrame.AObject();
-		},
+			name: "TestCase AFrame.AObject",
 
-		tearDown : function () {
-		    this.aobject.teardown();
-		    this.aobject = null;
-		    delete this.aobject;
-		},
+			setUp: function() {
+				aobject = new AFrame.AObject();
+			},
 
-		testInit: function() {
-		    this.aobject.init( {
-		        configVal: true
-		    } );
+			tearDown : function () {
+				aobject.teardown();
+				aobject = null;
+			},
 
-		    var objectConfig = this.aobject.getConfig();
-		    Assert.isTrue( objectConfig.configVal, 'configuration correctly set' );
-		},
+			testInit: function() {
+				aobject.init( {
+					configVal: true
+				} );
 
-		testCIDSetInConfig: function() {
-			this.aobject.init( {
-				cid: 'testcid'
-			} );
+				var objectConfig = aobject.getConfig();
+				Assert.isTrue( objectConfig.configVal, 'configuration correctly set' );
+			},
 
-			Assert.areEqual( 'testcid', this.aobject.getCID(), 'CID assigned correctly' );
-		},
+			testCIDSetInConfig: function() {
+				aobject.init( {
+					cid: 'testcid'
+				} );
 
-		testCIDAssigned: function() {
-			this.aobject.init( {} );
+				Assert.areEqual( 'testcid', aobject.getCID(), 'CID assigned correctly' );
+			},
 
-			Assert.isNotUndefined( this.aobject.getCID(), 'CID assigned automatically' );
-		},
+			testCIDAssigned: function() {
+				aobject.init( {} );
 
-		testIsTriggeredNoListener: function() {
-		    Assert.isFalse( this.aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered' );
-		    var callback = function() {};
+				Assert.isNotUndefined( aobject.getCID(), 'CID assigned automatically' );
+			},
 
-		    this.aobject.init( {
-		        configVal: true
-		    } );
+			testIsTriggeredNoListener: function() {
+				Assert.isFalse( aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered' );
+				var callback = function() {};
 
-		    Assert.isFalse( this.aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered, no listener' );
+				aobject.init( {
+					configVal: true
+				} );
 
-		},
+				Assert.isFalse( aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered, no listener' );
 
-		testIsTriggeredListener: function() {
-		    Assert.isFalse( this.aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered' );
-		    var callback = function() {};
+			},
 
-		    this.aobject.bindEvent( 'onInit', callback );
-		    this.aobject.init( {
-		        configVal: true
-		    } );
+			testIsTriggeredListener: function() {
+				Assert.isFalse( aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered' );
+				var callback = function() {};
 
-		    Assert.isTrue( this.aobject.isEventTriggered( 'onInit' ), 'onInit event triggered' );
-		},
+				aobject.bindEvent( 'onInit', callback );
+				aobject.init( {
+					configVal: true
+				} );
 
-        testTriggerEvent: function() {
-            var triggeredEvent, extraParam = true;
-		    var callback = function( event, extra ) {
-                triggeredEvent = event;
-                extraParam = extra;
-            };
+				Assert.isTrue( aobject.isEventTriggered( 'onInit' ), 'onInit event triggered' );
+			},
 
-            this.aobject.bindEvent( 'onInit', callback );
-		    this.aobject.triggerEvent( 'onInit' );
+			testTriggerEvent: function() {
+				var triggeredEvent, extraParam = true;
+				var callback = function( event, extra ) {
+					triggeredEvent = event;
+					extraParam = extra;
+				};
 
-            Assert.areEqual( 'onInit', triggeredEvent.type, 'triggeredEvent type is set' );
-            Assert.areEqual( this.aobject, triggeredEvent.target, 'triggeredEvent target is set' );
-            Assert.isUndefined( extraParam, 'extraParam is undefined' );
+				aobject.bindEvent( 'onInit', callback );
+				aobject.triggerEvent( 'onInit' );
 
-		    this.aobject.triggerEvent( 'onInit', 'blue' );
-            Assert.areEqual( 'blue', extraParam, 'extraParam is set to blue' );
-        },
+				Assert.areEqual( 'onInit', triggeredEvent.type, 'triggeredEvent type is set' );
+				Assert.areEqual( aobject, triggeredEvent.target, 'triggeredEvent target is set' );
+				Assert.isUndefined( extraParam, 'extraParam is undefined' );
 
-        testTriggerProxy: function() {
-            var proxy = this.aobject.triggerProxy( 'proxiedEvent' );
+				aobject.triggerEvent( 'onInit', 'blue' );
+				Assert.areEqual( 'blue', extraParam, 'extraParam is set to blue' );
+			},
 
-            var eventTriggered = false;
-            this.aobject.bindEvent( 'proxiedEvent', function() {
-                eventTriggered = true;
-            } );
+			testTriggerProxy: function() {
+				var proxy = aobject.triggerProxy( 'proxiedEvent' );
 
-            // call the proxied function
-            proxy();
+				var eventTriggered = false;
+				aobject.bindEvent( 'proxiedEvent', function() {
+					eventTriggered = true;
+				} );
 
-            Assert.isTrue( eventTriggered, 'triggerProxy works' );
-        },
+				// call the proxied function
+				proxy();
 
-		testAddChild: function() {
-			var tornDown = false;
-			var objectToTeardown = {
-				teardown: function() {
-					tornDown = true;
-				},
-				getCID: function() {
-					return 1;
-				}
-			};
+				Assert.isTrue( eventTriggered, 'triggerProxy works' );
+			},
 
-			this.aobject.init( {} );
-			this.aobject.addChild( objectToTeardown );
-			this.aobject.teardown();
-			Assert.isTrue( tornDown, 'child\'s teardown called' );
-		},
+			testAddChild: function() {
+				var tornDown = false;
+				var objectToTeardown = {
+					teardown: function() {
+						tornDown = true;
+					},
+					getCID: function() {
+						return 1;
+					}
+				};
 
-		testRemoveChild: function() {
-			var tornDown = false;
-			var objectToRemove = {
-				teardown: function() {
-					tornDown = true;
-				},
-				getCID: function() {
-					return 1;
-				}
-			};
+				aobject.init( {} );
+				aobject.addChild( objectToTeardown );
+				aobject.teardown();
+				Assert.isTrue( tornDown, 'child\'s teardown called' );
+			},
 
-			this.aobject.init( {} );
-			this.aobject.addChild( objectToRemove );
-			this.aobject.removeChild( 1 );
-			this.aobject.teardown();
-			Assert.isFalse( tornDown, 'child\'s teardown not called since it was already removed' );
-		},
+			testRemoveChild: function() {
+				var tornDown = false;
+				var objectToRemove = {
+					teardown: function() {
+						tornDown = true;
+					},
+					getCID: function() {
+						return 1;
+					}
+				};
 
-        testDeclareImportConfig: function() {
-            var Class = AFrame.Class( AFrame.AObject, {
-                importconfig: [ 'blue' ]
-            } );
+				aobject.init( {} );
+				aobject.addChild( objectToRemove );
+				aobject.removeChild( 1 );
+				aobject.teardown();
+				Assert.isFalse( tornDown, 'child\'s teardown not called since it was already removed' );
+			},
 
-            var SubClass = AFrame.Class( Class, {
-                importconfig: [ 'green', 'indigo' ]
-            } );
+			testDeclareImportConfig: function() {
+				var Class = AFrame.AObject.extend( {
+					importconfig: [ 'blue' ]
+				} );
 
-            var instance = AFrame.create( SubClass, {
-                blue: 'blueish',
-                green: 'greenish',
-                indigo: 'indigoish',
-                yellow: 'yellowish'
-            } );
+				var SubClass = Class.extend( {
+					importconfig: [ 'green', 'indigo' ]
+				} );
 
-            Assert.areEqual( 'blueish', instance.blue, 'blue imported correctly' );
-            Assert.areEqual( 'greenish', instance.green, 'green imported correctly' );
-            Assert.areEqual( 'indigoish', instance.indigo, 'indigo imported correctly' );
-            Assert.isUndefined( instance.yellow, 'yellow not imported' );
-        },
+				var instance = SubClass.create( {
+					blue: 'blueish',
+					green: 'greenish',
+					indigo: 'indigoish',
+					yellow: 'yellowish'
+				} );
 
-        testDeclareBindings: function() {
-            var event1HandlerCalled = false;
-            var Class = AFrame.Class( AFrame.AObject, {
-                importconfig: [ 'insertedObj' ],
-                events: {
-                    'event1 insertedObj': function() {
-                        event1HandlerCalled = true;
-                    }
-                }
-            } );
+				Assert.areEqual( 'blueish', instance.blue, 'blue imported correctly' );
+				Assert.areEqual( 'greenish', instance.green, 'green imported correctly' );
+				Assert.areEqual( 'indigoish', instance.indigo, 'indigo imported correctly' );
+				Assert.isUndefined( instance.yellow, 'yellow not imported' );
+			},
 
-
-            var inserted = AFrame.create( AFrame.AObject );
-            var instance = AFrame.create( Class, {
-                insertedObj: inserted
-            } );
-
-            inserted.triggerEvent( 'event1' );
-            Assert.isTrue( event1HandlerCalled, 'the handler on inserted\'s event is called' )
-        },
-
-        testDeclarBindingsWithInheritance: function() {
-            var eventCallCount = 0;
-            var Super = AFrame.Class( AFrame.AObject, {
-                importconfig: [ 'insertedObj' ],
-                events: {
-                    'event1 insertedObj': function() {
-                        eventCallCount++;
-                    }
-                }
-            } );
-
-            var Sub = AFrame.Class( Super );
-
-            var inserted = AFrame.create( AFrame.AObject );
-            var instance = AFrame.create( Sub, {
-                insertedObj: inserted
-            } );
-
-            inserted.triggerEvent( 'event1' );
-            Assert.areEqual( 1, eventCallCount, 'the handler was called once.' )
-
-        }
-} );
+			testDeclareBindings: function() {
+				var event1HandlerCalled = false;
+				var Class = AFrame.AObject.extend( {
+					importconfig: [ 'insertedObj' ],
+					events: {
+						'event1 insertedObj': function() {
+							event1HandlerCalled = true;
+						}
+					}
+				} );
 
 
+				var inserted = AFrame.AObject.create();
+				var instance = Class.create( {
+					insertedObj: inserted
+				} );
+
+				inserted.triggerEvent( 'event1' );
+				Assert.isTrue( event1HandlerCalled, 'the handler on inserted\'s event is called' )
+			},
+
+			testDeclarBindingsWithInheritance: function() {
+				var eventCallCount = 0;
+				var Super = AFrame.AObject.extend( {
+					importconfig: [ 'insertedObj' ],
+					events: {
+						'event1 insertedObj': function() {
+							eventCallCount++;
+						}
+					}
+				} );
+
+				var Sub = Super.extend();
+
+				var inserted = AFrame.AObject.create();
+				var instance = Sub.create( {
+					insertedObj: inserted
+				} );
+
+				inserted.triggerEvent( 'event1' );
+				Assert.areEqual( 1, eventCallCount, 'the handler was called once.' )
+
+			}
+	} );
+
+
+}());

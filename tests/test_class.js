@@ -112,7 +112,7 @@
 		},
 
 		testClassCreate: function() {
-			var Class = AFrame.Class( AFrame.AObject, {
+			var Class = AFrame.AObject.extend( {
 				importconfig: [ 'color' ],
 				getColor: function() {
 					return this.color;
@@ -137,7 +137,7 @@
 		testClassWithConstructorSpecified: function() {
 			var constCalled = false;
 
-			var Class = AFrame.Class( AFrame.AObject, {
+			var Class = AFrame.AObject.extend( {
 				constructor: function() {
 					constCalled = true;
 				}
