@@ -122,11 +122,7 @@ AFrame.Class = ( function() {
 	function addCreate( Class ) {
 		if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
 			// Add a create function so that every class with init has one.
-			Class.create = function() {
-				var args = [].slice.call( arguments, 0 );
-				args.splice( 0, 0, this );
-				return AFrame.create.apply( null, args );
-			}.bind( Class );
+			Class.create = AFrame.create.bind( null, Class );
 		}
 	}
 
