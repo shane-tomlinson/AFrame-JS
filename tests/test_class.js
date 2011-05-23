@@ -79,13 +79,44 @@ testsToRun.push( {
     },
 
     testClassCreateNotAddedIfNoInit: function() {
-  	var Class = AFrame.Class( {
+  		var Class = AFrame.Class( {
     		importconfig: [ 'color' ],
     		getColor: function() {
 				return this.color;
     		}
     	} );
 		Assert.isUndefined( Class.create, 'create not added to Class without init' );
-      }
+    },
+
+    testClassWithConstructorSpecified: function() {
+    	var constCalled = false;
+
+		var Class = AFrame.Class( AFrame.AObject, {
+			constructor: function() {
+				constCalled = true;
+			}
+		} );
+
+		var inst = Class.create();
+
+		Assert.isTrue( constCalled, 'The constructor was specified and called' );
+	},
+
+	testWithConstructorAndNoBaseClass: function() {
+    	var constCalled = false;
+
+		var Class = AFrame.Class( {
+			constructor: function() {
+				constCalled = true;
+			},
+			init: function() {
+
+			}
+		} );
+
+		var inst = Class.create();
+
+		Assert.isTrue( constCalled, 'The constructor was specified and called' );
+	}
 } );
 

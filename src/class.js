@@ -26,28 +26,25 @@ AFrame.Class = ( function() {
     *        }
     *     } );
     *
-    * @method AFrame.Class
+    * @method Class
     * @param {function} superclass (optional) - superclass to use.  If not given, class has
     *   no superclass.
     * @param {object}
     * @return {function} - the new class.
     */
     var Class = function() {
-        var F;
+        var args = Array.prototype.slice.call( arguments, 0 ), F;
 
-        var args = Array.prototype.slice.call( arguments, 0 );
-
-        // we have a superclass, do everything related to a superclass
         if( AFrame.func( args[ 0 ] ) ) {
-            F = function() {
-                F.sc.constructor.call( this );
-            };
+	        // we have a superclass, do everything related to a superclass
+        	F = chooseConstructor( args[ 1 ], function() {
+				F.sc.constructor.call( this );
+			} );
             AFrame.extend( F, args[ 0 ] );
             args.splice( 0, 1 );
         }
         else {
-            // no superclass.  Create a base class.
-            F = function() {};
+        	F = chooseConstructor( args[ 0 ], function() {} );
         }
 
         for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
@@ -59,6 +56,7 @@ AFrame.Class = ( function() {
 
 		AFrame.addCreate( F );
 
+//		F.extend = F.extend ||
         return F;
     };
 
@@ -84,6 +82,21 @@ AFrame.Class = ( function() {
             currClass = currClass.superclass;
         } while( currClass );
     };
+
+	function chooseConstructor( checkForConst, alternate ) {
+		var F;
+		if( checkForConst && checkForConst.hasOwnProperty( 'constructor' ) ) {
+			F = checkForConst.constructor;
+		}
+		else {
+			F = alternate;
+		}
+		return F;
+	}
+
+	function extend() {
+		return AFrame.Class.apply( this, arguments );
+	}
 
     return Class;
 }() );
