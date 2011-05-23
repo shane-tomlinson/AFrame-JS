@@ -10,58 +10,6 @@ var AFrame = ( function() {
     "use strict";
 
     var AFrame = {
-        /**
-        * Used to extend a class with another class and optional functions.
-        *
-        *    AFrame.NewClass = function() {
-        *        AFrame.NewClass.sc.constructor.apply( this, arguments );
-        *    }
-        *    AFrame.extend( AFrame.NewClass, AFrame.AObject, {
-        *        someFunc: function() {
-        *            // do something here
-        *        }
-        *    } );
-        *
-        * @method extend
-        * @param {function} subClass - the class to extend
-        * @param {function} superClass - The super class.
-        * @param {object} extrafuncs (optional) - all additional parameters will have their functions mixed in.
-        */
-        extend: function( subClass, superClass ) {
-            var F = function() {};
-            F.prototype = superClass.prototype;
-            subClass.prototype = new F;
-            subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
-            subClass.sc = superClass.prototype;
-
-            var mixins = Array.prototype.slice.call( arguments, 2 );
-            for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
-                AFrame.mixin( subClass.prototype, mixin );
-            }
-            subClass.prototype.constructor = subClass;
-
-			AFrame.addCreate( subClass );
-        },
-
-		/**
-		* Add a create function to a Class if the Class has an init function.
-		*  The create function is an alias to call AFrame.create with this
-		*  class.
-		*
-		* @method addCreate
-		* @param {function} Class
-		*/
-        addCreate: function( Class ) {
-			if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
-				// Add a create function so that every class with init has one.
-				Class.create = function() {
-					var args = [].slice.call( arguments, 0 );
-					args.splice( 0, 0, this );
-					return AFrame.create.apply( null, args );
-				}.bind( Class );
-			}
-        },
-
 		/**
 		* Checks whether the subClass is a sub-class of superClass, as is
 		*  done using AFrame.extend or AFrame.Class.

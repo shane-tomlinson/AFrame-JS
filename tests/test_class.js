@@ -1,133 +1,208 @@
+(function() {
+	var SuperClass = AFrame.Class( {
+		hasFunc: function() {
+			return true;
+		},
 
-testsToRun.push( {
-    name: 'TestCase AFrame.Class',
+		sharedFunc: function() {
+			this.sharedFuncCalled = true;
+			return true;
+		}
+	} );
 
-    testNewClassNoBase: function() {
-        var proto = {
-            init: function() {
-            }
-        };
-        var Class = AFrame.Class( proto );
+	var SubClass = SuperClass.extend( {
+		superExtendedFunc: function() {
+		return true;
+		},
 
-        Assert.isFunction( Class );
-        Assert.areSame( Class, Class.prototype.constructor, 'prototype constructor is set' );
-        Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
-    },
+		sharedFunc: function() {
+		return SubClass.sc.sharedFunc.call( this );
+		},
 
-    testNewClassBase: function() {
-        var proto = {
-            init: function() {}
-        };
+		init: function() {
+		  this.initCalled = true;
+		},
 
-        var constCalled = false;
-        function MockBase() {
-            constCalled = true;
-        }
-        MockBase.prototype = {
-            constructor: MockBase,
-            init: function() {
-            }
-        };
+		itemToRemove: true
+	}, {
+		funcsFromSecondMixin: function() {
+		}
+	} );
 
-        var Class = AFrame.Class( MockBase, proto );
-        Assert.isFunction( Class );
-        Assert.isTrue( Class === Class.prototype.constructor, 'prototype constructor is set' );
-        Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
+	var A = {
+		SubClass: function() {
+		this.init = function() {};
+		return true;
+		}
+	};
 
-        var instance = AFrame.create( Class );
+	testsToRun.push( {
+		name: 'TestCase AFrame.Class',
 
-        Assert.isTrue( instance instanceof MockBase, 'new class is instance of AObject' );
-        Assert.isTrue( constCalled, 'base constructor is called' );
-    },
+		setUp : function () {
+			this.subInstance = SubClass.create();
+		},
 
-    testNewClassMultipleMixins: function() {
-        var mixin1 = {
-            init: function() {}
-        };
+		tearDown : function () {
+			this.subInstance = null;
+			delete this.subInstance;
+		},
 
-        var mixin2 = {
-            func2: function() {}
-        };
+		testNewClassNoBase: function() {
+			var proto = {
+				init: function() {
+				}
+			};
+			var Class = AFrame.Class( proto );
 
-        var Class = AFrame.Class( mixin1, mixin2 );
+			Assert.isFunction( Class );
+			Assert.areSame( Class, Class.prototype.constructor, 'prototype constructor is set' );
+			Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
+		},
 
-        Assert.isFunction( Class.prototype.init, 'init added to Class' );
-        Assert.isFunction( Class.prototype.func2, 'func2 added to Class' );
+		testNewClassBase: function() {
+			var proto = {
+				init: function() {}
+			};
 
-    },
-
-    testWalkChain: function() {
-        var instance = AFrame.create( SubClass ), depth = 0;
-        AFrame.Class.walkChain( function( currClass ) {
-            depth++;
-        }, instance );
-
-        Assert.areEqual( 2, depth, 'SubClass has a class depth of 2' );
-    },
-
-    testClassCreate: function() {
-    	var Class = AFrame.Class( AFrame.AObject, {
-    		importconfig: [ 'color' ],
-    		getColor: function() {
-				return this.color;
-    		}
-    	} );
-
-    	var inst = Class.create( { color: 'green' } );
-    	Assert.isTrue( inst instanceof Class, 'Class created with Class.create()' );
-    	Assert.areEqual( 'green', inst.getColor(), 'options passed to constructor' );
-    },
-
-    testClassCreateNotAddedIfNoInit: function() {
-  		var Class = AFrame.Class( {
-    		importconfig: [ 'color' ],
-    		getColor: function() {
-				return this.color;
-    		}
-    	} );
-		Assert.isUndefined( Class.create, 'create not added to Class without init' );
-    },
-
-    testClassWithConstructorSpecified: function() {
-    	var constCalled = false;
-
-		var Class = AFrame.Class( AFrame.AObject, {
-			constructor: function() {
+			var constCalled = false;
+			function MockBase() {
 				constCalled = true;
 			}
-		} );
+			MockBase.prototype = {
+				constructor: MockBase,
+				init: function() {
+				}
+			};
 
-		var inst = Class.create();
+			var Class = AFrame.Class( MockBase, proto );
+			Assert.isFunction( Class );
+			Assert.isTrue( Class === Class.prototype.constructor, 'prototype constructor is set' );
+			Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
 
-		Assert.isTrue( constCalled, 'The constructor was specified and called' );
-	},
+			var instance = AFrame.create( Class );
 
-	testWithConstructorAndNoBaseClass: function() {
-    	var constCalled = false;
+			Assert.isTrue( instance instanceof MockBase, 'new class is instance of AObject' );
+			Assert.isTrue( constCalled, 'base constructor is called' );
+		},
 
-		var Class = AFrame.Class( {
-			constructor: function() {
-				constCalled = true;
-			},
-			init: function() {
+		testNewClassMultipleMixins: function() {
+			var mixin1 = {
+				init: function() {}
+			};
 
-			}
-		} );
+			var mixin2 = {
+				func2: function() {}
+			};
 
-		var inst = Class.create();
+			var Class = AFrame.Class( mixin1, mixin2 );
 
-		Assert.isTrue( constCalled, 'The constructor was specified and called' );
-	},
+			Assert.isFunction( Class.prototype.init, 'init added to Class' );
+			Assert.isFunction( Class.prototype.func2, 'func2 added to Class' );
 
-	testExtend: function() {
-		Assert.isFunction( AFrame.AObject.extend, 'extend added to AObject' );
+		},
 
-		var Class = AFrame.AObject.extend( {} );
+		testWalkChain: function() {
+			var instance = AFrame.create( SubClass ), depth = 0;
+			AFrame.Class.walkChain( function( currClass ) {
+				depth++;
+			}, instance );
 
-		Assert.isTrue( AFrame.extendsFrom( Class, AFrame.AObject ), 'Class extends from AFrame.AObject' );
+			Assert.areEqual( 2, depth, 'SubClass has a class depth of 2' );
+		},
 
-		var inst = Class.create();
-		Assert.isTrue( inst instanceof AFrame.AObject, 'subclass is instanceof superclass' );
-	}
-} );
+		testClassCreate: function() {
+			var Class = AFrame.Class( AFrame.AObject, {
+				importconfig: [ 'color' ],
+				getColor: function() {
+					return this.color;
+				}
+			} );
 
+			var inst = Class.create( { color: 'green' } );
+			Assert.isTrue( inst instanceof Class, 'Class created with Class.create()' );
+			Assert.areEqual( 'green', inst.getColor(), 'options passed to constructor' );
+		},
+
+		testClassCreateNotAddedIfNoInit: function() {
+			var Class = AFrame.Class( {
+				importconfig: [ 'color' ],
+				getColor: function() {
+					return this.color;
+				}
+			} );
+			Assert.isUndefined( Class.create, 'create not added to Class without init' );
+		},
+
+		testClassWithConstructorSpecified: function() {
+			var constCalled = false;
+
+			var Class = AFrame.Class( AFrame.AObject, {
+				constructor: function() {
+					constCalled = true;
+				}
+			} );
+
+			var inst = Class.create();
+
+			Assert.isTrue( constCalled, 'The constructor was specified and called' );
+		},
+
+		testWithConstructorAndNoBaseClass: function() {
+			var constCalled = false;
+
+			var Class = AFrame.Class( {
+				constructor: function() {
+					constCalled = true;
+				},
+				init: function() {
+
+				}
+			} );
+
+			var inst = Class.create();
+
+			Assert.isTrue( constCalled, 'The constructor was specified and called' );
+		},
+
+		testExtend: function() {
+			Assert.isFunction( AFrame.AObject.extend, 'extend added to AObject' );
+
+			var Class = AFrame.AObject.extend( {} );
+
+			Assert.isTrue( AFrame.extendsFrom( Class, AFrame.AObject ), 'Class extends from AFrame.AObject' );
+
+			var inst = Class.create();
+			Assert.isTrue( inst instanceof AFrame.AObject, 'subclass is instanceof superclass' );
+		},
+
+		testExtendSuperclass: function () {
+			Assert.isFunction( this.subInstance.hasFunc, 'superExtendedFunc exists' );
+			Assert.isTrue( this.subInstance.hasFunc(), 'subclass function returns true' );
+			Assert.isObject( SubClass.sc, 'sc exists' );
+			Assert.areEqual( SubClass.sc.hasFunc, SuperClass.prototype.hasFunc, 'sc points to super\'s function' );
+
+			Assert.isFunction( this.subInstance.funcsFromSecondMixin, 'extend works with more than one mixin' );
+		},
+
+		testExtendExtraFuncs: function () {
+			Assert.isFunction( this.subInstance.superExtendedFunc, 'superExtendedFunc exists' );
+			Assert.isTrue( this.subInstance.superExtendedFunc(), 'superExtendedFunc returns correctly' );
+		},
+
+		testExtendSuperclassInheritedFuncCall: function () {
+			Assert.isTrue( this.subInstance.sharedFunc(), 'sharedFunc calls super class' );
+			Assert.isTrue( this.subInstance.sharedFuncCalled, 'sharedFunc calls super class sets value' );
+		},
+
+		testCheckExtendsFrom: function() {
+			var doesExtend = AFrame.extendsFrom( SubClass, SuperClass );
+			Assert.isTrue( doesExtend, 'SubClass inherits from SuperClass' );
+
+			doesExtend = AFrame.extendsFrom( SuperClass, SubClass );
+			Assert.isFalse( doesExtend, 'SuperClass does not extend from SubClass' );
+		},
+
+	} );
+
+}());

@@ -40,7 +40,7 @@ AFrame.Class = ( function() {
         	F = chooseConstructor( args[ 1 ], function() {
 				F.sc.constructor.call( this );
 			} );
-            AFrame.extend( F, args[ 0 ] );
+			doExtension( F, args[ 0 ] );
             args.splice( 0, 1 );
         }
         else {
@@ -54,7 +54,7 @@ AFrame.Class = ( function() {
         // Always set the constructor last in case any mixins overwrote it.
         F.prototype.constructor = F;
 
-		AFrame.addCreate( F );
+		addCreate( F );
 
 		F.extend = Class.bind( null, F );
         return F;
@@ -93,6 +93,43 @@ AFrame.Class = ( function() {
 		}
 		return F;
 	}
+
+	function doExtension( subClass, superClass ) {
+		var F = function() {};
+		F.prototype = superClass.prototype;
+		subClass.prototype = new F;
+		subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
+		subClass.sc = superClass.prototype;
+
+		var mixins = Array.prototype.slice.call( arguments, 2 );
+		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
+			AFrame.mixin( subClass.prototype, mixin );
+		}
+		subClass.prototype.constructor = subClass;
+
+		addCreate( subClass );
+	}
+
+	/**
+	* @private
+	* Add a create function to a Class if the Class has an init function.
+	*  The create function is an alias to call AFrame.create with this
+	*  class.
+	*
+	* @method addCreate
+	* @param {function} Class
+	*/
+	function addCreate( Class ) {
+		if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
+			// Add a create function so that every class with init has one.
+			Class.create = function() {
+				var args = [].slice.call( arguments, 0 );
+				args.splice( 0, 0, this );
+				return AFrame.create.apply( null, args );
+			}.bind( Class );
+		}
+	}
+
 
     return Class;
 }() );
