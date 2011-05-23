@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 640px)" href="stylesheets/mobile.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono">
 
-    
+
 </head>
 
 <body>
@@ -37,9 +37,9 @@
 					<li><a href="tests/index.html">Unit Tests</a></li>
 				</ul>
 			</nav>
-			
+
 		</header>
-		
+
     <nav class="grid_3">
       <div id="navigation">
             <div class="module">
@@ -72,24 +72,24 @@
                 </ul>
             </div>
         </div>
-      
+
       <a href='https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String' title='JS String toLocaleLowerCase'><img src='http://static.jsconf.us/promotejsv.gif' height='280' width='160' alt='JS String toLocaleLowerCase'/></a>
     </nav>
-    
+
     <div class="grid_9">
-    
+
         <section>
             <article id="objectInstantiation">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Instantiating an object</h3>
                 <p >
-                    Since AFrame tries to be somewhat AOP with its use of Plugins, and often times those Plugins depend on knowing 
-                    when the plugged object is initialized, it is recommended to use <a href="docs/AFrame.html#method_create">AFrame.create</a> instead
+                    Since AFrame tries to be somewhat AOP with its use of Plugins, and often times those Plugins depend on knowing
+                    when the plugged object is initialized, it is recommended to use a class' create function instead
                     of the 'new' operator to do object instantiation.  Most <a href="docs/AFrame.AObject.html">AFrame.AObject</a> based classes do very little in
                     their constructors, and do their initialization in the 'init' function.  This allows us to create an object and all of its plugins, then
-                    have the plugins take action whenever their plugged object is initialized.  
+                    have the plugins take action whenever their plugged object is initialized.
                 </p>
                 <p>
-                    All AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within 
+                    All AFrame.AObject based items have a CID.  A CID is a Client IDentifier that is used to uniquely identify objects within
                     the system.  CIDs can be assigned on object creation, if a CID is not given, one is assigned automatically.
                 </p>
                 <p>
@@ -97,10 +97,10 @@
 <pre>
 
     // Simple example, simply create an object, no configuration given to the object
-    var object = AFrame.create( AFrame.SomeAObject );
-    
+    var object = AFrame.SomeAObject.create();
+
     // Complex example, configuration, plugins, plugins with configuration
-    var object = AFrame.create( AFrame.SomeAObject, {
+    var object = AFrame.SomeAObject.create( {
         configConfig1: val1,
         configConfig2: val2,
         plugins: [ [ AFrame.SomePlugin, {
@@ -108,19 +108,19 @@
                 pluginConfig2: val2
         } ] ]
     } );
-    
+
     object.someOperation();
 </pre>
 
-                    What this does under the hood is create an instance of AFrame.SomeAObject and an instance of AFrame.SomePlugin.  AFrame.SomePlugin is bound to AFrame.SomeObject.  
-                    AFrame.SomePlugin finally has its init function called.  More information on object creation is found at <a href="docs/AFrame.html#method_create">AFrame.create</a>.
+                    What this does under the hood is create an instance of AFrame.SomeAObject and an instance of AFrame.SomePlugin.  AFrame.SomePlugin is bound to AFrame.SomeObject.
+                    AFrame.SomePlugin finally has its init function called.
                 </p>
             </article>
-            
+
             <article id="classDefinition">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Defining a Class</h3>
                 Defining a class in AFrame is a very straight forward process.
-                
+
 <pre>
                 // Define a class that has no superclass
                 var Class = AFrame.Class( {
@@ -135,39 +135,39 @@
                         // do something
                     }
                 } );
-</pre>                
+</pre>
             </article>
-            
-            
+
+
             <article id="observables">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Observables within AFrame.AObjects</h3>
-                An <a href="docs/AFrame.Observable.html">Observable</a> is the way events are done.  Observables are very similar to DOM Events in that 
+                An <a href="docs/AFrame.Observable.html">Observable</a> is the way events are done.  Observables are very similar to DOM Events in that
                 each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
                 called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
                 to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
                 objects that care about it.
             </article>
-            
+
             <article>
             <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of Binding to an AObject's Observable</h4>
 <pre>
 
     /**
     * Assume anObject is an AFrame.AObject based object.
-    * Every AFrame.AObject based object triggers an onInit 
+    * Every AFrame.AObject based object triggers an onInit
     * event when its init function is called.
     */
     var onObjectInit = function() {
         // called whenever anObject.init is called.
     };
-    
+
     anObject.bindEvent( 'onInit', onObjectInit );
     anObject.init();    // calls onObjectInit function
 </pre>
             </article>
-            
+
         </section>
-        
+
         <section>
             <h2>Model Related Classes</h2>
             <p id="dataContainers">
@@ -176,7 +176,7 @@
                 allows many listeners to be notified when a field changes.  This is important in an MVC system where one
                 item of data could have several distinct Views.
             </p>
-            
+
             <p>
             <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Basic DataContainer Usage</h4>
 <pre>
@@ -185,25 +185,25 @@
         firstName: 'Shane',
         lastName: 'Tomlinson'
     };
-    
+
     var dataContainer = AFrame.DataContainer( dataObject );
     dataContainer.bindField( 'firstName', function( eventObject ) {
         alert( 'new name: ' + eventObject.value );
     } );
-    
+
     dataContainer.set( 'firstName', 'Charlotte' );
-</pre>            
+</pre>
             </p>
-            
+
             <p id="schema">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Schemas to Define the Data's Structure</h3>
-                A <a href="docs/AFrame.Schema.html">Schema</a> acts as a template to define the structure of a piece of data.  
+                A <a href="docs/AFrame.Schema.html">Schema</a> acts as a template to define the structure of a piece of data.
                 Though schemas define the structure of data, they can also be used to validate, clean up or just plain transmogrify data.
-                These capabilities are especially useful when either retreiving data from or sending data to some sort of persistence layer.  
-                Schemas can even be nested to create complex data structures.  A Schema, combined with a DataContainer, 
+                These capabilities are especially useful when either retreiving data from or sending data to some sort of persistence layer.
+                Schemas can even be nested to create complex data structures.  A Schema, combined with a DataContainer,
                 make up what is traditionally thought of as a Model (more on Models in the next section).
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>An Example Schema</h4>
 <pre>
@@ -211,7 +211,7 @@
     /**
     * A simple schema for a note.
     * the integer and text types are self explanatory, iso8601 means ISO8601
-    *    formatted date.  Dates using the iso8601 type format will be 
+    *    formatted date.  Dates using the iso8601 type format will be
     *    automatically converted to Javascript Date objects.
     *
     * def means "default value"
@@ -224,26 +224,26 @@
         edit_date: { type: 'iso8601' }
     };
 
-    var noteSchema = AFrame.create( AFrame.Schema, {
+    var noteSchema = AFrame.Schema.create( {
         schema: noteSchemaConfig
     } );
 </pre>            </p>
-            
+
             <p id="dataContainerAndSchema">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using DataContainers and Schemas Together = Model</h3>
-                
+
             </p>
-            
+
             <p></p>
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example Making a Model from a Schema and DataContainer</h4>
 <pre>
 
-    
+
     // When creating a model, an explicit Schema does not need made, one will
-    //  automatically be created from the schema configuration object (using 
+    //  automatically be created from the schema configuration object (using
     //  noteSchemaConfig from above).
-    var model = AFrame.create( AFrame.Model, {
+    var model = AFrame.Model.create( {
         schema: noteSchemaConfig,
         data: {
             id: '1',
@@ -254,9 +254,9 @@
             extra_field: 'this field does not get through'
        }
     } );
-    
+
     /**
-    * Here: 
+    * Here:
     *    model.id is the integer 1
     *    model.date is a Javascript Date
     *    model.edit_date is a Javascript Date
@@ -273,145 +273,145 @@
     // Check the overall model for validity.  Returns true if all valid, an object of
     // of FieldValidityStates otherwise
     var isValid = model.checkValidity();
-    
+
 </pre>            </p>
-            
+
             <p id="collections">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Collections</h3>
                 AFrame provides two collections, <a href="docs/AFrame.CollectionHash.html">CollectionHash</a> and <a href="docs/AFrame.CollectionArray.html">CollectionArray</a>.
                 Both collections are very similar to their native Javascript counterparts, but by using accessor functions to insert or delete data, it is possible to
-                use <a href="docs/AFrame.Observable.html">Observables</a> to notify multiple views of changes to the collection.  Any sort of data can be stored 
+                use <a href="docs/AFrame.Observable.html">Observables</a> to notify multiple views of changes to the collection.  Any sort of data can be stored
                 in a collection, but all items inserted into the hash or array are given a CID.  If an object is inserted that has a CID field, the object's CID will be used.
                 By decoupling CIDs from an object's id field, it allows for instances of inserting objects that do not yet have ids - this is often the case when creating a
                 new object that needs saved to a backend database, where the database assigns the object's id field.
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of Using a CollectionHash</h4>
 <pre>
 
-    /* hash is set up as an AFrame.CollectionHash.  
+    /* hash is set up as an AFrame.CollectionHash.
         noteModel is the DataContainer from the above example. */
     var cid = hash.insert( noteModel );
-    
+
     /* some other operations */
     var note = hash.get( cid );
     console.log( note.title );   // prints 'Get some milk'
-    
+
     /* some other operations */
     this.hash.remove( cid );
 </pre>            </p>
-            
+
         </section>
-        
+
         <section>
-        
+
             <h2>View/Display Related Classes</h2>
-            
+
             <p id="display">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>A Basic Display</h3>
                 <a href="docs/AFrame.Display.html">Displays</a> are similar to Views, but unlike a traditional View, it is not limited to displaying data related
-                to a particular model.  A Display is any class that relates to putting "stuff" on the screen.  Currently, Displays depend on the 
+                to a particular model.  A Display is any class that relates to putting "stuff" on the screen.  Currently, Displays depend on the
                 <a href="www.jquery.com">jQuery</a> library, jQuery is used to do DOM manipulation.  All Displays must have a target specified, a target is
                 considered that Display's root node.
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Ultra Basic Display</h4>
 <pre>
     &lt;button id="submitForm"&gt;Submit&lt;/button&gt;
-    
+
     ---------
 
     var buttonSelector = '#submitForm';
-    
-    /* buttonSelector is a selector used to specify the root node of 
+
+    /* buttonSelector is a selector used to specify the root node of
         the target. */
-    var button = AFrame.create( AFrame.Display, {
+    var button = AFrame.Display.create( {
         target: buttonSelector
     } );
-    
-    /* When binding to a DOM event, must define the target, which 
-        can be any jQuery element or selector. If a selector is given, 
-        the target is looked for as a descendant of the display's 
+
+    /* When binding to a DOM event, must define the target, which
+        can be any jQuery element or selector. If a selector is given,
+        the target is looked for as a descendant of the display's
         target. */
     button.bindClick( $( buttonSelector ), function( event ) {
-       /* take care of the click, the event's default action is 
+       /* take care of the click, the event's default action is
             already prevented. */
     } );
-    
+
     /* Any DOM event can be bound to. */
     button.bindDOMEvent( $( buttonSelector ), 'mouseenter', function( event ) {
         // Do a button highlight or some other such thing.
     } );
 </pre>            </p>
-            
+
             <p id="field">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Fields</h3>
-                A <a href="docs/AFrame.Field.html">Field</a> is the basic display unit for a form.  Fields can be used for 
-                either input or output.  If the browser is HTML5 compatible, the 
+                A <a href="docs/AFrame.Field.html">Field</a> is the basic display unit for a form.  Fields can be used for
+                either input or output.  If the browser is HTML5 compatible, the
                 <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api">HTML5</a>
                 spec is followed with regards to validation.  The current field state is returned using field.getValidityState() which returns
                 a <a href="docs/AFrame.FieldValidityState.html">FieldValidityState.</a>
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of Field Usage</h4>
 <pre>
     &lt;input type="number" id="numberInput" /&gt;
-    
+
     ---------
 
-    var field = AFrame.create( AFrame.Field, {
+    var field = AFrame.Field.create( {
         target: $( '#numberInput' )
     } );
-    
+
     /* Set the value of the field, it is now displaying 3.1415 */
     field.set(3.1415);
-    
+
     /* Check the validity of the field */
     var isValid = field.checkValidity();
-    
+
     /* The field is cleared, displays nothing */
     field.clear();
-    
+
     field.set('invalid set');
-    
+
     /* This will return false */
     isValid = field.checkValidity();
-    
+
     /* Get the validity state, as per the HTML5 spec */
     var validityState = field.getValidityState();
 </pre>
             </p>
-            
+
             <p id="form">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using Forms</h3>
                 A <a href="docs/AFrame.Form.html">Form</a> is a composite of <a href="docs/AFrame.Field.html">Fields.</a>  A generic form is
                 not bound to any data, it is only a collection of form fields.  A field factory function must
                 be specified in the form configuration, this allows for complete control over the construction of Fields.
-                On form initialization, the Form's descendents will be searched for elements with the "data-field" 
-                attribute.  Each element found will be passed to the field factory, the factory must return a 
+                On form initialization, the Form's descendents will be searched for elements with the "data-field"
+                attribute.  Each element found will be passed to the field factory, the factory must return a
                 <a href="docs/AFrame.Field.html">Field</a> compatible object.  A basic Form that is not bound to any particular
-                <a href="docs/AFrame.DataContainer.html">DataContainer</a> or <a href="docs/AFrame.Model.html">Model</a> is useful primarily 
-                to do input validation where data from the form is retreived and used through methods outside of the framework.  
+                <a href="docs/AFrame.DataContainer.html">DataContainer</a> or <a href="docs/AFrame.Model.html">Model</a> is useful primarily
+                to do input validation where data from the form is retreived and used through methods outside of the framework.
                 To bind a form to data, see the next section, <a href="#bindFormDataContainer">Binding a Form to a DataContainer/Model</a>.
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form Using the Default fieldFactory</h4>
 <pre>
     &lt;div id="nameForm"&gt;
         &lt;input type="text" data-field name="name" /&gt;
     &lt;/div&gt;
-    
+
     ---------
-    
+
     /* Set up the form with the default field factory, form will look in #nameForm
-    * for elements with the "data-field" attribute.  This will find one field 
+    * for elements with the "data-field" attribute.  This will find one field
     * in the above HTML.
     */
-    var form = AFrame.create( AFrame.Form, {
+    var form = AFrame.Form.create( {
         target: $( '#nameForm' )
     } );
 
@@ -419,19 +419,19 @@
 
     /* Check the validity of the form */
     var isValid = form.checkValidity();
-    
+
     // do some other stuff.
-    
+
     form.clear();
-</pre>                
+</pre>
 
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a Form Using a Specialized fieldFactory</h4>
 <pre>
     /* Sets up a form with a specialty field factory */
-    var formWithSpecialtyField = AFrame.create( AFrame.Form, {
+    var formWithSpecialtyField = AFrame.Form.create( {
         target: $( '#nameForm' ),
         formFieldFactory: function( element ) {
-            return AFrame.create( AFrame.SpecializedField, {
+            return AFrame.SpecializedField.create( {
                 target: element
             } );
         }
@@ -441,10 +441,10 @@
 
             <p id="bindFormDataContainer">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Binding a Form to a DataContainer or Model</h3>
-                Basic forms are very useful in themselves, but frequently a form is bound to a particular set of data.  
-                By binding a <a href="docs/AFrame.DataForm.html">DataForm</a> to a <a href="docs/AFrame.DataContainer.html">DataContainer</a>, 
+                Basic forms are very useful in themselves, but frequently a form is bound to a particular set of data.
+                By binding a <a href="docs/AFrame.DataForm.html">DataForm</a> to a <a href="docs/AFrame.DataContainer.html">DataContainer</a>,
                 the DataContainer is used as both the source and the receiver of information.  Form fields will automatically have their values populated
-                with the values contained in the DataContainer.  The user is then free to update the form as they please, but data within the DataContainer 
+                with the values contained in the DataContainer.  The user is then free to update the form as they please, but data within the DataContainer
                 is only updated when the DataForm's save function is called and the form successfully validates.  This ensures that the user cannot pollute the data
                 within the DataContainer with invalid entries.
             </p>
@@ -454,9 +454,9 @@
         &lt;input type="text" data-field name="name" /&gt;
         &lt;input type="text" data-field name="version" /&gt;
     &lt;/div&gt;
-    
+
     ---------
-    
+
     /* Note that we do not use new when getting a DataContainer for an object.
     * This is so that if an object already has a DataContainer associated with it,
     * the original DataContainer will be returned.
@@ -465,30 +465,30 @@
         name: 'AFrame',
         version: '0.0.20'
     } );
-    
-    /* Set up the form to look under #nameForm for elements with the "data-field" 
-        attribute.  This will find two fields, each field will be tied to the 
+
+    /* Set up the form to look under #nameForm for elements with the "data-field"
+        attribute.  This will find two fields, each field will be tied to the
         appropriate field in the libraryDataContainer */
-    var form = AFrame.create( AFrame.DataForm, {
+    var form = AFrame.DataForm.create( {
         target: $( '#nameForm' ),
         dataSource: libraryDataContainer
     } );
-    
-    /* do some stuff, user updates the fields with the library name and version 
-        number. Note, throughout this period the libraryDataContainer is never 
+
+    /* do some stuff, user updates the fields with the library name and version
+        number. Note, throughout this period the libraryDataContainer is never
         updated. */
 
-    /* Check the validity of the form, if we are valid, save the data back to 
+    /* Check the validity of the form, if we are valid, save the data back to
         the dataContainer */
     var isValid = form.checkValidity();
     if( isValid ) {
-        /* if the form is valid, the input is saved back to 
+        /* if the form is valid, the input is saved back to
             the libraryDataContainer */
         form.save();
     }
 </pre>
             </p>
-            
+
             <p id="list">
                 <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Displaying a List</h3>
                 A <a href="docs/AFrame.List.html">List</a> is a way of displaying lists of data (circular definition).  A List shares
@@ -499,31 +499,31 @@
                 return an element which can be inserted into the list.  The callback can create an element using a templating mechanism or by creating an
                 element itself.
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of Using a List</h4>
 <pre>
     &lt;ul id="clientList"&gt;
     &lt;/ul&gt;
-    
+
     ---------
 
     var factory = function( data, index ) {
         var listItem = $( '&lt;li&gt;' + data.name + ', ' + data.employer + '&lt;/li&gt;' );
         return listItem;
     };
-    
-    var list = AFrame.create( AFrame.List, {
+
+    var list = AFrame.List.create( {
         target: '#clientList',
         listElementFactory: factory
     } );
-    
+
     /* Creates a list item using the factory function at the end of the list */
     list.insert( {
         name: 'Shane Tomlinson',
         employer: 'AFrame Foundary'
     } );
-    
+
     /* Inserts a pre-made list item at the head of the list */
     list.insertRow( $( '&lt;li&gt;Joe Smith, the Coffee Shop&lt;/li&gt;' ), 0 );
     ---------
@@ -532,7 +532,7 @@
         &lt;li&gt;Joe Smith, The Coffee Shop&lt;/li&gt;
         &lt;li&gt;Shane Tomlinson, AFrame Foundary&lt;/li&gt;
     &lt;/ul&gt;
-</pre>                
+</pre>
             </p>
 
             <p id="bindListCollection">
@@ -540,34 +540,34 @@
                 <a href="docs/AFrame.List.html">Lists</a> are useful by themselves but become much more powerful when paired with a Collection of some sort.  Instead
                 of adding and removing from the list directly, it is usually preferable in MVC systems to have Views react to changes in the Models.  If the List is
                 thought of as a view of a Collection model, any update to the Collection should be reflected in the List.  This means whenever
-                data is added, removed, or modified within the Collection, the List should automatically updated.  The 
+                data is added, removed, or modified within the Collection, the List should automatically updated.  The
                 <a href="docs/AFrame.ListPluginBindToCollection.html">ListPluginBindToCollection</a> is the first step in this.  <a href="docs/AFrame.ListPluginBindToCollection.html">ListPluginBindToCollection</a>
                 is a plugin on a list that is associated with a Collection.  Any time an item is added or removed from the Collection, the plugin automatically updates the list.
             </p>
-            
+
             <p>
                 <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Using a ListPluginBindToCollection</h4>
 <pre>
     &lt;ul id="clientList"&gt;
     &lt;/ul&gt;
-    
+
     ---------
-    /* A List with the same results as the previous example is 
+    /* A List with the same results as the previous example is
         the expected result */
-    
+
     /* First we need to set up the collection */
-    var collection = AFrame.create( AFrame.CollectionArray );
-    
-    
+    var collection = AFrame.CollectionArray.create();
+
+
     var factory = function( data, index ) {
         var listItem = $( '&lt;li&gt;' + data.name + ', ' + data.employer + '&lt;/li&gt;' );
         return listItem;
     };
 
-    /* Sets up our list with the ListPluginBindToCollection.  Notice the 
+    /* Sets up our list with the ListPluginBindToCollection.  Notice the
         ListPluginBindToCollection has a collection config parameter.
     */
-    var list = AFrame.create( AFrame.List, {
+    var list = AFrame.List.create( {
         target: '#clientList',
         listElementFactory: factory,
         plugins: [ [
@@ -575,17 +575,17 @@
                 collection: collection
         } ] ]
     } );
-    
+
     collection.insert( {
         name: 'Shane Tomlinson',
-        employer: 'AFrame Foundary'    
+        employer: 'AFrame Foundary'
     } );
-    
+
     collection.insert( {
         name: 'Joe Smith',
-        employer: 'The Coffee Shop'    
+        employer: 'The Coffee Shop'
     }, 0 );
-    
+
     /* The same list as in the example above is shown */
     ---------
 
@@ -595,52 +595,52 @@
     &lt;/ul&gt;
 
     ----------
-    
+
     collection.remove( 0 );
-    
+
     /* Joe Smith has been removed */
-    
+
     ---------
 
     &lt;ul id="clientList"&gt;
         &lt;li&gt;Shane Tomlinson, AFrame Foundary&lt;/li&gt;
     &lt;/ul&gt;
-</pre>                
+</pre>
             </p>
-            
+
         <p id="listForms">
             <h3><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Creating Forms in Lists Using ListPluginFormRow</h3>
-            Now there are Lists, and Forms, and Fields, but what about putting them all together?  This is where a 
+            Now there are Lists, and Forms, and Fields, but what about putting them all together?  This is where a
             <a href="docs/AFrame.ListPluginFormRow.html">ListPluginFormRow</a> comes in.  A <a href="docs/AFrame.ListPluginFormRow.html">ListPluginFormRow</a> allows
-            the creation of a <a href="docs/AFrame.Form.html">Form</a> for each row in the List.  To keep coupling low and flexibility high, the ListPluginFormRow 
-            does not create the Forms itself, but relies on a formFactory function that is passed in as configuration.  Whenever a row is added to the list, the 
-            formFactory will be passed the row's root element as well as the row's data.  The formFactory must then return an AFrame.Form compatible object.  
+            the creation of a <a href="docs/AFrame.Form.html">Form</a> for each row in the List.  To keep coupling low and flexibility high, the ListPluginFormRow
+            does not create the Forms itself, but relies on a formFactory function that is passed in as configuration.  Whenever a row is added to the list, the
+            formFactory will be passed the row's root element as well as the row's data.  The formFactory must then return an AFrame.Form compatible object.
             The ListPluginFormRow adds extra functions to the base List object, these functions are validate, save, clear, and reset.
         </p>
-        
+
         <p>
             <h4><a title="Jump back to the top" class="top" href="#top">&uarr;</a>Example of a ListPluginFormRow tied with ListPluginCollection</h4>
 <pre>
     &lt;ul id="clientList"&gt;
     &lt;/ul&gt;
-    
+
     ---------
-    
-    /* the row element factory, can easily use a templating 
+
+    /* the row element factory, can easily use a templating
     *   mechanism instead of direct creation */
     var rowElementFactory = function( data, index ) {
         var listItem = $( '&lt;li&gt;&lt;input type="text" data-field name="name" /&gt;,' +
             '&lt;input type="text" data-field name="employer" /&gt;&lt;/li&gt;' );
         return listItem;
     };
-    
-    /* Set up a collection to add data to */
-    var collection = AFrame.create( AFrame.CollectionArray );
 
-    /* Sets up our list with the ListPluginBindToCollection.  Notice the 
+    /* Set up a collection to add data to */
+    var collection = AFrame.CollectionArray.create();
+
+    /* Sets up our list with the ListPluginBindToCollection.  Notice the
         ListPluginBindToCollection has a collection config parameter.
     */
-    var list = AFrame.create( AFrame.List, {
+    var list = AFrame.List.create( {
         target: '#clientList',
         listElementFactory: rowElementFactory,
         plugins: [ [ AFrame.ListPluginBindToCollection, {
@@ -648,30 +648,30 @@
         } ], AFrame.ListPluginFormRow ]
     } );
 
-    
+
     collection.insert( {
         name: 'Shane Tomlinson',
         employer: 'AFrame Foundary'
     } );
-    
+
     --------------
-    
-    /* At this point, the list contains one row with two form elements 
+
+    /* At this point, the list contains one row with two form elements
         that can be edited */
     &lt;ul id="clientList"&gt;
             &lt;li&gt;&lt;input type="text" data-field name="name" value="Shane Tomlinson" /&gt;,&lt;input type="text" data-field name="employer" value="AFrame Foundary" /&gt;&lt;/li&gt;
     &lt;/ul&gt;
-    
+
     --------------
 
-    /* I, as the user, modify the employer name to AFrameJS, 
-        no data in the collection has yet changed, but I 
+    /* I, as the user, modify the employer name to AFrameJS,
+        no data in the collection has yet changed, but I
         want to save the data back to the collection */
-    
+
     if( list.validate() ) {
         list.save();    /* Data is now updated in the collection */
     }
-</pre>            
+</pre>
         </p>
         </section>
 
@@ -687,7 +687,7 @@
 				<li>run "ant all" to do a full build.</li>
 			</ol>
 		</section>
-		
+
 
 		<section>
 			<h2>Build options</h2>
@@ -699,12 +699,12 @@
 				<li>"and jslint" runs a javascript linter to check for errors</li>
 				<li>"ant clean" cleans up any messes</li>
 			</ol>
-			
+
 		</section>
-        
+
         <section>
             <h2>Other Info</h2>
-            
+
             <p>
                 I can be written at set117 at yahoo period com.
             </p>
@@ -715,14 +715,14 @@
 			<p class="grid_6">
 				Copyright &copy; 2011 Shane Tomlinson (set117 at yahoo period com). All rights reserved.
 			</p>
-            
+
 			<p class="grid_6">
 				<a href="http://www.shanetomlinson.com">http://www.shanetomlinson.com</a>
 			</p>
-            
+
 		</footer>
 	</div>
-	
+
 	<script type="text/javascript">
 
 	var _gaq = _gaq || [];
@@ -742,13 +742,13 @@
     <script type="text/javascript" src="scripts/XRegExp.js"></script>
     <script type="text/javascript" src="scripts/shCore.js"></script>
     <script type="text/javascript" src="scripts/shBrushJScript.js"></script>
-     
+
 
     <script type="text/javascript">
          SyntaxHighlighter.defaults['toolbar'] = false;
          SyntaxHighlighter.defaults['gutter'] = false;
          SyntaxHighlighter.all( { brush: 'js' } );
     </script>
-    
+
 </body>
 </html>

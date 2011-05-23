@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 640px)" href="stylesheets/mobile.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono">
 
-    
+
 </head>
 
 <body>
@@ -22,7 +22,7 @@
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"/>
     </a>
 	<div class="container container_12">
-        
+
 		<header class="clearfix">
 			<h1>AFrameJS</h1> <h2>- Javascript MVC Library</h2>
 
@@ -37,17 +37,17 @@
 					<li><a href="tests/index.html">Unit Tests</a></li>
 				</ul>
 			</nav>
-			
+
 		</header>
-		
-		
+
+
 		<section class="grid_12">
 			<h2>Not Another DOM Manipulation Library!</h2>
 
 			 <p>
 				AFrameJS is an <strong><abbr title="Model-View-Controller"><a href="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a></abbr> application development library</strong>, not a DOM manipulation library!  AFrameJS leaves the DOM manipulation to jQuery, MooTools, or Prototype, instead providing the parts necessary to create MVC applications.
              </p>
-             
+
              <p>
                 MVC is a programming paradigm that has been common in other languages for many years. In MVC, <strong>M</strong>odels represent data and its operations.  <strong>V</strong>iews are the presentation of the data contained in a model.  <strong>C</strong>ontrollers are the glue that bind the two together.  In MVC, the three are separated, there is no mixing as is commonly found in web apps today.  The benefits of MVC are numerous, but the main goal is to reduce the mental load for the developer.  Modules focus on one goal at a time.  Outgrowths of this include smaller modules, easier testing, a higher chance of code re-use.
              </p>
@@ -58,13 +58,13 @@
 
 
 		</section>
-		
+
         <section class="grid_12">
             <h2>Quick Example</h2>
             Presented below is a simple MVC application that combines many of AFrameJS' concepts.  Models are created and contained in a Collection and then a List of Views presents the data contained in the models.  AFrameJS's special object construct mechanism is used, allowing the developer to use object Plugins.
             <pre>
 // The "main" Controller.
-            
+
 // Define the "layout" of model using a SchemaConfig.
 var friendSchemaConfig = {
     name: { type: 'text' }
@@ -73,7 +73,7 @@ var friendSchemaConfig = {
 // Use a collection to keep track of the friend models.  When data items are
 // inserted into collection, models will be created automatically using the
 // layout defined in the friendSchemaConfig
-var friendsCollection = AFrame.create( AFrame.CollectionArray, {
+var friendsCollection = AFrame.CollectionArray.create( {
     // Whenever data is inserted into the collection, create a model for the
     //  data using the layout defined in friendSchemaConfig.
     plugins: [ [ AFrame.CollectionPluginModel, {
@@ -82,9 +82,9 @@ var friendsCollection = AFrame.create( AFrame.CollectionArray, {
 } );
 
 // This is a list of friends.  It will display the data held by each of Friend models.
-// The list is bound to the friendsCollection, any time a friend is added or removed 
+// The list is bound to the friendsCollection, any time a friend is added or removed
 // from the collection, the list will be automatically updated.
-var friendsList = AFrame.create( AFrame.List, {
+var friendsList = AFrame.List.create( {
     target: '#friendList',
     listElementFactory: function( model, index ) {
         // whenever a model is inserted into the collection, create a list item
@@ -104,32 +104,32 @@ var friendsList = AFrame.create( AFrame.List, {
 $( '#add-friend' ).click( function( event ) {
        var friend_name = prompt( "Who is your friend?" );
        friendsCollection.insert( { name: friend_name } );
-} );            
+} );
             </pre>
-            
+
             <h3>See the code in action</h3>
-            
+
             <h4>Friends:</h4>
             <ul id="friendList">
             </ul>
             <button id="add-friend">Add a Friend</button>
-            
+
             <p>
                 While this example is contrived, it gives a brief example of what AFrameJS can do with a minimal amount of code.  We have one main controller, a collection (representing Models) and a List(representing Views).  On top of this basic example, AFrameJS provides mechanisms to work with models individually, use forms to input, edit, and validate data that is later saved to a model.
             </p>
         </section>
-        
-        
+
+
         <section class="grid_12">
             <h2>Overview</h2>
-            
+
             <p>
                 AFrameJS provides base level components necessary to start creating full MVC style applications.
             </p>
              <p>
                 At its core, AFrameJS is an event-driven system - anybody who has worked with DOM events will immediately understand how these work.  The library  takes advantage of Javascript's incredible flexibility, it is an <abbr title="Object-Oriented"><a href="http://en.wikipedia.org/wiki/Object_oriented_programming">OO</a></abbr> library that uses <abbr title="Aspect-Oriented"><a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect Oriented</a></abbr> and functional styles when appropriate.
              </p>
-		  
+
 	 		<p>
 				AFrameJS is DOM library agnostic, meaning it can be used with any DOM library.  All DOM manipulation within the library is done using DOM adapters, currently there are adapters for jQuery, MooTools and Prototype.
 	 		</p>
@@ -138,41 +138,41 @@ $( '#add-friend' ).click( function( event ) {
                 Pre-packaged and minified versions of AFrameJS are found at <a href="https://github.com/stomlinson/AFrame-JS/tree/master/dist">GitHub</a>.
 			</p>
          </section>
-         
+
          <section class="grid_12">
             <h2>MVC in AFrameJS</h2>
-            
+
             <h3>Models</h3>
             <p>
-                In AFrameJS, a <a href="docs/AFrame.Model.html">Model</a> is made up of a <a href="docs/AFrame.DataContainer.html">DataContainer</a> and a <a href="docs/AFrame.Schema.html">Schema.</a> A <a href="docs/AFrame.DataContainer.html">DataContainer</a> 
+                In AFrameJS, a <a href="docs/AFrame.Model.html">Model</a> is made up of a <a href="docs/AFrame.DataContainer.html">DataContainer</a> and a <a href="docs/AFrame.Schema.html">Schema.</a> A <a href="docs/AFrame.DataContainer.html">DataContainer</a>
                 is the object that holds data.  A <a href="docs/AFrame.Schema.html">Schema</a> acts as both a template and a filter when working with data objects.
                 Models combine the power of both of these.
             </p>
-            
+
             <p>
                 Models are often times part of a larger collection.  Javascript provides two basic Collections, a hash or an array. AFrameJS provides two data collections as well, <a href="docs/AFrame.CollectionHash.html">CollectionHash</a> and <a href="docs/AFrame.CollectionArray.html">CollectionArray</a>.
             </p>
-            
+
             <h3>Views</h3>
             <p>
-                A <a href="docs/AFrame.Display.html">Display</a> in AFrameJS is a View in MVC.  There are several types of Displays, but the basic 
-                Display provides very basic DOM and DOM event functionality.  A <a href="docs/AFrame.Field.html">Field</a> 
-                provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user, 
-                validate the data, clean up the data, and display helpful hints when there are problems.  A <a href="docs/AFrame.Form.html">Form</a> 
-                is a composite of <a href="docs/AFrame.Field.html">Fields</a>.  A <a href="docs/AFrame.DataForm.html">DataForm</a> takes 
-                this one step further and binds a form to a <a href="docs/AFrame.DataContainer.html">DataContainer</a> allowing 
+                A <a href="docs/AFrame.Display.html">Display</a> in AFrameJS is a View in MVC.  There are several types of Displays, but the basic
+                Display provides very basic DOM and DOM event functionality.  A <a href="docs/AFrame.Field.html">Field</a>
+                provides two pieces of functionality, input and output.  When used as input, a Field can get input from the user,
+                validate the data, clean up the data, and display helpful hints when there are problems.  A <a href="docs/AFrame.Form.html">Form</a>
+                is a composite of <a href="docs/AFrame.Field.html">Fields</a>.  A <a href="docs/AFrame.DataForm.html">DataForm</a> takes
+                this one step further and binds a form to a <a href="docs/AFrame.DataContainer.html">DataContainer</a> allowing
                 changes in input to automatically update its corresponding model when all fields are valid.
             </p>
-            
+
             <p>
                 Just as models are parts of a larger collection, often times Displays need to be part of a larger <a href="docs/AFrame.List.html">List</a>.
             </p>
-            
+
             <h3>Controllers</h3>
             <p>
                 There has to be some fun in programming.  You get to write whatever controllers you want.
             </p>
-            
+
             <h3>Plugins</h3>
             <p>
                 AFrameJS provides strong <a href="docs/AFrame.Observable.html">Observable</a>(events) and <a href="docs/AFrame.Plugin.html">Plugin</a> systems.  Observables make it easy to listen for specific events that happen on an object, anybody who has worked with DOM Events already has an understanding of how Observables work. Plugins are a way of extending the functionality of an object through composition instead of inheritance - it combines the events, mixins, and decorators of other languages. Plugins make it easy for a small piece of functionality to be written once and be shared across several seemingly unrelated classes.  Plugins also make configuring an object incredibly flexible.  Instead of writing one gigantic class that does 15 different things,  one small base class can be written and then all peripheral functionality can be placed into plugins.  Developing this way makes testing and debugging much easier.  It also means if an object no longer needs a piece of functionality, it can be thrown away without affecting other parts of the code.
@@ -192,22 +192,22 @@ $( '#add-friend' ).click( function( event ) {
                 <li>Clean up references when objects are torn down so that memory leaks are minimized</li>
                 <li>Make AFrame as easy to add on to as possible</li>
             </ul>
-        
+
         </section>
-        
-        
+
+
         <section class="grid_12 summary description">
             <h2>Using AFrame</h2>
             <p>
-                Get either a <a href="https://github.com/stomlinson/AFrame-JS/tree/master/dist">compiled</a> version of the library or 
+                Get either a <a href="https://github.com/stomlinson/AFrame-JS/tree/master/dist">compiled</a> version of the library or
                 download the source from <a href="https://github.com/stomlinson/AFrame-JS">GitHub</a>.
             </p>
-            
+
             <p>
                 Try the <a href="http://www.aframejs.com/mobilenotes/">Mobile Notes demo</a>.  No data is ever sent to the server,
                 but in Chrome/Safari/Opera or your iPhone/iPad/Android devices, your notes persist across browser sessions!
             </p>
-            
+
             <p>
                 Check out the <a href="tutorial.html">tutorial</a> for code examples of how to use the various components.
             </p>
@@ -219,26 +219,26 @@ $( '#add-friend' ).click( function( event ) {
             <p>
                 Examine and trace through the <a href="tests/index.html">Unit Tests</a> to see AFrame in action.
             </p>
-        
+
         </section>
-         
+
         <p>
             <a href='https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String' title='JS String toLocaleLowerCase'><img src='http://static.jsconf.us/promotejsv.gif' height='280' width='160' alt='JS String toLocaleLowerCase'/></a>
         </p>
-        
+
 		<footer class="clearfix">
 
 			<p class="grid_6">
 				Copyright &copy; 2011 Shane Tomlinson (set117 at yahoo period com). All rights reserved.
 			</p>
-            
+
 			<p class="grid_6">
 				<a href="http://www.shanetomlinson.com">http://www.shanetomlinson.com</a>
 			</p>
-            
+
 		</footer>
 	</div>
-	
+
 	<script type="text/javascript">
 
 	var _gaq = _gaq || [];
