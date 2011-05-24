@@ -85,7 +85,7 @@
 	testsToRun.push( {
 		name: 'TestCase AFrame.create',
 		testCreateNoConfig: function() {
-			var instance = AFrame.create( SubClass );
+			var instance = SubClass.create();
 
 			Assert.isTrue( instance instanceof SubClass, 'instance is an instance of subclass' );
 			Assert.isTrue( instance.initCalled, 'init is called' );
@@ -93,7 +93,7 @@
 
 		testCreateConfig: function() {
 			var config = {};
-			var instance = AFrame.create( AFrame.AObject, config );
+			var instance = AFrame.AObject.create( config );
 
 			Assert.areSame( config, instance.getConfig(), 'config passed to init' );
 		},
@@ -102,20 +102,19 @@
 			var initPluginConfig;
 			var setPluggedPlugged;
 
-			var PluginMock = function() {};
-			PluginMock.prototype = {
+			var PluginMock = AFrame.Class( {
 				init: function( config ) {
 					initPluginConfig = config;
 					setPluggedPlugged = config.plugged;
 				}
-			}
+			} );
 
 			var pluginConfig = {};
 			var config = {
 				plugins: [ [ PluginMock, pluginConfig ] ]
 			};
 
-			var instance = AFrame.create( AFrame.AObject, config );
+			var instance = AFrame.AObject.create( config );
 
 			Assert.areSame( instance, setPluggedPlugged, 'setPlugged called with new object' );
 		},
@@ -124,13 +123,12 @@
 			var pluginInitCalled;
 			var setPluggedPlugged;
 
-			var PluginMock = function() {};
-			PluginMock.prototype = {
+			var PluginMock = AFrame.Class( {
 				init: function( config ) {
 					pluginInitCalled = true;
 					setPluggedPlugged = config.plugged;
 				}
-			}
+			} );
 
 			var config = {
 				plugins: [ PluginMock ]
@@ -145,15 +143,14 @@
 			var pluginInitCalled;
 			var setPluggedPlugged;
 
-			var PluginMock = function() {};
-			PluginMock.prototype = {
+			var PluginMock = AFrame.Class( {
 				init: function( config ) {
 					pluginInitCalled = true;
 					setPluggedPlugged = config.plugged;
 				}
-			}
+			} );
 
-			var Class = AFrame.Class( AFrame.AObject, {
+			var Class = AFrame.AObject.extend( {
 				plugins: [ PluginMock ]
 			} );
 

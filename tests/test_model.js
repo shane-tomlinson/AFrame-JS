@@ -6,7 +6,7 @@
         isodatetime: { type: 'iso8601' }
     };
 
-	var ModelClass = AFrame.Class( AFrame.Model, {
+	var ModelClass = AFrame.Model.extend( {
 		schema: schemaConfig
 	} );
 
@@ -16,7 +16,7 @@
 		name: "TestCase AFrame.Model",
 
 		setUp: function() {
-		    this.model = AFrame.create( ModelClass );
+		    this.model = ModelClass.create();
 		},
 
 		tearDown: function() {
@@ -98,7 +98,7 @@
                 isodatetime: '2011-01-16T11:47:04Z'
             };
 
-		    var model = AFrame.create( ModelClass, {
+		    var model = ModelClass.create( {
                 data: initialData
             } );
 
@@ -116,7 +116,7 @@
                 stringField: 'string value'
             };
 
-        	var model = AFrame.create( AFrame.Model, {
+        	var model = AFrame.Model.create( {
         		schema: schemaConfig,
         		data: initialData
         	} );
@@ -129,7 +129,7 @@
                 stringField: 'string value'
             };
 
-        	var model = AFrame.create( AFrame.Model, {
+        	var model = AFrame.Model.create( {
         		schema: schemaConfig,
         		data: initialData
         	} );

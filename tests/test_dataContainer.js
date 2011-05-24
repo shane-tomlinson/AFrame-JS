@@ -3,7 +3,7 @@ testsToRun.push( {
 		name: "TestCase AFrame.DataContainer",
 
 		setUp: function() {
-		    this.dataContainer = AFrame.create( AFrame.DataContainer );
+		    this.dataContainer = AFrame.DataContainer.create();
 		},
 
 		tearDown : function () {

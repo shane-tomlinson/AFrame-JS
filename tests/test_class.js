@@ -80,7 +80,7 @@
 			Assert.isTrue( Class === Class.prototype.constructor, 'prototype constructor is set' );
 			Assert.areSame( proto.init, Class.prototype.init, 'init uses the init we defined' );
 
-			var instance = AFrame.create( Class );
+			var instance = Class.create();
 
 			Assert.isTrue( instance instanceof MockBase, 'new class is instance of AObject' );
 			Assert.isTrue( constCalled, 'base constructor is called' );
@@ -103,7 +103,7 @@
 		},
 
 		testWalkChain: function() {
-			var instance = AFrame.create( SubClass ), depth = 0;
+			var instance = SubClass.create(), depth = 0;
 			AFrame.Class.walkChain( function( currClass ) {
 				depth++;
 			}, instance );

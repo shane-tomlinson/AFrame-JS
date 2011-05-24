@@ -3,7 +3,7 @@ testsToRun.push( {
 		name: "TestCase AFrame.Display",
 
 		setUp: function() {
-			this.display = AFrame.create( AFrame.Display, {
+			this.display = AFrame.Display.create( {
                 target: '.target'
 			} );
 		},
@@ -17,7 +17,7 @@ testsToRun.push( {
 		testInitNoTarget: function() {
 			var except;
 			try {
-				var display = AFrame.create( AFrame.Display );
+				var display = AFrame.Display.create();
 			} catch ( e ) {
 				except = e;
 			}
@@ -134,7 +134,7 @@ testsToRun.push( {
 
         testDeclareDOMEventsNoSelector: function() {
             var inlineEvent, outlineEvent, onMouseOverCalled;
-            var Display = AFrame.Class( AFrame.Display, {
+            var Display = AFrame.Display.extend( {
                 domevents: {
                     click: [ function( event ) {
                         inlineEvent = event.type;
@@ -151,7 +151,7 @@ testsToRun.push( {
                 }
             } );
 
-            var instance = AFrame.create( Display, {
+            var instance = Display.create( {
                 target: '.target'
             } );
             $( '.target' ).trigger( 'click' );
@@ -165,7 +165,7 @@ testsToRun.push( {
 
         testDeclareDOMEventsWithSelector: function() {
             var onClickCalled;
-            var Display = AFrame.Class( AFrame.Display, {
+            var Display = AFrame.Display.extend( {
                 domevents: {
                     'click .buttonContainer #externalButton': 'onClick'
                 },
@@ -175,7 +175,7 @@ testsToRun.push( {
                 }
             } );
 
-            var instance = AFrame.create( Display, {
+            var instance = Display.create( {
                 target: '#AFrame_Display'
             } );
             $( '#externalButton' ).trigger( 'click' );
@@ -185,7 +185,7 @@ testsToRun.push( {
 
         testDeclareEventsWithInheritance: function() {
             var clickCount = 0;
-            var Super = AFrame.Class( AFrame.Display, {
+            var Super = AFrame.Display.extend( {
                 domevents: {
                     'click .buttonContainer #externalButton': 'onClick'
                 },
@@ -194,9 +194,9 @@ testsToRun.push( {
                     clickCount++;
                 }
             } );
-			var Sub = AFrame.Class( Super );
+			var Sub = Super.extend();
 
-            var instance = AFrame.create( Sub, {
+            var instance = Sub.create( {
                 target: '#AFrame_Display'
             } );
             $( '#externalButton' ).trigger( 'click' );

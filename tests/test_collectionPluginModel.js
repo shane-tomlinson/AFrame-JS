@@ -4,7 +4,7 @@
         employer: { type: 'text', 'def': 'AFrame Foundary' }
     };
 
-    var testModel = AFrame.Class( AFrame.Model, {
+    var testModel = AFrame.Model.extend( {
     	schema: schemaConfig
     } );
 
@@ -13,7 +13,7 @@
             name: "TestCase AFrame.CollectionPluginModel",
 
             setUp: function() {
-                this.collection = AFrame.create( AFrame.CollectionArray, {
+                this.collection = AFrame.CollectionArray.create( {
                     plugins: [ AFrame.CollectionPluginPersistence,
                         [ AFrame.CollectionPluginModel, {
                             schema: schemaConfig
@@ -42,7 +42,7 @@
             },
 
             testInsertModel: function() {
-                var model =  AFrame.create( AFrame.Model, {
+                var model =  AFrame.Model.create( {
                     schema: schemaConfig,
                     data: {
                         name: 'Shane Tomlinson'
@@ -76,7 +76,7 @@
                     beforeAddItem = event.item;
                 } );
 
-                var model =  AFrame.create( AFrame.Model, {
+                var model =  AFrame.Model.create( {
                     schema: schemaConfig,
                     data: {
                         name: 'Shane Tomlinson'
@@ -90,7 +90,7 @@
             },
 
             testAddNotAddedIfNoPersistencePlugin: function() {
-                var collection = AFrame.create( AFrame.CollectionArray, {
+                var collection = AFrame.CollectionArray.create( {
                     plugins: [
                         [ AFrame.CollectionPluginModel, {
                             schema: schemaConfig
@@ -102,11 +102,11 @@
             },
 
             testUseModelForSchema: function() {
-                var TestModel = AFrame.Class( AFrame.Model, {
+                var TestModel = AFrame.Model.extend( {
 					schema: schemaConfig
 				} );
 
-                var collection = AFrame.create( AFrame.CollectionArray, {
+                var collection = AFrame.CollectionArray.create( {
                     plugins: [ AFrame.CollectionPluginPersistence,
                         [ AFrame.CollectionPluginModel, {
                             schema: TestModel
@@ -142,7 +142,7 @@
             name: "TestCase AFrame.CollectionPluginModel with overridden modelFactory",
 
             setUp: function() {
-                this.collection = AFrame.create( AFrame.CollectionArray, {
+                this.collection = AFrame.CollectionArray.create( {
                     plugins: [ [ AFrame.CollectionPluginModel, {
                         schema: schemaConfig,
                         modelFactory: modelFactory
