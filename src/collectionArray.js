@@ -1,12 +1,12 @@
 /**
-* An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via 
+* An array collection.  Unlike the [CollectionHash](AFrame.CollectionHash.html), the CollectionArray can be accessed via
 * either a key or an index.  When accessed via a key, the item's CID will be used.  If an item has a cid field when
 * inserted, this cid will be used, otherwise a cid will be assigned.
-* 
+*
 * This raises the same events as AFrame.CollectionHash, but every event will have one additional parameter, index.
 *
 *    Create the array
-*    var collection = AFrame.create( AFrame.CollectionArray );
+*    var collection = AFrame.CollectionArray.create();
 *
 *    // First item is inserted with a cid, inserted at the end of the array.
 *    var aframeCID = collection.insert( { cid: 'cid1',
@@ -54,25 +54,25 @@
 */
 AFrame.CollectionArray = ( function() {
     "use strict";
-    
-    var CollectionArray = AFrame.Class( AFrame.CollectionHash, AFrame.ArrayCommonFuncsMixin, {
+
+    var CollectionArray = AFrame.CollectionHash.extend( AFrame.ArrayCommonFuncsMixin, {
         init: function( config ) {
             this.itemCIDs = [];
 
             CollectionArray.sc.init.call( this, config );
         },
-        
+
         teardown: function() {
             this.itemCIDs.forEach( function( id, index ) {
                 this.itemCIDs[ index ] = null;
             }, this );
             AFrame.remove( this, 'itemCIDs' );
-            
+
             CollectionArray.sc.teardown.apply( this );
         },
-        
+
         /**
-        * Insert an item into the array.  
+        * Insert an item into the array.
         *
         *    // First item is inserted with a cid, inserted at the end of the array.
         *    var aframeCID = collection.insert( { cid: 'cid1',
@@ -104,13 +104,13 @@ AFrame.CollectionArray = ( function() {
         insert: function( item, index ) {
             index = 'number' == typeof( index ) ? index : -1;
             this.currentIndex = this.getActualInsertIndex( index );
-            
+
             var cid = CollectionArray.sc.insert.call( this, item );
             this.itemCIDs.splice( this.currentIndex, 0, cid );
-            
+
             return cid;
         },
-        
+
         /**
         * Get an item from the array.
         *
@@ -137,8 +137,8 @@ AFrame.CollectionArray = ( function() {
             }
             return retval;
         },
-        
-        /** 
+
+        /**
         * Remove an item from the array
         *
         *    var googleItem = collection.remove( googleCID );
@@ -161,17 +161,17 @@ AFrame.CollectionArray = ( function() {
                 cid = this.getCID( index );
             }
 
-            
+
             var retval;
             if( index > -1 ) {
                 this.itemCIDs.splice( index, 1 );
                 this.currentIndex = index;
                 retval = CollectionArray.sc.remove.call( this, cid );
             }
-            
+
             return retval;
         },
-        
+
         /**
         * Clear the array
         *
@@ -182,10 +182,10 @@ AFrame.CollectionArray = ( function() {
         */
         clear: function() {
             CollectionArray.sc.clear.call( this );
-            
+
             this.itemCIDs = [];
         },
-        
+
         /**
         * Get the current count of items
         *
@@ -198,7 +198,7 @@ AFrame.CollectionArray = ( function() {
         getCount: function() {
             return this.itemCIDs.length;
         },
-        
+
         /**
         * Get an array representation of the CollectionArray
         *
@@ -213,7 +213,7 @@ AFrame.CollectionArray = ( function() {
             this.itemCIDs.forEach( function( cid, index ) {
                 array[ index ] = this.hash.get( cid );
             } );
-            
+
             return array;
         },
 
@@ -226,7 +226,7 @@ AFrame.CollectionArray = ( function() {
 
             return event;
         },
-        
+
         /**
          * Given an index or cid, get the cid.
          * @method getCID
@@ -235,12 +235,12 @@ AFrame.CollectionArray = ( function() {
          */
         getCID: function( index ) {
             var cid = index;
-            
+
             if( 'number' == typeof( index ) ) {
                 index = this.getActualIndex( index );
                 cid = this.itemCIDs[ index ];
             }
-            
+
             return cid;
         },
 
@@ -254,10 +254,10 @@ AFrame.CollectionArray = ( function() {
             if( 'string' == typeof( index ) ) {
                 index = this.itemCIDs.indexOf( index );
             }
-            
+
             return index;
         },
-        
+
         forEach: function( callback, context ) {
             for( var item, index = 0, cid; cid = this.itemCIDs[ index ]; ++index ) {
                 item = this.get( cid );

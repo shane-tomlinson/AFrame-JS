@@ -7,7 +7,7 @@
 * by index.
 *
 *    Create the hash
-*    var collection = AFrame.create( AFrame.CollectionHash );
+*    var collection = AFrame.CollectionHash.create();
 *
 *    // First item is inserted with a cid
 *    var cid = collection.insert( { cid: 'cid1',
@@ -37,23 +37,23 @@
 */
 AFrame.CollectionHash = ( function() {
     "use strict";
-    
-    var CollectionHash = AFrame.Class( AFrame.AObject, AFrame.EnumerableMixin, {
+
+    var CollectionHash = AFrame.AObject.extend( AFrame.EnumerableMixin, {
         init: function( config ) {
             this.hash = {};
-            
+
             CollectionHash.sc.init.call( this, config );
         },
-        
+
         teardown: function() {
             for( var cid in this.hash ) {
                 AFrame.remove( this.hash, cid );
             }
             AFrame.remove( this, 'hash' );
-            
+
             CollectionHash.sc.teardown.call( this );
         },
-        
+
         /**
         * Get an item from the hash.
         *
@@ -68,7 +68,7 @@ AFrame.CollectionHash = ( function() {
         get: function( cid ) {
             return this.hash[ cid ];
         },
-        
+
         /**
         * Remove an item from the store.
         *
@@ -85,7 +85,7 @@ AFrame.CollectionHash = ( function() {
         */
         remove: function( cid, options ) {
             var item = this.get( cid );
-            
+
             if( item ) {
                 /**
                 * Triggered before remove happens.  If listeners call preventDefault on the
@@ -101,7 +101,7 @@ AFrame.CollectionHash = ( function() {
                     type: 'onBeforeRemove',
                     force: options && options.force
                 } );
-                
+
                 if( this.shouldDoAction( options, event ) ) {
                     AFrame.remove( this.hash, cid );
                     /**
@@ -117,20 +117,20 @@ AFrame.CollectionHash = ( function() {
                         type: 'onRemove',
                         force: options && options.force
                     } );
-                    
+
                     return item;
                 }
             }
-            
+
         },
-        
+
         /**
         * Insert an item into the hash.  CID is gotten first from the item's cid field.  If this doesn't exist,
-        * it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid' 
+        * it is then assigned.  Items with duplicate cids are not allowed, this will cause a 'duplicate cid'
         * exception to be thrown.  If the item being inserted is an Object and does not already have a cid, the
         * item's cid will be placed on the object under the cid field.
         *
-        * When onBeforeInsert is triggered, if the event has had preventDefault called, 
+        * When onBeforeInsert is triggered, if the event has had preventDefault called,
         *   the insert will be cancelled
         *
         *    // First item is inserted with a cid
@@ -160,8 +160,8 @@ AFrame.CollectionHash = ( function() {
             if( 'undefined' != typeof( this.get( cid ) ) ) {
                 throw 'duplicate cid';
             }
-            
-            
+
+
             /**
              * Triggered before insertion happens.  If listeners call preventDefault on the event,
              *  item will not be inserted
@@ -176,16 +176,16 @@ AFrame.CollectionHash = ( function() {
                 type: 'onBeforeInsert',
                 force: options && options.force
             } );
-            
+
             if( this.shouldDoAction( options, event ) ) {
-            
+
                 // store the CID on the item.
                 if( item instanceof Object ) {
                     item.cid = cid;
                 }
-                
+
                 this.hash[ cid ] = item;
-                
+
                 /**
                  * Triggered after insertion happens.
                  * @event onInsert
@@ -198,17 +198,17 @@ AFrame.CollectionHash = ( function() {
                     cid: cid,
                     type: 'onInsert',
                     force: options && options.force
-                } );                
-                
+                } );
+
                 return cid;
             }
 
         },
-        
+
         shouldDoAction: function( options, event ) {
             return ( options && options.force ) || !( event && event.isDefaultPrevented() );
         },
-        
+
         /**
         * Clear the hash
         *
@@ -222,7 +222,7 @@ AFrame.CollectionHash = ( function() {
                 this.remove( cid );
             }
         },
-        
+
         /**
         * Iterate over the collection, calling a function once for each item in the collection.
         *
@@ -232,7 +232,7 @@ AFrame.CollectionHash = ( function() {
         *    } );
         *
         * @method forEach
-        * @param {function} callback - callback to call for each item.  Will be called with two parameters, 
+        * @param {function} callback - callback to call for each item.  Will be called with two parameters,
         *   the first is the item, the second the identifier (id type depends on type of collection).
         * @param {object} context - optional context to call callback in.
         */

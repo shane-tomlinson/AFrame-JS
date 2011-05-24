@@ -1,35 +1,35 @@
 /**
- * Create an AFrame.Form based object for each item in the list.  Adds the functions [validate](#method_validate), 
- * [save](#method_save), [clear](#method_clear), [reset](#method_reset), and [getForm](#method_getForm) to the 
- * plugged object.  By default, no formFactory method is needed to create forms and a 
- * [AFrame.DataForm](AFrame.DataForm.html) is created for each row.  If a specialty form is needed, 
+ * Create an AFrame.Form based object for each item in the list.  Adds the functions [validate](#method_validate),
+ * [save](#method_save), [clear](#method_clear), [reset](#method_reset), and [getForm](#method_getForm) to the
+ * plugged object.  By default, no formFactory method is needed to create forms and a
+ * [AFrame.DataForm](AFrame.DataForm.html) is created for each row.  If a specialty form is needed,
  * the formFactory configuration parameter can be specified.
  *
  *##Setting up a List##
  *
  *    // ListPluginFormRow with default formFactory
- *    var list = AFrame.create( AFrame.List, {
+ *    var list = AFrame.List.create( {
  *        target: '.list',
  *        plugins: [ AFrame.ListPluginFormRow ]
  *    } );
- *       
+ *
  *    // ListPluginFormRow with formFactory specified
- *    var list = AFrame.create( AFrame.List, {
+ *    var list = AFrame.List.create( {
  *        target: '.list',
  *        plugins: [ [ AFrame.ListPluginFormRow, {
  *           formFactory: function( rowElement, data )
- *              var form = AFrame.create( AFrame.SpecializedForm, {
+ *              var form = AFrame.SpecializedForm.create( {
  *                  target: rowElement,
  *                  dataSource: data
  *              } );
- *           
+ *
  *              return form;
  *        } ] ]
  *    } );
  *
  *
  *##Using ListPluginFormRow's Functionality##
- * 
+ *
  *     // list is an AFrame.List with the AFrame.ListPluginFormRow plugin
  *
  *     // reset all forms in the entire list
@@ -43,13 +43,13 @@
  *
  *     // validate one row
  *     var valid = list.validate( 0 );
- *       
+ *
  *     // save all forms in the entire list
  *     list.save();
  *
  *     // save one row
  *     list.save( 0 );
- * 
+ *
  *     // clear all forms in the entire list
  *     list.clear();
  *
@@ -58,12 +58,12 @@
  *
  * @class AFrame.ListPluginFormRow
  * @extends AFrame.Plugin
- * @constructor 
+ * @constructor
  */
 AFrame.ListPluginFormRow = ( function() {
     "use strict";
-    
-    var Plugin = AFrame.Class( AFrame.Plugin, {
+
+    var Plugin = AFrame.Plugin.extend( {
         events: {
             'onInsert plugged': 'onInsertRow',
             'onRemove plugged': 'onRemoveRow'
@@ -77,11 +77,11 @@ AFrame.ListPluginFormRow = ( function() {
              *
              *     ...
              *     formFactory: function( rowElement, data ) {
-             *          var form = AFrame.create( AFrame.SpecializedForm, {
+             *          var form = AFrame.SpecializedForm.create( {
              *              target: rowElement,
              *              dataSource: data
              *          } );
-             *           
+             *
              *          return form;
              *      },
              *      ....
@@ -91,11 +91,11 @@ AFrame.ListPluginFormRow = ( function() {
              * @default this.formFactory
              */
             this.formFactory = config.formFactory || this.formFactory;
-            
+
             this.forms = [];
-            
+
             Plugin.sc.init.call( this, config );
-            
+
             var plugged = this.getPlugged();
             plugged.validate = this.validate.bind( this );
             plugged.save = this.save.bind( this );
@@ -103,16 +103,16 @@ AFrame.ListPluginFormRow = ( function() {
             plugged.clear = this.clear.bind( this );
             plugged.getForm = this.getForm.bind( this );
         },
-        
+
         teardown: function() {
             this.forms.forEach( function( form, index ) {
                 form.teardown();
                 this.forms[ index ] = null;
             }, this );
-            
-            Plugin.sc.teardown.call( this );		
+
+            Plugin.sc.teardown.call( this );
         },
-        
+
         /**
          * The factory function used to create forms.  formFactory will be called once for each
          *	row in the list, it will be called with two parameters, the rowElement and the data
@@ -120,11 +120,11 @@ AFrame.ListPluginFormRow = ( function() {
          *
          *     ...
          *     formFactory: function( rowElement, data ) {
-         *          var form = AFrame.create( AFrame.SpecializedForm, {
+         *          var form = AFrame.SpecializedForm.create( {
          *              target: rowElement,
          *              dataSource: data
          *          } );
-         *           
+         *
          *          return form;
          *      },
          *      ....
@@ -133,30 +133,30 @@ AFrame.ListPluginFormRow = ( function() {
          * @type {function}
          */
         formFactory: function( rowElement, data ) {
-            var form = AFrame.create( AFrame.DataForm, {
+            var form = AFrame.DataForm.create( {
                 target: rowElement,
                 dataSource: data
             } );
-            
+
             return form;
         },
-        
+
         onInsertRow: function( data, index ) {
             var form = this.formFactory( data.rowElement, data.data );
             this.forms.splice( index, 0, form );
         },
-        
+
         onRemoveRow: function( data, index ) {
             var form = this.forms[ index ];
             form.teardown();
-            
+
             this.forms[ index ] = null;
             this.forms.splice( index, 1 );
         },
-        
+
         /**
          * Validate a form.
-         * 
+         *
          *     // list is an AFrame.List with the Plugin plugin
          *
          *     // validate all forms in the entire list
@@ -173,11 +173,11 @@ AFrame.ListPluginFormRow = ( function() {
         validate: function( index ) {
             var valid = true;
             var form;
-            
+
             if( AFrame.defined( index ) ) {
                 form = this.forms[ index ];
                 if( form ) {
-                    valid = form.validate();				
+                    valid = form.validate();
                 }
             }
             else {
@@ -185,13 +185,13 @@ AFrame.ListPluginFormRow = ( function() {
                     valid = form.validate();
                 }
             }
-            
+
             return valid;
         },
-        
+
         /**
          * Save a form's data to its DataContainer
-         * 
+         *
          *     // list is an AFrame.List with the Plugin plugin
          *
          *     // save all forms in the entire list
@@ -207,10 +207,10 @@ AFrame.ListPluginFormRow = ( function() {
         save: function( index ) {
             this.formFunc( index, 'save' );
         },
-        
+
         /**
          * Reset a form
-         * 
+         *
          *     // list is an AFrame.List with the Plugin plugin
          *
          *     // reset all forms in the entire list
@@ -226,10 +226,10 @@ AFrame.ListPluginFormRow = ( function() {
         reset: function( index ) {
             this.formFunc( index, 'reset' );
         },
-        
+
         /**
          * Clear a form
-         * 
+         *
          *     // list is an AFrame.List with the Plugin plugin
          *
          *     // clear all forms in the entire list
@@ -245,12 +245,12 @@ AFrame.ListPluginFormRow = ( function() {
         clear: function( index ) {
             this.formFunc( index, 'clear' );
         },
-        
+
         formFunc: function( index, funcName ) {
             if( AFrame.defined( index ) ) {
                 var form = this.forms[ index ];
                 if( form ) {
-                    form[ funcName ]();				
+                    form[ funcName ]();
                 }
             }
             else {
@@ -259,10 +259,10 @@ AFrame.ListPluginFormRow = ( function() {
                 } );
             }
         },
-        
+
         /**
         * Get the reference to a form
-        * 
+        *
         *     // list is an AFrame.List with the Plugin plugin
         *
         *     // get the form for one row.

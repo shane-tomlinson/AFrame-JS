@@ -56,6 +56,10 @@ var AFrame = ( function() {
         },
 
         /**
+        * @deprecated
+        * This has been deprecated in favor of calling a Class' static create method
+        *	instead.
+        *
         * Instantiate an [AFrame.AObject](#AFrame.AObject.html) compatible object.
         * When using the create function, any Plugins are automatically created
         * and bound, and init is called on the created object.

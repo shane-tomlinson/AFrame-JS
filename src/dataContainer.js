@@ -44,7 +44,7 @@ AFrame.DataContainer = ( function() {
 			else if( data ) {
 				var dataContainer = data.__dataContainer;
 				if( !dataContainer ) {
-					dataContainer = AFrame.create( DataContainer, {
+					dataContainer = DataContainer.create( {
 						data: data
 					} );
 				}

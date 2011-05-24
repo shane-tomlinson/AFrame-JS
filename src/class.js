@@ -65,7 +65,7 @@ AFrame.Class = ( function() {
     *
     *    // Walk the object's class chain
     *    // SubClass is an AFrame.Class based class
-    *    var obj = AFrame.create( SubClass );
+    *    var obj = SubClass.create();
     *    AFrame.Class.walkChain( function( currClass ) {
     *        // do something.  Context of function is the obj
     *    }, obj );

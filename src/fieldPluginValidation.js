@@ -20,7 +20,7 @@
 *
 *    ---------
 *
-*    var field = AFrame.create( AFrame.Field, {
+*    var field = AFrame.Field.create( {
 *        target: '#numberInput'
 *    } );
 *
@@ -69,7 +69,7 @@
 AFrame.FieldPluginValidation = (function() {
     "use strict";
 
-    var FieldPluginValidation = AFrame.Class( AFrame.Plugin, {
+    var FieldPluginValidation = AFrame.Plugin.extend( {
         events: {
             'onChange plugged': onChange
         },

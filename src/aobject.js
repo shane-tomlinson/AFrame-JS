@@ -23,7 +23,7 @@
  *        importconfig: [ 'firstImportedParam', 'secondImportedParam' ]
  *    } );
  *
- *    var someClassInst = AFrame.create( SomeClass, {
+ *    var someClassInst = SomeClass.create( {
  *        firstImportedParam: "This is imported",
  *        secondImportedParam: "So is this",
  *        thirdParam: "But this is not"
@@ -63,7 +63,7 @@
  *    // bind to two events on insertedObj, event1, and event2.
  *    // event1 has an inline handler.
  *    // event2 uses a class member as a handler.
- *    var Class = AFrame.Class( AFrame.AObject, {
+ *    var Class = AFrame.AObject.extend( {
  *        importconfig: [ 'insertedObj' ],
  *        events: {
  *            'event1 insertedObj': function() {
@@ -88,7 +88,7 @@ AFrame.AObject = (function(){
 
     var AObject = AFrame.Class( {
         /**
-         * Initialize the object.  Note that if [AFrame.construct](AFrame.html#method_construct) or [AFrame.create](AFrmae.html#method_create)is used, this will be called automatically.
+         * Initialize the object.  Note that if a class' create static function is used to create an object, this will be called automatically.
          *
          *    var obj = new AFrame.SomeObject();
          *    obj.init( { name: 'value' } );

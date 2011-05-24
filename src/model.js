@@ -13,12 +13,12 @@
 *    };
 *
 *    // Create A Model Class
-*    var ModelClass = AFrame.Class( AFrame.Model, {
+*    var ModelClass = AFrame.Model.extend( {
 *        schema: noteSchemaConfig
 *    } );
 *
 *    // Create an instance of ModelClass
-*    var model = AFrame.create( ModelClass, {
+*    var model = ModelClass.create( {
 *        data: {
 *           id: '1',
 *           title: 'Get some milk',
@@ -48,7 +48,7 @@
 * AFrame.Model and associating it with a schemaConfig.
 *
 *    // Manually create a model
-*    var model = AFrame.create( AFrame.Model, {
+*    var model = AFrame.Model.create( {
 *        schema: noteSchemaConfig,
 *        data: {
 *            // data here
@@ -73,7 +73,7 @@
 AFrame.Model = ( function() {
     "use strict";
 
-    var Model = AFrame.Class( AFrame.DataContainer, {
+    var Model = AFrame.DataContainer.extend( {
         init: function( config ) {
             this.schema = getSchema( this.schema || config.schema );
 

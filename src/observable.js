@@ -1,15 +1,15 @@
 /**
- * An Observable is the way events are done.  Observables are very similar to DOM Events in that 
+ * An Observable is the way events are done.  Observables are very similar to DOM Events in that
  * each object has a set of events that it can trigger.  Objects that are concerned with a particular event register a callback to be
  * called whenever the event is triggered.  Observables allow for each event to have zero or many listeners, meaning the developer does not have
  * to manually keep track of who to notify when a particular event happens.  This completely decouples the triggering object from any
  * objects that care about it.
- * 
+ *
  * @class AFrame.Observable
  */
 AFrame.Observable = ( function() {
     "use strict";
-    
+
     var Observable = AFrame.Class( {
         /**
          * Initialize the observable
@@ -18,7 +18,7 @@ AFrame.Observable = ( function() {
         init: function() {
             this.callbacks = {};
         },
-        
+
         /**
          * Tear the observable down, free references
          * @method teardown
@@ -26,7 +26,7 @@ AFrame.Observable = ( function() {
         teardown: function() {
             this.unbindAll();
         },
-        
+
         /**
          * Trigger the observable, calls any callbacks bound to the observable.
          * @method trigger
@@ -39,7 +39,7 @@ AFrame.Observable = ( function() {
                 callback.apply( this, arguments );
             }
         },
-        
+
         /**
          * Bind a callback to the observable
          * @method bind
@@ -48,12 +48,12 @@ AFrame.Observable = ( function() {
          */
         bind: function( callback ) {
             var id = AFrame.getUniqueID();
-            
+
             this.callbacks[ id ] = callback;
-            
+
             return id;
         },
-        
+
         /**
          * Unbind an observable
          * @method unbind
@@ -62,7 +62,7 @@ AFrame.Observable = ( function() {
         unbind: function( id ) {
             AFrame.remove( this.callbacks, id );
         },
-        
+
         /**
          * Unbind all observables
          * @method unbindAll
@@ -72,7 +72,7 @@ AFrame.Observable = ( function() {
               AFrame.remove( this.callbacks, key );
             }
         },
-        
+
         /**
          * Check whether the observable has been triggered
          * @method isTriggered
@@ -88,13 +88,13 @@ AFrame.Observable = ( function() {
      *
      *    var observable = Observable.getInstance();
      *    var id = observable.bind( this.onInit, this );
-     
+
      * @method Observable.getInstance
      * @return {Observable}
      */
     Observable.getInstance = function() {
-        return AFrame.create( Observable );
+        return Observable.create();
     };
-    
+
     return Observable;
 }() );

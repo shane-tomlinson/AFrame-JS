@@ -10,8 +10,8 @@
 */
 AFrame.Plugin = ( function() {
     "use strict";
-    
-    var Plugin = AFrame.Class( AFrame.AObject, {
+
+    var Plugin = AFrame.AObject.extend( {
         importconfig: [ 'plugged' ],
         events: {
             'onTeardown plugged': 'teardown',
@@ -26,12 +26,12 @@ AFrame.Plugin = ( function() {
         getPlugged: function() {
             return this.plugged;
         },
-        
+
         teardown: function() {
             AFrame.remove( this, 'plugged' );
             Plugin.sc.teardown.call( this );
         },
-        
+
         /**
         * Override to do some specialized handling when a plugged object is initialized.
         * @method onPluggedInit

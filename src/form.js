@@ -1,6 +1,6 @@
 /**
- * A basic form.  A Form is a Composite of form fields.  Each Field contains at least 
- * the following functions, clear, save, reset, validate.  A generic Form is not 
+ * A basic form.  A Form is a Composite of form fields.  Each Field contains at least
+ * the following functions, clear, save, reset, validate.  A generic Form is not
  * bound to any data, it is only a collection of form fields.  Note, by default,
  * the form creates an AFrame.Field for each field found.  If specialized field
  * creation is needed, fieldFactory can be overridden through either subclassing
@@ -16,44 +16,44 @@
  *
  *##Working in Javascript##
  *
- *   
- *    // Set up the form to look under #nameForm for elements with the "data-field" 
+ *
+ *    // Set up the form to look under #nameForm for elements with the "data-field"
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.create( AFrame.Form, {
+ *    var form = AFrame.Form.create( {
  *        target: '#nameForm'
  *    } );
- *   
+ *
  *    // do some stuff, user enters data.
  *
  *    // Check the validity of the form
  *    var isValid = form.checkValidity();
- *   
+ *
  *    // do some other stuff.
- *   
+ *
  *    form.clear();
  *
  *##Using a Specialized fieldFactory##
- *   
+ *
  *    // Sets up the field constructor, right now there is only one type of field
  *    var fieldFactory = function( element ) {
- *       return AFrame.create( AFrame.SpecializedField, {
+ *       return AFrame.SpecializedField.create( {
  *           target: element
  *       } );
  *    };
- *   
- *    // Set up the form to look under #nameForm for elements with the "data-field" 
+ *
+ *    // Set up the form to look under #nameForm for elements with the "data-field"
  *    //   attribute.  This will find one field in the above HTML
  *    //
- *    var form = AFrame.create( AFrame.Form, {
+ *    var form = AFrame.Form.create( {
  *        target: '#nameForm',
  *        formFieldFactory: fieldFactory
  *    } );
  *
- *    // the specialized form field factory can be used globally as 
+ *    // the specialized form field factory can be used globally as
  *    // the default factory
  *    AFrame.Form.setDefaultFieldFactory( fieldFactory );
- *    
+ *
  * @class AFrame.Form
  * @extends AFrame.Display
  * @uses AFrame.EnumerableMixin
@@ -64,7 +64,7 @@
  *
  *     // example field factory in a Form's config.
  *     formFieldFactory: function( element ) {
- *       return AFrame.create( AFrame.SpecializedField, {
+ *       return AFrame.SpecializedField.create( {
  *           target: element
  *       } );
  *     };
@@ -76,12 +76,12 @@
 AFrame.Form = ( function() {
     "use strict";
 
-    var Form = AFrame.Class( AFrame.Display, AFrame.EnumerableMixin, {
+    var Form = AFrame.Display.extend( AFrame.EnumerableMixin, {
         init: function( config ) {
             this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
             this.formElements = [];
             this.formFields = [];
-            
+
             Form.sc.init.call( this, config );
 
             this.bindFormElements();
@@ -89,7 +89,7 @@ AFrame.Form = ( function() {
 
         bindFormElements: function() {
             var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
-            
+
             AFrame.DOM.forEach( formElements, this.bindFormElement, this );
         },
 
@@ -102,7 +102,7 @@ AFrame.Form = ( function() {
             this.formElements = null;
             Form.sc.teardown.call( this );
         },
-        
+
         /**
          * bind a form element to the form
          *
@@ -119,10 +119,10 @@ AFrame.Form = ( function() {
 
             var formField = this.formFieldFactory( target );
             this.formFields.push( formField );
-            
+
             return formField;
         },
-        
+
         /**
          * Get the form field elements
          *
@@ -164,7 +164,7 @@ AFrame.Form = ( function() {
             for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
                 valid = formField.checkValidity();
             }
-            
+
             return valid;
         },
 
@@ -206,11 +206,11 @@ AFrame.Form = ( function() {
             if( valid ) {
                 fieldAction.call( this, 'save' );
             }
-            
+
             return valid;
         },
 
-        
+
         /**
         * Iterate through each form field
         * @method forEach
@@ -221,15 +221,15 @@ AFrame.Form = ( function() {
             this.formFields && this.formFields.forEach( callback, context );
         }
     } );
-    
+
     /**
-    * Set the default field factory.  Overridden factory takes one parameter, element.  
+    * Set the default field factory.  Overridden factory takes one parameter, element.
     * It should return a {Field}(AFrame.Field.html) compatible object.
     *
     *
     *     // example of overloaded formFieldFactory
     *     AFrame.Form.setDefaultFieldFactory( function( element ) {
-    *       return AFrame.create( AFrame.SpecializedField, {
+    *       return AFrame.SpecializedField.create( {
     *           target: element
     *       } );
     *     } );
@@ -241,7 +241,7 @@ AFrame.Form = ( function() {
     Form.setDefaultFieldFactory = function( factory ) {
         formFieldFactory = factory;
     };
-    
+
     /**
     * Do an action on all fields.
     * @method fieldAction
@@ -252,14 +252,14 @@ AFrame.Form = ( function() {
             formField[ action ]();
         } );
     }
-    
-    
+
+
     /**
     * The factory used to create fields.
     *
     *     // example of overloaded formFieldFactory
     *     formFieldFactory: function( element ) {
-    *       return AFrame.create( AFrame.SpecializedField, {
+    *       return AFrame.SpecializedField.create( {
     *           target: element
     *       } );
     *     };
@@ -269,7 +269,7 @@ AFrame.Form = ( function() {
     * @return {AFrame.Field} field for element.
     */
     function formFieldFactory( element ) {
-       return AFrame.create( AFrame.Field, {
+       return AFrame.Field.create( {
             target: element
        } );
     }

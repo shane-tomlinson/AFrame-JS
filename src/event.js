@@ -30,7 +30,7 @@
 */
 AFrame.Event = (function() {
     "use strict";
-    
+
     var Event = AFrame.Class( {
         /**
         * initialize the event.  All items in configuration will be added to event.  If timestamp
@@ -42,18 +42,18 @@ AFrame.Event = (function() {
             for( var key in config ) {
                 this[ key ] = config[ key ];
             }
-            
+
             if( !this.type ) {
                 throw 'Event type undefined';
             }
-            
+
             if( this.target ) {
                 this.setOriginalTarget = true;
             }
-            
+
             this.timestamp = new Date();
         },
-        
+
         /**
         * Check if preventDefault has been called.
         *
@@ -66,7 +66,7 @@ AFrame.Event = (function() {
         isDefaultPrevented: function() {
             return !!this.defaultPrevented;
         },
-        
+
         /**
         * Cancel the default action of the event.  Note, this does nothing on its own,
         *   any object that passes an Event object must check isDefaultPrevented to see
@@ -80,7 +80,7 @@ AFrame.Event = (function() {
         preventDefault: function() {
             this.defaultPrevented = true;
         },
-        
+
         /**
         * Proxy an event.  If this is the first time the event is proxied, causes
         *   originalTarget to be set to the original target, and updates target to
@@ -96,11 +96,11 @@ AFrame.Event = (function() {
                 this.originalTarget = this.target;
                 this.setOriginalTarget = false;
             }
-            
+
             this.target = proxy;
         }
     } );
-    
+
     /**
     * A factory method to create an event.
     *
@@ -114,7 +114,7 @@ AFrame.Event = (function() {
     *    } );
     *
     * @method Event.createEvent
-    * @param {object||string} config - if an object, object is used as Event config, 
+    * @param {object||string} config - if an object, object is used as Event config,
     *   if a string, the string signifies the type of event
     * @return {AFrame.Event} event with type
     */
@@ -122,9 +122,9 @@ AFrame.Event = (function() {
         if( AFrame.string( config ) ) {
             config = { type: config };
         }
-        var event = AFrame.create( AFrame.Event, config );
+        var event = AFrame.Event.create( config );
         return event;
     };
-    
+
     return Event;
 })();

@@ -22,24 +22,24 @@
 *        name: 'AFrame',
 *        version: '0.0.20'
 *    } );
-*    
-*    // Set up the form to look under #nameForm for elements with the "data-field" 
-*    //    attribute.  This will find two fields, each field will be tied to the 
+*
+*    // Set up the form to look under #nameForm for elements with the "data-field"
+*    //    attribute.  This will find two fields, each field will be tied to the
 *    //    appropriate field in the libraryDataContainer
-*    var form = AFrame.create( AFrame.DataForm, {
+*    var form = AFrame.DataForm.create( {
 *       target: '#nameForm',
 *       dataSource: libraryDataContainer
 *    } );
-*    
-*    // do some stuff, user updates the fields with the library name and version 
-*    //    number. Note, throughout this period the libraryDataContainer is never 
+*
+*    // do some stuff, user updates the fields with the library name and version
+*    //    number. Note, throughout this period the libraryDataContainer is never
 *    //    updated.
 *
-*    // Check the validity of the form, if we are valid, save the data back to 
+*    // Check the validity of the form, if we are valid, save the data back to
 *    //    the dataContainer.
 *    var isValid = form.checkValidity();
 *    if( isValid ) {
-*        // if the form is valid, the input is saved back to 
+*        // if the form is valid, the input is saved back to
 *        //    the libraryDataContainer
 *        form.save();
 *    }
@@ -62,19 +62,19 @@
 *    };
 *
 *    // create the model.
-*    var model = AFrame.create( AFrame.Model, {
+*    var model = AFrame.Model.create( {
 *        schema: schemaConfig
 *    } );
 *
-*    // Set up the form to look under #nameForm for elements with the "data-field" 
-*    //    attribute.  The name of each field will be that specified in the 
-*    //    element's "name" attribute.  This will try and tie fields to name 
+*    // Set up the form to look under #nameForm for elements with the "data-field"
+*    //    attribute.  The name of each field will be that specified in the
+*    //    element's "name" attribute.  This will try and tie fields to name
 *    //    and version, as specified in the schemaConfig.
-*    var form = AFrame.create( AFrame.DataForm, {
+*    var form = AFrame.DataForm.create( {
 *        target: '#nameForm',
 *        dataSource: model
 *    } );
-*    
+*
 *
 * @class AFrame.DataForm
 * @extends AFrame.Form
@@ -83,8 +83,8 @@
 
 AFrame.DataForm = ( function() {
     "use strict";
-    
-    var DataForm = AFrame.Class( AFrame.Form, {
+
+    var DataForm = AFrame.Form.extend( {
 	    init: function( config ) {
 		    /**
 		     * The source of data
@@ -92,43 +92,43 @@ AFrame.DataForm = ( function() {
 		     * @type {AFrame.DataContainer || Object}
 		     */
 		    this.dataContainer = AFrame.DataContainer( config.dataSource );
-		
+
 		    DataForm.sc.init.call( this, config );
 	    },
-	
+
 	    teardown: function() {
 		    this.dataContainer = null;
 		    DataForm.sc.teardown.call( this );
 	    },
-	
+
 	    bindFormElement: function( formElement ) {
 		    var formField = DataForm.sc.bindFormElement.call( this, formElement );
 		    var fieldName = fieldGetName( formField );
-		
+
 		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );
-		
+
 		    return formField;
 	    },
 
 	    checkValidity: function() {
 		    var valid = DataForm.sc.checkValidity.call( this ) && this.validateFormFieldsWithModel( this.dataContainer );
-		
+
 		    return valid;
 	    },
-	
+
 	    save: function() {
 		    var valid = DataForm.sc.save.apply( this, arguments );
-		
+
 		    if( valid ) {
                 this.forEach( function( formField, index ) {
 				    var fieldName = fieldGetName( formField );
 				    this.dataContainer.set( fieldName, formField.get() );
 			    }, this );
 		    }
-		
+
 		    return valid;
 	    },
-        
+
         /**
         * Validate the form against a model.
         *
@@ -154,14 +154,14 @@ AFrame.DataForm = ( function() {
         this.forEach( function( formField, index ) {
             var fieldName = fieldGetName( formField );
             var validityState = model.checkValidity( fieldName, formField.get() );
-        
+
             if( validityState !== true ) {
                 valid = false;
                 fieldUpdateValidityState( formField, validityState );
             }
         }, this );
-            
-        return valid;	
+
+        return valid;
     }
 
     function fieldUpdateValidityState( formField, validityState ) {
@@ -173,7 +173,7 @@ AFrame.DataForm = ( function() {
                 }
                 else if( 'string' == typeof( val ) ) {
                     formField.setCustomValidity( val );
-                }            
+                }
             }
         }
     }
@@ -186,6 +186,6 @@ AFrame.DataForm = ( function() {
         this.set( data.value );
     }
 
-    
+
     return DataForm;
 } )();

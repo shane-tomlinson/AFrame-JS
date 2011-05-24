@@ -15,7 +15,7 @@
 *    };
 *
 *    // create the collection.
-*    this.collection = AFrame.create( AFrame.CollectionArray, {
+*    this.collection = AFrame.CollectionArray.create( {
 *        plugins: [ [ AFrame.CollectionPluginModel, {
 *            schema: schemaConfig
 *        } ] ]
@@ -38,7 +38,7 @@
 *
 *    // example of an overridden model factory function.
 *    var modelFactory = function( data, schema ) {
-*       return AFrame.create( SpecializedMode, {
+*       return SpecializedMode.create( {
 *           data: data,
 *           schema: schema
 *       } );
@@ -51,7 +51,7 @@
 AFrame.CollectionPluginModel = ( function() {
     "use strict";
 
-    var Plugin = AFrame.Class( AFrame.Plugin, {
+    var Plugin = AFrame.Plugin.extend( {
         importconfig: [ 'schema' ],
 
         init: function( config ) {
@@ -81,7 +81,7 @@ AFrame.CollectionPluginModel = ( function() {
     }
 
     function createModel( data ) {
-		var model = AFrame.create( this.defaultModelConstructor, {
+		var model = this.defaultModelConstructor.create( {
 			schema: this.schema,
 			data: data
 		} );

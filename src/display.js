@@ -11,7 +11,7 @@
  *
  *    // buttonSelector is a selector used to specify the root node of
  *    //    the target.
- *    var button = AFrame.create( AFrame.Display, {
+ *    var button = AFrame.Display.create( {
  *        target: buttonSelector
  *    } );
  *
@@ -64,7 +64,7 @@
  *
  *    // First is a simple click event with an inline handler.  The
  *	  // click event is attached to the Display's target node.
- *    var Display = AFrame.Class( AFrame.Display, {
+ *    var Display = AFrame.Display.extend( {
  *        domevents: {
  *            click: function( event ) {
  *                	// Handle event here
@@ -75,7 +75,7 @@
  *    // Second, a mouseover event is attached to the Display's target.
  *    // The handler is a class function, whose name is given as the
  *    // event handler.  All strings are assumed to be class functions.
- *    var Display = AFrame.Class( AFrame.Display, {
+ *    var Display = AFrame.Display.extend( {
  *        domevents: {
  *            mouseover: 'onMouseOver'
  *        },
@@ -87,7 +87,7 @@
  *    // Frequently, it is necessary to attach an event not to the target
  *	  // element of the object, but to one of its children.  This is possible
  *	  // by specifying a selector to attach to.
- *    var Display = AFrame.Class( AFrame.Display, {
+ *    var Display = AFrame.Display.extend( {
  *        domevents: {
  *            'click .selector': function( event ) {}
  *        }
@@ -96,7 +96,7 @@
  *    // Since attaching multiple event handlers can help reduce
  *    // event handler complexity, multiple handlers are possible.
  *    // Instead of specifying one handler, specify an array of handlers.
- *    var Display = AFrame.Class( AFrame.Display, {
+ *    var Display = AFrame.Display.extend( {
  *        domevents: {
  *            click: [ function( event ) {
  *            // Handle Event
@@ -109,7 +109,7 @@
  *
  *    // All together now - Multiple events, using a combination
  *	  // of inline and class handlers
- *    var Display = AFrame.Class( AFrame.Display, {
+ *    var Display = AFrame.Display.extend( {
  *        domevents: {
  *            'click .selector': [ function( event ) {
  *                // Handle Event
@@ -133,7 +133,7 @@ AFrame.Display = (function() {
 
     var currDOMEventID = 0;
 
-    var Display = AFrame.Class( AFrame.AObject, {
+    var Display = AFrame.AObject.extend( {
         /**
          * the target
          * @config target
