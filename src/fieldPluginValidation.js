@@ -158,7 +158,7 @@ AFrame.FieldPluginValidation = (function() {
         */
         updateValidityState: function( validate ) {
             if( this.calculateValidity ) {
-                this.validityState = AFrame.FieldValidityState.getInstance( this.getPlugged().getTarget()[ 0 ].validity );
+                this.validityState = AFrame.FieldValidityState.create( this.getPlugged().getTarget()[ 0 ].validity );
 
                 if( validate ) {
                     this.validate();

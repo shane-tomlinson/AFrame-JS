@@ -105,25 +105,26 @@ AFrame.Event = (function() {
     * A factory method to create an event.
     *
     *    // returns an event with event.type == 'eventType'
-    *    var event = Event.createEvent( 'eventType' );
+    *    var event = AFrame.Event.create( 'eventType' );
     *
     *    // returns an event with event.type == 'eventType', extraField == 'extraValue'
-    *    var event = Event.createEvent( {
+    *    var event = AFrame.Event.create( {
     *        type: 'eventType',
     *        extraField: 'extraValue'
     *    } );
     *
-    * @method Event.createEvent
+    * @method Event.create
     * @param {object||string} config - if an object, object is used as Event config,
     *   if a string, the string signifies the type of event
     * @return {AFrame.Event} event with type
     */
-    Event.createEvent = function( config ) {
+    var origCreate = Event.create;
+
+    Event.create = function( config ) {
         if( AFrame.string( config ) ) {
             config = { type: config };
         }
-        var event = AFrame.Event.create( config );
-        return event;
+        return origCreate( config );
     };
 
     return Event;

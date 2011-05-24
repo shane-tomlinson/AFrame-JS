@@ -210,30 +210,7 @@ var AFrame = ( function() {
         * @param {array} config.plugins (optional) - Any plugins to attach
         */
         create: function( construct, config ) {
-            var retval;
-            if( construct ) {
-                try {
-                    retval = new construct;
-                } catch ( e ) {
-                    AFrame.log( e.toString() );
-                }
-
-                AFrame.Class.walkChain( function( currClass ) {
-					if( currClass.prototype && currClass.prototype.hasOwnProperty( 'plugins' ) ) {
-						addPlugins( retval, currClass.prototype.plugins );
-					}
-                }, retval );
-
-                config = config || {};
-				addPlugins( retval, config.plugins || [] );
-
-                retval.init( config );
-            }
-            else {
-                throw 'Class does not exist.';
-            }
-            return retval;
-
+        	return construct.create( config );
         },
 
         /**
@@ -342,14 +319,6 @@ var AFrame = ( function() {
         }
     };
 
-	function addPlugins( plugged, plugins ) {
-		// recursively create and bind any plugins
-		for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-			plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
-			var pluginConfig = AFrame.mixin( { plugged: plugged }, plugin[ 1 ] || {} );
-			AFrame.create( plugin[ 0 ], pluginConfig );
-		}
-	}
 
     if( typeof( module ) != 'undefined' ) {
         module.exports = AFrame;
@@ -379,8 +348,8 @@ AFrame.Class = ( function() {
     *        }
     *     } );
     *
-    *     // Create a Subclass of AFrame.AObject
-    *     var SubClass = AFrame.Class( AFrame.AObject, {
+    *     // Create a Subclass of Class
+    *     var SubClass = Class.extend( {
     *        anOperation: function() {
     *           // do an operation here
     *        }
@@ -393,30 +362,13 @@ AFrame.Class = ( function() {
     * @return {function} - the new class.
     */
     var Class = function() {
-        var args = Array.prototype.slice.call( arguments, 0 ), F;
+        var args = [].slice.call( arguments, 0 ),
+        	F = createChain( args );
 
-        if( AFrame.func( args[ 0 ] ) ) {
-	        // we have a superclass, do everything related to a superclass
-        	F = chooseConstructor( args[ 1 ], function() {
-				F.sc.constructor.call( this );
-			} );
-			doExtension( F, args[ 0 ] );
-            args.splice( 0, 1 );
-        }
-        else {
-        	F = chooseConstructor( args[ 0 ], function() {} );
-        }
-
-        for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
-            AFrame.mixin( F.prototype, mixin );
-        }
-
-        // Always set the constructor last in case any mixins overwrote it.
-        F.prototype.constructor = F;
-
+		addMixins( F, args );
 		addCreate( F );
+		addExtend( F );
 
-		F.extend = Class.bind( null, F );
         return F;
     };
 
@@ -443,6 +395,22 @@ AFrame.Class = ( function() {
         } while( currClass );
     };
 
+    function createChain( args ) {
+    	var F;
+        if( AFrame.func( args[ 0 ] ) ) {
+	        // we have a superclass, do everything related to a superclass
+        	F = chooseConstructor( args[ 1 ], function() {
+				F.sc.constructor.call( this );
+			} );
+			extendWithSuper( F, args[ 0 ] );
+            args.splice( 0, 1 );
+        }
+        else {
+        	F = chooseConstructor( args[ 0 ], function() {} );
+        }
+        return F;
+    }
+
 	function chooseConstructor( checkForConst, alternate ) {
 		var F;
 		if( checkForConst && checkForConst.hasOwnProperty( 'constructor' ) ) {
@@ -454,14 +422,14 @@ AFrame.Class = ( function() {
 		return F;
 	}
 
-	function doExtension( subClass, superClass ) {
+	function extendWithSuper( subClass, superClass ) {
 		var F = function() {};
 		F.prototype = superClass.prototype;
 		subClass.prototype = new F;
 		subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
 		subClass.sc = superClass.prototype;
 
-		var mixins = Array.prototype.slice.call( arguments, 2 );
+		var mixins = [].slice.call( arguments, 2 );
 		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
 			AFrame.mixin( subClass.prototype, mixin );
 		}
@@ -469,6 +437,15 @@ AFrame.Class = ( function() {
 
 		addCreate( subClass );
 	}
+
+	function addMixins( F, args ) {
+        for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
+            AFrame.mixin( F.prototype, mixin );
+        }
+
+        // Always set the constructor last in case any mixins overwrote it.
+        F.prototype.constructor = F;
+    }
 
 	/**
 	* @private
@@ -482,10 +459,48 @@ AFrame.Class = ( function() {
 	function addCreate( Class ) {
 		if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
 			// Add a create function so that every class with init has one.
-			Class.create = AFrame.create.bind( null, Class );
+			Class.create = create.bind( null, Class );
 		}
 	}
 
+	function addExtend( F ) {
+		F.extend = Class.bind( null, F );
+	}
+
+	function create( construct, config ) {
+		var retval;
+		if( construct ) {
+			try {
+				retval = new construct;
+			} catch ( e ) {
+				AFrame.log( e.toString() );
+			}
+
+			AFrame.Class.walkChain( function( currClass ) {
+				if( currClass.prototype && currClass.prototype.hasOwnProperty( 'plugins' ) ) {
+					addPlugins( retval, currClass.prototype.plugins );
+				}
+			}, retval );
+
+			config = config || {};
+			addPlugins( retval, config.plugins || [] );
+
+			retval.init( config );
+		}
+		else {
+			throw 'Class does not exist.';
+		}
+		return retval;
+	}
+
+	function addPlugins( plugged, plugins ) {
+		// recursively create and bind any plugins
+		for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+			plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
+			var pluginConfig = AFrame.mixin( { plugged: plugged }, plugin[ 1 ] || {} );
+			plugin[ 0 ].create( pluginConfig );
+		}
+	}
 
     return Class;
 }() );
@@ -574,19 +589,6 @@ AFrame.Observable = ( function() {
         }
     } );
 
-    /**
-     * Get an instance of the observable
-     *
-     *    var observable = Observable.getInstance();
-     *    var id = observable.bind( this.onInit, this );
-
-     * @method Observable.getInstance
-     * @return {Observable}
-     */
-    Observable.getInstance = function() {
-        return Observable.create();
-    };
-
     return Observable;
 }() );
 /**
@@ -600,7 +602,7 @@ AFrame.ObservablesMixin = {
      *
      *    // trigger an event using event name only.  Event object returned.
      *    var event = object.triggerEvent( 'eventName' );
-     *    
+     *
      *    // trigger an event using event name and some extra parameters
      *    object.triggerEvent( 'eventName', 'extraParameterValue' );
      *
@@ -631,7 +633,7 @@ AFrame.ObservablesMixin = {
 		var eventData = arguments[ 0 ];
         var isDataObj = !AFrame.string( eventData );
         var eventName = isDataObj ? eventData.type : eventData;
-        
+
 		var observable = this.handlers && this.handlers[ eventName ];
 		if( observable ) {
             eventData = isDataObj ? eventData : {
@@ -639,15 +641,15 @@ AFrame.ObservablesMixin = {
             };
             this.setEventData( eventData );
             var eventObject = this.getEventObject();
-            
+
 			var args = Array.prototype.slice.call( arguments, 1 );
             args.splice( 0, 0, eventObject );
 			observable.trigger.apply( observable, args );
-            
+
             return eventObject;
 		}
 	},
-    
+
     /**
     * Set data to be added on to the next event triggered.
     *
@@ -672,7 +674,7 @@ AFrame.ObservablesMixin = {
             AFrame.mixin( this.eventData, data );
         }
     },
-    
+
     /**
     * Get an event object.  Should not be called directly, but can be overridden in subclasses to add
     *   specialized fields to the event object.
@@ -683,14 +685,14 @@ AFrame.ObservablesMixin = {
         if( !this.eventData.target ) {
             this.eventData.target = this;
         }
-        
-        var event = this.event || AFrame.Event.createEvent( this.eventData );
+
+        var event = this.event || AFrame.Event.create( this.eventData );
         this.eventData = null;
-    
+
         this.event = null;
         return event;
     },
-	
+
 	/**
 	 * Check to see if an event has been triggered
 	 * @method isEventTriggered
@@ -700,14 +702,14 @@ AFrame.ObservablesMixin = {
 	isEventTriggered: function( eventName ) {
 		var retval = false;
 		var observable = this.handlers && this.handlers[ eventName ];
-		
+
 		if( observable ) {
 			retval = observable.isTriggered();
 		}
-		
+
 		return retval;
 	},
-	
+
 	/**
 	 * Bind a callback to an event.  When an event is triggered and the callback is called,
      *  the first argument to the callback will be an [AFrame.Event](AFrame.Event.html) object.
@@ -715,7 +717,7 @@ AFrame.ObservablesMixin = {
      *
      *     // Bind a callback to an event
      *     obj.bindEvent( 'eventname', function( event, arg1 ) {
-     *         // event is an AFrame.Event, arg1 is the first argument passed 
+     *         // event is an AFrame.Event, arg1 is the first argument passed
      *         // (when triggered below, will be 'arg1Value')
      *     } );
      *
@@ -731,10 +733,10 @@ AFrame.ObservablesMixin = {
 	 */
 	bindEvent: function( eventName, callback, context ) {
 		this.handlers = this.handlers || {};
-		
-		var observable = this.handlers[ eventName ] || AFrame.Observable.getInstance();
+
+		var observable = this.handlers[ eventName ] || AFrame.Observable.create();
 		this.handlers[ eventName ] = observable;
-		
+
 		var eid = observable.bind( callback.bind( context || this ) );
 
 		this.bindings = this.bindings || {};
@@ -746,7 +748,7 @@ AFrame.ObservablesMixin = {
 		if( context && context.bindTo ) {
 			context.bindTo( this, eid );
 		}
-		
+
 		return eid;
 	},
 
@@ -757,14 +759,14 @@ AFrame.ObservablesMixin = {
 	 */
 	unbindEvent: function( id ) {
 		var binding = this.bindings && this.bindings[ id ];
-		
+
 		if( binding ) {
 			AFrame.remove( this.bindings, id );
 
 			if( binding.object && binding.object.unbindTo ) {
 				binding.object.unbindTo( id );
 			}
-			
+
 			return binding.observable.unbind( id );
 		}
 	},
@@ -782,7 +784,7 @@ AFrame.ObservablesMixin = {
 		for( var id in this.bindings ) {
 			var binding = this.bindings[ id ];
 			AFrame.remove( this.bindings, id );
-			
+
 			if( binding.object && binding.object.unbindTo ) {
 				binding.object.unbindTo( id );
 			}
@@ -801,18 +803,18 @@ AFrame.ObservablesMixin = {
 			proxyFrom.bindEvent( eventName, function() {
                 // get rid of the original event, a new one will be created.
 				var args = Array.prototype.slice.call( arguments, 1 );
-                
+
                 // create a new event, used in getEventObject
                 this.event = arguments[ 0 ];
                 this.event.originalTarget = this.event.target;
                 this.event.target = this;
-                
+
 				args.splice( 0, 0, eventName );
 				this.triggerEvent.apply( this, args );
 			}.bind( this ), this );
 		}, this );
 	},
-	
+
 	/**
 	 * Create a binding between this object and another object.  This means this object
 	 * is listening to an event on another object.
@@ -826,7 +828,7 @@ AFrame.ObservablesMixin = {
 			object: bindToObject
 		};
 	},
-	
+
 	/**
 	 * Unbind a listener bound from this object to another object
 	 * @method unbindTo
@@ -839,7 +841,7 @@ AFrame.ObservablesMixin = {
 			AFrame.remove( this.boundTo, id );
 		}
 	},
-	
+
 	/**
 	 * Unbind all events registered from this object on other objects.  Useful when tearing
 	 * an object down
@@ -854,7 +856,8 @@ AFrame.ObservablesMixin = {
 		this.boundTo = null;
 		this.boundTo = {};
 	}
-};/**
+};
+/**
 * A collection of functions common to enumerable objects.  When mixing in 
 * this class, the class being mixed into must define a forEach function.
 *
@@ -3170,7 +3173,7 @@ AFrame.DataValidation = ( function() {
         validate: function( options ) {
             var dataToValidate = options.data;
             var allCriteria = options.criteria;
-            var fieldValidityState = options.fieldValidityState || AFrame.FieldValidityState.getInstance();
+            var fieldValidityState = options.fieldValidityState || AFrame.FieldValidityState.create();
             var type = allCriteria.type || 'text';
 
             for( var key in allCriteria ) {
@@ -3609,33 +3612,34 @@ AFrame.Event = (function() {
     * A factory method to create an event.
     *
     *    // returns an event with event.type == 'eventType'
-    *    var event = Event.createEvent( 'eventType' );
+    *    var event = AFrame.Event.create( 'eventType' );
     *
     *    // returns an event with event.type == 'eventType', extraField == 'extraValue'
-    *    var event = Event.createEvent( {
+    *    var event = AFrame.Event.create( {
     *        type: 'eventType',
     *        extraField: 'extraValue'
     *    } );
     *
-    * @method Event.createEvent
+    * @method Event.create
     * @param {object||string} config - if an object, object is used as Event config,
     *   if a string, the string signifies the type of event
     * @return {AFrame.Event} event with type
     */
-    Event.createEvent = function( config ) {
+    var origCreate = Event.create;
+
+    Event.create = function( config ) {
         if( AFrame.string( config ) ) {
             config = { type: config };
         }
-        var event = AFrame.Event.create( config );
-        return event;
+        return origCreate( config );
     };
 
     return Event;
 })();
 /**
-* An object that keeps track of a field's validity, mirrors the 
+* An object that keeps track of a field's validity, mirrors the
 * [HTML5](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api) spec.
-* 
+*
 * @class AFrame.FieldValidityState
 * @constructor
 */
@@ -3646,11 +3650,11 @@ AFrame.FieldValidityState = function( config ) {
 };
 /**
 * Get an instance of the FieldValidityState object
-* @method AFrame.FieldValidityState.getInstance
+* @method AFrame.FieldValidityState.create
 * @param {object} config - object with a list of fields to set on the validity object
 * @returns {AFrame.FieldValidityState}
 */
-AFrame.FieldValidityState.getInstance = function( config ) {
+AFrame.FieldValidityState.create = function( config ) {
 	return new AFrame.FieldValidityState( config || {} );
 };
 AFrame.FieldValidityState.prototype = {
@@ -3714,7 +3718,7 @@ AFrame.FieldValidityState.prototype = {
 	* @type {string}
 	*/
 	validationMessage: '',
-	
+
 	/**
 	* Set an error on the state
 	* @method setError
@@ -3724,7 +3728,7 @@ AFrame.FieldValidityState.prototype = {
 		this[ errorType ] = true;
 		this.valid = false;
 	},
-	
+
 	/**
 	* Set the custom error message
 	* @method setCustomValidity

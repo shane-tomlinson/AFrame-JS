@@ -91,7 +91,7 @@ AFrame.DataValidation = ( function() {
         validate: function( options ) {
             var dataToValidate = options.data;
             var allCriteria = options.criteria;
-            var fieldValidityState = options.fieldValidityState || AFrame.FieldValidityState.getInstance();
+            var fieldValidityState = options.fieldValidityState || AFrame.FieldValidityState.create();
             var type = allCriteria.type || 'text';
 
             for( var key in allCriteria ) {

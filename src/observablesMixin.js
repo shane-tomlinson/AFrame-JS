@@ -9,7 +9,7 @@ AFrame.ObservablesMixin = {
      *
      *    // trigger an event using event name only.  Event object returned.
      *    var event = object.triggerEvent( 'eventName' );
-     *    
+     *
      *    // trigger an event using event name and some extra parameters
      *    object.triggerEvent( 'eventName', 'extraParameterValue' );
      *
@@ -40,7 +40,7 @@ AFrame.ObservablesMixin = {
 		var eventData = arguments[ 0 ];
         var isDataObj = !AFrame.string( eventData );
         var eventName = isDataObj ? eventData.type : eventData;
-        
+
 		var observable = this.handlers && this.handlers[ eventName ];
 		if( observable ) {
             eventData = isDataObj ? eventData : {
@@ -48,15 +48,15 @@ AFrame.ObservablesMixin = {
             };
             this.setEventData( eventData );
             var eventObject = this.getEventObject();
-            
+
 			var args = Array.prototype.slice.call( arguments, 1 );
             args.splice( 0, 0, eventObject );
 			observable.trigger.apply( observable, args );
-            
+
             return eventObject;
 		}
 	},
-    
+
     /**
     * Set data to be added on to the next event triggered.
     *
@@ -81,7 +81,7 @@ AFrame.ObservablesMixin = {
             AFrame.mixin( this.eventData, data );
         }
     },
-    
+
     /**
     * Get an event object.  Should not be called directly, but can be overridden in subclasses to add
     *   specialized fields to the event object.
@@ -92,14 +92,14 @@ AFrame.ObservablesMixin = {
         if( !this.eventData.target ) {
             this.eventData.target = this;
         }
-        
-        var event = this.event || AFrame.Event.createEvent( this.eventData );
+
+        var event = this.event || AFrame.Event.create( this.eventData );
         this.eventData = null;
-    
+
         this.event = null;
         return event;
     },
-	
+
 	/**
 	 * Check to see if an event has been triggered
 	 * @method isEventTriggered
@@ -109,14 +109,14 @@ AFrame.ObservablesMixin = {
 	isEventTriggered: function( eventName ) {
 		var retval = false;
 		var observable = this.handlers && this.handlers[ eventName ];
-		
+
 		if( observable ) {
 			retval = observable.isTriggered();
 		}
-		
+
 		return retval;
 	},
-	
+
 	/**
 	 * Bind a callback to an event.  When an event is triggered and the callback is called,
      *  the first argument to the callback will be an [AFrame.Event](AFrame.Event.html) object.
@@ -124,7 +124,7 @@ AFrame.ObservablesMixin = {
      *
      *     // Bind a callback to an event
      *     obj.bindEvent( 'eventname', function( event, arg1 ) {
-     *         // event is an AFrame.Event, arg1 is the first argument passed 
+     *         // event is an AFrame.Event, arg1 is the first argument passed
      *         // (when triggered below, will be 'arg1Value')
      *     } );
      *
@@ -140,10 +140,10 @@ AFrame.ObservablesMixin = {
 	 */
 	bindEvent: function( eventName, callback, context ) {
 		this.handlers = this.handlers || {};
-		
-		var observable = this.handlers[ eventName ] || AFrame.Observable.getInstance();
+
+		var observable = this.handlers[ eventName ] || AFrame.Observable.create();
 		this.handlers[ eventName ] = observable;
-		
+
 		var eid = observable.bind( callback.bind( context || this ) );
 
 		this.bindings = this.bindings || {};
@@ -155,7 +155,7 @@ AFrame.ObservablesMixin = {
 		if( context && context.bindTo ) {
 			context.bindTo( this, eid );
 		}
-		
+
 		return eid;
 	},
 
@@ -166,14 +166,14 @@ AFrame.ObservablesMixin = {
 	 */
 	unbindEvent: function( id ) {
 		var binding = this.bindings && this.bindings[ id ];
-		
+
 		if( binding ) {
 			AFrame.remove( this.bindings, id );
 
 			if( binding.object && binding.object.unbindTo ) {
 				binding.object.unbindTo( id );
 			}
-			
+
 			return binding.observable.unbind( id );
 		}
 	},
@@ -191,7 +191,7 @@ AFrame.ObservablesMixin = {
 		for( var id in this.bindings ) {
 			var binding = this.bindings[ id ];
 			AFrame.remove( this.bindings, id );
-			
+
 			if( binding.object && binding.object.unbindTo ) {
 				binding.object.unbindTo( id );
 			}
@@ -210,18 +210,18 @@ AFrame.ObservablesMixin = {
 			proxyFrom.bindEvent( eventName, function() {
                 // get rid of the original event, a new one will be created.
 				var args = Array.prototype.slice.call( arguments, 1 );
-                
+
                 // create a new event, used in getEventObject
                 this.event = arguments[ 0 ];
                 this.event.originalTarget = this.event.target;
                 this.event.target = this;
-                
+
 				args.splice( 0, 0, eventName );
 				this.triggerEvent.apply( this, args );
 			}.bind( this ), this );
 		}, this );
 	},
-	
+
 	/**
 	 * Create a binding between this object and another object.  This means this object
 	 * is listening to an event on another object.
@@ -235,7 +235,7 @@ AFrame.ObservablesMixin = {
 			object: bindToObject
 		};
 	},
-	
+
 	/**
 	 * Unbind a listener bound from this object to another object
 	 * @method unbindTo
@@ -248,7 +248,7 @@ AFrame.ObservablesMixin = {
 			AFrame.remove( this.boundTo, id );
 		}
 	},
-	
+
 	/**
 	 * Unbind all events registered from this object on other objects.  Useful when tearing
 	 * an object down

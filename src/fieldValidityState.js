@@ -1,7 +1,7 @@
 /**
-* An object that keeps track of a field's validity, mirrors the 
+* An object that keeps track of a field's validity, mirrors the
 * [HTML5](http://www.whatwg.org/specs/web-apps/current-work/multipage/association-of-controls-and-forms.html#the-constraint-validation-api) spec.
-* 
+*
 * @class AFrame.FieldValidityState
 * @constructor
 */
@@ -12,11 +12,11 @@ AFrame.FieldValidityState = function( config ) {
 };
 /**
 * Get an instance of the FieldValidityState object
-* @method AFrame.FieldValidityState.getInstance
+* @method AFrame.FieldValidityState.create
 * @param {object} config - object with a list of fields to set on the validity object
 * @returns {AFrame.FieldValidityState}
 */
-AFrame.FieldValidityState.getInstance = function( config ) {
+AFrame.FieldValidityState.create = function( config ) {
 	return new AFrame.FieldValidityState( config || {} );
 };
 AFrame.FieldValidityState.prototype = {
@@ -80,7 +80,7 @@ AFrame.FieldValidityState.prototype = {
 	* @type {string}
 	*/
 	validationMessage: '',
-	
+
 	/**
 	* Set an error on the state
 	* @method setError
@@ -90,7 +90,7 @@ AFrame.FieldValidityState.prototype = {
 		this[ errorType ] = true;
 		this.valid = false;
 	},
-	
+
 	/**
 	* Set the custom error message
 	* @method setCustomValidity
