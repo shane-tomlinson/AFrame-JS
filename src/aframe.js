@@ -96,30 +96,7 @@ var AFrame = ( function() {
         * @param {array} config.plugins (optional) - Any plugins to attach
         */
         create: function( construct, config ) {
-            var retval;
-            if( construct ) {
-                try {
-                    retval = new construct;
-                } catch ( e ) {
-                    AFrame.log( e.toString() );
-                }
-
-                AFrame.Class.walkChain( function( currClass ) {
-					if( currClass.prototype && currClass.prototype.hasOwnProperty( 'plugins' ) ) {
-						addPlugins( retval, currClass.prototype.plugins );
-					}
-                }, retval );
-
-                config = config || {};
-				addPlugins( retval, config.plugins || [] );
-
-                retval.init( config );
-            }
-            else {
-                throw 'Class does not exist.';
-            }
-            return retval;
-
+        	return construct.create( config );
         },
 
         /**
@@ -228,14 +205,6 @@ var AFrame = ( function() {
         }
     };
 
-	function addPlugins( plugged, plugins ) {
-		// recursively create and bind any plugins
-		for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
-			plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
-			var pluginConfig = AFrame.mixin( { plugged: plugged }, plugin[ 1 ] || {} );
-			AFrame.create( plugin[ 0 ], pluginConfig );
-		}
-	}
 
     if( typeof( module ) != 'undefined' ) {
         module.exports = AFrame;

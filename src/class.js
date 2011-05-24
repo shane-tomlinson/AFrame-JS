@@ -20,7 +20,7 @@ AFrame.Class = ( function() {
     *     } );
     *
     *     // Create a Subclass of AFrame.AObject
-    *     var SubClass = AFrame.Class( AFrame.AObject, {
+    *     var SubClass = AFrame.AObject.extend( {
     *        anOperation: function() {
     *           // do an operation here
     *        }
@@ -33,30 +33,13 @@ AFrame.Class = ( function() {
     * @return {function} - the new class.
     */
     var Class = function() {
-        var args = Array.prototype.slice.call( arguments, 0 ), F;
+        var args = [].slice.call( arguments, 0 ),
+        	F = createChain( args );
 
-        if( AFrame.func( args[ 0 ] ) ) {
-	        // we have a superclass, do everything related to a superclass
-        	F = chooseConstructor( args[ 1 ], function() {
-				F.sc.constructor.call( this );
-			} );
-			doExtension( F, args[ 0 ] );
-            args.splice( 0, 1 );
-        }
-        else {
-        	F = chooseConstructor( args[ 0 ], function() {} );
-        }
-
-        for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
-            AFrame.mixin( F.prototype, mixin );
-        }
-
-        // Always set the constructor last in case any mixins overwrote it.
-        F.prototype.constructor = F;
-
+		addMixins( F, args );
 		addCreate( F );
+		addExtend( F );
 
-		F.extend = Class.bind( null, F );
         return F;
     };
 
@@ -83,6 +66,22 @@ AFrame.Class = ( function() {
         } while( currClass );
     };
 
+    function createChain( args ) {
+    	var F;
+        if( AFrame.func( args[ 0 ] ) ) {
+	        // we have a superclass, do everything related to a superclass
+        	F = chooseConstructor( args[ 1 ], function() {
+				F.sc.constructor.call( this );
+			} );
+			extendWithSuper( F, args[ 0 ] );
+            args.splice( 0, 1 );
+        }
+        else {
+        	F = chooseConstructor( args[ 0 ], function() {} );
+        }
+        return F;
+    }
+
 	function chooseConstructor( checkForConst, alternate ) {
 		var F;
 		if( checkForConst && checkForConst.hasOwnProperty( 'constructor' ) ) {
@@ -94,7 +93,7 @@ AFrame.Class = ( function() {
 		return F;
 	}
 
-	function doExtension( subClass, superClass ) {
+	function extendWithSuper( subClass, superClass ) {
 		var F = function() {};
 		F.prototype = superClass.prototype;
 		subClass.prototype = new F;
@@ -110,6 +109,15 @@ AFrame.Class = ( function() {
 		addCreate( subClass );
 	}
 
+	function addMixins( F, args ) {
+        for( var mixin, index = 0; mixin = args[ index ]; ++index ) {
+            AFrame.mixin( F.prototype, mixin );
+        }
+
+        // Always set the constructor last in case any mixins overwrote it.
+        F.prototype.constructor = F;
+    }
+
 	/**
 	* @private
 	* Add a create function to a Class if the Class has an init function.
@@ -122,10 +130,48 @@ AFrame.Class = ( function() {
 	function addCreate( Class ) {
 		if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
 			// Add a create function so that every class with init has one.
-			Class.create = AFrame.create.bind( null, Class );
+			Class.create = create.bind( null, Class );
 		}
 	}
 
+	function addExtend( F ) {
+		F.extend = Class.bind( null, F );
+	}
+
+	function create( construct, config ) {
+		var retval;
+		if( construct ) {
+			try {
+				retval = new construct;
+			} catch ( e ) {
+				AFrame.log( e.toString() );
+			}
+
+			AFrame.Class.walkChain( function( currClass ) {
+				if( currClass.prototype && currClass.prototype.hasOwnProperty( 'plugins' ) ) {
+					addPlugins( retval, currClass.prototype.plugins );
+				}
+			}, retval );
+
+			config = config || {};
+			addPlugins( retval, config.plugins || [] );
+
+			retval.init( config );
+		}
+		else {
+			throw 'Class does not exist.';
+		}
+		return retval;
+	}
+
+	function addPlugins( plugged, plugins ) {
+		// recursively create and bind any plugins
+		for( var index = 0, plugin; plugin = plugins[ index ]; ++index ) {
+			plugin = AFrame.array( plugin ) ? plugin : [ plugin ];
+			var pluginConfig = AFrame.mixin( { plugged: plugged }, plugin[ 1 ] || {} );
+			plugin[ 0 ].create( pluginConfig );
+		}
+	}
 
     return Class;
 }() );
