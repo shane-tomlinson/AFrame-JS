@@ -19,8 +19,8 @@ AFrame.Class = ( function() {
     *        }
     *     } );
     *
-    *     // Create a Subclass of AFrame.AObject
-    *     var SubClass = AFrame.AObject.extend( {
+    *     // Create a Subclass of Class
+    *     var SubClass = Class.extend( {
     *        anOperation: function() {
     *           // do an operation here
     *        }
@@ -100,7 +100,7 @@ AFrame.Class = ( function() {
 		subClass.superclass = superClass;        // superclass and sc are different.  sc points to the superclasses prototype, superclass points to the superclass itself.
 		subClass.sc = superClass.prototype;
 
-		var mixins = Array.prototype.slice.call( arguments, 2 );
+		var mixins = [].slice.call( arguments, 2 );
 		for( var mixin, index = 0; mixin = mixins[ index ]; ++index ) {
 			AFrame.mixin( subClass.prototype, mixin );
 		}
