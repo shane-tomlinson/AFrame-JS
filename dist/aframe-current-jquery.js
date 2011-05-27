@@ -3313,7 +3313,7 @@ AFrame.CollectionPluginModel = ( function() {
             item = this.modelFactory( item );
         }
 
-        decorated.call( this.getPlugged(), item, insertAt );
+        return decorated.call( this.getPlugged(), item, insertAt );
     }
 
     function createModel( data ) {
@@ -3614,6 +3614,8 @@ AFrame.Form = ( function() {
  * and attached as a plugin.  To override the default validation for a field, subclass FieldPluginValidation
  * and attach the subclass as a plugin on field creation.
  *
+ * A working example is found on [JSFiddle](http://jsfiddle.net/shane_tomlinson/s48Cn/)
+ *
  *    <input type="number" id="numberInput" />
  *
  *    ---------
@@ -3629,6 +3631,7 @@ AFrame.Form = ( function() {
  *    field.clear();
  *
  *    var val = field.get();
+ *
  *
  * @class AFrame.Field
  * @extends AFrame.Display
@@ -5768,7 +5771,7 @@ AFrame.Event = (function() {
     *        extraField: 'extraValue'
     *    } );
     *
-    * @method Event.create
+    * @method AFrame.Event.create
     * @param {object||string} config - if an object, object is used as Event config,
     *   if a string, the string signifies the type of event
     * @return {AFrame.Event} event with type
