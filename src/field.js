@@ -8,6 +8,8 @@
  * and attached as a plugin.  To override the default validation for a field, subclass FieldPluginValidation
  * and attach the subclass as a plugin on field creation.
  *
+ * A working example is found on [JSFiddle](http://jsfiddle.net/shane_tomlinson/s48Cn/)
+ *
  *    <input type="number" id="numberInput" />
  *
  *    ---------
@@ -23,6 +25,7 @@
  *    field.clear();
  *
  *    var val = field.get();
+ *
  *
  * @class AFrame.Field
  * @extends AFrame.Display
