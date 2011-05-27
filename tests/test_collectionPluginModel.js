@@ -49,11 +49,12 @@
                     }
                 } );
 
-                this.collection.insert( model );
+                var cid = this.collection.insert( model );
 
                 var model = this.collection.get( 0 );
 
                 Assert.areSame( 'Shane Tomlinson', model.get( 'name' ) );
+                Assert.isNotUndefined( cid, 'cid is still defined' );
             },
 
             testAddData: function() {

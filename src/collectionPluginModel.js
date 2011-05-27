@@ -77,7 +77,7 @@ AFrame.CollectionPluginModel = ( function() {
             item = this.modelFactory( item );
         }
 
-        decorated.call( this.getPlugged(), item, insertAt );
+        return decorated.call( this.getPlugged(), item, insertAt );
     }
 
     function createModel( data ) {
