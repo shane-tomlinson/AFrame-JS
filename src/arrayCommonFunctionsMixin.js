@@ -52,12 +52,15 @@ AFrame.ArrayCommonFuncsMixin = (function() {
 		getActualIndex: function( index ) {
 			var len = this.getCount();
 
+			// check from end
 			if( index < 0 ) {
 				index = len + index;
 			}
 
-			index = Math.min( len - 1, index );
-			index = Math.max( 0, index );
+			// invalid indexes;
+			if( index < 0 || len <= index ) {
+				index = undefined;
+			}
 
 			return index;
 		}

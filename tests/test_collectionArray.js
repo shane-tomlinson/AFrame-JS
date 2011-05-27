@@ -101,6 +101,17 @@ testsToRun.push( {
             Assert.areEqual( this.item, item, 'can insert and retreive using -1' );
 		},
 
+		testGetInvalidIndex: function() {
+			var cid = this.array.insert( this.item );
+
+			// there is only one item in the array
+			var item = this.array.get( 2 );
+			Assert.isUndefined( item );
+
+			var item = this.array.get( -5 );
+			Assert.isUndefined( item );
+		},
+
 		testClear: function() {
 			var cid = this.array.insert( this.item );
 			Assert.areEqual( 1, this.array.getCount(), 'item inserted' );
