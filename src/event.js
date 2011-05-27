@@ -113,7 +113,7 @@ AFrame.Event = (function() {
     *        extraField: 'extraValue'
     *    } );
     *
-    * @method Event.create
+    * @method AFrame.Event.create
     * @param {object||string} config - if an object, object is used as Event config,
     *   if a string, the string signifies the type of event
     * @return {AFrame.Event} event with type
