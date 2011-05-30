@@ -49,7 +49,7 @@
              </p>
 
              <p>
-                MVC is a programming paradigm that has been common in other languages for many years. In MVC, <strong>M</strong>odels represent data and its operations.  <strong>V</strong>iews are the presentation of the data contained in a model.  <strong>C</strong>ontrollers are the glue that bind the two together.  In MVC, the three are separated, there is no mixing as is commonly found in web apps today.  The benefits of MVC are numerous, but the main goal is to reduce the mental load for the developer.  Modules focus on one goal at a time.  Outgrowths of this include smaller modules, easier testing, a higher chance of code re-use.
+                MVC is a programming paradigm that has been common in other languages for many years. In MVC, <strong>M</strong>odels represent data and its operations.  <strong>V</strong>iews are the presentation of the data contained in a model.  <strong>C</strong>ontrollers are the glue that bind the two together.  MVC separates these three concepts, there is no mixing as is commonly found in web apps today.  The benefits of MVC are numerous, but the main goal is to reduce the mental load for the developer.  Modules focus on one goal at a time.  This allows for smaller modules, easier testing, a higher chance of code re-use.
              </p>
 
              <p>
@@ -115,7 +115,7 @@ $( '#add-friend' ).click( function( event ) {
             <button id="add-friend">Add a Friend</button>
 
             <p>
-                While this example is contrived, it gives a brief example of what AFrameJS can do with a minimal amount of code.  We have one main controller, a collection (representing Models) and a List(representing Views).  On top of this basic example, AFrameJS provides mechanisms to work with models individually, use forms to input, edit, and validate data that is later saved to a model.
+                While this example is contrived, it gives a brief example of what AFrameJS can do with a minimal amount of code.  We have one main controller, a collection (representing Models) and a List(representing Views).
             </p>
         </section>
 
@@ -127,7 +127,7 @@ $( '#add-friend' ).click( function( event ) {
                 AFrameJS provides base level components necessary to start creating full MVC style applications.
             </p>
              <p>
-                At its core, AFrameJS is an event-driven system - anybody who has worked with DOM events will immediately understand how these work.  The library  takes advantage of Javascript's incredible flexibility, it is an <abbr title="Object-Oriented"><a href="http://en.wikipedia.org/wiki/Object_oriented_programming">OO</a></abbr> library that uses <abbr title="Aspect-Oriented"><a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect Oriented</a></abbr> and functional styles when appropriate.
+                At its core, AFrameJS is an event-driven system - anybody who has worked with DOM events will immediately understand how events work.  The library  takes advantage of Javascript's incredible flexibility - it is an <abbr title="Object-Oriented"><a href="http://en.wikipedia.org/wiki/Object_oriented_programming">OO</a></abbr> library that uses <abbr title="Aspect-Oriented"><a href="http://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect Oriented</a></abbr> and functional styles when appropriate.
              </p>
 
 	 		<p>
@@ -175,7 +175,7 @@ $( '#add-friend' ).click( function( event ) {
 
             <h3>Plugins</h3>
             <p>
-                AFrameJS provides strong <a href="docs/AFrame.Observable.html">Observable</a>(events) and <a href="docs/AFrame.Plugin.html">Plugin</a> systems.  Observables make it easy to listen for specific events that happen on an object, anybody who has worked with DOM Events already has an understanding of how Observables work. Plugins are a way of extending the functionality of an object through composition instead of inheritance - it combines the events, mixins, and decorators of other languages. Plugins make it easy for a small piece of functionality to be written once and be shared across several seemingly unrelated classes.  Plugins also make configuring an object incredibly flexible.  Instead of writing one gigantic class that does 15 different things,  one small base class can be written and then all peripheral functionality can be placed into plugins.  Developing this way makes testing and debugging much easier.  It also means if an object no longer needs a piece of functionality, it can be thrown away without affecting other parts of the code.
+                AFrameJS provides strong <a href="docs/AFrame.Observable.html">Observable</a>(PubSub/events) and <a href="docs/AFrame.Plugin.html">Plugin</a> systems.  Observables make it easy to listen for specific events that happen on an object, anybody who has worked with DOM Events already has an understanding of how Observables work. Plugins are a way of extending the functionality of an object through composition instead of inheritance - it combines the events, mixins, and decorators of other languages. Plugins make it easy for a small piece of functionality to be written once and be shared across several seemingly unrelated classes.  Plugins also make configuring an object incredibly flexible.  Instead of writing one gigantic class that does 15 different things,  one small base class can be written and then all peripheral functionality can be placed into plugins.  Developing this way makes testing and debugging much easier.  It also means if an object no longer needs a piece of functionality, it can be thrown away without affecting other parts of the code.
             </p>
         </section>
 
@@ -257,7 +257,7 @@ $( '#add-friend' ).click( function( event ) {
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
     <script type="text/javascript" src="scripts/codehighlighter.min.js"></script>
-    <script type="text/javascript" src="demos/add_friend/scripts/aframe-current-jquery.js"></script>
+    <script type="text/javascript" src="https://github.com/stomlinson/AFrame-JS/blob/master/dist/aframe-current-jquery.js"></script>
     <script type="text/javascript" src="demos/add_friend/scripts/demoapp.js"></script>
 </body>
 </html>
