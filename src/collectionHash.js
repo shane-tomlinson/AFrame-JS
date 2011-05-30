@@ -155,11 +155,7 @@ AFrame.CollectionHash = ( function() {
         * @return {id} cid of the item.
         */
         insert: function( item, options ) {
-            var cid = item.cid || AFrame.getUniqueID();
-
-            if( 'undefined' != typeof( this.get( cid ) ) ) {
-                throw 'duplicate cid';
-            }
+            var cid = this.getItemCID( item );
 
 
             /**
@@ -241,6 +237,16 @@ AFrame.CollectionHash = ( function() {
             for( var cid in hash ) {
                 callback.call( context, hash[ cid ], cid );
             }
+        },
+
+        getItemCID: function( item ) {
+            var cid = item.cid || AFrame.getUniqueID();
+
+            if( 'undefined' != typeof( this.get( cid ) ) ) {
+                throw 'duplicate cid';
+            }
+
+			return cid;
         }
     } );
     CollectionHash.currID = 0;

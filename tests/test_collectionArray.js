@@ -44,6 +44,19 @@ testsToRun.push( {
 			Assert.areEqual( index, insertData.index, 'index set in the meta data' );
 		},
 
+		testOnInsertCanCallForEach: function() {
+			var maxIndex = -1, array = this.array;
+			array.bindEvent( 'onInsert', function( data ) {
+				array.forEach( function( item, index ) {
+					maxIndex = index;
+				} );
+			} );
+
+			array.insert( this.item );
+
+			Assert.areEqual( 0, maxIndex, 'forEach can be called on onInsert' );
+		},
+
 		testRemove: function() {
 			var index = 0;
 			var id = this.array.insert( this.item, index );

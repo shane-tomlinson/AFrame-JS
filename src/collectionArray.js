@@ -102,11 +102,14 @@ AFrame.CollectionArray = ( function() {
         * @return {id} cid of the item
         */
         insert: function( item, index ) {
+            var me=this, cid = me.getItemCID( item );
             index = 'number' == typeof( index ) ? index : -1;
-            this.currentIndex = this.getActualInsertIndex( index );
 
-            var cid = CollectionArray.sc.insert.call( this, item );
-            this.itemCIDs.splice( this.currentIndex, 0, cid );
+            me.currentIndex = me.getActualInsertIndex( index );
+            me.itemCIDs.splice( me.currentIndex, 0, cid );
+
+			item.cid = cid;
+            CollectionArray.sc.insert.call( me, item );
 
             return cid;
         },

@@ -1541,12 +1541,15 @@ AFrame.ArrayCommonFuncsMixin = (function() {
 		getActualIndex: function( index ) {
 			var len = this.getCount();
 
+			// check from end
 			if( index < 0 ) {
 				index = len + index;
 			}
 
-			index = Math.min( len - 1, index );
-			index = Math.max( 0, index );
+			// invalid indexes;
+			if( index < 0 || len <= index ) {
+				index = undefined;
+			}
 
 			return index;
 		}
@@ -1711,11 +1714,7 @@ AFrame.CollectionHash = ( function() {
         * @return {id} cid of the item.
         */
         insert: function( item, options ) {
-            var cid = item.cid || AFrame.getUniqueID();
-
-            if( 'undefined' != typeof( this.get( cid ) ) ) {
-                throw 'duplicate cid';
-            }
+            var cid = this.getItemCID( item );
 
 
             /**
@@ -1797,6 +1796,16 @@ AFrame.CollectionHash = ( function() {
             for( var cid in hash ) {
                 callback.call( context, hash[ cid ], cid );
             }
+        },
+
+        getItemCID: function( item ) {
+            var cid = item.cid || AFrame.getUniqueID();
+
+            if( 'undefined' != typeof( this.get( cid ) ) ) {
+                throw 'duplicate cid';
+            }
+
+			return cid;
         }
     } );
     CollectionHash.currID = 0;
@@ -1907,11 +1916,14 @@ AFrame.CollectionArray = ( function() {
         * @return {id} cid of the item
         */
         insert: function( item, index ) {
+            var me=this, cid = me.getItemCID( item );
             index = 'number' == typeof( index ) ? index : -1;
-            this.currentIndex = this.getActualInsertIndex( index );
 
-            var cid = CollectionArray.sc.insert.call( this, item );
-            this.itemCIDs.splice( this.currentIndex, 0, cid );
+            me.currentIndex = me.getActualInsertIndex( index );
+            me.itemCIDs.splice( me.currentIndex, 0, cid );
+
+			item.cid = cid;
+            CollectionArray.sc.insert.call( me, item );
 
             return cid;
         },
