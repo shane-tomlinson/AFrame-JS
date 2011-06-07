@@ -778,20 +778,11 @@ header {
   text-align: center; }
   header h1 {
     color: #ff8200;
-    font-size: 2.2em; 
-    text-shadow: 1px 1px 1px rgba(255,130,0,.4);
-    display: inline-block;
-    line-height: 42px;
-    }
+    font-size: 2.2em; }
   header h2 {
     color: #ff8200;
     margin-bottom: 1.1em;
-    font-size: 1.1em; 
-    text-shadow: 1px 1px 1px rgba(255,130,0,.4);
-    display: inline-block;
-    line-height: 42px;
-    vertical-align: middle;
-    }
+    font-size: 1.1em; }
     header h2 strong {
       font-style: italic; }
   header nav {
@@ -833,10 +824,7 @@ section {
   section h2 {
     margin-bottom: 10px;
     margin-left: -10px;
-    font-size: 1.2em; 
-    text-shadow: 1px 1px 1px rgba(51,51,51,.3); }
-  section h3 {
-    text-shadow: 1px 1px 1px rgba(51,51,51,.15); }
+    font-size: 1.2em; }
   section p {
     margin: 10px 0;
     line-height: 1.6em; }
@@ -872,7 +860,7 @@ td.description {
  *
  * @version
  * 3.0.83 (July 02 2010)
- * 
+ *
  * @copyright
  * Copyright (C) 2004-2010 Alex Gorbatchev.
  *
@@ -921,7 +909,17 @@ td.description {
   margin: 1em 0 1em 0 !important;
   position: relative !important;
   /*overflow: auto !important;*/
-  font-size: 1em !important; }
+  overflow: auto;
+  width: 95%;
+  line-height: 16px;
+  margin: 0 0 20px;
+  padding: 5px;
+  color: #555;
+  font-family: "Courier New",FixedSys;
+  font-size: 12px;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  border-left: 15px solid #ccc; }
 
 .syntaxhighlighter.source {
   overflow: hidden !important; }
