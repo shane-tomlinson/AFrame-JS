@@ -48,6 +48,7 @@
 *        form.save();
 *    }
 *
+*###Data Forms with Models###
 * If setting up a DataForm with a [Model](AFrame.Model.html), when validating the form,
 *   the model's validators will be called as well.  This is useful to do specialized
 *   model level validation.
@@ -79,6 +80,13 @@
 *        dataSource: model
 *    } );
 *
+*###Multiple Views###
+* One of the really powerful concepts that DataForms and the MVC pattern in 
+* general provide is the ability to attach multiple views to the same data.  
+* This is very useful in situations where you have one input view and another 
+* output view that depends on the same data.  An example of how this can be
+* accomplished is shown on <a 
+* href="http://jsfiddle.net/shane_tomlinson/crqpU/">JSFiddle</a>
 *
 * @class AFrame.DataForm
 * @extends AFrame.Form
