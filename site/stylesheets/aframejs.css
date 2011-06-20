@@ -793,6 +793,10 @@ header {
       display: inline;
       margin: 0 4px; }
 
+#content h3, h4, h5 {
+  margin-top: .5em;
+  font-weight: bold; }
+
 ul {
   padding-left: 20px; }
   ul li {

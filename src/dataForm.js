@@ -1,12 +1,16 @@
 /**
-* A Form that is bound to data.  Each DataForm is bound to a DataContainer, 
-* (or Model), the DataContainer is used as the data source for all form Fields.  
-* When a Field in the form is created, it has its value set to be that of the 
+* A Form that is bound to data.  Each DataForm is bound to a DataContainer,
+* (or Model), the DataContainer is used as the data source for all form Fields.
+* When a Field in the form is created, it has its value set to be that of the
 * corresponding field in the DataContainer.  Unless the "autosave" config
 * attribute is set to true, the DataContainer's values are not updated,
 * even if a field's value changes, until the form's save function is called.
 *
-*##Setting up the HTML##
+*###Example####
+* The following example can be founds on <a target="_blank"
+* href="http://jsfiddle.net/shane_tomlinson/anwKE/">JSFiddle</a>
+*
+*####Setting up the HTML####
 *
 * Use the "data-field" attribute on an element to specify that an element
 * is a form field. The "name" attribute is the name of the field to bind to.
@@ -17,10 +21,7 @@
 *    </formset>
 *
 *
-*##Working in Javascript##
-*
-* The following example can be founds on <a 
-* href="http://jsfiddle.net/shane_tomlinson/anwKE/">JSFiddle</a>
+*####Working in Javascript####
 *
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
@@ -48,7 +49,7 @@
 *        form.save();
 *    }
 *
-*###Data Forms with Models###
+*####Data Forms with Models####
 * If setting up a DataForm with a [Model](AFrame.Model.html), when validating the form,
 *   the model's validators will be called as well.  This is useful to do specialized
 *   model level validation.
@@ -80,13 +81,42 @@
 *        dataSource: model
 *    } );
 *
-*###Multiple Views###
-* One of the really powerful concepts that DataForms and the MVC pattern in 
-* general provide is the ability to attach multiple views to the same data.  
-* This is very useful in situations where you have one input view and another 
-* output view that depends on the same data.  An example of how this can be
-* accomplished is shown on <a 
-* href="http://jsfiddle.net/shane_tomlinson/crqpU/">JSFiddle</a>
+*####Multiple Views####
+* One of the really powerful concepts that DataForms and the MVC pattern in
+* general provide is the ability to attach multiple views to the same data.
+* This is very useful in situations where you have one input view and another
+* output view that depends on the same data.  This example is shown on <a target="_blank"
+* href="http://jsfiddle.net/shane_tomlinson/crqpU/">JSFiddle</a>.
+*
+*#####HTML#####
+*
+*    <fieldset id="inputSet">
+*        <input type="string" name="name" data-field />
+*        <input type="string" name="version" data-field />
+*    </fieldset>
+*
+*    <fieldset id="outputSet">
+*        <p>Name: <span name="name" data-field></span></p>
+*        <p>Version: <span name="version" data-field></span></p>
+*    </fieldset>
+*
+*#####Javascript#####
+*
+*    var libraryDataContainer = AFrame.DataContainer( {
+*        name: 'AFrame',
+*        version: '0.0.20'
+*    } );
+*
+*    var form = AFrame.DataForm.create( {
+*        autosave: true,
+*        target: '#inputSet',
+*        dataSource: libraryDataContainer
+*    } );
+*
+*    var form = AFrame.DataForm.create( {
+*        target: '#outputSet',
+*        dataSource: libraryDataContainer
+*    } );
 *
 * @class AFrame.DataForm
 * @extends AFrame.Form
@@ -94,10 +124,10 @@
 */
 
 /**
- * If set to true, the form's DataContainer is automatically updated when 
- * a field is updated and is valid.  Example shown on <a 
+ * If set to true, the form's DataContainer is automatically updated when
+ * a field is updated and is valid.  Example shown on <a target="_blank"
  * href="http://jsfiddle.net/shane_tomlinson/2QgeG/">JSFiddle</a>
- * 
+ *
  * @config autosave
  * @type {boolean}
  * @default false
