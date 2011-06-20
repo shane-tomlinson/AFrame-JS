@@ -1635,15 +1635,21 @@ AFrame.CollectionHash = ( function() {
         *    var googleItem = hash.remove( googleCID );
         *    // googleItem will be the google item that was inserted
         *
+        * An Example can be found on <a 
+        * href="http://jsfiddle.net/shane_tomlinson/Jkdy3/" 
+        * target="_blank">JSFiddle</a>
+        *
         * @method remove
-        * @param {id} cid - cid of item to remove
+        * @param {object || cid} item - item or cid of item to remove
         * @param {object} options - options
         * @param {boolean} options.force - force removal, if set to true, onBeforeRemove event has
         *   no effect.
         * @return {variant} item if it exists, undefined otw.
         */
         remove: function( cid, options ) {
-            var item = this.get( cid );
+            var me=this,
+                cid = 'object' === typeof( cid ) ? findHashKey.call( me, cid ) : cid,
+                item = me.get( cid );
 
             if( item ) {
                 /**
@@ -1654,15 +1660,15 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                var event = this.triggerEvent( {
+                var event = me.triggerEvent( {
                     item: item,
                     cid: cid,
                     type: 'onBeforeRemove',
                     force: options && options.force
                 } );
 
-                if( this.shouldDoAction( options, event ) ) {
-                    AFrame.remove( this.hash, cid );
+                if( me.shouldDoAction( options, event ) ) {
+                    AFrame.remove( me.hash, cid );
                     /**
                     * Triggered after remove happens.
                     * @event onRemove
@@ -1670,7 +1676,7 @@ AFrame.CollectionHash = ( function() {
                     * @param {CollectionHash} data.collection - collection causing event.
                     * @param {variant} data.item - item removed
                     */
-                    this.triggerEvent(  {
+                    me.triggerEvent(  {
                         item: item,
                         cid: cid,
                         type: 'onRemove',
@@ -1809,6 +1815,15 @@ AFrame.CollectionHash = ( function() {
         }
     } );
     CollectionHash.currID = 0;
+
+    function findHashKey( item ) {
+        var hash = this.hash;
+        for( var key in hash ) {
+            if( item === hash[ key ] ) {
+                return key;
+            }
+        }
+    }
 
     return CollectionHash;
 } )();

@@ -1635,15 +1635,21 @@ AFrame.CollectionHash = ( function() {
         *    var googleItem = hash.remove( googleCID );
         *    // googleItem will be the google item that was inserted
         *
+        * An Example can be found on <a 
+        * href="http://jsfiddle.net/shane_tomlinson/Jkdy3/" 
+        * target="_blank">JSFiddle</a>
+        *
         * @method remove
-        * @param {id} cid - cid of item to remove
+        * @param {object || cid} item - item or cid of item to remove
         * @param {object} options - options
         * @param {boolean} options.force - force removal, if set to true, onBeforeRemove event has
         *   no effect.
         * @return {variant} item if it exists, undefined otw.
         */
         remove: function( cid, options ) {
-            var item = this.get( cid );
+            var me=this,
+                cid = 'object' === typeof( cid ) ? findHashKey.call( me, cid ) : cid,
+                item = me.get( cid );
 
             if( item ) {
                 /**
@@ -1654,15 +1660,15 @@ AFrame.CollectionHash = ( function() {
                 * @param {CollectionHash} data.collection - collection causing event.
                 * @param {variant} data.item - item removed
                 */
-                var event = this.triggerEvent( {
+                var event = me.triggerEvent( {
                     item: item,
                     cid: cid,
                     type: 'onBeforeRemove',
                     force: options && options.force
                 } );
 
-                if( this.shouldDoAction( options, event ) ) {
-                    AFrame.remove( this.hash, cid );
+                if( me.shouldDoAction( options, event ) ) {
+                    AFrame.remove( me.hash, cid );
                     /**
                     * Triggered after remove happens.
                     * @event onRemove
@@ -1670,7 +1676,7 @@ AFrame.CollectionHash = ( function() {
                     * @param {CollectionHash} data.collection - collection causing event.
                     * @param {variant} data.item - item removed
                     */
-                    this.triggerEvent(  {
+                    me.triggerEvent(  {
                         item: item,
                         cid: cid,
                         type: 'onRemove',
@@ -1809,6 +1815,15 @@ AFrame.CollectionHash = ( function() {
         }
     } );
     CollectionHash.currID = 0;
+
+    function findHashKey( item ) {
+        var hash = this.hash;
+        for( var key in hash ) {
+            if( item === hash[ key ] ) {
+                return key;
+            }
+        }
+    }
 
     return CollectionHash;
 } )();
@@ -5053,14 +5068,18 @@ AFrame.ListPluginFormRow = ( function() {
     return Plugin;
 }() );
 /**
-* A Form that is bound to data.  Each DataForm is bound to a DataContainer, 
-* (or Model), the DataContainer is used as the data source for all form Fields.  
-* When a Field in the form is created, it has its value set to be that of the 
+* A Form that is bound to data.  Each DataForm is bound to a DataContainer,
+* (or Model), the DataContainer is used as the data source for all form Fields.
+* When a Field in the form is created, it has its value set to be that of the
 * corresponding field in the DataContainer.  Unless the "autosave" config
 * attribute is set to true, the DataContainer's values are not updated,
 * even if a field's value changes, until the form's save function is called.
 *
-*##Setting up the HTML##
+*###Example####
+* The following example can be founds on <a target="_blank"
+* href="http://jsfiddle.net/shane_tomlinson/anwKE/">JSFiddle</a>
+*
+*####Setting up the HTML####
 *
 * Use the "data-field" attribute on an element to specify that an element
 * is a form field. The "name" attribute is the name of the field to bind to.
@@ -5071,10 +5090,7 @@ AFrame.ListPluginFormRow = ( function() {
 *    </formset>
 *
 *
-*##Working in Javascript##
-*
-* The following example can be founds on <a 
-* href="http://jsfiddle.net/shane_tomlinson/anwKE/">JSFiddle</a>
+*####Working in Javascript####
 *
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
@@ -5102,6 +5118,7 @@ AFrame.ListPluginFormRow = ( function() {
 *        form.save();
 *    }
 *
+*####Data Forms with Models####
 * If setting up a DataForm with a [Model](AFrame.Model.html), when validating the form,
 *   the model's validators will be called as well.  This is useful to do specialized
 *   model level validation.
@@ -5133,6 +5150,42 @@ AFrame.ListPluginFormRow = ( function() {
 *        dataSource: model
 *    } );
 *
+*####Multiple Views####
+* One of the really powerful concepts that DataForms and the MVC pattern in
+* general provide is the ability to attach multiple views to the same data.
+* This is very useful in situations where you have one input view and another
+* output view that depends on the same data.  This example is shown on <a target="_blank"
+* href="http://jsfiddle.net/shane_tomlinson/crqpU/">JSFiddle</a>.
+*
+*#####HTML#####
+*
+*    <fieldset id="inputSet">
+*        <input type="string" name="name" data-field />
+*        <input type="string" name="version" data-field />
+*    </fieldset>
+*
+*    <fieldset id="outputSet">
+*        <p>Name: <span name="name" data-field></span></p>
+*        <p>Version: <span name="version" data-field></span></p>
+*    </fieldset>
+*
+*#####Javascript#####
+*
+*    var libraryDataContainer = AFrame.DataContainer( {
+*        name: 'AFrame',
+*        version: '0.0.20'
+*    } );
+*
+*    var form = AFrame.DataForm.create( {
+*        autosave: true,
+*        target: '#inputSet',
+*        dataSource: libraryDataContainer
+*    } );
+*
+*    var form = AFrame.DataForm.create( {
+*        target: '#outputSet',
+*        dataSource: libraryDataContainer
+*    } );
 *
 * @class AFrame.DataForm
 * @extends AFrame.Form
@@ -5140,10 +5193,10 @@ AFrame.ListPluginFormRow = ( function() {
 */
 
 /**
- * If set to true, the form's DataContainer is automatically updated when 
- * a field is updated and is valid.  Example shown on <a 
+ * If set to true, the form's DataContainer is automatically updated when
+ * a field is updated and is valid.  Example shown on <a target="_blank"
  * href="http://jsfiddle.net/shane_tomlinson/2QgeG/">JSFiddle</a>
- * 
+ *
  * @config autosave
  * @type {boolean}
  * @default false

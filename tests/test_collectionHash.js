@@ -267,6 +267,19 @@ testsToRun.push( {
 
             Assert.areEqual( 3, callbackCount, 'callback called once for each item' );
 
+        },
+
+        testRemoveUsingItem: function() {
+			var item = {
+				cid: 1,
+				fieldName: 'fieldValue'
+			};
+
+			this.hash.insert( item );
+            this.hash.remove( item );
+
+            Assert.isUndefined( this.hash.get( 1 ), 'item was removed using itself as the key' );
+
         }
 
 } );
