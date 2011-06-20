@@ -5053,17 +5053,19 @@ AFrame.ListPluginFormRow = ( function() {
     return Plugin;
 }() );
 /**
-* A Form that is bound to data.  Each DataForm is bound to a DataContainer, the DataContainer
-*	is used as the data source for all form Fields.  When a Field in the form is created, it
-*	has its value set to be that of the corresponding field in the DataContainer.  When Fields
-*	are updated, the DataContainer is not updated until the form's save function is called.
+* A Form that is bound to data.  Each DataForm is bound to a DataContainer, 
+* (or Model), the DataContainer is used as the data source for all form Fields.  
+* When a Field in the form is created, it has its value set to be that of the 
+* corresponding field in the DataContainer.  Unless the "autosave" config
+* attribute is set to true, the DataContainer's values are not updated,
+* even if a field's value changes, until the form's save function is called.
 *
 *##Setting up the HTML##
 *
-* Use the "data-field" attribute on an element to specify that an element is a form field
-* The "name" attribute is the name of the field to bind to.
+* Use the "data-field" attribute on an element to specify that an element
+* is a form field. The "name" attribute is the name of the field to bind to.
 *
-*    <formset id="nameForm">
+*    <fieldset id="nameForm">
 *        <input type="string" name="name" data-field />
 *        <input type="string" name="version" data-field />
 *    </formset>
@@ -5071,6 +5073,8 @@ AFrame.ListPluginFormRow = ( function() {
 *
 *##Working in Javascript##
 *
+* The following example can be founds on <a 
+* href="http://jsfiddle.net/shane_tomlinson/anwKE/">JSFiddle</a>
 *
 *    var libraryDataContainer = AFrame.DataContainer( {
 *        name: 'AFrame',
@@ -5135,10 +5139,21 @@ AFrame.ListPluginFormRow = ( function() {
 * @constructor
 */
 
+/**
+ * If set to true, the form's DataContainer is automatically updated when 
+ * a field is updated and is valid.  Example shown on <a 
+ * href="http://jsfiddle.net/shane_tomlinson/2QgeG/">JSFiddle</a>
+ * 
+ * @config autosave
+ * @type {boolean}
+ * @default false
+ */
+
 AFrame.DataForm = ( function() {
     "use strict";
 
     var DataForm = AFrame.Form.extend( {
+        importconfig: [ 'autosave' ],
 	    init: function( config ) {
 		    /**
 		     * The source of data
@@ -5156,10 +5171,14 @@ AFrame.DataForm = ( function() {
 	    },
 
 	    bindFormElement: function( formElement ) {
-		    var formField = DataForm.sc.bindFormElement.call( this, formElement );
-		    var fieldName = fieldGetName( formField );
+            var me=this,
+		        formField = DataForm.sc.bindFormElement.call( me, formElement ),
+		        fieldName = fieldGetName( formField );
 
-		    this.dataContainer.bindField( fieldName, fieldSetValue, formField );
+		    me.dataContainer.bindField( fieldName, fieldSetValue, formField );
+            if( me.autosave ) {
+                formField.bindEvent( 'onChange', onFieldChange, me );
+            }
 
 		    return formField;
 	    },
@@ -5201,6 +5220,14 @@ AFrame.DataForm = ( function() {
             return valid;
         }
     } );
+
+    function onFieldChange( event, formField, val ) {
+        var me=this,
+            fieldName = fieldGetName( formField );
+        if( val !== me.dataContainer.get( fieldName ) ) {
+            me.save();
+        }
+    }
 
     // Some helper functions that should probably be on the Field itself.
     function validateFormFieldsWithModel( model ) {

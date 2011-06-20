@@ -120,3 +120,44 @@ testsToRun.push( {
         }
 
 } );
+
+testsToRun.push( {
+
+		name: "TestCase AFrame.DataForm with autosave",
+
+		setUp: function() {
+			this.dataSource = AFrame.DataContainer.create( {
+                data: {
+                    name: 'AFrame',
+                    field2: 'Field2'
+                }
+			} );
+
+			this.form = AFrame.DataForm.create( {
+                autosave: true,
+                target: '#AFrame_Form',
+                formFieldFactory: function( formElement ) {
+                    this.factoryFormElement = formElement;
+                    this.field = AFrame.Field.create( {
+                        target: formElement
+                    } );
+
+                    return this.field;
+                }.bind( this ),
+                dataSource: this.dataSource
+			} );
+		},
+
+		tearDown: function() {
+			this.form.teardown();
+			this.form = null;
+		},
+
+
+        testAutoSaveOnChange: function() {
+            this.field.set( 'Charlotte' );
+
+            Assert.areSame( 'Charlotte', this.dataSource.get( 'field2' ), 
+                    'field2 is updated' );
+        }
+} );
