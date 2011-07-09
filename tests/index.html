@@ -3,9 +3,10 @@
 <head>
     <link rel="stylesheet" type="text/css" href="../stylesheets/aframejs.css">
     <link rel="stylesheet" type="text/css" href="ext/droid_sans_mono.css">
+    <link rel="stylesheet" type="text/css" href="ext/qunit.css">
 
-	<script type="text/javascript" src="ext/yui-min.js"></script>
 	<script type="text/javascript" src="ext/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="ext/qunit.js"></script>
 
 	<script type="text/javascript" src="ext/jquery.cookie.js"></script>
 	<script type="text/javascript" src="ext/json.js"></script>
@@ -64,7 +65,8 @@
 	<script type="text/javascript" src="test_listPluginBindToCollection.js"></script>
 	<script type="text/javascript" src="test_listPluginFormRow.js"></script>
 	<script type="text/javascript" src="test_collectionPluginPersistence.js"></script>
-	<script type="text/javascript" src="test_collectionPluginModel.js"></script>
+	<script type="text/javascript" 
+    src="test_collectionPluginModel.js"></script>
 	<script type="text/javascript" src="test_form.js"></script>
 	<script type="text/javascript" src="test_field.js"></script>
 	<script type="text/javascript" src="test_fieldValidityState.js"></script>
@@ -103,7 +105,14 @@
 			
 		</header>
 
-        <h2>AFrameJS Unit tests</h2>
+
+
+        <h3 id="qunit-banner"></h3>
+        <div id="qunit-testrunner-toolbar"></div>
+        <h3 id="qunit-userAgent"></h3>
+        <ol id="qunit-tests"></ol>
+        <div id="qunit-fixture">test markup, will be hidden</div>
+        <div id="qunit-testresult"></div>
     
         <form>
             <ul id="testList">

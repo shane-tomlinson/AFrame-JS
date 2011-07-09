@@ -4,7 +4,7 @@ testsToRun.push( {
 		name: "TestCase AFrame.CollectionPluginPersistence no callbacks",
 
 		setUp: function() {
-			this.mockCollection = Mock();
+			this.mockCollection = {};//Mock();
 			AFrame.mixin( this.mockCollection, AFrame.ObservablesMixin );
 			AFrame.mixin( this.mockCollection, {
                 shouldDoAction: AFrame.CollectionHash.prototype.shouldDoAction
@@ -98,7 +98,7 @@ testsToRun.push( {
 			};
 		},
 
-		teardDown: function() {
+		tearDown: function() {
 			this.mockCollection = null;
 			this.mixin.teardown();
 			this.mixin = null;
@@ -153,7 +153,7 @@ testsToRun.push( {
 			this.mockCollection.add( {}, this.persistenceOptions );
 
 			Assert.isFalse( this.onCompleteCallbackCalled, 'insert never occurred, onBeforeAdd event had preventDefault called' );
-			Mock.verify( this.mockCollection );
+			//Mock.verify( this.mockCollection );
 
             this.mockCollection.unbindEvent( beforeAddCID );
         },
@@ -164,7 +164,7 @@ testsToRun.push( {
 			this.mockCollection.add( {}, this.persistenceOptionsForced );
 
 			Assert.isTrue( this.onCompleteCallbackCalled, 'insert was forced' );
-			Mock.verify( this.mockCollection );
+			//Mock.verify( this.mockCollection );
 
             this.mockCollection.unbindEvent( beforeAddCID );
         },

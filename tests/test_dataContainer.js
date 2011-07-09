@@ -105,7 +105,7 @@ testsToRun.push( {
 			var dataContainer = AFrame.DataContainer( data );
 
             var dataObject = dataContainer.getDataObject();
-            Assert.areEqual( dataObject, data, 'getDataObject returns original data' );
+            Assert.areSame( dataObject, data, 'getDataObject returns original data' );
         },
 
         testBulkSet: function() {

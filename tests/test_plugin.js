@@ -25,7 +25,7 @@ testsToRun.push( {
 			var plugged = this.plugin.getPlugged();
 
 			Assert.isObject( plugged, 'plugged is an object' );
-			Assert.areEqual( plugged, this.pluggedObject, 'plugged object correctly set' );
+			Assert.areSame( plugged, this.pluggedObject, 'plugged object correctly set' );
 		},
 
 		testTeardownOnPluggedTeardown: function() {
