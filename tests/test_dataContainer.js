@@ -102,10 +102,12 @@ testsToRun.push( {
 				field2: 'value2'
 			};
 
+            var dataCopy = AFrame.mixin( {}, data );
 			var dataContainer = AFrame.DataContainer( data );
 
             var dataObject = dataContainer.getDataObject();
-            Assert.areSame( dataObject, data, 'getDataObject returns original data' );
+            Assert.isUndefined( dataObject.__dataContainer, '__dataContainer not returned' );
+            Assert.deepEqual( dataObject, dataCopy, 'getDataObject returns same data as original object' );
         },
 
         testBulkSet: function() {

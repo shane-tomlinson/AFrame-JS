@@ -165,7 +165,15 @@ AFrame.DataContainer = ( function() {
         * @return {object}
         */
         getDataObject: function() {
-            return this.data;
+            var data = this.data,
+                retval = {},
+                key;
+            for( key in data ) {
+               if( key !== '__dataContainer' ) {
+                   retval[ key ] = data[ key ];
+               }
+            }
+            return retval;
         },
 
         /**

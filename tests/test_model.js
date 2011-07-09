@@ -108,7 +108,6 @@
 
             Assert.isTrue( model.get( 'isodatetime' ) instanceof Date, 'isodatetime deserialized' );
 
-            Assert.areSame( initialData, model.getDataObject(), 'deserialization deserializes in same data object' );
         },
 
         testCreateModelManually: function() {
