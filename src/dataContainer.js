@@ -1,15 +1,10 @@
 /**
-* A basic data container. Used like a hash. Provides functionality that allows 
-* the binding of callbacks to the change in a piece of data.  The preferred 
-* method of creating an AFrame.DataContainer is to do
-*
-*    dataContainer = AFrame.DataContainer.create( { data: data } );
-* This ensures that only one DataContainer is ever created for a given object. 
-* DataContainers are very important in the AFrame world.  They act as the 
-* basic data container, they can be created out of any object.  They are the 
-* "Model" in Model-View-Controller.  What is possible with a DataContainer is
-* to have multiple Views bound to a particular field.  When a field is updated
-* that has multiple Views registered, all Views are notified of the change.
+* DataContainers are the basic atom of data within the AFrameJS ecosystem.  
+* Used like a hash. They provide functionality allowing concerned parties
+* to be notified when the data mutates. They are the "Model" in 
+* Model-View-Controller.  DataContainer's make it possible to have multiple
+* Views bound to a particular field update automatically when the underlying
+* data is modified.
 *
 * Example:
 *
@@ -18,7 +13,7 @@
 *        lastName: 'Tomlinson'
 *    };
 *
-*    var dataContainer = AFrame.DataContainer( dataObject );
+*    var dataContainer = AFrame.DataContainer.create( { data: dataObject } );
 *    dataContainer.bindField( 'firstName', function( notification ) {
 *        alert( 'new name: ' + notification.value );
 *    } );
@@ -28,11 +23,18 @@
 * @class AFrame.DataContainer
 * @extends AFrame.AObject
 * @uses AFrame.EnumerableMixin
-* @constructor
-* @param {object || AFrame.DataContainer} data (optional) If given, creates a 
-* new AFrame.DataContainer for the data. If already an AFrame.DataContainer, 
-* returns self, if the data already has an AFrame.DataContainer associated with
-* it, then the original AFrame.DataContainer is used.
+*/
+
+/**
+ * Create a DataContainer.
+ *
+ *     var dataContainer = AFrame.DataContainer.create( { data: dataObject } );
+ *
+ * @method AFrame.DataContainer.create
+ * @param {object || AFrame.DataContainer} data (optional) If given, creates a 
+ * new AFrame.DataContainer for the data. If already an AFrame.DataContainer, 
+ * returns self, if the data already has an AFrame.DataContainer associated with
+ * it, then the original AFrame.DataContainer is used.
 */
 AFrame.DataContainer = ( function() {
     "use strict";
