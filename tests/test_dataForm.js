@@ -19,7 +19,7 @@ testsToRun.push( {
 
                     return this.field;
                 }.bind( this ),
-                dataSource: this.dataSource
+                data: this.dataSource
 			} );
 		},
 
@@ -76,7 +76,7 @@ testsToRun.push( {
 
                     return this.field;
                 }.bind( this ),
-                dataSource: this.dataSource
+                data: this.dataSource
 			} );
 		},
 
@@ -145,7 +145,7 @@ testsToRun.push( {
 
                     return this.field;
                 }.bind( this ),
-                dataSource: this.dataSource
+                data: this.dataSource
 			} );
 		},
 

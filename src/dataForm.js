@@ -33,7 +33,7 @@
 *    //    appropriate field in the libraryDataContainer
 *    var form = AFrame.DataForm.create( {
 *       target: '#nameForm',
-*       dataSource: libraryDataContainer
+*       data: libraryDataContainer
 *    } );
 *
 *    // do some stuff, user updates the fields with the library name and version
@@ -78,7 +78,7 @@
 *    //    and version, as specified in the schemaConfig.
 *    var form = AFrame.DataForm.create( {
 *        target: '#nameForm',
-*        dataSource: model
+*        data: model
 *    } );
 *
 *####Multiple Views####
@@ -110,12 +110,12 @@
 *    var form = AFrame.DataForm.create( {
 *        autosave: true,
 *        target: '#inputSet',
-*        dataSource: libraryDataContainer
+*        data: libraryDataContainer
 *    } );
 *
 *    var form = AFrame.DataForm.create( {
 *        target: '#outputSet',
-*        dataSource: libraryDataContainer
+*        data: libraryDataContainer
 *    } );
 *
 * @class AFrame.DataForm
@@ -141,10 +141,10 @@ AFrame.DataForm = ( function() {
 	    init: function( config ) {
 		    /**
 		     * The source of data
-		     * @config dataSource
+		     * @config data
 		     * @type {AFrame.DataContainer || Object}
 		     */
-		    this.dataContainer = AFrame.DataContainer.create( {data: config.dataSource} );
+		    this.dataContainer = AFrame.DataContainer.create( { data: config.data } );
 
 		    DataForm.sc.init.call( this, config );
 	    },

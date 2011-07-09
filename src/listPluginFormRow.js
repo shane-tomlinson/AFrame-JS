@@ -20,7 +20,7 @@
  *           formFactory: function( rowElement, data )
  *              var form = AFrame.SpecializedForm.create( {
  *                  target: rowElement,
- *                  dataSource: data
+ *                  data: data
  *              } );
  *
  *              return form;
@@ -79,7 +79,7 @@ AFrame.ListPluginFormRow = ( function() {
              *     formFactory: function( rowElement, data ) {
              *          var form = AFrame.SpecializedForm.create( {
              *              target: rowElement,
-             *              dataSource: data
+             *              data: data
              *          } );
              *
              *          return form;
@@ -122,7 +122,7 @@ AFrame.ListPluginFormRow = ( function() {
          *     formFactory: function( rowElement, data ) {
          *          var form = AFrame.SpecializedForm.create( {
          *              target: rowElement,
-         *              dataSource: data
+         *              data: data
          *          } );
          *
          *          return form;
@@ -135,7 +135,7 @@ AFrame.ListPluginFormRow = ( function() {
         formFactory: function( rowElement, data ) {
             var form = AFrame.DataForm.create( {
                 target: rowElement,
-                dataSource: data
+                data: data
             } );
 
             return form;
