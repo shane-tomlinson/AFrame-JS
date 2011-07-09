@@ -127,10 +127,10 @@ AFrame.Class = ( function() {
 	* @method addCreate
 	* @param {function} Class
 	*/
-	function addCreate( Class ) {
-		if( Class.prototype && AFrame.func( Class.prototype.init ) && !Class.create ) {
-			// Add a create function so that every class with init has one.
-			Class.create = create.bind( null, Class );
+	function addCreate( _class ) {
+		if( _class.prototype && AFrame.func( _class.prototype.init ) && !_class.create ) {
+			// Add a create function so that every _class with init has one.
+			_class.create = Class.create.bind( null, _class );
 		}
 	}
 
@@ -138,7 +138,7 @@ AFrame.Class = ( function() {
 		F.extend = Class.bind( null, F );
 	}
 
-	function create( construct, config ) {
+	Class.create = function( construct, config ) {
 		var retval;
 		if( construct ) {
 			try {

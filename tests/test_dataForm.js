@@ -3,10 +3,11 @@ testsToRun.push( {
 		name: "TestCase AFrame.DataForm with DataContainer",
 
 		setUp: function() {
-			this.dataSource = AFrame.DataContainer( {
-				name: 'AFrame',
-				field2: 'Field2'
-			} );
+			this.dataSource = AFrame.DataContainer.create( {
+                data: {
+                    name: 'AFrame',
+                    field2: 'Field2'
+                } } );
 
 			this.form = AFrame.DataForm.create( {
                 target: '#AFrame_Form',

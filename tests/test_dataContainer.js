@@ -86,13 +86,14 @@ testsToRun.push( {
 				field2: 'value2'
 			};
 
-			var dataContainer = AFrame.DataContainer( data );
+			var dataContainer = AFrame.DataContainer.create( { data: data } );
 			Assert.isTrue( ( dataContainer instanceof AFrame.DataContainer ), 'successful creation of DataContainer from data' );
 
-			var secondDataContainer = AFrame.DataContainer( dataContainer );
+			var secondDataContainer = AFrame.DataContainer.create( { data: dataContainer } );
+
 			Assert.isTrue( ( secondDataContainer instanceof AFrame.DataContainer ), 'successful creation of DataContainer from another DataContainer' );
 
-			var thirdDataContainer = AFrame.DataContainer( data );
+			var thirdDataContainer = AFrame.DataContainer.create( { data: data } );
 			Assert.isTrue( ( thirdDataContainer === dataContainer ), 'making a second DataContainer from data gives back the same DataContainer' );
 		},
 
@@ -103,7 +104,7 @@ testsToRun.push( {
 			};
 
             var dataCopy = AFrame.mixin( {}, data );
-			var dataContainer = AFrame.DataContainer( data );
+			var dataContainer = AFrame.DataContainer.create( { data: data } );
 
             var dataObject = dataContainer.getDataObject();
             Assert.isUndefined( dataObject.__dataContainer, '__dataContainer not returned' );
@@ -116,9 +117,9 @@ testsToRun.push( {
         		field2: 'value2'
         	};
 
-			var dataContainer = AFrame.DataContainer( {
+			var dataContainer = AFrame.DataContainer.create( { data: {
 				field0: 'value0'
-			} );
+			} } );
 
 			var prevVals = dataContainer.set( data );
 

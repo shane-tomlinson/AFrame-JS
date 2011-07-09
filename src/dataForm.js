@@ -144,7 +144,7 @@ AFrame.DataForm = ( function() {
 		     * @config dataSource
 		     * @type {AFrame.DataContainer || Object}
 		     */
-		    this.dataContainer = AFrame.DataContainer( config.dataSource );
+		    this.dataContainer = AFrame.DataContainer.create( {data: config.dataSource} );
 
 		    DataForm.sc.init.call( this, config );
 	    },

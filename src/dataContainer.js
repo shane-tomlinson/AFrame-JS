@@ -1,15 +1,16 @@
 /**
-* A basic data container. Used like a hash. Provides functionality that allows the binding of callbacks
-* to the change in a piece of data.  The preferred method of creating an AFrame.DataContainer is to
-* do
+* A basic data container. Used like a hash. Provides functionality that allows 
+* the binding of callbacks to the change in a piece of data.  The preferred 
+* method of creating an AFrame.DataContainer is to do
 *
-*    dataContainer = AFrame.DataContainer( data );
+*    dataContainer = AFrame.DataContainer.create( { data: data } );
 * This ensures that only one DataContainer is ever created for a given object.
 *
-* DataContainers are very important in the AFrame world.  They act as the basic data container, they can be created out of
-*   any object.  They are the "Model" in Model-View-Controller.  What is possible with a DataContainer is to have multiple
-*   Views bound to a particular field.  When a field is updated that has multiple Views registered, all Views are notified
-*   of the change.
+* DataContainers are very important in the AFrame world.  They act as the 
+* basic data container, they can be created out of any object.  They are the 
+* "Model" in Model-View-Controller.  What is possible with a DataContainer is
+* to have multiple Views bound to a particular field.  When a field is updated
+* that has multiple Views registered, all Views are notified of the change.
 *
 * Example:
 *
@@ -29,30 +30,15 @@
 * @extends AFrame.AObject
 * @uses AFrame.EnumerableMixin
 * @constructor
-* @param {object || AFrame.DataContainer} data (optional) If given, creates a new AFrame.DataContainer for the data.
-*   If already an AFrame.DataContainer, returns self, if the data already has an AFrame.DataContainer associated with
-*	it, then the original AFrame.DataContainer is used.
+* @param {object || AFrame.DataContainer} data (optional) If given, creates a 
+* new AFrame.DataContainer for the data. If already an AFrame.DataContainer, 
+* returns self, if the data already has an AFrame.DataContainer associated with
+* it, then the original AFrame.DataContainer is used.
 */
 AFrame.DataContainer = ( function() {
     "use strict";
 
     var DataContainer = AFrame.AObject.extend( {
-		constructor:function( data ) {
-			if( data instanceof DataContainer ) {
-				return data;
-			}
-			else if( data ) {
-				var dataContainer = data.__dataContainer;
-				if( !dataContainer ) {
-					dataContainer = DataContainer.create( {
-						data: data
-					} );
-				}
-				return dataContainer;
-			}
-			DataContainer.sc.constructor.call( this, data );
-
-		},
         /**
         * Initialize the data container.
         * @method init
@@ -64,16 +50,17 @@ AFrame.DataContainer = ( function() {
             * @type {object}
             * @default {}
             */
-            this.data = config.data || {};
+            var me=this,
+                data = me.data = config.data || {};
 
-            if( this.data.__dataContainer ) {
+            if( data.__dataContainer ) {
                 throw Error( 'Cannot create a second DataContainer for an object' );
             }
+            data.__dataContainer = me;
 
-            this.data.__dataContainer = this;
-            this.fieldBindings = {};
+            me.fieldBindings = {};
 
-            DataContainer.sc.init.call( this, config );
+            DataContainer.sc.init.call( me, config );
         },
 
         /**
@@ -112,10 +99,12 @@ AFrame.DataContainer = ( function() {
             /**
             * Triggered whenever any item on the object is set.
             * @event onSet
-            * @param {AFrame.Event} event - an event object. @see [Event](AFrame.Event.html)
+            * @param {AFrame.Event} event - an event object. @see 
+            *   [Event](AFrame.Event.html)
             * @param {string} event.fieldName - name of field affected.
             * @param {variant} event.value - the current value of the field.
-            * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
+            * @param {variant} event.oldValue - the previous value of the field
+            *   (only applicable if data has changed).
             */
             this.triggerEvent( {
                 fieldName: fieldName,
@@ -124,13 +113,15 @@ AFrame.DataContainer = ( function() {
                 type: 'onSet'
             } );
             /**
-            * Triggered whenever an item on the object is set.  This is useful to bind
-            *	to whenever a particular field is being changed.
+            * Triggered whenever an item on the object is set.  This is useful 
+            * to bind to whenever a particular field is being changed.
             * @event onSet-fieldName
-            * @param {AFrame.Event} event - an event object.  @see [Event](AFrame.Event.html)
+            * @param {AFrame.Event} event - an event object.  @see 
+            *   [Event](AFrame.Event.html)
             * @param {string} event.fieldName - name of field affected.
             * @param {variant} event.value - the current value of the field.
-            * @param {variant} event.oldValue - the previous value of the field (only applicable if data has changed).
+            * @param {variant} event.oldValue - the previous value of the field
+            *   (only applicable if data has changed).
             */
             this.triggerEvent( {
                 fieldName: fieldName,
@@ -177,14 +168,17 @@ AFrame.DataContainer = ( function() {
         },
 
         /**
-        * Bind a callback to a field.  Function is called once on initialization as well as any time the field changes.
-        *   When function is called, it is called with an event.
+        * Bind a callback to a field.  Function is called once on initialization
+        * as well as any time the field changes. When function is called, it is 
+        * called with an event.
         *
         *    var onChange = function( event ) {
-        *        console.log( 'Name: "' + event.fieldName + '" + value: "' + event.value + '" oldValue: "' + event.oldValue + '"' );
+        *        console.log( 'Name: "' + event.fieldName + '" + value: "' 
+        *           + event.value + '" oldValue: "' + event.oldValue + '"' );
         *    };
         *    var id = dataContainer.bindField( 'name', onChange );
-        *    // use id to unbind callback manually, otherwise callback will be unbound automatically.
+        *    // use id to unbind callback manually, otherwise callback will 
+        *    / /be unbound automatically.
         *
         * @method bindField
         * @param {string} fieldName name of field
@@ -220,7 +214,8 @@ AFrame.DataContainer = ( function() {
         },
 
         /**
-        * Iterate over each item in the dataContainer.  Callback will be called with two parameters, the first the value, the second the key
+        * Iterate over each item in the dataContainer.  Callback will be called
+        * with two parameters, the first the value, the second the key
         *
         *    dataCollection.forEach( function( item, index ) {
         *       // process item here
@@ -239,6 +234,21 @@ AFrame.DataContainer = ( function() {
         }
     },
  	AFrame.EnumerableMixin );
+    DataContainer.create = function( config ) {
+        config = config || {};
+        var data = config.data = config.data || {};
+
+        if( data instanceof DataContainer ) {
+            return data;
+        }
+        else if( data.__dataContainer ) {
+            return data.__dataContainer;
+        }
+
+        var dataContainer = AFrame.Class.create( DataContainer, config );
+
+        return dataContainer;
+    };
 
     return DataContainer;
 }() );
