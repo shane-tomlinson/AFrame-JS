@@ -33,10 +33,12 @@ AFrame.Observable = ( function() {
          * @param {variant} optional - any arguments will be passed to the callbacks
          */
         trigger: function() {
-            this.triggered = true;
-            for( var key in this.callbacks ) {
-                var callback = this.callbacks[ key ];
-                callback.apply( this, arguments );
+            var me=this,
+                key;
+
+            me.triggered = true;
+            for( key in me.callbacks ) {
+                me.callbacks[ key ].apply( me, arguments );
             }
         },
 
@@ -68,8 +70,10 @@ AFrame.Observable = ( function() {
          * @method unbindAll
          */
         unbindAll: function() {
-            for( var key in this.callbacks ) {
-              AFrame.remove( this.callbacks, key );
+            var me=this,
+                key;
+            for( key in me.callbacks ) {
+              AFrame.remove( me.callbacks, key );
             }
         },
 
