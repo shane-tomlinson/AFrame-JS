@@ -145,7 +145,7 @@ AFrame.AObject = (function(){
             /**
              * triggered whenever tte object is torn down
              * @event onTeardown
-             * @param {AFrame.Event} e3vent - the event
+             * @param {AFrame.Event} event - the event
              */
             this.triggerEvent( 'onTeardown' );
 
