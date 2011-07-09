@@ -4,8 +4,7 @@
 * method of creating an AFrame.DataContainer is to do
 *
 *    dataContainer = AFrame.DataContainer.create( { data: data } );
-* This ensures that only one DataContainer is ever created for a given object.
-*
+* This ensures that only one DataContainer is ever created for a given object. 
 * DataContainers are very important in the AFrame world.  They act as the 
 * basic data container, they can be created out of any object.  They are the 
 * "Model" in Model-View-Controller.  What is possible with a DataContainer is
