@@ -99,19 +99,20 @@ AFrame.AObject = (function(){
          * @param config.cid {id} - cid to give to the object, if not given, one is generated.
          */
         init: function( config ) {
-            this.config = config;
-            this.cid = config.cid || AFrame.getUniqueID();
-            this.children = {};
+            var me=this;
+            me.config = config;
+            me.cid = config.cid || AFrame.getUniqueID();
+            me.children = {};
 
-            importConfig.call( this );
-            this.bindEvents();
+            importConfig.call( me );
+            me.bindEvents();
 
             /**
              * Triggered when the object is initialized
              * @event onInit
              * @param {AFrame.Event} event - the event object
              */
-             this.triggerEvent( 'onInit' );
+             me.triggerEvent( 'onInit' );
         },
 
         /**
@@ -147,12 +148,13 @@ AFrame.AObject = (function(){
              * @event onTeardown
              * @param {AFrame.Event} event - the event
              */
-            this.triggerEvent( 'onTeardown' );
+            var me=this;
+            me.triggerEvent( 'onTeardown' );
 
-            this.unbindAll();
-            this.unbindToAll();
-            this.teardownChildren();
-            this.config = this.cid = this.children = null;
+            me.unbindAll();
+            me.unbindToAll();
+            me.teardownChildren();
+            me.config = me.cid = me.children = null;
         },
 
         teardownChildren: function() {
@@ -235,22 +237,25 @@ AFrame.AObject = (function(){
     }
 
     function bindEvents() {
-        var me = this;
+        var me = this,
+            events,
+            eventName,
+            nameTarget;
 
         AFrame.Class.walkChain( function( currClass ) {
         	if( currClass.prototype.hasOwnProperty( 'events' ) ) {
-				var events = currClass.prototype.events;
+				events = currClass.prototype.events;
 
-				for( var eventName in events ) {
-					var nameTarget = getNameAndTarget.call( me, eventName );
+				for( eventName in events ) {
+					nameTarget = getNameAndTarget.call( me, eventName );
 					bindHandlers.call( me, nameTarget.name, nameTarget.target, events[ eventName ] );
 				}
             }
         }, me );
 
         function getNameAndTarget( eventName ) {
-            var parts = eventName.split( ' ' );
-            var target = me[ parts[ 1 ] ] || me;
+            var parts = eventName.split( ' ' ),
+                target = me[ parts[ 1 ] ] || me;
 
             return {
                 name: parts[ 0 ],
