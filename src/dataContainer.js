@@ -1,5 +1,5 @@
 /**
-* DataContainers are the basic atom of data within the AFrameJS ecosystem.  
+* DataContainers are the basic atom of data within the AFrameJS ecosystem.
 * Used like a hash. They provide functionality allowing concerned parties
 * to be notified when the data mutates. They are the "Model" in 
 * Model-View-Controller.  DataContainer's make it possible to have multiple
