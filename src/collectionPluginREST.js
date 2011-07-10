@@ -23,7 +23,7 @@ AFrame.CollectionPluginREST = (function() {
             var me=this;
             me.net.ajax( {
                 url: me.root + '/' + item.id,
-                type: 'DEL',
+                type: 'DELETE',
                 success: options.onComplete
             } );
         },

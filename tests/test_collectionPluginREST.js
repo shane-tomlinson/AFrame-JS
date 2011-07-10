@@ -25,7 +25,7 @@
                 config.success( data );
             }
 
-            if( this.type === 'DEL' && !( data && AFrame.defined( data.id ) ) ) {
+            if( this.type === 'DELETE' && !( data && AFrame.defined( data.id ) ) ) {
                 config.success( data );
             }
 
@@ -105,7 +105,7 @@
             } );
 
             Assert.isTrue( success, 'we managed a round trip del' );
-            Assert.areEqual( 'DEL', NetMock.type, 'correct type used' );
+            Assert.areEqual( 'DELETE', NetMock.type, 'correct type used' );
             Assert.areEqual( '/test/0', NetMock.url, 'correct load URL called' );
             Assert.areEqual( 0, collection.getCount(), 'we have no items' );
         },
