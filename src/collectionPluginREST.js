@@ -1,5 +1,5 @@
 AFrame.CollectionPluginREST = (function() {
-    var Plugin = AFrame.CollectionPluginPersistence.extend({
+    var Plugin = AFrame.CollectionPluginPersistence.extend( {
         importconfig: [ 'root', 'net' ],
         loadCallback: function( options ) {
             var me=this;
@@ -17,8 +17,27 @@ AFrame.CollectionPluginREST = (function() {
                 type: 'POST',
                 success: options.onComplete
             } );
+        },
+
+        deleteCallback: function( item, options ) {
+            var me=this;
+            me.net.ajax( {
+                url: me.root + '/' + item.id,
+                type: 'DEL',
+                success: options.onComplete
+            } );
+        },
+
+        saveCallback: function( item, options ) {
+            var me=this;
+            me.net.ajax( {
+                url: me.root + '/' + item.id,
+                data: item,
+                type: 'PUT',
+                success: options.onComplete
+            } );
         }
-    });
+    } );
 
     return Plugin;
 }());

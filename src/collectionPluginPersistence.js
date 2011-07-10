@@ -1,14 +1,17 @@
 /**
- * A plugin to a collection to give the collection db ops.  This is part of what is usually called an Adapter
- *  when referring to collections with a hookup to a database.  The CollectionPluginPersistence is not the actual
- *  Adapter but binds a collection to an Adapter.  The CollectionPluginPersistence adds load, add, save, del
- *  functions to the collection, all four functions are assumed to operate asynchronously.
- *  When configuring the plugin, 4 parameters can be specified, each are optional.
- *  The four paramters are addCallback, saveCallback, loadCallback, and deleteCallback.  When the callbacks are called, they
- *  will be called with two parameters, item, options.  item is the item currently being operated on. options is
- *  options data that will contain at least two fields, collection and onComplete. onComplte should be called by the
- *  adapter when the adapter function
- *  has completed.
+ * A plugin to a collection to give the collection db ops.  This is part of 
+ * what is usually called an Adapter when referring to collections with a 
+ * hookup to a database.  The CollectionPluginPersistence is not the actual 
+ * Adapter but binds a collection to an Adapter.  The 
+ * CollectionPluginPersistence adds load, add, save, del functions to the 
+ * collection, all four functions are assumed to operate asynchronously. When
+ * configuring the plugin, 4 parameters can be specified, each are optional. 
+ * The four paramters are addCallback, saveCallback, loadCallback, and 
+ * deleteCallback.  When the callbacks are called, they will be called with two
+ * parameters, item, options.  item is the item currently being operated on. 
+ * options is options data that will contain at least two fields, collection and
+ * onComplete. onComplte should be called by the adapter when the adapter 
+ * function has completed.
  *
  *     // set up the adapter
  *     var dbAdapter = {
@@ -107,32 +110,40 @@ AFrame.CollectionPluginPersistence = ( function() {
     var Plugin = AFrame.Plugin.extend( {
         init: function( config ) {
             /**
-             * function to call to do add.  Will be called with two parameters, data, and options.
+             * function to call to do add.  Will be called with two parameters,
+             * data, and options.
              * @config addCallback
              * @type function (optional)
              */
-            this.addCallback = config.addCallback || noPersistenceOp;
+            this.addCallback = config.addCallback || this.addCallback  
+                || noPersistenceOp;
 
             /**
-             * function to call to do save.  Will be called with two parameters, data, and options.
+             * function to call to do save.  Will be called with two parameters,
+             * data, and options.
              * @config saveCallback
              * @type function (optional)
              */
-            this.saveCallback = config.saveCallback || noPersistenceOp;
+            this.saveCallback = config.saveCallback || this.saveCallback 
+                || noPersistenceOp;
 
             /**
-             * function to call to do load.  Will be called with one parameter, options.
+             * function to call to do load.  Will be called with one parameter,
+             * options.
              * @config loadCallback
              * @type function (optional)
              */
-            this.loadCallback = config.loadCallback || noPersistenceOp;
+            this.loadCallback = config.loadCallback || this.loadCallback 
+                || noPersistenceOp;
 
             /**
-             * function to call to do delete.  Will be called with two parameters, data, and options.
+             * function to call to do delete.  Will be called with two 
+             * parameters, data, and options.
              * @config deleteCallback
              * @type function (optional)
              */
-            this.deleteCallback = config.deleteCallback || noPersistenceOp;
+            this.deleteCallback = config.deleteCallback || this.deleteCallback
+                || noPersistenceOp;
 
             Plugin.sc.init.call( this, config );
 
@@ -145,9 +156,10 @@ AFrame.CollectionPluginPersistence = ( function() {
 
 
         /**
-         * Add an item to the collection.  The item will be inserted into the collection once the addCallback
-         *  is complete.  Because of this, no cid is returned from the add function, but one will be placed into
-         *  the options item passed to the onComplete callback.
+         * Add an item to the collection.  The item will be inserted into the
+         * collection once the addCallback is complete.  Because of this, no 
+         * cid is returned from the add function, but one will be placed into
+         * the options item passed to the onComplete callback.
          *
          *     // Adds an item to the collection.  Note, a cid is not given back
          *     // because this operation is asynchronous and a cid will not be
@@ -166,12 +178,14 @@ AFrame.CollectionPluginPersistence = ( function() {
          * @method add
          * @param {object} item - item to add
          * @param {object} options - options information.
-         * @param {function} options.onComplete (optional) - callback to call when complete
-         *	Will be called with two parameters, the item, and options information.
-         * @param {function} options.insertAt (optional) - data to be passed as second argument to the collection's
-         *  insert function.  Useful when using CollectionArrays to specify the index
-         * @param {boolean} options.force (optional) - If set to true, an add will be forced even if
-         *  onBeforeAdd has its preventDefault called.
+         * @param {function} options.onComplete (optional) - callback to call
+         * when complete. Will be called with two parameters, the item, and 
+         * options information.
+         * @param {function} options.insertAt (optional) - data to be passed 
+         * as second argument to the collection's insert function.  Useful when
+         * using CollectionArrays to specify the index
+         * @param {boolean} options.force (optional) - If set to true, an add 
+         * will be forced even if onBeforeAdd has its preventDefault called.
          */
         add: function( item, options ) {
             options = getOptions( this, options );
@@ -179,8 +193,9 @@ AFrame.CollectionPluginPersistence = ( function() {
 
             var plugged = this.getPlugged();
             /**
-            * Triggered on the collection before an add is sent to persistence.  If the event has preventDefault called,
-            *   the add will be cancelled as long as the options.force is not set to true
+            * Triggered on the collection before an add is sent to persistence.
+            * If the event has preventDefault called, the add will be cancelled
+            * as long as the options.force is not set to true
             * @event onBeforeAdd
             * @param {AFrame.Event} event - event object
             * @param {variant} event.item - the item being added
@@ -190,8 +205,9 @@ AFrame.CollectionPluginPersistence = ( function() {
 
             if( plugged.shouldDoAction( options, event ) ) {
                 options.onComplete = function( overriddenItem ) {
-                    // For the insert item, use the item given by the db access layer, if they pass one back.  If
-                    //  no override is given, use the original item.
+                    // For the insert item, use the item given by the db access
+                    // layer, if they pass one back.  If no override is given,
+                    // use the original item.
                     item = overriddenItem || item;
                     var cid = plugged.insert( item, options.insertAt );
                     options.cid = cid;
@@ -200,7 +216,8 @@ AFrame.CollectionPluginPersistence = ( function() {
                     callback && callback( item, options );
 
                     /**
-                    * Triggered on the collection after an item is sent to persistence and is added to the Collection.
+                    * Triggered on the collection after an item is sent to 
+                    * persistence and is added to the Collection.
                     * @event onAdd
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being added
@@ -228,16 +245,18 @@ AFrame.CollectionPluginPersistence = ( function() {
          *
          * @method load
          * @param {object} options - options information.
-         * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-         *	Callback will be called with two parameters, the items, and options information.
+         * @param {function} options.onComplete (optional) - the callback will
+         * be called when operation is complete. Callback will be called with 
+         * two parameters, the items, and options information.
          */
         load: function( options ) {
             options = getOptions( this, options );
             var plugged = this.getPlugged();
 
             /**
-            * Triggered on the collection before a load occurs.  If the listener calls preventDefault on the event,
-            *   the load will be cancelled unless the load is forced.
+            * Triggered on the collection before a load occurs.  If the listener
+            * calls preventDefault on the event, the load will be cancelled 
+            * unless the load is forced.
             * @event onBeforeLoad
             * @param {object} event - event information
             * @param {boolean} event.force - whether the load is being forced.
@@ -252,7 +271,8 @@ AFrame.CollectionPluginPersistence = ( function() {
                 * Triggered on the collection whenever a load is starting
                 * @event onLoadStart
                 * @param {object} event - event information
-                * @param {boolean} event.force - whether the load is being forced.
+                * @param {boolean} event.force - whether the load is 
+                * being forced.
                 */
                 plugged.triggerEvent( {
                     type: 'onLoadStart',
@@ -275,9 +295,11 @@ AFrame.CollectionPluginPersistence = ( function() {
                 /**
                 * Triggered on the collection whenever a load has completed
                 * @event onLoad
-                * @param {object} event - event information, has collection and items fields.
+                * @param {object} event - event information, has collection and
+                * items fields.
                 * @param {variant} event.items- items loaded inserted
-                * @param {boolean} event.force - whether the load is being forced.
+                * @param {boolean} event.force - whether the load is being 
+                * forced.
                 */
                 plugged.triggerEvent( {
                     items: items,
@@ -301,8 +323,9 @@ AFrame.CollectionPluginPersistence = ( function() {
          * @method del
          * @param {id || index} itemID - id or index of item to remove
          * @param {object} options - options information.
-         * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-         *	Callback will be called with two parameters, the item, and options information.
+         * @param {function} options.onComplete (optional) - the callback will
+         * be called when operation is complete. Callback will be called with
+         * two parameters, the item, and options information.
          */
         del: function( itemID, options ) {
             var plugged = this.getPlugged();
@@ -310,14 +333,18 @@ AFrame.CollectionPluginPersistence = ( function() {
 
             if( item ) {
                 /**
-                * Triggered on the collection before a delete is sent to persistence.  If the event has preventDefault called,
-                *   the delete will be cancelled as long as the options.force is not set to true
+                * Triggered on the collection before a delete is sent to 
+                * persistence.  If the event has preventDefault called, the
+                * delete will be cancelled as long as the options.force is not
+                * set to true
                 * @event onBeforeDelete
                 * @param {AFrame.Event} event - event object
                 * @param {variant} event.item - the item being deleted
-                * @param {boolean} event.force - whether the delete is being forced.
+                * @param {boolean} event.force - whether the delete is being 
+                * forced.
                 */
-                var event = plugged.triggerEvent( getEvent( 'onBeforeDelete', item, options ) );
+                var event = plugged.triggerEvent( getEvent( 'onBeforeDelete', 
+                            item, options ) );
 
                 if( plugged.shouldDoAction( options, event ) ) {
                     options = getOptions( this, options );
@@ -332,11 +359,13 @@ AFrame.CollectionPluginPersistence = ( function() {
                     this.deleteCallback( item, options );
 
                     /**
-                    * Triggered on the collection after an item is deleted from persistence and is removed from the Collection.
+                    * Triggered on the collection after an item is deleted from
+                    * persistence and is removed from the Collection.
                     * @event onDelete
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being deleted
-                    * @param {boolean} event.force - whether the delete is being forced.
+                    * @param {boolean} event.force - whether the delete is being 
+                    * forced.
                     * @param {id} event.cid - item's cid
                     */
                     plugged.triggerEvent( getEvent( 'onDelete', item, options ) );
@@ -358,8 +387,9 @@ AFrame.CollectionPluginPersistence = ( function() {
          * @method save
          * @param {id || index} itemID - id or index of item to save
          * @param {object} options - options information.
-         * @param {function} options.onComplete (optional) - the callback will be called when operation is complete.
-         *	Callback will be called with two parameters, the item, and options information.
+         * @param {function} options.onComplete (optional) - the callback will 
+         * be called when operation is complete. Callback will be called with
+         * two parameters, the item, and options information.
          */
         save: function( itemID, options ) {
             var plugged = this.getPlugged();
@@ -367,14 +397,18 @@ AFrame.CollectionPluginPersistence = ( function() {
 
             if( item ) {
                 /**
-                * Triggered on the collection before a save is sent to persistence.  If the event has preventDefault called,
-                *   the save elete will be cancelled as long as the options.force is not set to true
+                * Triggered on the collection before a save is sent to 
+                * persistence.  If the event has preventDefault called, the save
+                * will be cancelled as long as the options.force is not set to
+                * true
                 * @event onBeforeSave
                 * @param {AFrame.Event} event - event object
                 * @param {variant} event.item - the item being saved
-                * @param {boolean} event.force - whether the save is being forced.
+                * @param {boolean} event.force - whether the save is being 
+                * forced.
                 */
-                var event = plugged.triggerEvent( getEvent( 'onBeforeSave', item, options ) );
+                var event = plugged.triggerEvent( getEvent( 'onBeforeSave', 
+                            item, options ) );
                 if( plugged.shouldDoAction( options, event ) ) {
 
                     options = getOptions( this, options );
@@ -388,11 +422,13 @@ AFrame.CollectionPluginPersistence = ( function() {
                     this.saveCallback( item, options );
 
                     /**
-                    * Triggered on the collection after an item is saved to persistence.
+                    * Triggered on the collection after an item is saved to 
+                    * persistence.
                     * @event onSave
                     * @param {AFrame.Event} event - event object
                     * @param {variant} event.item - the item being saved
-                    * @param {boolean} event.force - whether the save is being forced.
+                    * @param {boolean} event.force - whether the save is being 
+                    * forced.
                     * @param {id} event.cid - item's cid
                     */
                     plugged.triggerEvent( getEvent( 'onSave', item, options ) );
@@ -413,7 +449,8 @@ AFrame.CollectionPluginPersistence = ( function() {
     }
 
     /**
-    * Get an event object.  Used when triggering the on[Add|Delete|Save|Load]* events
+    * Get an event object.  Used when triggering the 
+    * on[Add|Delete|Save|Load]* events
     * @method getEvent
     * @private
     */
@@ -435,8 +472,8 @@ AFrame.CollectionPluginPersistence = ( function() {
     }
 
     /**
-    * A NoOp type function that just calls the onComplete function, used for persistence functions
-    *   where no callback is specified.
+    * A NoOp type function that just calls the onComplete function, used for
+    * persistence functions where no callback is specified.
     * @method noPersistenceOp
     * @private
     */
