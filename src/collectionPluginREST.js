@@ -49,7 +49,7 @@ AFrame.CollectionPluginREST = (function() {
     }
 
     function getItemData( item ) {
-        return item.getDataObject ? item.getDataObject() : item;
+        return item.toJSON ? item.toJSON() : item;
     }
 
     function setItemData( item, key, data ) {

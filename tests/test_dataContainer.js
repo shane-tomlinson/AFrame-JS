@@ -106,9 +106,9 @@ testsToRun.push( {
             var dataCopy = AFrame.mixin( {}, data );
 			var dataContainer = AFrame.DataContainer.create( { data: data } );
 
-            var dataObject = dataContainer.getDataObject();
+            var dataObject = dataContainer.toJSON();
             Assert.isUndefined( dataObject.__dataContainer, '__dataContainer not returned' );
-            Assert.deepEqual( dataObject, dataCopy, 'getDataObject returns same data as original object' );
+            Assert.deepEqual( dataObject, dataCopy, 'toJSON returns same data as original object' );
         },
 
         testBulkSet: function() {

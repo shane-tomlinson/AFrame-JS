@@ -151,12 +151,12 @@ AFrame.DataContainer = ( function() {
         * Get an object with all fields contained in the DataContainer.
         *
         *    // Get an object with all fields contained in the DataContainer.
-        *    var dataObject = dataContainer.getDataObject();
+        *    var dataObject = dataContainer.toJSON();
         *
-        * @method getDataObject
+        * @method toJSON
         * @return {object}
         */
-        getDataObject: function() {
+        toJSON: function() {
             var data = this.data,
                 retval = {},
                 key;

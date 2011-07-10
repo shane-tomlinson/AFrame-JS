@@ -170,7 +170,7 @@ AFrame.Model = ( function() {
         * @return {object}
         */
         toSerializedJSON: function() {
-            var dataObject = this.getDataObject();
+            var dataObject = this.toJSON();
             return this.schema.toSerializedJSON( dataObject );
         }
     } );
