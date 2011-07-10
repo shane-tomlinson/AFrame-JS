@@ -1,26 +1,32 @@
 /**
- * A basic data schema, useful for defining a data structure, validating data, and preparing data to
- * be loaded from or saved to a persistence store.  Schema's define the data structure and can
- * be nested to create complex data structures.  Schemas perform serialization duties in getAppData and
- * serializeItems.  Finally, Schemas define ways to perform data validation.
+ * A basic data schema, useful for defining a data structure, validating data,
+ * and preparing data to be loaded from or saved to a persistence store.  
+ * Schema's define the data structure and can be nested to create complex data
+ * structures.  Schemas perform serialization duties in fromSerializedJSON and 
+ * toSerializedJSON.  Finally, Schemas define ways to perform data validation.
  *
- * When loading data from persistence, if the data is run through the getAppData function,
- * it will make an object with only the fields
- * defined in the schema, and any missing fields will get default values.  If a fixup function is defined
- * for that row, the field's value will be run through the fixup function.  When saving data to persistence,
- * running data through the serializeItems will create an object with only the fields specified in the schema.  If
- * a row has 'save: false' defined, the row will not be added to the form data object. If a row has a cleanup
- * function defined, the corresponding data value will be run through the cleanup function.
+ * When loading data from persistence, if the data is run through the
+ * fromSerializedJSON function, it will make an object with only the fields defined in
+ * the schema, and any missing fields will get default values.  If a fixup 
+ * function is defined for that row, the field's value will be run through the
+ * fixup function.  When saving data to persistence, running data through the 
+ * toSerializedJSON will create an object with only the fields specified in the
+ * schema.  If a row has 'save: false' defined, the row will not be added to the
+ * form data object. If a row has a cleanup function defined, the corresponding
+ * data value will be run through the cleanup function.
  *
- * Generic serialization functions can be set for a type using the AFrame.Schema.addDeserializer and
- * AFrame.Schema.addSerializer.  These are useful for doing conversions where the data persistence
- * layer saves data in a different format than the internal application representation.  A useful
- * example of this is ISO8601 date<->Javascript Date.  Already added types are 'number', 'integer',
- * and 'iso8601'.
+ * Generic serialization functions can be set for a type using the 
+ * AFrame.Schema.addDeserializer and AFrame.Schema.addSerializer.  These are 
+ * useful for doing conversions where the data persistence layer saves data in 
+ * a different format than the internal application representation.  A useful
+ * example of this is ISO8601 date<->Javascript Date.  Already added types are 
+ * 'number', 'integer', and 'iso8601'.
  *
- * If a row in the schema config has the has_many field, the field is made into an array and the fixup/cleanup functions
- *	are called on each item in the array.  The default default item for these fields is an empty array.  If
- *	there is no data for the field in serializeItems, the field is left out of the output.
+ * If a row in the schema config has the has_many field, the field is made into
+ * an array and the fixup/cleanup functions are called on each item in the 
+ * array.  The default default item for these fields is an empty array.  If 
+ * there is no data for the field in toSerializedJSON, the field is left out
+ * of the output.
  *
  *
  *    // Schema defines four fields, two with validators
@@ -144,20 +150,23 @@ AFrame.Schema = (function() {
         },
 
         /**
-         * Fix a data object for use in the application.  Creates a new object using the specified data
-         * as a template for values.  If a value is not specified but a default value is specified in the
-         * schema, the default value is used for that item.  Items are finally run through an optionally defined
-         * fixup function.  If defined, the fixup function should return cleaned data.  If the fixup function
-         * does not return data, the field will be undefined.
+         * Fix a data object for use in the application.  Creates a new object
+         * using the specified data as a template for values.  If a value is not
+         * specified but a default value is specified in the schema, the default
+         * value is used for that item.  Items are finally run through an 
+         * optionally defined fixup function.  If defined, the fixup function 
+         * should return cleaned data.  If the fixup function does not return 
+         * data, the field will be undefined.
          *
-         *     // dbData is data coming from the database, still needs to be deserialized.
-         *     var appData = schema.getAppData( dbData );
+         *     // dbData is data coming from the database, still needs to be 
+         *     // deserialized.
+         *     var appData = schema.fromSerializedJSON( dbData );
          *
-         * @method getAppData
+         * @method fromSerializedJSON
          * @param {object} dataToFix
          * @return {object} fixedData
          */
-        getAppData: function( dataToFix ) {
+        fromSerializedJSON: function( dataToFix ) {
             var fixedData = {};
 
             this.forEach( function( schemaRow, key ) {
@@ -170,11 +179,11 @@ AFrame.Schema = (function() {
 
                 if( schemaRow.has_many ) {
                     value && value.forEach && value.forEach( function( current, index ) {
-                        value[ index ] = this.getAppDataValue( current, schemaRow, dataToFix, fixedData );
+                        value[ index ] = this.fromSerializedJSONValue( current, schemaRow, dataToFix, fixedData );
                     }, this );
                 }
                 else {
-                    value = this.getAppDataValue( value, schemaRow, dataToFix, fixedData );
+                    value = this.fromSerializedJSONValue( value, schemaRow, dataToFix, fixedData );
                 }
 
                 fixedData[ key ] = value;
@@ -183,13 +192,13 @@ AFrame.Schema = (function() {
             return fixedData;
         },
 
-        getAppDataValue: function( value, schemaRow, dataToFix, fixedData ) {
+        fromSerializedJSONValue: function( value, schemaRow, dataToFix, fixedData ) {
             // If the object has a type and there is a schema for the type,
             //	fix up the value.  If there is no schema for the type, but the value
             //	is defined and there is a type converter fix function, convert the value.
             var schema = Schema.getSchema( schemaRow.type );
             if( schema ) {
-                value = schema.getAppData( value );
+                value = schema.fromSerializedJSON( value );
             }
             else if( AFrame.defined( value ) ) {
                 // call the generic type deserializer function
@@ -213,19 +222,22 @@ AFrame.Schema = (function() {
         },
 
         /**
-         * Get an object suitable to send to persistence.  This is based roughly on converting
-         *	the data to a [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
-         *	All items in the schema that do not have save parameter set to false and have values defined in dataToSerialize
-         *	will have values returned.
+         * Get an object suitable to send to persistence.  This is based roughly
+         * on converting the data to a 
+         * [FormData](https://developer.mozilla.org/en/XMLHttpRequest/FormData) 
+         * "like" object - see [MDC](https://developer.mozilla.org/en/XMLHttpRequest/FormData)
+         * All items in the schema that do not have save parameter set to false
+         * and have values defined in dataToSerialize will have values returned.
          *
-         *     // appData is data from the application ready to send to the DB, needs serialized.
-         *     var serializedData = schema.serializeItems( appData );
+         *     // appData is data from the application ready to send to the
+         *     // DB, needs serialized.
+         *     var serializedData = schema.toSerializedJSON( appData );
          *
-         * @method serializeItems
+         * @method toSerializedJSON
          * @param {object} dataToSerialize - data to clean up
          * @return {object} cleanedData
          */
-        serializeItems: function( dataToSerialize ) {
+        toSerializedJSON: function( dataToSerialize ) {
             var cleanedData = {};
 
             this.forEach( function( schemaRow, key ) {
@@ -267,7 +279,7 @@ AFrame.Schema = (function() {
                 *  a saveCleaner, run the value through the save cleaner.
                 */
                 if( schema ) {
-                    value = schema.serializeItems( value );
+                    value = schema.toSerializedJSON( value );
                 }
                 else {
                     var convert = Schema.serializers[ schemaRow.type ];
@@ -318,11 +330,13 @@ AFrame.Schema = (function() {
         *
         * @method validate
         * @param {object} data - data to validate
-        * @param {boolean} ignoreMissing (optional) - if set to true, fields missing from data are not validated.  Defaults to false.
-        *   Note, even if set to true, and a field in data has an undefined value, the field will be validated against the
-        *   the undefined value.
-        * @return {variant} true if all fields are valid, an object with each field in data, for each field there
-        *   is an [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
+        * @param {boolean} ignoreMissing (optional) - if set to true, fields 
+        * missing from data are not validated.  Defaults to false. Note, even if
+        * set to true, and a field in data has an undefined value, the field 
+        * will be validated against the the undefined value.
+        * @return {variant} true if all fields are valid, an object with each
+        * field in data, for each field there is an 
+        * [AFrame.FieldValidityState](AFrame.FieldValidityState.html)
         */
         validate: function( data, ignoreMissing ) {
             var statii = {};
@@ -333,8 +347,9 @@ AFrame.Schema = (function() {
                 var criteriaCopy = AFrame.mixin( { type: row.type }, rowCriteria );
                 var field = data[ key ];
 
-                // Check hasOwnProperty so that if a field is defined in data, but has an undefined value,
-                //  even if ignoreMissing is set to true, we validate against it.
+                // Check hasOwnProperty so that if a field is defined in data, 
+                // but has an undefined value, even if ignoreMissing is set to 
+                // true, we validate against it.
                 if( !ignoreMissing || data.hasOwnProperty( key ) ) {
                     var validityState = this.validateData( data[ key ], criteriaCopy );
                     // if the row is valid, then just give the row a true status
@@ -366,8 +381,10 @@ AFrame.Schema = (function() {
         schemaCache: {},
 
         /**
-         * Add a universal function that fixes data in [getAppData](#method_getAppData). This is used to convert
-         * data from a version the backend sends to one that is used internally.
+         * Add a universal function that fixes data in 
+         * [fromSerializedJSON](#method_fromSerializedJSON). This is used to 
+         * convert data from a version the backend sends to one that is used 
+         * internally.
          * @method Schema.addDeserializer
          * @param {string} type - type of field.
          * @param {function} callback - to call
@@ -377,9 +394,9 @@ AFrame.Schema = (function() {
         },
 
         /**
-         * Add a universal function that gets data ready to save to persistence.  This is used
-         * to convert data from an internal representation of a piece of data to a
-         * representation the backend is expecting.
+         * Add a universal function that gets data ready to save to persistence.
+         * This is used to convert data from an internal representation of a 
+         * piece of data to a representation the backend is expecting.
          * @method Schema.addSerializer
          * @param {string} type - type of field.
          * @param {function} callback - to call
@@ -401,7 +418,8 @@ AFrame.Schema = (function() {
         /**
         * Get a schema
         * @method Schema.getSchema
-        * @param {id} type - type of schema to get, a config must be registered for type.
+        * @param {id} type - type of schema to get, a config must be registered
+        * for type.
         * @return {Schema}
         */
         getSchema: function( type ) {

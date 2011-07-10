@@ -58,7 +58,7 @@
 * @class AFrame.Model
 * @extends AFrame.DataContainer
 * @constructor
-*/
+*
 /**
 * The schema to use for the model.  Can be either a Schema or a schema configuration object.
 * @config schema
@@ -164,14 +164,14 @@ AFrame.Model = ( function() {
         *	will have values returned.
         *
         *     // Get an object suitable to send to persistence.
-        *     var serializedData = model.serializeItems();
+        *     var serializedData = model.toSerializedJSON();
         *
-        * @method serializeItems
+        * @method toSerializedJSON
         * @return {object}
         */
-        serializeItems: function() {
+        toSerializedJSON: function() {
             var dataObject = this.getDataObject();
-            return this.schema.serializeItems( dataObject );
+            return this.schema.toSerializedJSON( dataObject );
         }
     } );
 
@@ -191,7 +191,7 @@ AFrame.Model = ( function() {
 
         // use the initialData structure to store deserialized data
         //  so that we do not have two copies of the data running around.
-        var deserialized = schema.getAppData( initialData );
+        var deserialized = schema.fromSerializedJSON( initialData );
         for( var key in deserialized ) {
             initialData[ key ] = deserialized[ key ];
         }

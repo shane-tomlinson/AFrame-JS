@@ -75,13 +75,13 @@
 
         },
 
-        testSerializeItems: function() {
+        testToSerializedJSON: function() {
             this.model.set( 'stringField', 'a field' );
             this.model.set( 'numberField', 1.25 );
             this.model.set( 'integerField', 1 );
             this.model.set( 'isodatetime', new Date() );
 
-            var serializedItems = this.model.serializeItems();
+            var serializedItems = this.model.toSerializedJSON();
 
             Assert.areEqual( 'a field', serializedItems.stringField, 'stringField is good' );
             Assert.areEqual( 1.25, serializedItems.numberField, 'numberField is good' );

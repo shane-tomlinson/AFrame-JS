@@ -29,7 +29,7 @@
                     fixer: { type: 'fixer' },
                     persistence: { type: 'persistencer' },
                     isodatetime: { type: 'iso8601' },
-                    noSaveField: { type: 'string', save: false, def: 'this field will not be saved in serializeItems' }
+                    noSaveField: { type: 'string', save: false, def: 'this field will not be saved in toSerializedJSON' }
                 };
 
                 fieldCount = 0;
@@ -52,8 +52,8 @@
                 Assert.areEqual( 'returned by function', defaultObject.stringFieldFixupFunc, 'can get default value using function' );
             },
 
-            testGetAppData: function() {
-                var fixedData = this.schema.getAppData( {} );
+            testFromSerializedJSON: function() {
+                var fixedData = this.schema.fromSerializedJSON( {} );
 
                 // with no data, should return same as default items unless a fixup function modifies a value
                 Assert.areEqual( 'stringField Default Value', fixedData.stringField, 'Default value set for stringField' );
@@ -61,7 +61,7 @@
                 Assert.areEqual( 'returned by function', fixedData.stringFieldFixupFunc, 'Default func called for stringFieldFixupFunc' );
 
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     stringField: 'this is a string',
                     stringFieldFixup: 'run through fixup',
                     stringFieldFixupFunc: 'default func not used',
@@ -76,7 +76,7 @@
 
                 // make the fixup function modify value
                 this.useFixedValue = true;
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     stringFieldFixup: 'should be modified'
                 } );
 
@@ -94,8 +94,8 @@
                 Assert.areEqual( fieldCount, this.forEachCallbackCallCount, 'callback called for each' );
             },
 
-            testSerializeItems: function() {
-                var persistence = this.schema.serializeItems( {
+            testToSerializedJSON: function() {
+                var persistence = this.schema.toSerializedJSON( {
                     stringField: 'stringField value',
                     stringFieldFixup: 'stringFieldFixup value',
                     extraField: 'extra field',
@@ -108,7 +108,7 @@
                 Assert.isUndefined( persistence.noSaveField, 'noSaveField not added with the save: false' );
 
                 this.useCleanedValue = true;
-                var persistence = this.schema.serializeItems( {
+                var persistence = this.schema.toSerializedJSON( {
                     stringField: 'stringField value',
                     stringFieldFixup: 'stringFieldFixup value'
                 } );
@@ -120,27 +120,27 @@
             },
 
             testNumberTypeFixer: function() {
-                var fixedData = this.schema.getAppData( {
+                var fixedData = this.schema.fromSerializedJSON( {
                     numberField: '1.25'
                 } );
                 Assert.areEqual( 1.25, fixedData.numberField, 'converted a float string to number' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     numberField: '2'
                 } );
                 Assert.areEqual( 2, fixedData.numberField, 'converted a integer string to number' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     numberField: 3.25
                 } );
                 Assert.areEqual( 3.25, fixedData.numberField, 'keep a number a number' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     numberField: 4
                 } );
                 Assert.areEqual( 4, fixedData.numberField, 'keep an integer a number' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     numberField: 'a'
                 } );
                 Assert.isTrue( isNaN( fixedData.numberField ), 'converting a letter returns NaN' );
@@ -148,27 +148,27 @@
             },
 
             testIntegerTypeFixer: function() {
-                var fixedData = this.schema.getAppData( {
+                var fixedData = this.schema.fromSerializedJSON( {
                     integerField: '1.25'
                 } );
                 Assert.areEqual( 1, fixedData.integerField, 'converted a float string to integer' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     integerField: '2'
                 } );
                 Assert.areEqual( 2, fixedData.integerField, 'converted a integer string to integer' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     integerField: 3.25
                 } );
                 Assert.areEqual( 3, fixedData.integerField, 'convert a number to an integer' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     integerField: 4
                 } );
                 Assert.areEqual( 4, fixedData.integerField, 'keep an integer an integer' );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     integerField: 'a'
                 } );
                 Assert.isTrue( isNaN( fixedData.integerField ), 'converting a letter returns NaN' );
@@ -181,7 +181,7 @@
                     return 'fixed';
                 } );
 
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     fixer: 'value'
                 } );
                 Assert.areEqual( 'fixed', fixedData.fixer, 'fix function value applied' );
@@ -195,7 +195,7 @@
                     return 'persistence';
                 } );
 
-                var persistence = this.schema.serializeItems( {
+                var persistence = this.schema.toSerializedJSON( {
                     persistence: 'initial'
                 } );
                 Assert.areEqual( 'persistence', persistence.persistence, 'new value used' );
@@ -203,7 +203,7 @@
             },
 
             testISO8601: function() {
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     isodatetime: '2010-06-06T15:30:00.00Z'
                 } );
 
@@ -211,14 +211,14 @@
                 Assert.areEqual( 1275838200000, fixedData.isodatetime.getTime(), 'correct conversion' );
 
                 // make sure the deserializer can take an item that is already a date
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     isodatetime: new Date()
                 } );
 
                 Assert.isTrue( fixedData.isodatetime instanceof Date, 'we have date conversion' );
 
                 var now = new Date();
-                var persistence = this.schema.serializeItems( {
+                var persistence = this.schema.toSerializedJSON( {
                     isodatetime: now
                 } );
 
@@ -226,7 +226,7 @@
             },
 
             testISO8601WithTimezone: function() {
-                fixedData = this.schema.getAppData( {
+                fixedData = this.schema.fromSerializedJSON( {
                     isodatetime: '2011-03-04T19:15:53.123-05:00'
                 } );
 
@@ -248,12 +248,12 @@
 
                 var schema = AFrame.Schema.getSchema( 'outer' );
 
-                var data = schema.getAppData( {} );
+                var data = schema.fromSerializedJSON( {} );
 
                 Assert.isObject( data.schemaField, 'schemaField created' );
                 Assert.areEqual( 'inner value', data.schemaField.innerField, 'schemaField.innerField has correct value' );
 
-                var persist = schema.serializeItems( {
+                var persist = schema.toSerializedJSON( {
                     schemaField: {
                         innerField: 'inner there',
                         extraField: 'extra field'
@@ -263,13 +263,13 @@
                 Assert.areEqual( 'inner there', persist.schemaField.innerField, 'schemaField.innerField is there' );
                 Assert.isUndefined( persist.schemaField.extraField, 'schemaField.extraField is not there' );
 
-                persist = schema.serializeItems( {
+                persist = schema.toSerializedJSON( {
                     schemaField: {}
                 } );
 
                 Assert.isObject( persist.schemaField, 'schemaField made it' );
 
-                persist = schema.serializeItems( {} );
+                persist = schema.toSerializedJSON( {} );
 
                 Assert.isUndefined( persist.schemaField, 'schemaField not there' );
             },
@@ -287,12 +287,12 @@
                     schema: schemaConfig
                 } );
 
-                var data = schema.getAppData( {} );
+                var data = schema.fromSerializedJSON( {} );
 
                 Assert.isArray( data.arrayField, 'created an array for arrayField' );
                 Assert.areEqual( 0, data.arrayField.length, 'array is empty' );
 
-                data = schema.getAppData( {
+                data = schema.fromSerializedJSON( {
                     arrayField: [ 1.24, 2, 'a' ]
                 } );
 
@@ -301,11 +301,11 @@
                 Assert.isTrue( isNaN( data.arrayField[ 2 ] ), 'item could not be converted to integer' );
 
 
-                data = schema.serializeItems( {
+                data = schema.toSerializedJSON( {
                 } );
 
                 Assert.isUndefined( data.arrayField, 'arrayField wasn\'t in the data' );
-                data = schema.serializeItems( {
+                data = schema.toSerializedJSON( {
                     dateArrayField: [
                         new Date(), new Date()
                     ]
