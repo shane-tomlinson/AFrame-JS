@@ -47,7 +47,7 @@
  *    //
  *    var form = AFrame.Form.create( {
  *        target: '#nameForm',
- *        formFieldFactory: fieldFactory
+ *        fieldFactory: fieldFactory
  *    } );
  *
  *    // the specialized form field factory can be used globally as
@@ -63,44 +63,47 @@
  * The factory to use to create form fields.
  *
  *     // example field factory in a Form's config.
- *     formFieldFactory: function( element ) {
+ *     fieldFactory: function( element ) {
  *       return AFrame.SpecializedField.create( {
  *           target: element
  *       } );
  *     };
  *
- * @config formFieldFactory
+ * @config fieldFactory
  * @type {function}
- * @default this.formFieldFactory;
+ * @default this.fieldFactory;
  */
 AFrame.Form = ( function() {
     "use strict";
 
     var Form = AFrame.Display.extend( AFrame.EnumerableMixin, {
         init: function( config ) {
-            this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
-            this.formElements = [];
-            this.formFields = [];
+            var me=this;
+            me.fieldFactory = config.fieldFactory || me.fieldFactory || fieldFactory;
+            me.elements = [];
+            me.fields = [];
 
-            Form.sc.init.call( this, config );
+            Form.sc.init.call( me, config );
 
-            this.bindFormElements();
+            me.bindFormElements();
         },
 
         bindFormElements: function() {
-            var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
+            var me=this,
+                elements = AFrame.DOM.getDescendentElements( '[data-field]',
+                    me.getTarget() );
 
-            AFrame.DOM.forEach( formElements, this.bindFormElement, this );
+            AFrame.DOM.forEach( elements, me.bindFormElement, me );
         },
 
         teardown: function() {
-            this.forEach( function( formField, index ) {
+            var me=this;
+            me.forEach( function( formField, index ) {
                 formField.teardown();
-                this.formFields[ index ] = null;
-            }, this );
-            this.formFields = null;
-            this.formElements = null;
-            Form.sc.teardown.call( this );
+                me.fields[ index ] = null;
+            } );
+            me.fields = me.elements = null;
+            Form.sc.teardown.call( me );
         },
 
         /**
@@ -110,15 +113,16 @@ AFrame.Form = ( function() {
          *    var field = form.bindFormElement( '#button' );
          *
          * @method bindFormElement
-         * @param {selector || element} formElement the form element to bind to.
+         * @param {selector || element} formElement - the form element to bind to.
          * @returns {AFrame.Field}
          */
         bindFormElement: function( formElement ) {
-            var target = AFrame.DOM.getElements( formElement );
-            this.formElements.push( target );
+            var me=this,
+                target = AFrame.DOM.getElements( formElement ),
+                formField = me.fieldFactory( target );
 
-            var formField = this.formFieldFactory( target );
-            this.formFields.push( formField );
+            me.elements.push( target );
+            me.fields.push( formField );
 
             return formField;
         },
@@ -133,7 +137,7 @@ AFrame.Form = ( function() {
          * @return {array} the form elements
          */
         getFormElements: function() {
-            return this.formElements;
+            return this.elements;
         },
 
         /**
@@ -146,7 +150,7 @@ AFrame.Form = ( function() {
          * @return {array} the form fields
          */
         getFormFields: function() {
-            return this.formFields;
+            return this.fields;
         },
 
         /**
@@ -161,7 +165,7 @@ AFrame.Form = ( function() {
         checkValidity: function() {
             var valid = true;
 
-            for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
+            for( var index = 0, formField; ( formField = this.fields[ index ] ) && valid; ++index ) {
                 valid = formField.checkValidity();
             }
 
@@ -202,9 +206,10 @@ AFrame.Form = ( function() {
          * @return {boolean} true if the form was valid and saved, false otw.
          */
         save: function() {
-            var valid = this.checkValidity();
+            var me=this,
+                valid = me.checkValidity();
             if( valid ) {
-                fieldAction.call( this, 'save' );
+                fieldAction.call( me, 'save' );
             }
 
             return valid;
@@ -218,7 +223,7 @@ AFrame.Form = ( function() {
         * @param {object} context (optional) - the context to call the callback in
         */
         forEach: function( callback, context ) {
-            this.formFields && this.formFields.forEach( callback, context );
+            this.fields && this.fields.forEach( callback, context );
         }
     } );
 
@@ -227,7 +232,7 @@ AFrame.Form = ( function() {
     * It should return a {Field}(AFrame.Field.html) compatible object.
     *
     *
-    *     // example of overloaded formFieldFactory
+    *     // example of overloaded fieldFactory
     *     AFrame.Form.setDefaultFieldFactory( function( element ) {
     *       return AFrame.SpecializedField.create( {
     *           target: element
@@ -239,7 +244,7 @@ AFrame.Form = ( function() {
     * @param {function} factory
     */
     Form.setDefaultFieldFactory = function( factory ) {
-        formFieldFactory = factory;
+        fieldFactory = factory;
     };
 
     /**
@@ -257,18 +262,18 @@ AFrame.Form = ( function() {
     /**
     * The factory used to create fields.
     *
-    *     // example of overloaded formFieldFactory
-    *     formFieldFactory: function( element ) {
+    *     // example of overloaded fieldFactory
+    *     fieldFactory: function( element ) {
     *       return AFrame.SpecializedField.create( {
     *           target: element
     *       } );
     *     };
     *
-    * @method formFieldFactory
+    * @method fieldFactory
     * @param {Element} element - element where to create field
     * @return {AFrame.Field} field for element.
     */
-    function formFieldFactory( element ) {
+    function fieldFactory( element ) {
        return AFrame.Field.create( {
             target: element
        } );

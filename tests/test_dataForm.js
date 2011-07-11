@@ -11,7 +11,7 @@ testsToRun.push( {
 
 			this.form = AFrame.DataForm.create( {
                 target: '#AFrame_Form',
-                formFieldFactory: function( formElement ) {
+                fieldFactory: function( formElement ) {
                     this.factoryFormElement = formElement;
                     this.field = AFrame.Field.create( {
                         target: formElement
@@ -68,7 +68,7 @@ testsToRun.push( {
 
 			this.form = AFrame.DataForm.create( {
                 target: '#AFrame_Form',
-                formFieldFactory: function( formElement ) {
+                fieldFactory: function( formElement ) {
                     this.factoryFormElement = formElement;
                     this.field = AFrame.Field.create( {
                         target: formElement
@@ -137,7 +137,7 @@ testsToRun.push( {
 			this.form = AFrame.DataForm.create( {
                 autosave: true,
                 target: '#AFrame_Form',
-                formFieldFactory: function( formElement ) {
+                fieldFactory: function( formElement ) {
                     this.factoryFormElement = formElement;
                     this.field = AFrame.Field.create( {
                         target: formElement

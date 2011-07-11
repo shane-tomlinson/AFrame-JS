@@ -33,7 +33,7 @@ testsToRun.push( {
 
 			this.form = AFrame.Form.create( {
                 target: '#AFrame_Form',
-                formFieldFactory: function( formElement ) {
+                fieldFactory: function( formElement ) {
                     this.factoryFormElement = formElement;
 
                     return {
