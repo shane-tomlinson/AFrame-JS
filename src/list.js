@@ -1,12 +1,15 @@
 /**
- * A generic HTML list class.  A list is any list of data.  A List shares
- *  the majority of its interface with a <a href="AFrame.CollectionArray.html">CollectionArray</a>
- *  since lists are inherently ordered (even if they are ULs).  There are two methods
- *  for inserting an item into the list, either passing an already created
- *  element to [insertElement](#method_insertElement) or by passing data to [insert](#method_insert).
- *  If using insert, a factory function (listElementFactory) must be specified in the configuration.
- *  The factory function can either create an element directly or use some sort of prototyping system
- *  to create the element.  The factory function must return the element to be inserted.
+ * A generic HTML list class.  A list is any list of data.  A List shares the
+ * majority of its interface with a 
+ * <a href="AFrame.CollectionArray.html">CollectionArray</a> since lists are 
+ * inherently ordered (even if they are ULs).  There are two methods for 
+ * inserting an item into the list, either passing an already created element to
+ * [insertElement](#method_insertElement) or by passing data to 
+ * [insert](#method_insert). If using insert, a factory function 
+ * (listElementFactory) must be specified in the configuration. The factory 
+ * function can either create an element directly or use some sort of 
+ * prototyping system to create the element.  The factory function must return
+ * the element to be inserted.
  *
  *
  *    <ul id="clientList">
@@ -16,7 +19,8 @@
  *    // Set up a factory to create list elements.  This can create the elements
  *    // directly or use sort of templating system.
  *    var factory = function( data, index ) {
- *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
+ *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' 
+ *          + data.employer );
  *       return listItem;
  *    };
  *
@@ -33,7 +37,8 @@
  *    } );
  *
  *    // Inserts a pre-made list item at the head of the list
- *    list.insertRow( AFrame.DOM.createElement( 'li', 'Joe Smith, the Coffee Shop' ), 0 );
+ *    list.insertRow( AFrame.DOM.createElement( 'li', 'Joe Smith, the Coffee' +
+ *      ' Shop' ), 0 );
  *    ---------
  *
  *    <ul id="clientList">
@@ -48,8 +53,9 @@
  * @constructor
  */
 /**
- * A function to call to create a list element.  function will be called with two parameters, an data and index.
- *  If not specified, then the internal factory that returns an empty LI element will be used.  See
+ * A function to call to create a list element.  function will be called with 
+ * two parameters, an data and index. If not specified, then the internal 
+ * factory that returns an empty LI element will be used.  See
  *  [listElementFactory](#method_listElementFactory).
  * @config listElementFactory
  * @type {function} (optional)
@@ -58,13 +64,14 @@
 AFrame.List = ( function() {
     "use strict";
 
-    var List = AFrame.Display.extend( AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
+    var List = AFrame.Display.extend( AFrame.ArrayCommonFuncsMixin, 
+        AFrame.EnumerableMixin, {
         init: function( config ) {
-            if( config.listElementFactory ) {
-                this.listElementFactory = config.listElementFactory;
-            }
+            var me=this;
+            me.listElementFactory = config.listElementFactory 
+                || me.listElementFactory;
 
-            List.sc.init.call( this, config );
+            List.sc.init.call( me, config );
         },
 
         /**
@@ -80,7 +87,8 @@ AFrame.List = ( function() {
         *
         *    // overriden listElementFactory
         *    listElementFactory: function( data, index ) {
-        *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
+        *       var listItem = AFrame.DOM.createElement( 'li', data.name 
+        *           + ', ' + data.employer );
         *       return listItem;
         *    }
         *
@@ -133,10 +141,11 @@ AFrame.List = ( function() {
          * @return {number} index the item is inserted at.
          */
         insert: function( data, index ) {
-            index = this.getActualInsertIndex( index );
+            var me=this;
+            index = me.getActualInsertIndex( index );
 
-            var rowElement = this.listElementFactory( data, index );
-            index = this.insertElement( rowElement, index );
+            var rowElement = me.listElementFactory( data, index );
+            index = me.insertElement( rowElement, index );
 
             /**
             * Triggered whenever a row is inserted into the list
@@ -146,12 +155,7 @@ AFrame.List = ( function() {
             * @param {object} options.data - data that was inserted
             * @param {object} options.index - index where row was inserted
             */
-            this.triggerEvent( {
-                rowElement: rowElement,
-                index: index,
-                data: data,
-                type: 'onInsert'
-            } );
+            trigger( me, 'onInsert', rowElement, index, data );
 
             return index;
         },
@@ -160,7 +164,8 @@ AFrame.List = ( function() {
          * Insert an element into the list.
          *
          *    // Item is inserted at index 0, the first item in the list.
-         *    list.insertElement( AFrame.DOM.createElement( 'li', 'Shane Tomlinson, AFrame Foundary' ), 0 );
+         *    list.insertElement( AFrame.DOM.createElement( 'li', 'Shane '
+         *      + 'Tomlinson, AFrame Foundary' ), 0 );
          *
          * @method insertElement
          * @param {element} rowElement - element to insert
@@ -170,9 +175,10 @@ AFrame.List = ( function() {
          * @return {number} index - the index the item is inserted at.
          */
         insertElement: function( rowElement, index ) {
-            var target = this.getTarget();
+            var me=this,
+                target = me.getTarget();
 
-            index = this.getActualInsertIndex( index );
+            index = me.getActualInsertIndex( index );
             AFrame.DOM.insertAsNthChild( rowElement, target, index );
 
             /**
@@ -183,11 +189,7 @@ AFrame.List = ( function() {
             * @param {object} options.index - index where row was inserted
             */
 
-            this.triggerEvent( {
-                rowElement: rowElement,
-                index: index,
-                type: 'onInsertElement'
-            } );
+            trigger( me, 'onInsertElement', rowElement, index );
 
             return index;
         },
@@ -202,8 +204,9 @@ AFrame.List = ( function() {
          * @param {number} index - index of item to remove
          */
         remove: function( index ) {
-            var removeIndex = this.getActualIndex( index );
-            var rowElement = AFrame.DOM.getNthChild( this.getTarget(), removeIndex );
+            var me=this,
+                removeIndex = me.getActualIndex( index ),
+                rowElement = AFrame.DOM.getNthChild( me.getTarget(), removeIndex );
             AFrame.DOM.removeElement( rowElement );
 
             /**
@@ -214,11 +217,7 @@ AFrame.List = ( function() {
             * @param {object} options.index - index where row was inserted
             */
 
-            this.triggerEvent( {
-                rowElement: rowElement,
-                index: index,
-                type: 'onRemoveElement'
-            } );
+            trigger( me, 'onRemoveElement', rowElement, index );
         },
 
         /**
@@ -233,6 +232,15 @@ AFrame.List = ( function() {
             AFrame.DOM.forEach( children, callback, context );
         }
     } );
+
+    function trigger( me, message, rowElement, index, data ) {
+        me.triggerEvent( {
+            rowElement: rowElement,
+            index: index,
+            data: data,
+            type: message 
+        } );
+    } 
 
     return List;
 } )();
