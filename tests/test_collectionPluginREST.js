@@ -57,7 +57,7 @@
             collection = AFrame.CollectionArray.create({
                 plugins: [
                     [ AFrame.CollectionPluginREST, {
-                        root: '/test', 
+                        url: '/test', 
                         net: NetMock           
                     } ]
                 ]
@@ -169,7 +169,7 @@
                     } ],
 
                     [ AFrame.CollectionPluginREST, {
-                        root: '/test', 
+                        url: '/test', 
                         net: NetMock           
                     } ]
                 ]

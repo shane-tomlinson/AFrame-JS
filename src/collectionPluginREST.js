@@ -1,10 +1,10 @@
 AFrame.CollectionPluginREST = (function() {
     var Plugin = AFrame.CollectionPluginPersistence.extend( {
-        importconfig: [ 'root', 'net' ],
+        importconfig: [ 'url', 'net' ],
         loadCallback: function( options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root,
+                url: me.url,
                 success: options.onComplete
             } );
         },
@@ -12,12 +12,12 @@ AFrame.CollectionPluginREST = (function() {
         addCallback: function( item, options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root,
+                url: me.url,
                 data: getItemData( item ),
                 type: 'POST',
                 success: function( body, textStatus, xhr ) {
                     var loc = xhr.getResponseHeader( 'Location' );
-                    loc = loc.replace( me.root + '/', '' );
+                    loc = loc.replace( me.url + '/', '' );
                     setItemData( item, 'id', loc );
                     options.onComplete && options.onComplete();
                 }
@@ -27,7 +27,7 @@ AFrame.CollectionPluginREST = (function() {
         deleteCallback: function( item, options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root + '/' + getItemID( item ),
+                url: me.url + '/' + getItemID( item ),
                 type: 'DELETE',
                 success: options.onComplete
             } );
@@ -36,7 +36,7 @@ AFrame.CollectionPluginREST = (function() {
         saveCallback: function( item, options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root + '/' + getItemID( item ),
+                url: me.url + '/' + getItemID( item ),
                 data: getItemData( item ),
                 type: 'PUT',
                 success: options.onComplete
