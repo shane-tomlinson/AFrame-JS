@@ -16,7 +16,7 @@
  *    var collection = AFrame.CollectionArray.create();
  *
  *
- *    var factory = function( index, data ) {
+ *    var renderItem = function( index, data ) {
  *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
@@ -25,7 +25,7 @@
  *    //    ListPluginBindToCollection has a collection config parameter.
  *    var list = AFrame.List.create( {
  *        target: '#clientList',
- *        listElementFactory: factory,
+ *        renderItem: renderItem,
  *        plugins: [
  *        [ AFrame.ListPluginBindToCollection, {
  *              collection: collection

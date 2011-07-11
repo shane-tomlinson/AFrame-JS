@@ -7,7 +7,7 @@ testsToRun.push( {
 
 			this.list = AFrame.List.create( {
                 target: '.list',
-                listElementFactory: function( data, index ) {
+                renderItem: function( data, index ) {
                     this.insertedIndex = index;
                     this.insertedData = data;
 
@@ -77,7 +77,7 @@ testsToRun.push( {
 
 			this.list = AFrame.List.create( {
                 target: '.list',
-                listElementFactory: function( data, index ) {
+                renderItem: function( data, index ) {
                     this.insertedIndex = index;
                     this.insertedData = data;
                     var rowElement = AFrame.DOM.createElement( 'li', 'Inserted Element' );

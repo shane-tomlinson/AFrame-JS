@@ -5,7 +5,7 @@ testsToRun.push( {
 		setUp: function() {
 			this.list = AFrame.List.create( {
                 target: '.list',
-                listElementFactory: function( data, index ) {
+                renderItem: function( data, index ) {
                     this.insertedIndex = index;
                     this.insertedData = data;
                     var rowElement = AFrame.DOM.createElement( 'li', '<span data-field name="fieldName"></span>' );
@@ -146,4 +146,4 @@ testsToRun.push( {
             Assert.isTrue( form instanceof AFrame.Form, 'default form returned, is of type form'  );
         }
 
-} );
+};

@@ -6,7 +6,7 @@
  * inserting an item into the list, either passing an already created element to
  * [insertElement](#method_insertElement) or by passing data to 
  * [insert](#method_insert). If using insert, a factory function 
- * (listElementFactory) must be specified in the configuration. The factory 
+ * (renderItem) must be specified in the configuration. The factory 
  * function can either create an element directly or use some sort of 
  * prototyping system to create the element.  The factory function must return
  * the element to be inserted.
@@ -26,7 +26,7 @@
  *
  *    var list = AFrame.List.create( {
  *        target: '#clientList',
- *        listElementFactory: factory
+ *        renderItem: factory
  *    } );
  *
  *    // Creates a list item using the factory function, item is inserted
@@ -56,10 +56,10 @@
  * A function to call to create a list element.  function will be called with 
  * two parameters, an data and index. If not specified, then the internal 
  * factory that returns an empty LI element will be used.  See
- *  [listElementFactory](#method_listElementFactory).
- * @config listElementFactory
+ *  [renderItem](#method_renderItem).
+ * @config renderItem
  * @type {function} (optional)
- * @default this.listElementFactory
+ * @default this.renderItem
  */
 AFrame.List = ( function() {
     "use strict";
@@ -68,8 +68,8 @@ AFrame.List = ( function() {
         AFrame.EnumerableMixin, {
         init: function( config ) {
             var me=this;
-            me.listElementFactory = config.listElementFactory 
-                || me.listElementFactory;
+            me.renderItem = config.renderItem 
+                || me.renderItem;
 
             List.sc.init.call( me, config );
         },
@@ -85,25 +85,25 @@ AFrame.List = ( function() {
         /**
         * The factory used to create list elements.
         *
-        *    // overriden listElementFactory
-        *    listElementFactory: function( data, index ) {
+        *    // overriden renderItem
+        *    renderItem: function( data, index ) {
         *       var listItem = AFrame.DOM.createElement( 'li', data.name 
         *           + ', ' + data.employer );
         *       return listItem;
         *    }
         *
-        * @method listElementFactory
+        * @method renderItem
         * @param {object} data - data used on insert
         * @param {number} index - index where item should be inserted
         * @return {Element} element to insert
         */
-        listElementFactory: function() {
+        renderItem: function() {
             return AFrame.DOM.createElement( 'li' );
         },
 
         /**
          * Insert a data item into the list, the list item is created
-         *  using the listElementFactory.
+         *  using the renderItem.
          *
          *
          *    // Creates a list item using the factory function,
@@ -144,7 +144,7 @@ AFrame.List = ( function() {
             var me=this;
             index = me.getActualInsertIndex( index );
 
-            var rowElement = me.listElementFactory( data, index );
+            var rowElement = me.renderItem( data, index );
             index = me.insertElement( rowElement, index );
 
             /**
