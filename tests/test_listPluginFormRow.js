@@ -146,4 +146,4 @@ testsToRun.push( {
             Assert.isTrue( form instanceof AFrame.Form, 'default form returned, is of type form'  );
         }
 
-};
+} );
