@@ -73,6 +73,19 @@
  * @type {function}
  * @default this.fieldFactory;
  */
+
+/**
+ * Triggered whenever form is cleared.
+ * @event clear
+*/
+/**
+ * Triggered whenever the form data is saved to the model.
+ * @event save
+*/
+/**
+ * Triggered whenever the form data is reloaded from the model.
+ * @event reset
+*/
 AFrame.Form = ( function() {
     "use strict";
 
@@ -256,6 +269,8 @@ AFrame.Form = ( function() {
         this.forEach( function( formField, index ) {
             formField[ action ]();
         } );
+
+        this.triggerEvent( action );
     }
 
 

@@ -91,20 +91,35 @@ testsToRun.push( {
 
 		testClear: function() {
 			Assert.areEqual( 0, this.clearCount, 'clear has not been called yet' );
+      this.form.bindEvent("clear", function() {
+        Assert.isTrue(true, "clear event triggered");
+        start();
+      });
+
 			this.form.clear();
 			Assert.areEqual( 2, this.clearCount, 'clear has been called' );
+      stop();
 		},
 
 		testReset: function() {
 			Assert.areEqual( 0, this.resetCount, 'reset has not been called yet' );
+      this.form.bindEvent("reset", function() {
+        Assert.isTrue(true, "reset event triggered");
+        start();
+      });
 			this.form.reset();
 			Assert.areEqual( 2, this.resetCount, 'reset has been called' );
+      stop();
 		},
 
 		testSave: function() {
 			Assert.areEqual( 0, this.saveCount, 'save has not been called yet' );
 
 			this.validateReturn = true;
+      this.form.bindEvent("save", function() {
+        Assert.isTrue(true, "save event triggered");
+        start();
+      });
 			var valid = this.form.save();
 
 			Assert.areEqual( 2, this.saveCount, 'save has been called' );
@@ -115,6 +130,7 @@ testsToRun.push( {
 
 			Assert.areEqual( 2, this.saveCount, 'form was not valid, save was not called' );
 			Assert.isFalse( valid, 'form was not valid' );
+      stop();
 		},
 
 		testTeardown: function() {
