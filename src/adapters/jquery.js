@@ -15,7 +15,7 @@ AFrame.DOM = ( function() {
         getElements: function( selector ) {
             return jQuery( selector );
         },
-        
+
         /**
         * Get a set of descendent elements that match the selector
         * @method getDescendentElements
@@ -26,7 +26,7 @@ AFrame.DOM = ( function() {
         getDescendentElements: function( selector, root ) {
             return jQuery( root ).find( selector );
         },
-        
+
         /**
         * Get a set of descendent elements that match the selector, include the root node if it
         *   matches the selector
@@ -43,7 +43,7 @@ AFrame.DOM = ( function() {
             }
             return set;
         },
-        
+
         /**
         * Get the children for an element
         * @method getChildren
@@ -53,7 +53,7 @@ AFrame.DOM = ( function() {
         getChildren: function( selector ) {
             return jQuery( selector ).children();
         },
-        
+
         /**
         * Get the nth child element
         * @method getNthChild
@@ -64,7 +64,7 @@ AFrame.DOM = ( function() {
         getNthChild: function( selector, index ) {
             return jQuery( selector ).children()[ index ];
         },
-        
+
         /**
         * Iterate over a set of elements
         * @method forEach
@@ -77,7 +77,7 @@ AFrame.DOM = ( function() {
                 callback.call( context, element, index );
             } );
         },
-        
+
         /**
         * Remove an element
         * @method removeElement
@@ -86,7 +86,7 @@ AFrame.DOM = ( function() {
         removeElement: function( selector ) {
             jQuery( selector ).remove();
         },
-        
+
         /**
         * Bind to an elements DOM Event
         * @method bindEvent
@@ -97,7 +97,7 @@ AFrame.DOM = ( function() {
         bindEvent: function( element, eventName, callback ) {
             return jQuery( element ).bind( eventName, callback );
         },
-        
+
         /**
         * Unbind an already bound DOM Event from an element.
         * @method unbindEvent
@@ -108,7 +108,7 @@ AFrame.DOM = ( function() {
         unbindEvent: function( element, eventName, callback ) {
             return jQuery( element ).unbind( eventName, callback );
         },
-        
+
         /**
         * Fire a DOM event on an element
         * @method fireEvent
@@ -118,7 +118,7 @@ AFrame.DOM = ( function() {
         fireEvent: function( element, type ) {
             return jQuery( element ).trigger( type );
         },
-        
+
         /**
         * Set the inner value of an element, including input elements
         * @method setInner
@@ -135,7 +135,7 @@ AFrame.DOM = ( function() {
             }
 
         },
-        
+
         /**
         * Get the inner value of an element, including input elements
         * @method getInner
@@ -145,7 +145,7 @@ AFrame.DOM = ( function() {
         getInner: function( element ) {
             var target = jQuery( element );
             var retval = '';
-            
+
             if( isValBased( target ) ) {
                 retval = target.val();
             }
@@ -154,7 +154,7 @@ AFrame.DOM = ( function() {
             }
             return retval;
         },
-        
+
         /**
         * Set an element's attribute.
         * @method setAttr
@@ -165,7 +165,7 @@ AFrame.DOM = ( function() {
         setAttr: function( element, attrName, value ) {
             jQuery( element ).attr( attrName, value );
         },
-        
+
         /**
         * Get an element's attribute.
         * @method getAttr
@@ -176,7 +176,17 @@ AFrame.DOM = ( function() {
         getAttr: function( element, attrName ) {
             return jQuery( element ).attr( attrName );
         },
-        
+
+        /**
+        * Remove an attribute from an element.
+        * @method removeAttr
+        * @param {selector || element} element
+        * @param {string} attrName - the attribute to remove
+        */
+        removeAttr: function( element, attrName ) {
+            return jQuery( element ).removeAttr( attrName );
+        },
+
         /**
         * Check if an element has an attribute
         * @method hasAttr
@@ -188,7 +198,7 @@ AFrame.DOM = ( function() {
             var val = jQuery( element )[ 0 ].getAttribute( attrName );
             return val !== null;
         },
-        
+
         /**
         * Add a class to an element
         * @method addClass
@@ -198,7 +208,7 @@ AFrame.DOM = ( function() {
         addClass: function( element, className ) {
             jQuery( element ).addClass( className );
         },
-        
+
         /**
         * Remove a class from an element
         * @method removeClass
@@ -208,7 +218,7 @@ AFrame.DOM = ( function() {
         removeClass: function( element, className ) {
             jQuery( element ).removeClass( className );
         },
-        
+
         /**
         * Check if an element has a class
         * @method hasClass
@@ -219,7 +229,7 @@ AFrame.DOM = ( function() {
         hasClass: function( element, className ) {
             return jQuery( element ).hasClass( className );
         },
-        
+
         /**
         * Create an element
         * @method createElement
@@ -234,7 +244,7 @@ AFrame.DOM = ( function() {
             }
             return element;
         },
-      
+
         /**
         * Append an element as the last child of another element
         * @method appendTo
@@ -244,7 +254,7 @@ AFrame.DOM = ( function() {
         appendTo: function( elementToInsert, elementToAppendTo ) {
             jQuery( elementToInsert ).appendTo( jQuery( elementToAppendTo ) );
         },
-        
+
         /**
         * Insert an element before another element
         * @method insertBefore
@@ -254,7 +264,7 @@ AFrame.DOM = ( function() {
         insertBefore: function( elementToInsert, elementToInsertBefore ) {
             jQuery( elementToInsert ).insertBefore( elementToInsertBefore );
         },
-        
+
         /**
         * Insert as the nth child of an element
         * @method insertAsNthChild
@@ -271,16 +281,16 @@ AFrame.DOM = ( function() {
                 var insertBefore = children.eq( index );
                 elementToInsert.insertBefore( insertBefore );
             }
-        
+
         }
-        
-        
+
+
     };
-    
+
     function isValBased( target ) {
         return target.is( 'input' ) || target.is( 'textarea' );
     }
-    
+
     return DOM;
-    
+
 }() );
