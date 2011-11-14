@@ -4,7 +4,7 @@ testsToRun.push( {
 
 		setUp: function() {
 			this.display = AFrame.Display.create( {
-                target: '.target'
+         target: '.target'
 			} );
 		},
 
@@ -47,6 +47,20 @@ testsToRun.push( {
 			AFrame.DOM.fireEvent( '.target', 'click' );
 			Assert.areEqual( 1, this.callbackCount, 'event bound to correct child item' );
 		},
+
+    testBindDOMOnTarget: function() {
+			this.callbackCount = 0;
+
+			var onClick = function( event ) {
+				event.preventDefault();
+				this.callbackCount++;
+			};
+
+			var id = this.display.bindDOMEvent( '.target', 'click', onClick, this );
+
+			AFrame.DOM.fireEvent( '.target', 'click' );
+			Assert.areEqual( 1, this.callbackCount, 'event callback triggered' );
+    },
 
 		testBindDOMOutsideTarget: function() {
 			this.callbackCount = 0;
@@ -92,8 +106,8 @@ testsToRun.push( {
 
 		},
 
-        testBindClickNoContext: function() {
-            var context;
+    testBindClickNoContext: function() {
+      var context;
 			var onClick = function( event ) {
                 context = this;
 			};
@@ -101,7 +115,7 @@ testsToRun.push( {
 
 			AFrame.DOM.fireEvent( '.button', 'click' );
 			Assert.areEqual( this.display, context, 'context correctly set to object when no context given' );
-        },
+    },
 
 		testGetDOMElement: function() {
 			var domElement = this.display.getDOMElement();

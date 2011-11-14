@@ -2469,7 +2469,7 @@ AFrame.Display = (function() {
         var eventTarget;
 
         if( 'string' == typeof( target ) ) {
-            eventTarget = AFrame.DOM.getDescendentElements( target, this.getTarget() );
+            eventTarget = AFrame.DOM.getElementsIncludeRoot( target, this.getTarget() );
         }
         else {
             eventTarget = AFrame.DOM.getElements( target );
