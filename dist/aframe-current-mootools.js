@@ -2286,27 +2286,31 @@ AFrame.Display = (function() {
          * @config target
          * @type {element || selector}
          */
+        /**
+         * Whether to bind the DOM events on init
+         * @config bindEvents
+         * @type {boolean}
+         * @default true
+         */
         init: function( config ) {
-            this.target = AFrame.DOM.getElements( config.target );
+            var me=this;
+            me.target = AFrame.DOM.getElements( config.target );
 
-            if( !this.target.length ) {
+            if( !me.target.length ) {
                 throw 'invalid target';
             }
 
-            this.render();
+            me.render();
+            me.domEventHandlers = {};
+            Display.sc.init.call( me, config );
 
-            this.domEventHandlers = {};
-
-            Display.sc.init.call( this, config );
-
-            bindDOMEvents.call( this );
+            if( config.bindEvents !== false) {
+              me.bindDOMEvents();
+            }
         },
 
         teardown: function() {
-            for( var key in this.domEventHandlers ) {
-                this.unbindDOMEvent( key );
-            }
-
+            this.unbindDOMEvents();
             this.target = null;
 
             Display.sc.teardown.call( this );
@@ -2367,6 +2371,23 @@ AFrame.Display = (function() {
         */
         getDOMElement: function() {
             return this.target[ 0 ];
+        },
+
+        /**
+        * bind all declared DOM events
+        * @method bindDOMEvents
+        */
+        bindDOMEvents: bindDOMEvents,
+
+
+        /**
+        * Unbind all currently attached dom events
+        * @method unbindDOMEvents
+        */
+        unbindDOMEvents: function() {
+            for( var key in this.domEventHandlers ) {
+                this.unbindDOMEvent( key );
+            }
         },
 
         /**
@@ -2438,9 +2459,7 @@ AFrame.Display = (function() {
             var event = this.domEventHandlers[ id ];
             if( event ) {
                 AFrame.DOM.unbindEvent( event.target, event.eventName, event.callback );
-                event.target = null;
-                event.eventName = null;
-                event.callback = null;
+                event.target = event.eventName = event.callback = null;
                 AFrame.remove( this.domEventHandlers, id );
             }
         }
@@ -2496,14 +2515,17 @@ AFrame.Display = (function() {
     return Display;
 } )();
 /**
- * A generic HTML list class.  A list is any list of data.  A List shares
- *  the majority of its interface with a <a href="AFrame.CollectionArray.html">CollectionArray</a>
- *  since lists are inherently ordered (even if they are ULs).  There are two methods
- *  for inserting an item into the list, either passing an already created
- *  element to [insertElement](#method_insertElement) or by passing data to [insert](#method_insert).
- *  If using insert, a factory function (listElementFactory) must be specified in the configuration.
- *  The factory function can either create an element directly or use some sort of prototyping system
- *  to create the element.  The factory function must return the element to be inserted.
+ * A generic HTML list class.  A list is any list of data.  A List shares the
+ * majority of its interface with a 
+ * <a href="AFrame.CollectionArray.html">CollectionArray</a> since lists are 
+ * inherently ordered (even if they are ULs).  There are two methods for 
+ * inserting an item into the list, either passing an already created element to
+ * [insertElement](#method_insertElement) or by passing data to 
+ * [insert](#method_insert). If using insert, a factory function 
+ * (renderItem) must be specified in the configuration. The factory 
+ * function can either create an element directly or use some sort of 
+ * prototyping system to create the element.  The factory function must return
+ * the element to be inserted.
  *
  *
  *    <ul id="clientList">
@@ -2513,13 +2535,14 @@ AFrame.Display = (function() {
  *    // Set up a factory to create list elements.  This can create the elements
  *    // directly or use sort of templating system.
  *    var factory = function( data, index ) {
- *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
+ *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' 
+ *          + data.employer );
  *       return listItem;
  *    };
  *
  *    var list = AFrame.List.create( {
  *        target: '#clientList',
- *        listElementFactory: factory
+ *        renderItem: factory
  *    } );
  *
  *    // Creates a list item using the factory function, item is inserted
@@ -2530,7 +2553,8 @@ AFrame.Display = (function() {
  *    } );
  *
  *    // Inserts a pre-made list item at the head of the list
- *    list.insertRow( AFrame.DOM.createElement( 'li', 'Joe Smith, the Coffee Shop' ), 0 );
+ *    list.insertRow( AFrame.DOM.createElement( 'li', 'Joe Smith, the Coffee' +
+ *      ' Shop' ), 0 );
  *    ---------
  *
  *    <ul id="clientList">
@@ -2545,23 +2569,25 @@ AFrame.Display = (function() {
  * @constructor
  */
 /**
- * A function to call to create a list element.  function will be called with two parameters, an data and index.
- *  If not specified, then the internal factory that returns an empty LI element will be used.  See
- *  [listElementFactory](#method_listElementFactory).
- * @config listElementFactory
+ * A function to call to create a list element.  function will be called with 
+ * two parameters, an data and index. If not specified, then the internal 
+ * factory that returns an empty LI element will be used.  See
+ *  [renderItem](#method_renderItem).
+ * @config renderItem
  * @type {function} (optional)
- * @default this.listElementFactory
+ * @default this.renderItem
  */
 AFrame.List = ( function() {
     "use strict";
 
-    var List = AFrame.Display.extend( AFrame.ArrayCommonFuncsMixin, AFrame.EnumerableMixin, {
+    var List = AFrame.Display.extend( AFrame.ArrayCommonFuncsMixin, 
+        AFrame.EnumerableMixin, {
         init: function( config ) {
-            if( config.listElementFactory ) {
-                this.listElementFactory = config.listElementFactory;
-            }
+            var me=this;
+            me.renderItem = config.renderItem 
+                || me.renderItem;
 
-            List.sc.init.call( this, config );
+            List.sc.init.call( me, config );
         },
 
         /**
@@ -2575,24 +2601,25 @@ AFrame.List = ( function() {
         /**
         * The factory used to create list elements.
         *
-        *    // overriden listElementFactory
-        *    listElementFactory: function( data, index ) {
-        *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
+        *    // overriden renderItem
+        *    renderItem: function( data, index ) {
+        *       var listItem = AFrame.DOM.createElement( 'li', data.name 
+        *           + ', ' + data.employer );
         *       return listItem;
         *    }
         *
-        * @method listElementFactory
+        * @method renderItem
         * @param {object} data - data used on insert
         * @param {number} index - index where item should be inserted
         * @return {Element} element to insert
         */
-        listElementFactory: function() {
+        renderItem: function() {
             return AFrame.DOM.createElement( 'li' );
         },
 
         /**
          * Insert a data item into the list, the list item is created
-         *  using the listElementFactory.
+         *  using the renderItem.
          *
          *
          *    // Creates a list item using the factory function,
@@ -2630,10 +2657,11 @@ AFrame.List = ( function() {
          * @return {number} index the item is inserted at.
          */
         insert: function( data, index ) {
-            index = this.getActualInsertIndex( index );
+            var me=this;
+            index = me.getActualInsertIndex( index );
 
-            var rowElement = this.listElementFactory( data, index );
-            index = this.insertElement( rowElement, index );
+            var rowElement = me.renderItem( data, index );
+            index = me.insertElement( rowElement, index );
 
             /**
             * Triggered whenever a row is inserted into the list
@@ -2643,12 +2671,7 @@ AFrame.List = ( function() {
             * @param {object} options.data - data that was inserted
             * @param {object} options.index - index where row was inserted
             */
-            this.triggerEvent( {
-                rowElement: rowElement,
-                index: index,
-                data: data,
-                type: 'onInsert'
-            } );
+            trigger( me, 'onInsert', rowElement, index, data );
 
             return index;
         },
@@ -2657,7 +2680,8 @@ AFrame.List = ( function() {
          * Insert an element into the list.
          *
          *    // Item is inserted at index 0, the first item in the list.
-         *    list.insertElement( AFrame.DOM.createElement( 'li', 'Shane Tomlinson, AFrame Foundary' ), 0 );
+         *    list.insertElement( AFrame.DOM.createElement( 'li', 'Shane '
+         *      + 'Tomlinson, AFrame Foundary' ), 0 );
          *
          * @method insertElement
          * @param {element} rowElement - element to insert
@@ -2667,9 +2691,10 @@ AFrame.List = ( function() {
          * @return {number} index - the index the item is inserted at.
          */
         insertElement: function( rowElement, index ) {
-            var target = this.getTarget();
+            var me=this,
+                target = me.getTarget();
 
-            index = this.getActualInsertIndex( index );
+            index = me.getActualInsertIndex( index );
             AFrame.DOM.insertAsNthChild( rowElement, target, index );
 
             /**
@@ -2680,11 +2705,7 @@ AFrame.List = ( function() {
             * @param {object} options.index - index where row was inserted
             */
 
-            this.triggerEvent( {
-                rowElement: rowElement,
-                index: index,
-                type: 'onInsertElement'
-            } );
+            trigger( me, 'onInsertElement', rowElement, index );
 
             return index;
         },
@@ -2699,8 +2720,9 @@ AFrame.List = ( function() {
          * @param {number} index - index of item to remove
          */
         remove: function( index ) {
-            var removeIndex = this.getActualIndex( index );
-            var rowElement = AFrame.DOM.getNthChild( this.getTarget(), removeIndex );
+            var me=this,
+                removeIndex = me.getActualIndex( index ),
+                rowElement = AFrame.DOM.getNthChild( me.getTarget(), removeIndex );
             AFrame.DOM.removeElement( rowElement );
 
             /**
@@ -2711,11 +2733,7 @@ AFrame.List = ( function() {
             * @param {object} options.index - index where row was inserted
             */
 
-            this.triggerEvent( {
-                rowElement: rowElement,
-                index: index,
-                type: 'onRemoveElement'
-            } );
+            trigger( me, 'onRemoveElement', rowElement, index );
         },
 
         /**
@@ -2730,6 +2748,15 @@ AFrame.List = ( function() {
             AFrame.DOM.forEach( children, callback, context );
         }
     } );
+
+    function trigger( me, message, rowElement, index, data ) {
+        me.triggerEvent( {
+            rowElement: rowElement,
+            index: index,
+            data: data,
+            type: message 
+        } );
+    } 
 
     return List;
 } )();
@@ -2751,7 +2778,7 @@ AFrame.List = ( function() {
  *    var collection = AFrame.CollectionArray.create();
  *
  *
- *    var factory = function( index, data ) {
+ *    var renderItem = function( index, data ) {
  *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
@@ -2760,7 +2787,7 @@ AFrame.List = ( function() {
  *    //    ListPluginBindToCollection has a collection config parameter.
  *    var list = AFrame.List.create( {
  *        target: '#clientList',
- *        listElementFactory: factory,
+ *        renderItem: renderItem,
  *        plugins: [
  *        [ AFrame.ListPluginBindToCollection, {
  *              collection: collection
@@ -3346,11 +3373,11 @@ AFrame.CollectionPluginPersistence = ( function() {
 } )();
 AFrame.CollectionPluginREST = (function() {
     var Plugin = AFrame.CollectionPluginPersistence.extend( {
-        importconfig: [ 'root', 'net' ],
+        importconfig: [ 'url', 'net' ],
         loadCallback: function( options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root,
+                url: me.url,
                 success: options.onComplete
             } );
         },
@@ -3358,12 +3385,12 @@ AFrame.CollectionPluginREST = (function() {
         addCallback: function( item, options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root,
+                url: me.url,
                 data: getItemData( item ),
                 type: 'POST',
                 success: function( body, textStatus, xhr ) {
                     var loc = xhr.getResponseHeader( 'Location' );
-                    loc = loc.replace( me.root + '/', '' );
+                    loc = loc.replace( me.url + '/', '' );
                     setItemData( item, 'id', loc );
                     options.onComplete && options.onComplete();
                 }
@@ -3373,7 +3400,7 @@ AFrame.CollectionPluginREST = (function() {
         deleteCallback: function( item, options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root + '/' + getItemID( item ),
+                url: me.url + '/' + getItemID( item ),
                 type: 'DELETE',
                 success: options.onComplete
             } );
@@ -3382,7 +3409,7 @@ AFrame.CollectionPluginREST = (function() {
         saveCallback: function( item, options ) {
             var me=this;
             me.net.ajax( {
-                url: me.root + '/' + getItemID( item ),
+                url: me.url + '/' + getItemID( item ),
                 data: getItemData( item ),
                 type: 'PUT',
                 success: options.onComplete
@@ -3550,7 +3577,7 @@ AFrame.CollectionPluginModel = ( function() {
  *    //
  *    var form = AFrame.Form.create( {
  *        target: '#nameForm',
- *        formFieldFactory: fieldFactory
+ *        fieldFactory: fieldFactory
  *    } );
  *
  *    // the specialized form field factory can be used globally as
@@ -3566,44 +3593,60 @@ AFrame.CollectionPluginModel = ( function() {
  * The factory to use to create form fields.
  *
  *     // example field factory in a Form's config.
- *     formFieldFactory: function( element ) {
+ *     fieldFactory: function( element ) {
  *       return AFrame.SpecializedField.create( {
  *           target: element
  *       } );
  *     };
  *
- * @config formFieldFactory
+ * @config fieldFactory
  * @type {function}
- * @default this.formFieldFactory;
+ * @default this.fieldFactory;
  */
+
+/**
+ * Triggered whenever form is cleared.
+ * @event clear
+*/
+/**
+ * Triggered whenever the form data is saved to the model.
+ * @event save
+*/
+/**
+ * Triggered whenever the form data is reloaded from the model.
+ * @event reset
+*/
 AFrame.Form = ( function() {
     "use strict";
 
     var Form = AFrame.Display.extend( AFrame.EnumerableMixin, {
         init: function( config ) {
-            this.formFieldFactory = config.formFieldFactory || this.formFieldFactory || formFieldFactory;
-            this.formElements = [];
-            this.formFields = [];
+            var me=this;
+            me.fieldFactory = config.fieldFactory || me.fieldFactory || fieldFactory;
+            me.elements = [];
+            me.fields = [];
 
-            Form.sc.init.call( this, config );
+            Form.sc.init.call( me, config );
 
-            this.bindFormElements();
+            me.bindFormElements();
         },
 
         bindFormElements: function() {
-            var formElements = AFrame.DOM.getDescendentElements( '[data-field]', this.getTarget() );
+            var me=this,
+                elements = AFrame.DOM.getDescendentElements( '[data-field]',
+                    me.getTarget() );
 
-            AFrame.DOM.forEach( formElements, this.bindFormElement, this );
+            AFrame.DOM.forEach( elements, me.bindFormElement, me );
         },
 
         teardown: function() {
-            this.forEach( function( formField, index ) {
+            var me=this;
+            me.forEach( function( formField, index ) {
                 formField.teardown();
-                this.formFields[ index ] = null;
-            }, this );
-            this.formFields = null;
-            this.formElements = null;
-            Form.sc.teardown.call( this );
+                me.fields[ index ] = null;
+            } );
+            me.fields = me.elements = null;
+            Form.sc.teardown.call( me );
         },
 
         /**
@@ -3613,15 +3656,16 @@ AFrame.Form = ( function() {
          *    var field = form.bindFormElement( '#button' );
          *
          * @method bindFormElement
-         * @param {selector || element} formElement the form element to bind to.
+         * @param {selector || element} formElement - the form element to bind to.
          * @returns {AFrame.Field}
          */
         bindFormElement: function( formElement ) {
-            var target = AFrame.DOM.getElements( formElement );
-            this.formElements.push( target );
+            var me=this,
+                target = AFrame.DOM.getElements( formElement ),
+                formField = me.fieldFactory( target );
 
-            var formField = this.formFieldFactory( target );
-            this.formFields.push( formField );
+            me.elements.push( target );
+            me.fields.push( formField );
 
             return formField;
         },
@@ -3636,7 +3680,7 @@ AFrame.Form = ( function() {
          * @return {array} the form elements
          */
         getFormElements: function() {
-            return this.formElements;
+            return this.elements;
         },
 
         /**
@@ -3649,7 +3693,7 @@ AFrame.Form = ( function() {
          * @return {array} the form fields
          */
         getFormFields: function() {
-            return this.formFields;
+            return this.fields;
         },
 
         /**
@@ -3664,7 +3708,7 @@ AFrame.Form = ( function() {
         checkValidity: function() {
             var valid = true;
 
-            for( var index = 0, formField; ( formField = this.formFields[ index ] ) && valid; ++index ) {
+            for( var index = 0, formField; ( formField = this.fields[ index ] ) && valid; ++index ) {
                 valid = formField.checkValidity();
             }
 
@@ -3705,9 +3749,10 @@ AFrame.Form = ( function() {
          * @return {boolean} true if the form was valid and saved, false otw.
          */
         save: function() {
-            var valid = this.checkValidity();
+            var me=this,
+                valid = me.checkValidity();
             if( valid ) {
-                fieldAction.call( this, 'save' );
+                fieldAction.call( me, 'save' );
             }
 
             return valid;
@@ -3721,7 +3766,7 @@ AFrame.Form = ( function() {
         * @param {object} context (optional) - the context to call the callback in
         */
         forEach: function( callback, context ) {
-            this.formFields && this.formFields.forEach( callback, context );
+            this.fields && this.fields.forEach( callback, context );
         }
     } );
 
@@ -3730,7 +3775,7 @@ AFrame.Form = ( function() {
     * It should return a {Field}(AFrame.Field.html) compatible object.
     *
     *
-    *     // example of overloaded formFieldFactory
+    *     // example of overloaded fieldFactory
     *     AFrame.Form.setDefaultFieldFactory( function( element ) {
     *       return AFrame.SpecializedField.create( {
     *           target: element
@@ -3742,7 +3787,7 @@ AFrame.Form = ( function() {
     * @param {function} factory
     */
     Form.setDefaultFieldFactory = function( factory ) {
-        formFieldFactory = factory;
+        fieldFactory = factory;
     };
 
     /**
@@ -3754,24 +3799,26 @@ AFrame.Form = ( function() {
         this.forEach( function( formField, index ) {
             formField[ action ]();
         } );
+
+        this.triggerEvent( action );
     }
 
 
     /**
     * The factory used to create fields.
     *
-    *     // example of overloaded formFieldFactory
-    *     formFieldFactory: function( element ) {
+    *     // example of overloaded fieldFactory
+    *     fieldFactory: function( element ) {
     *       return AFrame.SpecializedField.create( {
     *           target: element
     *       } );
     *     };
     *
-    * @method formFieldFactory
+    * @method fieldFactory
     * @param {Element} element - element where to create field
     * @return {AFrame.Field} field for element.
     */
-    function formFieldFactory( element ) {
+    function fieldFactory( element ) {
        return AFrame.Field.create( {
             target: element
        } );

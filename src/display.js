@@ -139,27 +139,31 @@ AFrame.Display = (function() {
          * @config target
          * @type {element || selector}
          */
+        /**
+         * Whether to bind the DOM events on init
+         * @config bindEvents
+         * @type {boolean}
+         * @default true
+         */
         init: function( config ) {
-            this.target = AFrame.DOM.getElements( config.target );
+            var me=this;
+            me.target = AFrame.DOM.getElements( config.target );
 
-            if( !this.target.length ) {
+            if( !me.target.length ) {
                 throw 'invalid target';
             }
 
-            this.render();
+            me.render();
+            me.domEventHandlers = {};
+            Display.sc.init.call( me, config );
 
-            this.domEventHandlers = {};
-
-            Display.sc.init.call( this, config );
-
-            bindDOMEvents.call( this );
+            if( config.bindEvents !== false) {
+              me.bindDOMEvents();
+            }
         },
 
         teardown: function() {
-            for( var key in this.domEventHandlers ) {
-                this.unbindDOMEvent( key );
-            }
-
+            this.unbindDOMEvents();
             this.target = null;
 
             Display.sc.teardown.call( this );
@@ -220,6 +224,23 @@ AFrame.Display = (function() {
         */
         getDOMElement: function() {
             return this.target[ 0 ];
+        },
+
+        /**
+        * bind all declared DOM events
+        * @method bindDOMEvents
+        */
+        bindDOMEvents: bindDOMEvents,
+
+
+        /**
+        * Unbind all currently attached dom events
+        * @method unbindDOMEvents
+        */
+        unbindDOMEvents: function() {
+            for( var key in this.domEventHandlers ) {
+                this.unbindDOMEvent( key );
+            }
         },
 
         /**
@@ -291,9 +312,7 @@ AFrame.Display = (function() {
             var event = this.domEventHandlers[ id ];
             if( event ) {
                 AFrame.DOM.unbindEvent( event.target, event.eventName, event.callback );
-                event.target = null;
-                event.eventName = null;
-                event.callback = null;
+                event.target = event.eventName = event.callback = null;
                 AFrame.remove( this.domEventHandlers, id );
             }
         }

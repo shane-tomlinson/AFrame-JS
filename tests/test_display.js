@@ -202,5 +202,34 @@ testsToRun.push( {
             $( '#externalButton' ).trigger( 'click' );
 
             Assert.areEqual( 1, clickCount, 'click only called once' );
+        },
+
+        'init with bindEvents set to false, bindDOMEvents, unbindDOMEvents': function() {
+          var clickCount = 0;
+          var Display = AFrame.Display.extend( {
+              domevents: {
+                  'click .buttonContainer #externalButton': 'onClick'
+              },
+
+              onClick: function( event ) {
+                  clickCount++;
+              }
+          } );
+
+          var display = Display.create( {
+              target: '#AFrame_Display',
+              bindEvents: false
+          } );
+
+          $( '#externalButton' ).trigger( 'click' );
+          Assert.areEqual( 0, clickCount, 'click not called' );
+
+          display.bindDOMEvents();
+          $( '#externalButton' ).trigger( 'click' );
+          Assert.areEqual( 1, clickCount, 'click called after events bound' );
+
+          display.unbindDOMEvents();
+          $( '#externalButton' ).trigger( 'click' );
+          Assert.areEqual( 1, clickCount, 'click not called after events unbound' );
         }
 } );

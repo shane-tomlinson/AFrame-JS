@@ -16,7 +16,7 @@
 	<property file="includes.list" />
 	<property file="includes.node.list" />
 	<property file="adapters.list" />
-	
+
 	<target name="get_build_number" >
 		<property file="build.number" />
 		<property name="build.version" value="${major}.${minor}.${build.number}" />
@@ -24,7 +24,7 @@
 		<property name="js_combined_current" location="${dist}/aframe-current" />
 		<echo level="info" message="AFrame Version: ${build.version}" />
 	</target>
-           
+
    <target name="init" depends="get_build_number">
 	       <tstamp/>
 	       <taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -50,29 +50,29 @@
            <arg line="-conf tools/jsl.default.conf -process ${filename}"/>
        </exec>
    </target>
-       
+
     <target name="lintadapter">
         <antcall target="lintfile" >
             <param name="filename" location="${src}/adapters/${filename}.js" />
         </antcall>
     </target>
-       
+
     <target name="jslint" depends="init">
 
 		<echo level="info" message="JSLint: running..." />
-		
+
 		<foreach param="filename" target="lintfile" parallel="true">
 			<path>
 				<filelist dir="${src}" files="${includes.list}">
 				</filelist>
 			</path>
         </foreach>
-	
+
         <foreach param="filename" target="lintadapter" inheritall="true" list="${adapters.list}" parallel="true">
 		</foreach>
-        
+
 		<echo level="info" message="JSLint: finished running...." />
-	       
+
     </target>
 
     <target name="addadapter">
@@ -85,30 +85,30 @@
                 </fileset>
             </concat>
     </target>
-    
+
     <target name="concat" depends="init"
 		description="concatinate the script">
 			<echo message="Combining js files to ${js_combined}" />
-			
+
             <concat destfile="${js_combined}">
 				<filelist dir="${src}" files="${includes.list}">
 				</filelist>
 			</concat>
-            
+
             <foreach param="adapter" target="addadapter" list="${adapters.list}" inheritall="true">
             </foreach>
 	</target>
-    
+
     <target name="concat_node" depends="init"
 		description="concatinate the script for node">
 			<echo message="Combining js files to ${js_combined}.node" />
-			
+
             <concat destfile="${js_combined}-node.js">
 				<filelist dir="${src}" files="${includes.node.list}">
 				</filelist>
 			</concat>
 	</target>
-    
+
     <target name="compressfile">
 			<echo message="Building ${js_combined}-${adapter}.js" />
 			<apply executable="java" parallel="false" verbose="true" dest="${dist}">
@@ -126,7 +126,7 @@
 			<copy file="${js_combined}-${adapter}.min.js" tofile="${js_combined_current}-${adapter}.min.js" />
 			<echo message="${js_combined}-${adapter}.js built." />
     </target>
-    
+
 	<target name="compress" depends="concat,concat_node"
 		description="Compress the script">
 
@@ -135,7 +135,7 @@
 
         <foreach param="adapter" target="compressfile" list="node" inheritall="true">
         </foreach>
-			
+
 	</target>
 
        <target name="docs" depends="init,clean">
@@ -143,17 +143,17 @@
 		       <arg line="${yuidoc.home}/bin/yuidoc.py ${yuidoc.parser_in} -p ${yuidoc.parser_out} -o ${yuidoc.generator_out} -t ${yuidoc.template} -v ${build.version} -Y ${yuidoc.yuiversion}  -m ${yuidoc.projectname} -u ${yuidoc.projecturl} -C ${yuidoc.copyrighttag} -s"/>
 	       </exec>
        </target>
-       
-       <target name="all" depends="init,clean,jslint,increment_build_number,compress,docs">
+
+       <target name="all" depends="init,clean,increment_build_number,compress,docs">
 	</target>
-	
+
 	<target name="site" description="build the site" depends="docs">
 		<mkdir dir="${site}" />
-		
+
 		<delete dir="${site}/docs" />
 		<delete dir="${site}/src" />
 		<delete dir="${site}/tests" />
-		
+
 		<copy todir="${site}/docs" >
 			<fileset dir="${docs}" />
 		</copy>
@@ -165,10 +165,10 @@
 		<copy todir="${site}/tests" >
 			<fileset dir="tests" />
 		</copy>
-        
-		
+
+
 	</target>
-       
+
 	<target name="clean"
 	       description="clean up">
 		<delete dir="${docs}" />
