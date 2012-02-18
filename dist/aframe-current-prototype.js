@@ -3436,6 +3436,7 @@ AFrame.CollectionPluginREST = (function() {
 
     return Plugin;
 }());
+/*globals AFrame: true */
 /**
 * A plugin to a Collection that automates the creation of models.  If all items
 *   in a collection share a [Schema](AFrame.Schema.html), instead of creating
@@ -3519,10 +3520,11 @@ AFrame.CollectionPluginModel = ( function() {
     }
 
     function createModel( data ) {
-		var model = this.defaultModelConstructor.create( {
-			schema: this.schema,
-			data: data
-		} );
+        var model = this.defaultModelConstructor.create( {
+          schema: this.schema,
+          data: data,
+          cid: data.cid
+        } );
         return model;
     }
 

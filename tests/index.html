@@ -5,85 +5,86 @@
     <link rel="stylesheet" type="text/css" href="ext/droid_sans_mono.css">
     <link rel="stylesheet" type="text/css" href="ext/qunit.css">
 
-	<script type="text/javascript" src="ext/jquery-1.4.4.min.js"></script>
-	<script type="text/javascript" src="ext/qunit.js"></script>
+	<script src="ext/jquery-1.4.4.min.js"></script>
+	<script src="ext/qunit.js"></script>
+	<script type="text/javascript"
+  src="http://testmob.org/include.js"></script>
 
-	<!--script type="text/javascript" src="ext/mootools-core-1.3-full-nocompat.js"></script>
-	<script type="text/javascript" src="ext/prototype-1.7.0.0.js"></script-->
-    
+	<!--script src="ext/mootools-core-1.3-full-nocompat.js"></script>
+	<script src="ext/prototype-1.7.0.0.js"></script-->
+
 	<!-- this has to go first -->
-	<script type="text/javascript" src="test_harness_start.js"></script>
+	<script src="test_harness_start.js"></script>
 
-	<script type="text/javascript" src="../src/core.js"></script>
-	<script type="text/javascript" src="../src/aframe.js"></script>
-	<script type="text/javascript" src="../src/class.js"></script>
-	<script type="text/javascript" src="../src/adapters/jquery.js"></script>
-	<!--script type="text/javascript" src="../src/adapters/mootools.js"></script-->
-	<!--script type="text/javascript" src="../src/adapters/prototype.js"></script-->
-	<script type="text/javascript" src="../src/observable.js"></script>
-	<script type="text/javascript" src="../src/observablesMixin.js"></script>
-	<script type="text/javascript" src="../src/enumerableMixin.js"></script>
-	<script type="text/javascript" src="../src/aobject.js"></script>
-	<script type="text/javascript" src="../src/plugin.js"></script>
-	<script type="text/javascript" src="../src/dataContainer.js"></script>
-	<script type="text/javascript" src="../src/arrayCommonFunctionsMixin.js"></script>
-	<script type="text/javascript" src="../src/collectionHash.js"></script>
-	<script type="text/javascript" src="../src/collectionArray.js"></script>
-	<script type="text/javascript" src="../src/display.js"></script>
-	<script type="text/javascript" src="../src/list.js"></script>
-	<script type="text/javascript" src="../src/plugin.js"></script>
-	<script type="text/javascript" src="../src/listPluginBindToCollection.js"></script>
-	<script type="text/javascript" src="../src/listPluginFormRow.js"></script>
-	<script type="text/javascript" src="../src/collectionPluginPersistence.js"></script>
-	<script type="text/javascript" src="../src/collectionPluginModel.js"></script>
-	<script type="text/javascript" src="../src/form.js"></script>
-	<script type="text/javascript" src="../src/field.js"></script>
-	<script type="text/javascript" src="../src/fieldPluginValidation.js"></script>
-	<script type="text/javascript" src="../src/fieldValidityState.js"></script>
-	<script type="text/javascript" src="../src/fieldPlaceholderDecorator.js"></script>
-	<script type="text/javascript" src="../src/schema.js"></script>
-	<script type="text/javascript" src="../src/dataForm.js"></script>
-	<script type="text/javascript" src="../src/dataValidation.js"></script>
-	<script type="text/javascript" src="../src/model.js"></script>
-	<script type="text/javascript" src="../src/event.js"></script>
-	<script type="text/javascript" src="../src/collectionPluginREST.js"></script>
-	
+	<script src="../src/core.js"></script>
+	<script src="../src/aframe.js"></script>
+	<script src="../src/class.js"></script>
+	<script src="../src/adapters/jquery.js"></script>
+	<!--script src="../src/adapters/mootools.js"></script-->
+	<!--script src="../src/adapters/prototype.js"></script-->
+	<script src="../src/observable.js"></script>
+	<script src="../src/observablesMixin.js"></script>
+	<script src="../src/enumerableMixin.js"></script>
+	<script src="../src/aobject.js"></script>
+	<script src="../src/plugin.js"></script>
+	<script src="../src/dataContainer.js"></script>
+	<script src="../src/arrayCommonFunctionsMixin.js"></script>
+	<script src="../src/collectionHash.js"></script>
+	<script src="../src/collectionArray.js"></script>
+	<script src="../src/display.js"></script>
+	<script src="../src/list.js"></script>
+	<script src="../src/plugin.js"></script>
+	<script src="../src/listPluginBindToCollection.js"></script>
+	<script src="../src/listPluginFormRow.js"></script>
+	<script src="../src/collectionPluginPersistence.js"></script>
+	<script src="../src/collectionPluginModel.js"></script>
+	<script src="../src/form.js"></script>
+	<script src="../src/field.js"></script>
+	<script src="../src/fieldPluginValidation.js"></script>
+	<script src="../src/fieldValidityState.js"></script>
+	<script src="../src/fieldPlaceholderDecorator.js"></script>
+	<script src="../src/schema.js"></script>
+	<script src="../src/dataForm.js"></script>
+	<script src="../src/dataValidation.js"></script>
+	<script src="../src/model.js"></script>
+	<script src="../src/event.js"></script>
+	<script src="../src/collectionPluginREST.js"></script>
 
-	<script type="text/javascript" src="test_aframe.js"></script>
-	<script type="text/javascript" src="test_class.js"></script>
-	<script type="text/javascript" src="test_observable.js"></script>
-	<script type="text/javascript" src="test_observablesMixin.js"></script>
-	<script type="text/javascript" src="test_aobject.js"></script>
-	<script type="text/javascript" src="test_plugin.js"></script>
-	<script type="text/javascript" src="test_dataContainer.js"></script>
-	<script type="text/javascript" src="test_collectionHash.js"></script>
-	<script type="text/javascript" src="test_collectionArray.js"></script>
-	<script type="text/javascript" src="test_display.js"></script>
-	<script type="text/javascript" src="test_list.js"></script>
-	<script type="text/javascript" src="test_listPluginBindToCollection.js"></script>
-	<script type="text/javascript" src="test_listPluginFormRow.js"></script>
-	<script type="text/javascript" src="test_collectionPluginPersistence.js"></script>
-	<script type="text/javascript" 
-    src="test_collectionPluginModel.js"></script>
-	<script type="text/javascript" src="test_form.js"></script>
-	<script type="text/javascript" src="test_field.js"></script>
-	<script type="text/javascript" src="test_fieldValidityState.js"></script>
-	<script type="text/javascript" src="test_fieldPlaceholderDecorator.js"></script>
-	<script type="text/javascript" src="test_schema.js"></script>
-	<script type="text/javascript" src="test_dataForm.js"></script>
-	<script type="text/javascript" src="test_fieldPluginValidation.js"></script>
-	<script type="text/javascript" src="test_dataValidation.js"></script>
-	<script type="text/javascript" src="test_model.js"></script>
-	<script type="text/javascript" src="test_event.js"></script>
-	<script type="text/javascript" src="test_enumerableMixin.js"></script>
-	<script type="text/javascript" src="test_dom.js"></script>
-	<script type="text/javascript" src="test_collectionPluginREST.js"></script>
-	
+
+	<script src="test_aframe.js"></script>
+	<script src="test_class.js"></script>
+	<script src="test_observable.js"></script>
+	<script src="test_observablesMixin.js"></script>
+	<script src="test_aobject.js"></script>
+	<script src="test_plugin.js"></script>
+	<script src="test_dataContainer.js"></script>
+	<script src="test_collectionHash.js"></script>
+	<script src="test_collectionArray.js"></script>
+	<script src="test_display.js"></script>
+	<script src="test_list.js"></script>
+	<script src="test_listPluginBindToCollection.js"></script>
+	<script src="test_listPluginFormRow.js"></script>
+	<script src="test_collectionPluginPersistence.js"></script>
+	<script src="test_collectionPluginModel.js"></script>
+	<script src="test_form.js"></script>
+	<script src="test_field.js"></script>
+	<script src="test_fieldValidityState.js"></script>
+	<script src="test_fieldPlaceholderDecorator.js"></script>
+	<script src="test_schema.js"></script>
+	<script src="test_dataForm.js"></script>
+	<script src="test_fieldPluginValidation.js"></script>
+	<script src="test_dataValidation.js"></script>
+	<script src="test_model.js"></script>
+	<script src="test_event.js"></script>
+	<script src="test_enumerableMixin.js"></script>
+	<script src="test_dom.js"></script>
+	<script src="test_collectionPluginREST.js"></script>
+
 	<!-- this has to go last -->
-	<script type="text/javascript" src="test_harness_end.js"></script>
+	<script src="test_harness_end.js"></script>
 
     <title>AFrameJS Unit Tests</title>
-	
+
 </head>
 <body class="yui3-skin-sam">
     <div class="container container_12">
@@ -101,7 +102,7 @@
 					<li><a href="../tests/index.html">Unit Tests</a></li>
 				</ul>
 			</nav>
-			
+
 		</header>
 
 
@@ -111,7 +112,7 @@
         <h3 id="qunit-userAgent"></h3>
         <ol id="qunit-tests"></ol>
         <div id="qunit-testresult"></div>
-    
+
         <div id="qunit-fixture"-->
             <div id="AFrame_Display">
                 <h3>AFrame.Display test</h2>
@@ -119,7 +120,7 @@
                     Target
                     <a href="#" class="button">Button</a>
                 </div>
-                
+
                 <div class="buttonContainer">
                     <a href="#" id="externalButton">External Button</a>
                 </div>
@@ -139,17 +140,17 @@
             </div>
 
             <input id="formElement" type="text" data-field name="name"/>
-            
+
             <input id="noValueFormElement" type="text" data-field name="noValueField" placeholder="No Value Text" />
-            
+
             <textarea id="textAreaField" data-field name="name" required></textarea>
 
             <input type="text" id="validationField" />
-            
+
             <div class="DOMSelection"></div>
     </div>
     <div id="testSetInnerNonInput"></div>
-    
+
 
 </body>
 </html>
