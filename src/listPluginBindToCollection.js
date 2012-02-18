@@ -16,7 +16,7 @@
  *    var collection = AFrame.CollectionArray.create();
  *
  *
- *    var renderItem = function( index, data ) {
+ *    var renderItem = function( data, index ) {
  *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
