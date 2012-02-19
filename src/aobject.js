@@ -112,7 +112,22 @@ AFrame.AObject = (function(){
              * @event onInit
              * @param {AFrame.Event} event - the event object
              */
-             me.triggerEvent( 'onInit' );
+            me.triggerEvent( 'onInit' );
+        },
+
+        /**
+         * Check for required configuration options
+         * @method checkRequired
+         * @param config {object} - configuration
+         * @param name {string} - all remaining options are strings of items that are required to be in the configuration object.
+         */
+        checkRequired: function( config ) {
+            var list = [].slice.call(arguments, 1);
+            for(var item, index = 0; item = list[index]; ++index) {
+                if(!config.hasOwnProperty(item)) {
+                    throw "missing config option: " + item;
+                }
+            }
         },
 
         /**

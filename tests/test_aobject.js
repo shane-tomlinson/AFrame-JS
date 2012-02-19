@@ -37,6 +37,30 @@
 				Assert.isNotUndefined( aobject.getCID(), 'CID assigned automatically' );
 			},
 
+      testCheckRequiredNoneMissing: function() {
+        var error;
+        try {
+            aobject.checkRequired({ key: "value" }, "key");
+        }
+        catch(e) {
+          error = e;
+        }
+
+        Assert.isUndefined(error, "all options available, no error");
+      },
+
+      testCheckRequiredMissingOption: function() {
+        var error;
+        try {
+            aobject.checkRequired({}, "key");
+        }
+        catch(e) {
+          error = e;
+        }
+
+        Assert.areEqual(error, "missing config option: key");
+      },
+
 			testIsTriggeredNoListener: function() {
 				Assert.isFalse( aobject.isEventTriggered( 'onInit' ), 'onInit event not triggered' );
 				var callback = function() {};
