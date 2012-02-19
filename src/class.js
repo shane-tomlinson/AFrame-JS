@@ -156,7 +156,9 @@ AFrame.Class = ( function() {
 			config = config || {};
 			addPlugins( retval, config.plugins || [] );
 
-			retval.init( config );
+      var args = [].slice.call(arguments, 2);
+      args.splice(0, 0, config);
+			retval.init.apply( retval, args );
 		}
 		else {
 			throw 'Class does not exist.';

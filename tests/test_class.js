@@ -203,6 +203,19 @@
 			Assert.isFalse( doesExtend, 'SuperClass does not extend from SubClass' );
 		},
 
+    testAllCreateArgsPassedToInit: function() {
+      var extraArg;
+
+      var Class = AFrame.Class({
+        init: function(config, extra_arg) {
+          extraArg = extra_arg;
+        }
+      });
+
+      Class.create({}, "extra_arg");
+      Assert.areEqual(extraArg, "extra_arg", "Extra argument passed to init");
+    }
+
 	} );
 
 }());
