@@ -72,8 +72,12 @@ AFrame.Field = ( function() {
         * @param {variant} val value to dipslay
         */
         display: function( val ) {
-            var target = this.getTarget();
-            AFrame.DOM.setInner( target, val || '' );
+            var target = this.getTarget(),
+                displayVal = AFrame.defined( val ) ?
+                                // If null, convert to string "null"
+                                val === null ? "null" : val :
+                                "";
+            AFrame.DOM.setInner( target, displayVal );
         },
 
         /**

@@ -4,14 +4,14 @@ testsToRun.push( {
 
 		setUp: function() {
 			this.field = AFrame.Field.create( {
-                target: 'input[data-field][name=name]'
+          target: 'input[data-field][name=name]'
 			} );
 		},
 
 		tearDown: function() {
-			this.field.clear();
-			this.field.teardown();
-			this.field = null;
+      this.field.clear();
+      this.field.teardown();
+      this.field = null;
 		},
 
 		testInput: function() {
@@ -239,21 +239,36 @@ testsToRun.push( {
 
 		},
 
-        testSetCausesInvalid: function() {
+    testSetCausesInvalid: function() {
 			var target = jQuery( 'textarea[data-field][name=name]' );
 
 			var field = AFrame.Field.create( {
-                target: 'textarea[data-field][name=name]'
+          target: 'textarea[data-field][name=name]'
 			} );
 
-            field.set( 'value' );
-            var validityState = field.getValidityState();
+      field.set( 'value' );
+      var validityState = field.getValidityState();
 
-            Assert.isFalse( validityState.valueMissing, 'Field was required, has value, value is not missing' );
+      Assert.isFalse( validityState.valueMissing, 'Field was required, has value, value is not missing' );
 
-            // since a value is required, this should cause a validity state error.
-            field.set( '' );
-            var validityState = field.getValidityState();
-            Assert.isTrue( validityState.valueMissing, 'Field was required, does not have a value, getValidityState correctly gets this' );
-        }
+      // since a value is required, this should cause a validity state error.
+      field.set( '' );
+      var validityState = field.getValidityState();
+      Assert.isTrue( validityState.valueMissing, 'Field was required, does not have a value, getValidityState correctly gets this' );
+    },
+
+    testSetZero: function() {
+      this.field.set( 0 );
+      Assert.areEqual("0", this.field.getTarget().val(), "HTML set to 0");
+    },
+
+    testSetFalse: function() {
+      this.field.set( false );
+      Assert.areEqual("false", this.field.getTarget().val(), "HTML set to false");
+    },
+
+    testSetNull: function() {
+      this.field.set( null );
+      Assert.areEqual("null", this.field.getTarget().val(), "HTML set to null");
+    }
 } );
