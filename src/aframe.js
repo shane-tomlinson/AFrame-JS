@@ -134,7 +134,7 @@ var AFrame = ( function() {
         /**
          * Check whether an item is defined
          *
-         *     var isDefined = AFrame.func( valueToCheck );
+         *     var isDefined = AFrame.defined( valueToCheck );
          *
          * @method defined
          * @param {variant} itemToCheck
