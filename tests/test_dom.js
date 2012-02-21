@@ -201,7 +201,18 @@ function DOMTest( adapter, name ) {
             DOM.removeElement( '.DOMSelection' );
 
             Assert.areSame( 0, jQuery( '.DOMSelection' ).length, 'remove has worked' );
-        }
+        },
+
+        testIs: function() {
+            Assert.areSame( true, DOM.is( "#textAreaField", "textarea" ), "is correctly returns true" );
+            Assert.areSame( false, DOM.is( "#textAreaField", "body" ), "is correctly returns false" );
+        },
+
+        testFocus: function() {
+            DOM.focus( "#textAreaField" );
+            Assert.areSame( true, DOM.is( "#textAreaField", ":focus" ), "text area field is focused" );
+        },
+
     };
 }
 testsToRun.push( DOMTest( AFrame.DOM, 'DOM Adapter' ) );
