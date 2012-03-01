@@ -10,47 +10,50 @@ var AFrame = ( function() {
     "use strict";
 
     var AFrame = {
-		/**
-		* Checks whether the subClass is a sub-class of superClass, as is
-		*  done using AFrame.extend or AFrame.Class.
-		*
-		*    var SubClass = AFrame.Class( AFrame.AObject );
-		*
-		*    // extendsFrom will be true;
-		*    var extendsFrom = AFrame.extendsFrom( SubClass, AFrame.AObject );
-		*
-		* @method extendsFrom
-		* @param {function} subClass - the potential subclass
-		* @param {function} superClass - the potential superclass
-		* @return {boolean} true if subClass is a subclass of superClass, false otw.
-		*/
-		extendsFrom: function( subClass, superClass ) {
-			var same = false;
-			if( AFrame.func( subClass ) ) {
-				do {
-					same = subClass === superClass;
-					subClass = subClass.superclass;
-				} while( subClass && !same );
-			}
+        /**
+        * Checks whether the subClass is a sub-class of superClass, as is
+        *  done using AFrame.extend or AFrame.Class.
+        *
+        *    var SubClass = AFrame.Class( AFrame.AObject );
+        *
+        *    // extendsFrom will be true;
+        *    var extendsFrom = AFrame.extendsFrom( SubClass, AFrame.AObject );
+        *
+        * @method extendsFrom
+        * @param {function} subClass - the potential subclass
+        * @param {function} superClass - the potential superclass
+        * @return {boolean} true if subClass is a subclass of superClass, false otw.
+        */
+        extendsFrom: function( subClass, superClass ) {
+          var same = false;
+          if( AFrame.func( subClass ) ) {
+            do {
+              same = subClass === superClass;
+              subClass = subClass.superclass;
+            } while( subClass && !same );
+          }
 
-			return same;
-		},
+          return same;
+        },
 
         /**
-        * extend an object with the members of another object.
+        * extend an object with the members of one or more objects.
         *
         *    var objectToMixinTo = {
         *         name: 'AFrame'
         *    };
-        *    AFrame.mixin( objectToMixinTo, '{ version: 1.0 } );
+        *    AFrame.mixin( objectToMixinTo, { version: 1.0 }, { author: "Shane Tomlinson" } );
         *
         * @method mixin
         * @param {object} toExtend - object to extend
-        * @param {object} mixin (optional) - object with optional functions to extend bc with
+        * @param {object} mixin(s) (optional) - object(s) with optional functions to extend bc with
         */
-        mixin: function( toExtend, mixin ) {
-            for( var key in mixin ) {
-                toExtend[ key ] = mixin[ key ];
+        mixin: function( toExtend ) {
+            var mixins = [].slice.call( arguments, 1 );
+            for( var index = 0, mixin; mixin = mixins[index]; ++index ) {
+              for( var key in mixin ) {
+                  toExtend[ key ] = mixin[ key ];
+              }
             }
             return toExtend;
         },

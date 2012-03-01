@@ -59,7 +59,14 @@
 				Assert.isFunction( this.subInstance.mixedFunction, 'mixedFunction added' );
 				Assert.isTrue( this.subInstance.mixedFunction(), 'mixedFunction can be called' );
 				Assert.areSame( this.subInstance, this.mixed, 'AFrame.mixin returns object mixed into' )
-			}
+			},
+
+      testMixinMultiples: function() {
+        var mixed = AFrame.mixin( {}, { key: "value" }, { key2: "value2" } );
+
+        Assert.areEqual( "value", mixed.key, "key added" );
+        Assert.areEqual( "value2", mixed.key2, "key2 added" );
+      }
 	} );
 
 	testsToRun.push( {

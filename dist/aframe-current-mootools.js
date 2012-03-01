@@ -124,47 +124,50 @@ var AFrame = ( function() {
     "use strict";
 
     var AFrame = {
-		/**
-		* Checks whether the subClass is a sub-class of superClass, as is
-		*  done using AFrame.extend or AFrame.Class.
-		*
-		*    var SubClass = AFrame.Class( AFrame.AObject );
-		*
-		*    // extendsFrom will be true;
-		*    var extendsFrom = AFrame.extendsFrom( SubClass, AFrame.AObject );
-		*
-		* @method extendsFrom
-		* @param {function} subClass - the potential subclass
-		* @param {function} superClass - the potential superclass
-		* @return {boolean} true if subClass is a subclass of superClass, false otw.
-		*/
-		extendsFrom: function( subClass, superClass ) {
-			var same = false;
-			if( AFrame.func( subClass ) ) {
-				do {
-					same = subClass === superClass;
-					subClass = subClass.superclass;
-				} while( subClass && !same );
-			}
+        /**
+        * Checks whether the subClass is a sub-class of superClass, as is
+        *  done using AFrame.extend or AFrame.Class.
+        *
+        *    var SubClass = AFrame.Class( AFrame.AObject );
+        *
+        *    // extendsFrom will be true;
+        *    var extendsFrom = AFrame.extendsFrom( SubClass, AFrame.AObject );
+        *
+        * @method extendsFrom
+        * @param {function} subClass - the potential subclass
+        * @param {function} superClass - the potential superclass
+        * @return {boolean} true if subClass is a subclass of superClass, false otw.
+        */
+        extendsFrom: function( subClass, superClass ) {
+          var same = false;
+          if( AFrame.func( subClass ) ) {
+            do {
+              same = subClass === superClass;
+              subClass = subClass.superclass;
+            } while( subClass && !same );
+          }
 
-			return same;
-		},
+          return same;
+        },
 
         /**
-        * extend an object with the members of another object.
+        * extend an object with the members of one or more objects.
         *
         *    var objectToMixinTo = {
         *         name: 'AFrame'
         *    };
-        *    AFrame.mixin( objectToMixinTo, '{ version: 1.0 } );
+        *    AFrame.mixin( objectToMixinTo, { version: 1.0 }, { author: "Shane Tomlinson" } );
         *
         * @method mixin
         * @param {object} toExtend - object to extend
-        * @param {object} mixin (optional) - object with optional functions to extend bc with
+        * @param {object} mixin(s) (optional) - object(s) with optional functions to extend bc with
         */
-        mixin: function( toExtend, mixin ) {
-            for( var key in mixin ) {
-                toExtend[ key ] = mixin[ key ];
+        mixin: function( toExtend ) {
+            var mixins = [].slice.call( arguments, 1 );
+            for( var index = 0, mixin; mixin = mixins[index]; ++index ) {
+              for( var key in mixin ) {
+                  toExtend[ key ] = mixin[ key ];
+              }
             }
             return toExtend;
         },
@@ -248,7 +251,7 @@ var AFrame = ( function() {
         /**
          * Check whether an item is defined
          *
-         *     var isDefined = AFrame.func( valueToCheck );
+         *     var isDefined = AFrame.defined( valueToCheck );
          *
          * @method defined
          * @param {variant} itemToCheck
@@ -485,7 +488,9 @@ AFrame.Class = ( function() {
 			config = config || {};
 			addPlugins( retval, config.plugins || [] );
 
-			retval.init( config );
+      var args = [].slice.call(arguments, 2);
+      args.splice(0, 0, config);
+			retval.init.apply( retval, args );
 		}
 		else {
 			throw 'Class does not exist.';
@@ -600,282 +605,287 @@ AFrame.Observable = ( function() {
  * @class AFrame.ObservablesMixin
  * @static
  */
-AFrame.ObservablesMixin = {
-	/**
-	 * Trigger an event.
-     *
-     *    // trigger an event using event name only.  Event object returned.
-     *    var event = object.triggerEvent( 'eventName' );
-     *
-     *    // trigger an event using event name and some extra parameters
-     *    object.triggerEvent( 'eventName', 'extraParameterValue' );
-     *
-     *    // Equivalent to first example
-     *    object.triggerEvent( {
-     *        type: 'eventName'
-     *    } );
-     *
-     *    // Equivalent to second example
-     *    object.triggerEvent( {
-     *        type: 'eventName'
-     *    }, 'extraParameterValue' );
-     *
-     *    // Add extra fields to the event
-     *    object.triggerEvent( {
-     *        type: 'eventName',
-     *        extraField: 'extraValue'
-     *    } );
-     *    // event in listeners will be augmented with an extraField field whose value is extraValue
-     *
-	 * @method triggerEvent
-	 * @param {string || object} type - event type to trigger or object that serves the same purpose as the data object in setEventData
-	 * @param {variant} (optional) all other arguments are passed to any registered callbacks
-	 * @return {AFrame.Event} - event object that is passed to event listeners, only returned if there
-     *  are any listeners
-	 */
-	triggerEvent: function() {
-		var me=this,
-            eventData = arguments[ 0 ],
-            isDataObj = !AFrame.string( eventData ),
-            eventName = isDataObj ? eventData.type : eventData,
-		    observable = me.handlers && me.handlers[ eventName ];
+AFrame.ObservablesMixin = (function() {
+  "use strict";
 
-		if( observable ) {
-            eventData = isDataObj ? eventData : {
-                type: eventData
-            };
-            me.setEventData( eventData );
-            var eventObject = me.getEventObject(),
-			    args = Array.prototype.slice.call( arguments, 1 );
-            args.splice( 0, 0, eventObject );
-			observable.trigger.apply( observable, args );
+  return {
+      /**
+       * Trigger an event.
+         *
+         *    // trigger an event using event name only.  Event object returned.
+         *    var event = object.triggerEvent( 'eventName' );
+         *
+         *    // trigger an event using event name and some extra parameters
+         *    object.triggerEvent( 'eventName', 'extraParameterValue' );
+         *
+         *    // Equivalent to first example
+         *    object.triggerEvent( {
+         *        type: 'eventName'
+         *    } );
+         *
+         *    // Equivalent to second example
+         *    object.triggerEvent( {
+         *        type: 'eventName'
+         *    }, 'extraParameterValue' );
+         *
+         *    // Add extra fields to the event
+         *    object.triggerEvent( {
+         *        type: 'eventName',
+         *        extraField: 'extraValue'
+         *    } );
+         *    // event in listeners will be augmented with an extraField field whose value is extraValue
+         *
+       * @method triggerEvent
+       * @param {string || object} type - event type to trigger or object that serves the same purpose as the data object in setEventData
+       * @param {variant} (optional) all other arguments are passed to any registered callbacks
+       * @return {AFrame.Event} - event object that is passed to event listeners, only returned if there
+         *  are any listeners
+       */
+      triggerEvent: function() {
+        var me=this,
+                eventData = arguments[ 0 ],
+                isDataObj = !AFrame.string( eventData ),
+                eventName = isDataObj ? eventData.type : eventData,
+            observable = me.handlers && me.handlers[ eventName ];
 
-            return eventObject;
-		}
-	},
+        if( observable ) {
+                eventData = isDataObj ? eventData : {
+                    type: eventData
+                };
+                me.setEventData( eventData );
+                var eventObject = me.getEventObject(),
+              args = Array.prototype.slice.call( arguments, 1 );
+                args.splice( 0, 0, eventObject );
+          observable.trigger.apply( observable, args );
 
-    /**
-    * Set data to be added on to the next event triggered.
-    *
-    *    object.setEventData( {
-    *        addedField: 'addedValue'
-    *    } );
-    *    // can be called multiple times, new data with same key as old data
-    *    // overwrites old data.
-    *    object.setEventData( {
-    *        secondField: 'secondValue'
-    *    } );
-    *    // the next event that is triggered will have it's event parameter augmented with addedField and secondField.
-    *
-    * @method setEventData
-    * @param {object} data - data to be added to the next event triggered
-    */
-    setEventData: function( data ) {
-        var me=this;
-        if( me.eventData ) {
-            AFrame.mixin( me.eventData, data );
+                return eventObject;
         }
-        else {
-            me.eventData = data;
+      },
+
+        /**
+        * Set data to be added on to the next event triggered.
+        *
+        *    object.setEventData( {
+        *        addedField: 'addedValue'
+        *    } );
+        *    // can be called multiple times, new data with same key as old data
+        *    // overwrites old data.
+        *    object.setEventData( {
+        *        secondField: 'secondValue'
+        *    } );
+        *    // the next event that is triggered will have it's event parameter augmented with addedField and secondField.
+        *
+        * @method setEventData
+        * @param {object} data - data to be added to the next event triggered
+        */
+        setEventData: function( data ) {
+            var me=this;
+            if( me.eventData ) {
+                AFrame.mixin( me.eventData, data );
+            }
+            else {
+                me.eventData = data;
+            }
+        },
+
+        /**
+        * Get an event object.  Should not be called directly, but can be overridden in subclasses to add
+        *   specialized fields to the event object.
+        * @method getEventObject
+        * @return {AFrame.Event}
+        */
+        getEventObject: function() {
+            var me=this;
+            if( !me.eventData.target ) {
+                me.eventData.target = me;
+            }
+
+            var event = me.event || AFrame.Event.create( me.eventData );
+            me.eventData = me.event = null;
+            return event;
+        },
+
+      /**
+       * Check to see if an event has been triggered
+       * @method isEventTriggered
+       * @param {string} eventName name of event to check.
+       * @return {boolean} true if event has been triggered, false otw.
+       */
+      isEventTriggered: function( eventName ) {
+        var me=this,
+                retval = false,
+            observable = me.handlers && me.handlers[ eventName ];
+
+        if( observable ) {
+          retval = observable.isTriggered();
         }
-    },
 
-    /**
-    * Get an event object.  Should not be called directly, but can be overridden in subclasses to add
-    *   specialized fields to the event object.
-    * @method getEventObject
-    * @return {AFrame.Event}
-    */
-    getEventObject: function() {
-        var me=this;
-        if( !me.eventData.target ) {
-            me.eventData.target = me;
-        }
+        return retval;
+      },
 
-        var event = me.event || AFrame.Event.create( me.eventData );
-        me.eventData = me.event = null;
-        return event;
-    },
-
-	/**
-	 * Check to see if an event has been triggered
-	 * @method isEventTriggered
-	 * @param {string} eventName name of event to check.
-	 * @return {boolean} true if event has been triggered, false otw.
-	 */
-	isEventTriggered: function( eventName ) {
-		var me=this,
-            retval = false,
-		    observable = me.handlers && me.handlers[ eventName ];
-
-		if( observable ) {
-			retval = observable.isTriggered();
-		}
-
-		return retval;
-	},
-
-	/**
-	 * Bind a callback to an event.  When an event is triggered and the callback is called,
-     *  the first argument to the callback will be an [AFrame.Event](AFrame.Event.html) object.
-     *  The subsequent arguments will be those passed to the triggerEvent function.
-     *
-     *     // Bind a callback to an event
-     *     obj.bindEvent( 'eventname', function( event, arg1 ) {
-     *         // event is an AFrame.Event, arg1 is the first argument passed
-     *         // (when triggered below, will be 'arg1Value')
-     *     } );
-     *
-     *     // trigger the event
-     *     obj.triggerEvent( 'eventname', 'arg1Value' );
-     *
-	 * @method bindEvent
-	 * @param {string} eventName name of event to register on
-	 * @param {function} callback callback to call
-	 * @param {object} context (optional) optional context to call the callback in.  If not given,
-	 * 	use the 'this' object.
-	 * @return {id} id that can be used to unbind the callback.
-	 */
-	bindEvent: function( eventName, callback, context ) {
-        var me=this;
+      /**
+       * Bind a callback to an event.  When an event is triggered and the callback is called,
+         *  the first argument to the callback will be an [AFrame.Event](AFrame.Event.html) object.
+         *  The subsequent arguments will be those passed to the triggerEvent function.
+         *
+         *     // Bind a callback to an event
+         *     obj.bindEvent( 'eventname', function( event, arg1 ) {
+         *         // event is an AFrame.Event, arg1 is the first argument passed
+         *         // (when triggered below, will be 'arg1Value')
+         *     } );
+         *
+         *     // trigger the event
+         *     obj.triggerEvent( 'eventname', 'arg1Value' );
+         *
+       * @method bindEvent
+       * @param {string} eventName name of event to register on
+       * @param {function} callback callback to call
+       * @param {object} context (optional) optional context to call the callback in.  If not given,
+       * 	use the 'this' object.
+       * @return {id} id that can be used to unbind the callback.
+       */
+      bindEvent: function( eventName, callback, context ) {
+        var me=this,
             handlers = me.handlers = me.handlers || {},
             bindings = me.bindings = me.bindings || {},
-		    observable = handlers[ eventName ] || AFrame.Observable.create(),
-		    eid = observable.bind( callback.bind( context || me ) );
+            observable = handlers[ eventName ] || AFrame.Observable.create(),
+            eid = observable.bind( callback.bind( context || me ) );
 
-		handlers[ eventName ] = observable;
+        handlers[ eventName ] = observable;
 
-		bindings[ eid ] = {
-			object: context,
-			observable: observable
-		};
+        bindings[ eid ] = {
+          object: context,
+          observable: observable
+        };
 
-		context && context.bindTo && context.bindTo( me, eid );
+        context && context.bindTo && context.bindTo( me, eid );
 
-		return eid;
-	},
+        return eid;
+      },
 
-	/**
-	 * Unbind an event on this object
-	 * @method unbindEvent
-	 * @param {id} id returned by bindEvent
-	 */
-	unbindEvent: function( id ) {
-        var bindings = this.bindings,
-		    binding = bindings && bindings[ id ],
-            object = binding && binding.object;
+      /**
+       * Unbind an event on this object
+       * @method unbindEvent
+       * @param {id} id returned by bindEvent
+       */
+      unbindEvent: function( id ) {
+            var bindings = this.bindings,
+            binding = bindings && bindings[ id ],
+                object = binding && binding.object;
 
-		if( binding ) {
-			AFrame.remove( bindings, id );
-			object && object.unbindTo && object.unbindTo( id );
+        if( binding ) {
+          AFrame.remove( bindings, id );
+          object && object.unbindTo && object.unbindTo( id );
 
-			return binding.observable.unbind( id );
-		}
-	},
+          return binding.observable.unbind( id );
+        }
+      },
 
-	/**
-	 * Unbind all events on this object
-	 * @method unbindAll
-	 */
-	unbindAll: function() {
-        var me=this,
-            key,
-            id,
-            handlers = me.handlers,
-            bindings = me.bindings,
-            binding;
+      /**
+       * Unbind all events on this object
+       * @method unbindAll
+       */
+      unbindAll: function() {
+            var me=this,
+                key,
+                id,
+                handlers = me.handlers,
+                bindings = me.bindings,
+                binding;
 
-		for( key in handlers ) {
-			handlers[ key ].unbindAll();
-			AFrame.remove( handlers, key );
-		}
+        for( key in handlers ) {
+          handlers[ key ].unbindAll();
+          AFrame.remove( handlers, key );
+        }
 
-		for( id in bindings ) {
-			binding = bindings[ id ];
-			AFrame.remove( bindings, id );
+        for( id in bindings ) {
+          binding = bindings[ id ];
+          AFrame.remove( bindings, id );
 
-			if( binding.object && binding.object.unbindTo ) {
-				binding.object.unbindTo( id );
-			}
-			// no need to call the observable's unbind, it has already been torn down in unbindAll above
-		}
-	},
+          if( binding.object && binding.object.unbindTo ) {
+            binding.object.unbindTo( id );
+          }
+          // no need to call the observable's unbind, it has already been torn down in unbindAll above
+        }
+      },
 
-	/**
-	 * Proxy a list of events from another object as this object
-	 * @method proxyEvents
-	 * @param {object} proxyFrom object to proxy events from
-	 * @param {array} eventList list of event names to proxy
-	 */
-	proxyEvents: function( proxyFrom, eventList ) {
-        var me=this,
-            args,
-            event;
-		eventList.forEach( function( eventName, index ) {
-			proxyFrom.bindEvent( eventName, function() {
-                // get rid of the original event, a new one will be created.
-				args = Array.prototype.slice.call( arguments, 1 );
+      /**
+       * Proxy a list of events from another object as this object
+       * @method proxyEvents
+       * @param {object} proxyFrom object to proxy events from
+       * @param {array} eventList list of event names to proxy
+       */
+      proxyEvents: function( proxyFrom, eventList ) {
+            var me=this,
+                args,
+                event;
+        eventList.forEach( function( eventName, index ) {
+          proxyFrom.bindEvent( eventName, function() {
+                    // get rid of the original event, a new one will be created.
+            args = Array.prototype.slice.call( arguments, 1 );
 
-                // create a new event, used in getEventObject
-                me.event = event = arguments[ 0 ];
-                event.originalTarget = event.target;
-                event.target = me;
+                    // create a new event, used in getEventObject
+                    me.event = event = arguments[ 0 ];
+                    event.originalTarget = event.target;
+                    event.target = me;
 
-				args.splice( 0, 0, eventName );
-				me.triggerEvent.apply( me, args );
-			} );
-		} );
-	},
+            args.splice( 0, 0, eventName );
+            me.triggerEvent.apply( me, args );
+          } );
+        } );
+      },
 
-	/**
-	 * Create a binding between this object and another object.  This means this object
-	 * is listening to an event on another object.
-	 * @method bindTo
-	 * @param {AFrame.AObject} bindToObject object to bind to
-	 * @param {id} id of event this object is listening for on the bindToObject
-	 */
-	bindTo: function( bindToObject, id ) {
-        var me=this,
-            boundTo = me.boundTo = me.BoundTo || {};
+      /**
+       * Create a binding between this object and another object.  This means this object
+       * is listening to an event on another object.
+       * @method bindTo
+       * @param {AFrame.AObject} bindToObject object to bind to
+       * @param {id} id of event this object is listening for on the bindToObject
+       */
+      bindTo: function( bindToObject, id ) {
+            var me=this,
+                boundTo = me.boundTo = me.BoundTo || {};
 
-		boundTo[ id ] = boundTo[ id ] || {
-			object: bindToObject
-		};
-	},
+        boundTo[ id ] = boundTo[ id ] || {
+          object: bindToObject
+        };
+      },
 
-	/**
-	 * Unbind a listener bound from this object to another object
-	 * @method unbindTo
-	 * @param {id} id of event to unbind
-	 */
-	unbindTo: function( id ) {
-		var boundTo = this.boundTo,
-            binding = boundTo[ id ];
+      /**
+       * Unbind a listener bound from this object to another object
+       * @method unbindTo
+       * @param {id} id of event to unbind
+       */
+      unbindTo: function( id ) {
+        var boundTo = this.boundTo,
+                binding = boundTo[ id ];
 
-		if( binding ) {
-			binding.object.unbindEvent( id );
-			AFrame.remove( boundTo, id );
-		}
-	},
+        if( binding ) {
+          binding.object.unbindEvent( id );
+          AFrame.remove( boundTo, id );
+        }
+      },
 
-	/**
-	 * Unbind all events registered from this object on other objects.  Useful when tearing
-	 * an object down
-	 * @method unbindToAll
-	 */
-	unbindToAll: function() {
-        var me=this,
-            boundTo = me.boundTo,
-            id;
+      /**
+       * Unbind all events registered from this object on other objects.  Useful when tearing
+       * an object down
+       * @method unbindToAll
+       */
+      unbindToAll: function() {
+            var me=this,
+                boundTo = me.boundTo,
+                id;
 
-		for( id in boundTo ) {
-			boundTo[ id ].object.unbindEvent( id );
-			AFrame.remove( boundTo, id );
-		}
-		me.boundTo = null;
-		me.boundTo = {};
-	}
-};
+        for( id in boundTo ) {
+          boundTo[ id ].object.unbindEvent( id );
+          AFrame.remove( boundTo, id );
+        }
+        me.boundTo = null;
+        me.boundTo = {};
+      }
+    };
+
+}());
 /**
 * A collection of functions common to enumerable objects.  When mixing in 
 * this class, the class being mixed into must define a forEach function.
@@ -1066,7 +1076,22 @@ AFrame.AObject = (function(){
              * @event onInit
              * @param {AFrame.Event} event - the event object
              */
-             me.triggerEvent( 'onInit' );
+            me.triggerEvent( 'onInit' );
+        },
+
+        /**
+         * Check for required configuration options
+         * @method checkRequired
+         * @param config {object} - configuration
+         * @param name {string} - all remaining options are strings of items that are required to be in the configuration object.
+         */
+        checkRequired: function( config ) {
+            var list = [].slice.call(arguments, 1);
+            for(var item, index = 0; item = list[index]; ++index) {
+                if(!config.hasOwnProperty(item)) {
+                    throw "missing config option: " + item;
+                }
+            }
         },
 
         /**
@@ -2778,7 +2803,7 @@ AFrame.List = ( function() {
  *    var collection = AFrame.CollectionArray.create();
  *
  *
- *    var renderItem = function( index, data ) {
+ *    var renderItem = function( data, index ) {
  *       var listItem = AFrame.DOM.createElement( 'li', data.name + ', ' + data.employer );
  *       return listItem;
  *    };
@@ -3902,8 +3927,12 @@ AFrame.Field = ( function() {
         * @param {variant} val value to dipslay
         */
         display: function( val ) {
-            var target = this.getTarget();
-            AFrame.DOM.setInner( target, val || '' );
+            var target = this.getTarget(),
+                displayVal = AFrame.defined( val ) ?
+                                // If null, convert to string "null"
+                                val === null ? "null" : val :
+                                "";
+            AFrame.DOM.setInner( target, displayVal );
         },
 
         /**
