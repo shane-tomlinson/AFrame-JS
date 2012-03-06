@@ -250,9 +250,10 @@ AFrame.DOM = ( function() {
         * @method appendTo
         * @param {selector || element} elementToInsert
         * @param {selector || element} elementToAppendTo
+        * @return {element} appended element
         */
         appendTo: function( elementToInsert, elementToAppendTo ) {
-            jQuery( elementToInsert ).appendTo( jQuery( elementToAppendTo ) );
+            return jQuery( elementToInsert ).appendTo( jQuery( elementToAppendTo ) );
         },
 
         /**
@@ -260,9 +261,10 @@ AFrame.DOM = ( function() {
         * @method insertBefore
         * @param {selector || element} elementToInsert
         * @param {selector || element} elementToInsertBefore
+        * @return {element} inserted element
         */
         insertBefore: function( elementToInsert, elementToInsertBefore ) {
-            jQuery( elementToInsert ).insertBefore( elementToInsertBefore );
+            return jQuery( elementToInsert ).insertBefore( elementToInsertBefore );
         },
 
         /**
