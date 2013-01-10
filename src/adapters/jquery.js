@@ -66,6 +66,17 @@ AFrame.DOM = ( function() {
         },
 
         /**
+        * Find the closest ancestor that matches the selector
+        * @method closest
+        * @param {selector || element} selector - element to get children for
+        * @param {selector || element} searchFrom - element to search from
+        * @return {array} The closest ancestor matching the selector
+        */
+        closest: function( selector, searchFrom ) {
+          return jQuery( searchFrom ).closest( selector );
+        },
+
+        /**
         * Iterate over a set of elements
         * @method forEach
         * @param {Elements} elements - elements to iterate over
@@ -133,7 +144,6 @@ AFrame.DOM = ( function() {
             else {
                 target.html( value );
             }
-
         },
 
         /**
@@ -178,16 +188,6 @@ AFrame.DOM = ( function() {
         },
 
         /**
-        * Remove an attribute from an element.
-        * @method removeAttr
-        * @param {selector || element} element
-        * @param {string} attrName - the attribute to remove
-        */
-        removeAttr: function( element, attrName ) {
-            return jQuery( element ).removeAttr( attrName );
-        },
-
-        /**
         * Check if an element has an attribute
         * @method hasAttr
         * @param {selector || element} element
@@ -195,8 +195,17 @@ AFrame.DOM = ( function() {
         * @return {boolean} true if the element has the attribute, false otw.
         */
         hasAttr: function( element, attrName ) {
-            var val = jQuery( element )[ 0 ].getAttribute( attrName );
-            return val !== null;
+            return typeof jQuery( element ).attr( attrName ) !== "undefined";
+        },
+
+        /**
+        * Remove an attribute from an element.
+        * @method removeAttr
+        * @param {selector || element} element
+        * @param {string} attrName - the attribute to remove
+        */
+        removeAttr: function( element, attrName ) {
+            return jQuery( element ).removeAttr( attrName );
         },
 
         /**
@@ -250,10 +259,21 @@ AFrame.DOM = ( function() {
         * @method appendTo
         * @param {selector || element} elementToInsert
         * @param {selector || element} elementToAppendTo
-        * @return {element} appended element
         */
         appendTo: function( elementToInsert, elementToAppendTo ) {
-            return jQuery( elementToInsert ).appendTo( jQuery( elementToAppendTo ) );
+            var el = jQuery(elementToInsert );
+            el.appendTo( jQuery( elementToAppendTo ) );
+            return el;
+        },
+
+        /**
+        * Insert an element after another element
+        * @method insertAfter
+        * @param {selector || element} elementToInsert
+        * @param {selector || element} elementToInsertBefore
+        */
+        insertAfter: function( elementToInsert, elementToInsertAfter ) {
+            return jQuery( elementToInsertAfter ).after( elementToInsert );
         },
 
         /**
@@ -261,7 +281,6 @@ AFrame.DOM = ( function() {
         * @method insertBefore
         * @param {selector || element} elementToInsert
         * @param {selector || element} elementToInsertBefore
-        * @return {element} inserted element
         */
         insertBefore: function( elementToInsert, elementToInsertBefore ) {
             return jQuery( elementToInsert ).insertBefore( elementToInsertBefore );
@@ -307,8 +326,65 @@ AFrame.DOM = ( function() {
          */
         is: function( elementToCheck, type ) {
           return jQuery( elementToCheck ).is( type );
-        }
+        },
 
+        /**
+         * Show an element
+         * @method show
+         * @param {selector || element} elementToShow
+         */
+        show: function( elementToShow ) {
+          return jQuery( elementToShow ).show();
+        },
+
+        /**
+         * Hide an element
+         * @method hide
+         * @param {selector || element} elementToHide
+         */
+        hide: function( elementToHide ) {
+          return jQuery( elementToHide ).hide();
+        },
+
+        /**
+         * Slide an element down
+         * @method slideDown
+         * @param {selector || element} elementToSlide
+         * @param {number} [animationTime]
+         */
+        slideDown: function( elementToSlide, animationTime ) {
+          return jQuery( elementToSlide ).slideDown( animationTime );
+        },
+
+        /**
+         * Slide an element up
+         * @method slideUp
+         * @param {selector || element} elementToSlide
+         * @param {number} [animationTime]
+         */
+        slideUp: function( elementToSlide, animationTime ) {
+          return jQuery( elementToSlide ).slideUp( animationTime );
+        },
+
+        /**
+         * Fade an element in
+         * @method fadeIn
+         * @param {selector || element} elementToFade
+         * @param {number} [animationTime]
+         */
+        fadeIn: function( elementToFade, animationTime ) {
+          return jQuery( elementToFade ).fadeIn( animationTime );
+        },
+
+        /**
+         * Fade an element out
+         * @method fadeOut
+         * @param {selector || element} elementToFade
+         * @param {number} [animationTime]
+         */
+        fadeOut: function( elementToFade, animationTime ) {
+          return jQuery( elementToFade ).fadeOut( animationTime );
+        }
     };
 
     function isValBased( target ) {
